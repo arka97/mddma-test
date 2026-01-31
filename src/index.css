@@ -2,95 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* MDDMA Corporate Design System - Navy Blue & Gold */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core colors - Corporate Navy & Heritage Gold */
+    --background: 210 40% 98%;
+    --foreground: 215 45% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 215 45% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 215 45% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Navy Blue - Authority & Trust */
+    --primary: 215 60% 23%;
+    --primary-foreground: 45 90% 96%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Lighter navy for secondary actions */
+    --secondary: 215 35% 90%;
+    --secondary-foreground: 215 60% 23%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Subtle backgrounds */
+    --muted: 210 30% 95%;
+    --muted-foreground: 215 20% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Gold Accent - Heritage & Prestige */
+    --accent: 38 75% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 215 25% 88%;
+    --input: 215 25% 88%;
+    --ring: 38 75% 45%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Custom MDDMA tokens */
+    --navy: 215 60% 23%;
+    --navy-light: 215 45% 35%;
+    --navy-dark: 215 65% 15%;
+    --gold: 38 75% 45%;
+    --gold-light: 45 85% 55%;
+    --gold-dark: 35 70% 35%;
+    --cream: 45 40% 96%;
+    --warm-gray: 30 10% 50%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 215 60% 18%;
+    --sidebar-foreground: 45 90% 96%;
+    --sidebar-primary: 38 75% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 215 50% 28%;
+    --sidebar-accent-foreground: 45 90% 96%;
+    --sidebar-border: 215 50% 28%;
+    --sidebar-ring: 38 75% 45%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 215 65% 8%;
+    --foreground: 45 30% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 215 55% 12%;
+    --card-foreground: 45 30% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 215 55% 12%;
+    --popover-foreground: 45 30% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 38 75% 50%;
+    --primary-foreground: 215 65% 10%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 215 45% 20%;
+    --secondary-foreground: 45 30% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 215 40% 18%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 38 75% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 215 40% 22%;
+    --input: 215 40% 22%;
+    --ring: 38 75% 50%;
+
+    --sidebar-background: 215 65% 6%;
+    --sidebar-foreground: 45 30% 95%;
+    --sidebar-primary: 38 75% 50%;
+    --sidebar-primary-foreground: 215 65% 10%;
+    --sidebar-accent: 215 50% 15%;
+    --sidebar-accent-foreground: 45 30% 95%;
+    --sidebar-border: 215 50% 15%;
+    --sidebar-ring: 38 75% 50%;
   }
 }
 
@@ -100,6 +108,80 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .heritage-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full;
+    background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-dark)) 100%);
+    color: hsl(var(--primary));
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-primary;
+  }
+
+  .gold-gradient-text {
+    background: linear-gradient(135deg, hsl(var(--gold-light)) 0%, hsl(var(--gold)) 50%, hsl(var(--gold-dark)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+}
+
+@layer utilities {
+  .bg-navy {
+    background-color: hsl(var(--navy));
+  }
+  
+  .bg-navy-light {
+    background-color: hsl(var(--navy-light));
+  }
+  
+  .bg-navy-dark {
+    background-color: hsl(var(--navy-dark));
+  }
+  
+  .bg-gold {
+    background-color: hsl(var(--gold));
+  }
+  
+  .bg-gold-light {
+    background-color: hsl(var(--gold-light));
+  }
+  
+  .bg-cream {
+    background-color: hsl(var(--cream));
+  }
+  
+  .text-navy {
+    color: hsl(var(--navy));
+  }
+  
+  .text-navy-light {
+    color: hsl(var(--navy-light));
+  }
+  
+  .text-gold {
+    color: hsl(var(--gold));
+  }
+  
+  .text-gold-dark {
+    color: hsl(var(--gold-dark));
+  }
+  
+  .border-gold {
+    border-color: hsl(var(--gold));
   }
 }
