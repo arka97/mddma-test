@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Users, FileText, ArrowRight } from "lucide-react";
+import { Users, Search, ArrowRight, ShieldCheck } from "lucide-react";
 import { associationStats } from "@/data/sampleData";
 
 export function HeroSection() {
@@ -16,12 +16,13 @@ export function HeroSection() {
         />
       </div>
 
-      <div className="relative container mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-32">
+      <div className="relative container mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:px-8 lg:py-28">
         <div className="text-center max-w-4xl mx-auto">
           {/* Heritage Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 border border-accent/30 mb-6">
+            <ShieldCheck className="h-4 w-4 text-accent" />
             <span className="text-accent font-semibold text-sm">
-              Established 1930
+              Established 1930s
             </span>
             <span className="text-primary-foreground/60">•</span>
             <span className="text-primary-foreground/80 text-sm">
@@ -31,18 +32,18 @@ export function HeroSection() {
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight mb-6">
-            Representing Mumbai's{" "}
-            <span className="text-accent">Dry Fruits & Dates</span> Trade
+            Mumbai's Trusted{" "}
+            <span className="text-accent">Dry Fruits Trade</span> Association
           </h1>
 
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-10">
-            The premier trade association serving over{" "}
+            Connecting verified traders, importers, and buyers across{" "}
             <span className="font-semibold text-accent">
               {associationStats.memberCount}+ members
             </span>{" "}
-            across {associationStats.marketsCovered} major markets in Mumbai and
-            Navi Mumbai.
+            in {associationStats.marketsCovered} major markets — Mumbai & Navi
+            Mumbai.
           </p>
 
           {/* CTA Buttons */}
@@ -52,9 +53,9 @@ export function HeroSection() {
               className="bg-accent hover:bg-accent/90 text-primary font-semibold px-8 h-12 text-base"
               asChild
             >
-              <Link to="/apply">
-                <Users className="mr-2 h-5 w-5" />
-                Become a Member
+              <Link to="/directory">
+                <Search className="mr-2 h-5 w-5" />
+                Find Verified Traders
               </Link>
             </Button>
             <Button
@@ -63,9 +64,9 @@ export function HeroSection() {
               className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-semibold px-8 h-12 text-base"
               asChild
             >
-              <Link to="/directory">
-                <FileText className="mr-2 h-5 w-5" />
-                View Member Directory
+              <Link to="/apply">
+                <Users className="mr-2 h-5 w-5" />
+                Become a Member
               </Link>
             </Button>
           </div>
@@ -73,38 +74,21 @@ export function HeroSection() {
 
         {/* Stats */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-          <div className="text-center p-4">
-            <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">
-              {associationStats.memberCount}+
+          {[
+            { value: `${associationStats.yearsOfService}`, label: "Years Legacy" },
+            { value: `${associationStats.memberCount}+`, label: "Verified Members" },
+            { value: `${associationStats.marketsCovered}`, label: "APMC Markets" },
+            { value: `${associationStats.commodityTypes}+`, label: "Products Listed" },
+          ].map((stat) => (
+            <div key={stat.label} className="text-center p-4">
+              <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">
+                {stat.value}
+              </div>
+              <div className="text-sm text-primary-foreground/70">
+                {stat.label}
+              </div>
             </div>
-            <div className="text-sm text-primary-foreground/70">
-              Active Members
-            </div>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">
-              {associationStats.yearsOfService}
-            </div>
-            <div className="text-sm text-primary-foreground/70">
-              Years of Service
-            </div>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">
-              {associationStats.marketsCovered}
-            </div>
-            <div className="text-sm text-primary-foreground/70">
-              Markets Covered
-            </div>
-          </div>
-          <div className="text-center p-4">
-            <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">
-              {associationStats.commodityTypes}+
-            </div>
-            <div className="text-sm text-primary-foreground/70">
-              Commodity Types
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
