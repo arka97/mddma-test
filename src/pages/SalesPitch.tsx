@@ -288,7 +288,7 @@ const SalesPitch = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               { label: "Platform Development", value: "₹40-60k", sub: "One-time" },
-              { label: "Annual Hosting & Maintenance", value: "₹50K–1L", sub: "Per year" },
+              { label: "Annual Hosting & Maintenance", value: "<₹30k", sub: "Per year" },
               { label: "Projected Year 1 Revenue", value: "₹42–85L", sub: "From 4 streams" },
               { label: "Break-Even", value: "2–3 Months", sub: "After launch" },
             ].map((item) => (
