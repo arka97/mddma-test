@@ -662,7 +662,7 @@ export const membershipTiers: MembershipTier[] = [
     badge: "Basic", leadPacks: 0, sponsoredEligible: false, highlighted: false,
   },
   {
-    name: "Gold", price: "₹15,000", period: "per year",
+    name: "Gold", price: "₹10,000", period: "per year",
     features: [
       "Enhanced directory listing",
       "Company logo & description",
