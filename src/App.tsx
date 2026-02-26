@@ -16,6 +16,7 @@ import Forms from "./pages/Forms";
 import Login from "./pages/Login";
 import Apply from "./pages/Apply";
 import Admin from "./pages/Admin";
+import SalesPitch from "./pages/SalesPitch";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/apply" element={<Apply />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/pitch" element={<SalesPitch />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
