@@ -1,80 +1,68 @@
 
 
-# Sales Pitch Page for MDDMA Committee
+# BRD, FSD & TSD Document Pages
 
-## What We're Building
-A dedicated `/pitch` page -- a polished, presentation-ready sales document that you can show to the MDDMA committee to sell them on this digital transformation. It will be a scrollable, single-page pitch deck rendered as a web page with print-friendly styling.
+## Overview
+Create three new document pages — Business Requirements Document (BRD), Functional Specification Document (FSD), and Technical Specification Document (TSD) — following the same presentation-style layout as the existing Sales Pitch page. Each will be a scrollable, print-friendly document page accessible via `/brd`, `/fsd`, and `/tsd` routes.
 
-## Page Structure
+## Pages & Content
 
-### 1. Cover Section
-- "MDDMA Digital Platform" title with tagline
-- "Prepared for: Mumbai Dry Fruits & Dates Merchants Association"
-- Date and version
+### 1. BRD (`/brd`) — Business Requirements Document
+Sections:
+- **Cover** — Title, prepared for MDDMA, date/version
+- **Executive Summary** — High-level business need for digital transformation
+- **Business Objectives** — Increase member engagement, generate digital revenue, modernize operations, improve discoverability
+- **Scope** — In-scope (directory, products, leads, ads, admin) and out-of-scope items
+- **Stakeholders** — Committee members, office staff, members, buyers, advertisers
+- **Business Requirements** — Numbered list (BR-001 through BR-015+) covering member management, product catalog, lead intelligence, advertising, membership workflows
+- **Success Criteria** — KPIs (member signups, revenue targets, page visits)
+- **Constraints & Assumptions** — Budget, timeline, technology assumptions
+- **Risks** — Adoption risk, data migration, committee buy-in
 
-### 2. The Problem
-- Current website is Flash-based, non-functional on modern browsers
-- No searchable member directory -- members are invisible online
-- Manual membership workflows waste committee time
-- No revenue from digital advertising or lead intelligence
-- Losing credibility with younger traders and international partners
+### 2. FSD (`/fsd`) — Functional Specification Document
+Sections:
+- **Cover**
+- **Introduction** — Purpose, audience, references to BRD
+- **User Roles** — Public visitor, registered member, admin/office staff
+- **Functional Requirements by Module:**
+  - Member Directory (search, filter, profile view, verification badges)
+  - Product Catalog (categories, variants, seller mapping, affiliate links)
+  - Lead Intelligence (pack listing, purchase flow, download)
+  - Advertising (banner placement, scheduling, rotation)
+  - Admin Panel (CRUD for members/products/leads/ads, featured/sponsored management)
+  - Membership (application form, tier selection, renewal workflow)
+- **UI/UX Requirements** — Responsive design, print support, accessibility
+- **Non-Functional Requirements** — Performance, security, SEO
+- **Demo Links** — Links to live demo pages (`/directory`, `/products`, etc.)
 
-### 3. The Solution (Platform Overview)
-- Visual mockup screenshots pulled from the live demo (linking to actual pages)
-- Five core modules listed with icons:
-  - Verified Member Directory
-  - Product Discovery Catalog
-  - Lead Intelligence Portal
-  - Advertising Platform
-  - Admin Dashboard
+### 3. TSD (`/tsd`) — Technical Specification Document
+Sections:
+- **Cover**
+- **Architecture Overview** — React SPA, Vite build, Tailwind CSS, component hierarchy
+- **Technology Stack** — React 18, TypeScript, Tailwind, shadcn/ui, React Router, TanStack Query, Recharts
+- **Component Architecture** — Layout system, page structure, reusable UI components
+- **Data Model** — Member, Product, LeadPack, Advertiser, MembershipTier interfaces (from sampleData.ts)
+- **Routing** — All routes listed with descriptions
+- **Backend Integration Plan** — Supabase tables, RLS policies, auth flow
+- **Deployment** — Lovable hosting, CI/CD, environment config
+- **Security Considerations** — Auth, role-based access, input validation
+- **Performance** — Code splitting, lazy loading, caching strategy
 
-### 4. Key Features Showcase
-- Interactive cards for each module with "View Demo" buttons linking to the actual built pages (`/directory`, `/products`, `/leads`, `/admin`)
-- Highlight the member profile, search filters, product pages
-
-### 5. Revenue Model
-- Membership tiers (Silver/Gold/Platinum) with pricing
-- Advertising slots (homepage banner, directory sidebar, category pages)
-- Lead pack sales (expo databases)
-- Affiliate commission on retail links
-- Visual table showing projected revenue streams
-
-### 6. Why Now?
-- 95-year legacy needs a modern digital wrapper
-- Competitors (other associations) are digitizing
-- Members expect online access
-- Government digitization push (GST, FSSAI integration)
-
-### 7. Implementation Timeline
-- Phase 1 (Month 1-2): Public website + directory
-- Phase 2 (Month 2-3): Membership system + payments
-- Phase 3 (Month 3-4): Admin panel + lead intelligence
-- Visual timeline/roadmap graphic
-
-### 8. Investment & ROI
-- Development cost placeholder
-- Projected membership growth
-- Advertising revenue potential
-- Break-even timeline
-
-### 9. Call to Action
-- "Let's Build This Together"
-- Contact details / next steps
-- Print button to export as PDF
-
-## Technical Details
+## Technical Approach
 
 ### New Files
-- `src/pages/SalesPitch.tsx` -- the main pitch page component with all sections
-- `src/components/pitch/PitchSection.tsx` -- reusable section wrapper with consistent styling
+- `src/pages/BRD.tsx` — BRD document page
+- `src/pages/FSD.tsx` — FSD document page  
+- `src/pages/TSD.tsx` — TSD document page
 
 ### Modified Files
-- `src/App.tsx` -- add `/pitch` route
+- `src/App.tsx` — Add `/brd`, `/fsd`, `/tsd` routes
 
-### Design Approach
-- Clean, presentation-style layout with large typography and generous whitespace
-- Navy and gold color scheme matching the platform
-- Print-optimized CSS (`@media print`) so they can Ctrl+P to PDF
-- Each section fills roughly one viewport height for a "slide deck" feel
-- Smooth scroll navigation between sections
+### Design
+- Reuse `PitchSection` component for consistent section styling
+- Same sticky nav pattern as SalesPitch with section anchors
+- Print-optimized with `@media print` classes
+- Navy/gold theme consistent with pitch page
+- Each document self-contained with a PDF export button
+- Cross-links between documents (BRD references FSD, FSD references TSD)
 
