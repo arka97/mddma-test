@@ -17,6 +17,9 @@ import Login from "./pages/Login";
 import Apply from "./pages/Apply";
 import Admin from "./pages/Admin";
 import SalesPitch from "./pages/SalesPitch";
+import BRD from "./pages/BRD";
+import FSD from "./pages/FSD";
+import TSD from "./pages/TSD";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +46,9 @@ const App = () => (
           <Route path="/apply" element={<Apply />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/pitch" element={<SalesPitch />} />
+          <Route path="/brd" element={<BRD />} />
+          <Route path="/fsd" element={<FSD />} />
+          <Route path="/tsd" element={<TSD />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
