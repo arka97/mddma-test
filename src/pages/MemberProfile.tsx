@@ -3,18 +3,15 @@ import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { sampleMembers, sampleProducts } from "@/data/sampleData";
+import { sampleMembers } from "@/data/sampleData";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
-  ArrowLeft, Building2, Calendar, Globe, Package, Gavel, ExternalLink,
+  ArrowLeft, Building2, Calendar, Globe,
 } from "lucide-react";
 
 const MemberProfile = () => {
   const { slug } = useParams();
   const member = sampleMembers.find((m) => m.slug === slug);
-  const memberProducts = member
-    ? sampleProducts.filter((p) => p.sellerMemberIds.includes(member.id))
-    : [];
 
   if (!member) {
     return (
@@ -127,98 +124,6 @@ const MemberProfile = () => {
                       <span className="text-foreground">{member.memberSince}</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Products for Sale & Bidding */}
-              {memberProducts.length > 0 && (
-                <Card className="bg-card border-border">
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2">
-                        <Package className="h-5 w-5 text-accent" /> Products for Sale
-                      </CardTitle>
-                      <Badge variant="secondary">{memberProducts.length} Products</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {memberProducts.map((product) => (
-                        <div key={product.id} className="rounded-lg border border-border p-4 hover:border-accent/40 transition-colors">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1 min-w-0">
-                              <Link to={`/products/${product.slug}`} className="group">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-2xl">{product.image}</span>
-                                  <div>
-                                    <h4 className="font-semibold text-foreground group-hover:text-accent transition-colors">{product.name}</h4>
-                                    <Badge variant="outline" className="text-xs mt-0.5">{product.category}</Badge>
-                                  </div>
-                                </div>
-                              </Link>
-                              <div className="flex flex-wrap gap-1.5 mt-3">
-                                {product.variants.slice(0, 4).map((v) => (
-                                  <Badge key={v} variant="secondary" className="text-xs">{v}</Badge>
-                                ))}
-                                {product.variants.length > 4 && (
-                                  <Badge variant="secondary" className="text-xs">+{product.variants.length - 4} more</Badge>
-                                )}
-                              </div>
-                              <div className="flex flex-wrap gap-1.5 mt-2">
-                                {product.packagingFormats.slice(0, 3).map((p) => (
-                                  <span key={p} className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">{p}</span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 mt-4 pt-3 border-t border-border">
-                            <Button size="sm" className="bg-accent hover:bg-accent/90 text-primary flex-1">
-                              <Gavel className="mr-1.5 h-3.5 w-3.5" /> Place Bid
-                            </Button>
-                            <Button size="sm" variant="outline" asChild>
-                              <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}?text=Hi, I'm interested in ${product.name}`} target="_blank" rel="noopener noreferrer">
-                                <MessageCircle className="mr-1.5 h-3.5 w-3.5" /> Enquire
-                              </a>
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Community Discussions */}
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Community Discussions</CardTitle>
-                    <a href="https://community.mddma.com" target="_blank" rel="noopener noreferrer" className="text-sm text-accent hover:underline flex items-center gap-1">
-                      Visit Forum <ExternalLink className="h-3 w-3" />
-                    </a>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-3">
-                    Join discussions about products this member deals in on the MDDMA community forum.
-                  </p>
-                  <div className="space-y-2">
-                    {["Market Intelligence", "Trade Discussions", "Industry News"].map((cat) => (
-                      <a
-                        key={cat}
-                        href={`https://community.mddma.com/c/${cat.toLowerCase().replace(/ /g, "-")}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-2.5 rounded-lg border border-border hover:border-accent/40 transition-colors"
-                      >
-                        <span className="text-sm font-medium text-foreground">{cat}</span>
-                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
-                      </a>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-3 italic">
-                    ❌ No trade offers or buy requests — community is for discussion & intelligence only.
-                  </p>
                 </CardContent>
               </Card>
             </div>
