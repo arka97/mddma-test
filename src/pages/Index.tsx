@@ -21,6 +21,7 @@ const Index = () => {
       <FeaturedCategoriesSection />
       <WhyMddmaSection />
       <FeaturedMembersSection />
+      <CommunitySection />
       <NewsSection />
       <SponsorsSection />
     </Layout>
