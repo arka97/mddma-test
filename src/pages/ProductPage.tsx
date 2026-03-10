@@ -156,6 +156,35 @@ const ProductPage = () => {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Community Discussions */}
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-base">Discussions</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Join conversations about {product.name} on the MDDMA community forum.
+                  </p>
+                  <div className="space-y-2">
+                    {["Market Intelligence", "Trade Discussions"].map((cat) => (
+                      <a
+                        key={cat}
+                        href={`https://community.mddma.com/c/${cat.toLowerCase().replace(/ /g, "-")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-2.5 rounded border border-border hover:border-accent/40 transition-colors"
+                      >
+                        <span className="text-sm font-medium text-foreground">{cat}</span>
+                        <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
+                      </a>
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3 italic">
+                    ❌ No trade offers — discussion & intelligence only.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
