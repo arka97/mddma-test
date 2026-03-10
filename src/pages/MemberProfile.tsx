@@ -3,10 +3,10 @@ import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { sampleMembers } from "@/data/sampleData";
+import { sampleMembers, sampleProducts } from "@/data/sampleData";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
-  ArrowLeft, Building2, Calendar, Globe,
+  ArrowLeft, Building2, Calendar, Globe, Package, Gavel, ExternalLink,
 } from "lucide-react";
 
 const MemberProfile = () => {
