@@ -12,6 +12,9 @@ import {
 const MemberProfile = () => {
   const { slug } = useParams();
   const member = sampleMembers.find((m) => m.slug === slug);
+  const memberProducts = member
+    ? sampleProducts.filter((p) => p.sellerMemberIds.includes(member.id))
+    : [];
 
   if (!member) {
     return (
