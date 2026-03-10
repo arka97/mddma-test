@@ -6,6 +6,7 @@ import { FeaturedMembersSection } from "@/components/home/FeaturedMembersSection
 import { NewsSection } from "@/components/home/NewsSection";
 import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { AdBanner } from "@/components/home/AdBanner";
+import { CommunitySection } from "@/components/home/CommunitySection";
 
 const Index = () => {
   return (
