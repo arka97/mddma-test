@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Users, Search, ArrowRight, ShieldCheck } from "lucide-react";
+import { Users, Search, ArrowRight, ShieldCheck, TrendingUp, IndianRupee } from "lucide-react";
 import { associationStats } from "@/data/sampleData";
 
 export function HeroSection() {
@@ -32,18 +32,17 @@ export function HeroSection() {
 
           {/* Main Heading */}
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight mb-6">
-            Mumbai's Trusted{" "}
-            <span className="text-accent">Dry Fruits Trade</span> Association
+            India's Digital{" "}
+            <span className="text-accent">Trade Hub</span> for Dry Fruits & Commodities
           </h1>
 
           {/* Subheading */}
           <p className="text-lg sm:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-10">
-            Connecting verified traders, importers, and buyers across{" "}
+            Discover suppliers, list commodities, generate trade inquiries and access market intelligence.{" "}
             <span className="font-semibold text-accent">
-              {associationStats.memberCount}+ members
+              {associationStats.memberCount}+ verified members
             </span>{" "}
-            in {associationStats.marketsCovered} major markets — Mumbai & Navi
-            Mumbai.
+            across Mumbai's trading markets.
           </p>
 
           {/* CTA Buttons */}
@@ -64,9 +63,9 @@ export function HeroSection() {
               className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-semibold px-8 h-12 text-base"
               asChild
             >
-              <Link to="/apply">
-                <Users className="mr-2 h-5 w-5" />
-                Become a Member
+              <Link to="/products">
+                <TrendingUp className="mr-2 h-5 w-5" />
+                Browse Marketplace
               </Link>
             </Button>
           </div>
@@ -77,8 +76,8 @@ export function HeroSection() {
           {[
             { value: `${associationStats.yearsOfService}`, label: "Years Legacy" },
             { value: `${associationStats.memberCount}+`, label: "Verified Members" },
-            { value: `${associationStats.marketsCovered}`, label: "APMC Markets" },
-            { value: `${associationStats.commodityTypes}+`, label: "Products Listed" },
+            { value: "₹1,000 Cr", label: "Annual Trade" },
+            { value: `${associationStats.commodityTypes}+`, label: "Commodity Categories" },
           ].map((stat) => (
             <div key={stat.label} className="text-center p-4">
               <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">

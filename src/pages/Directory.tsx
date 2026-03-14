@@ -114,7 +114,7 @@ const Directory = () => {
           <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
             <div className="grid gap-4 sm:grid-cols-2">
               {sorted.map((member) => (
-                <Link key={member.id} to={`/directory/${member.slug}`}>
+                <Link key={member.id} to={`/store/${member.slug}`}>
                   <Card className="bg-card border-border hover:border-accent/50 card-hover h-full">
                     <CardContent className="p-5">
                       {/* Sponsored label */}

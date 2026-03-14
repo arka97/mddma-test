@@ -3,6 +3,8 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturedCategoriesSection } from "@/components/home/FeaturedCategoriesSection";
 import { WhyMddmaSection } from "@/components/home/WhyMddmaSection";
 import { FeaturedMembersSection } from "@/components/home/FeaturedMembersSection";
+import { RecentListingsSection } from "@/components/home/RecentListingsSection";
+import { CommunitySection } from "@/components/home/CommunitySection";
 import { NewsSection } from "@/components/home/NewsSection";
 import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { AdBanner } from "@/components/home/AdBanner";
@@ -18,8 +20,10 @@ const Index = () => {
       </div>
 
       <FeaturedCategoriesSection />
+      <RecentListingsSection />
       <WhyMddmaSection />
       <FeaturedMembersSection />
+      <CommunitySection />
       <NewsSection />
       <SponsorsSection />
     </Layout>

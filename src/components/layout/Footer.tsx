@@ -12,26 +12,26 @@ export function Footer() {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-primary font-bold text-sm">M</div>
               <div>
                 <div className="font-bold text-sm">MDDMA</div>
-                <div className="text-[10px] text-primary-foreground/60">Est. 1930s</div>
+                <div className="text-[10px] text-primary-foreground/60">Digital Trade Hub</div>
               </div>
             </div>
             <p className="text-sm text-primary-foreground/80 leading-relaxed">
-              Mumbai's trusted dry fruits trade association — connecting verified traders, importers, and buyers since the 1930s.
+              India's digital trade hub for dry fruits & commodities — connecting verified traders, importers, and buyers since the 1930s.
             </p>
           </div>
 
-          {/* Quick Links */}
+          {/* Platform */}
           <div>
-            <h3 className="font-semibold mb-4 text-accent text-sm">Quick Links</h3>
+            <h3 className="font-semibold mb-4 text-accent text-sm">Platform</h3>
             <ul className="space-y-2 text-sm">
               {[
                 { to: "/directory", label: "Member Directory" },
-                { to: "/products", label: "Products Catalog" },
-                { to: "/leads", label: "Expo Lead Intelligence" },
+                { to: "/products", label: "Commodity Marketplace" },
+                { to: "/broker", label: "Broker Marketplace" },
+                { to: "/market", label: "Market Intelligence" },
+                { to: "/dashboard", label: "Lead CRM" },
+                { to: "/community", label: "Trade Community" },
                 { to: "/membership", label: "Membership Plans" },
-                { to: "/circulars", label: "Circulars & Notices" },
-                { to: "/forms", label: "Contact & Forms" },
-                { to: "/admin", label: "Admin Panel" },
               ].map((link) => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-primary-foreground/70 hover:text-accent transition-colors">
@@ -61,16 +61,31 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Hours + Social */}
+          {/* Hours + Links */}
           <div>
             <h3 className="font-semibold mb-4 text-accent text-sm">Office Hours</h3>
-            <div className="flex items-start gap-2 text-sm text-primary-foreground/70">
+            <div className="flex items-start gap-2 text-sm text-primary-foreground/70 mb-4">
               <Clock className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
               <div>
                 <div>Mon-Sat: 10AM - 6PM</div>
                 <div className="text-xs mt-1">Closed Sundays & Market Holidays</div>
               </div>
             </div>
+            <h3 className="font-semibold mb-2 text-accent text-sm">Resources</h3>
+            <ul className="space-y-1.5 text-sm">
+              {[
+                { to: "/circulars", label: "Circulars & Notices" },
+                { to: "/leads", label: "Expo Lead Packs" },
+                { to: "/about", label: "About MDDMA" },
+                { to: "/admin", label: "Admin Panel" },
+              ].map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="text-primary-foreground/70 hover:text-accent transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
@@ -78,7 +93,7 @@ export function Footer() {
       <div className="border-t border-primary-foreground/20">
         <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-primary-foreground/50">
           <p>© {new Date().getFullYear()} Mumbai Dry Fruits & Dates Merchants Association. All rights reserved.</p>
-          <p>Serving Mumbai's Trade Since 1930s</p>
+          <p>India's Digital Trade Hub · Serving Since 1930s</p>
         </div>
       </div>
     </footer>

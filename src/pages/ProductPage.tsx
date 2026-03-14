@@ -1,13 +1,22 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { sampleProducts, sampleMembers } from "@/data/sampleData";
-import { ArrowLeft, ShieldCheck, ExternalLink, Package, MapPin } from "lucide-react";
+import { productListings } from "@/data/productListings";
+import { communityPosts } from "@/data/productListings";
+import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, ShieldCheck, ExternalLink, Package, MapPin, Send, MessageSquare } from "lucide-react";
 
 const ProductPage = () => {
   const { slug } = useParams();
+  const { toast } = useToast();
+  const [showInquiryForm, setShowInquiryForm] = useState(false);
   const product = sampleProducts.find((p) => p.slug === slug);
 
   if (!product) {
@@ -22,6 +31,19 @@ const ProductPage = () => {
   }
 
   const sellers = sampleMembers.filter((m) => product.sellerMemberIds.includes(m.id));
+  const relatedListings = productListings.filter((pl) => pl.commodityId === product.id);
+  // Find community discussions mentioning this product
+  const productName = product.name.split("(")[0].trim().toLowerCase();
+  const relatedDiscussions = communityPosts.filter((p) =>
+    p.title.toLowerCase().includes(productName) ||
+    p.title.toLowerCase().includes(product.slug)
+  );
+
+  const handleInquiry = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast({ title: "Inquiry Submitted!", description: `Your inquiry for ${product.name} has been sent to the seller.` });
+    setShowInquiryForm(false);
+  };
 
   return (
     <Layout>
@@ -51,6 +73,58 @@ const ProductPage = () => {
                   <p className="text-muted-foreground leading-relaxed">{product.description}</p>
                 </CardContent>
               </Card>
+
+              {/* Recent Listings with prices */}
+              {relatedListings.length > 0 && (
+                <Card className="bg-card border-border">
+                  <CardHeader><CardTitle>Current Market Listings</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border text-left">
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Variant</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Origin</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Price</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Seller</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {relatedListings.map((listing) => {
+                            const seller = sampleMembers.find((m) => m.id === listing.sellerId);
+                            return (
+                              <tr key={listing.id} className="border-b border-border/50">
+                                <td className="py-2.5 px-2 font-medium text-foreground">{listing.variant}</td>
+                                <td className="py-2.5 px-2 text-muted-foreground">{listing.origin}</td>
+                                <td className="py-2.5 px-2">
+                                  {listing.hidePrice || listing.price === null ? (
+                                    <Badge variant="secondary" className="text-xs">RFQ</Badge>
+                                  ) : (
+                                    <span className="font-semibold text-accent">{listing.price.toLocaleString()} {listing.priceUnit}</span>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-2">
+                                  {seller && (
+                                    <Link to={`/store/${seller.slug}`} className="text-accent hover:underline text-xs">
+                                      {seller.firmName}
+                                    </Link>
+                                  )}
+                                </td>
+                                <td className="py-2.5 px-2">
+                                  <Button size="sm" variant="outline" onClick={() => setShowInquiryForm(true)}>
+                                    <Send className="h-3 w-3 mr-1" /> Inquire
+                                  </Button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Variants */}
               <Card className="bg-card border-border">
@@ -89,7 +163,7 @@ const ProductPage = () => {
                 <CardContent>
                   <div className="space-y-3">
                     {sellers.map((seller) => (
-                      <Link key={seller.id} to={`/directory/${seller.slug}`} className="block">
+                      <Link key={seller.id} to={`/store/${seller.slug}`} className="block">
                         <div className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-accent/50 transition-colors">
                           <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-xs flex-shrink-0">
                             {seller.logoPlaceholder}
@@ -105,25 +179,62 @@ const ProductPage = () => {
                               <MapPin className="h-3 w-3" /> {seller.area} · {seller.memberType}
                             </div>
                           </div>
-                          <Button variant="outline" size="sm">Contact</Button>
+                          <Button variant="outline" size="sm">View Store</Button>
                         </div>
                       </Link>
                     ))}
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Related Discussions */}
+              {relatedDiscussions.length > 0 && (
+                <Card className="bg-card border-border">
+                  <CardHeader>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center gap-2">
+                        <MessageSquare className="h-5 w-5 text-accent" /> Discussions About This Product
+                      </CardTitle>
+                      <Link to="/community" className="text-sm text-accent hover:underline">View All →</Link>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {relatedDiscussions.map((post) => (
+                        <Link key={post.id} to="/community" className="block p-3 rounded-lg border border-border hover:border-accent/50 transition-colors">
+                          <h4 className="text-sm font-medium text-foreground">{post.title}</h4>
+                          <p className="text-xs text-muted-foreground mt-1">{post.author} · {post.replies} replies · {post.views} views</p>
+                        </Link>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* CTA */}
+              {/* Send Inquiry CTA */}
               <Card className="bg-accent/5 border-accent/20">
+                <CardContent className="p-5 text-center">
+                  <h3 className="font-semibold text-foreground mb-2">Send Inquiry</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Interested in {product.name}? Send an inquiry to verified sellers.
+                  </p>
+                  <Button className="w-full bg-accent hover:bg-accent/90 text-primary" onClick={() => setShowInquiryForm(true)}>
+                    <Send className="mr-2 h-4 w-4" /> Send Inquiry
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* List Your Products CTA */}
+              <Card className="bg-card border-border">
                 <CardContent className="p-5 text-center">
                   <h3 className="font-semibold text-foreground mb-2">List Your Products</h3>
                   <p className="text-sm text-muted-foreground mb-4">
-                    Are you a trader or importer of {product.name}? Join MDDMA and get listed.
+                    Are you a trader of {product.name}? Join MDDMA.
                   </p>
-                  <Button className="w-full bg-accent hover:bg-accent/90 text-primary" asChild>
+                  <Button className="w-full" variant="outline" asChild>
                     <Link to="/apply">Become a Member</Link>
                   </Button>
                 </CardContent>
@@ -160,6 +271,41 @@ const ProductPage = () => {
           </div>
         </div>
       </section>
+
+      {/* Inquiry Modal */}
+      {showInquiryForm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-md bg-card">
+            <CardHeader>
+              <CardTitle>Send Inquiry — {product.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleInquiry} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="inq-name">Full Name</Label>
+                  <Input id="inq-name" required placeholder="Your name" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inq-email">Email</Label>
+                  <Input id="inq-email" type="email" required placeholder="you@example.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inq-qty">Quantity Required</Label>
+                  <Input id="inq-qty" required placeholder="e.g., 500 kg" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="inq-msg">Message</Label>
+                  <Textarea id="inq-msg" placeholder="Describe your requirements..." rows={3} />
+                </div>
+                <div className="flex gap-3">
+                  <Button type="submit" className="flex-1 bg-accent hover:bg-accent/90 text-primary">Submit Inquiry</Button>
+                  <Button type="button" variant="outline" onClick={() => setShowInquiryForm(false)}>Cancel</Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </Layout>
   );
 };
