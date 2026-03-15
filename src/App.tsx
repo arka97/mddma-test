@@ -23,8 +23,11 @@ import Login from "./pages/Login";
 import Apply from "./pages/Apply";
 import Admin from "./pages/Admin";
 import SalesPitch from "./pages/SalesPitch";
+import SOW from "./pages/SOW";
 import BRD from "./pages/BRD";
+import PRD from "./pages/PRD";
 import FSD from "./pages/FSD";
+import SDD from "./pages/SDD";
 import TSD from "./pages/TSD";
 import NotFound from "./pages/NotFound";
 
@@ -58,8 +61,11 @@ const App = () => (
             <Route path="/apply" element={<Apply />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/pitch" element={<SalesPitch />} />
+            <Route path="/sow" element={<SOW />} />
             <Route path="/brd" element={<BRD />} />
+            <Route path="/prd" element={<PRD />} />
             <Route path="/fsd" element={<FSD />} />
+            <Route path="/sdd" element={<SDD />} />
             <Route path="/tsd" element={<TSD />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

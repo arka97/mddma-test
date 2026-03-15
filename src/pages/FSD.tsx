@@ -65,6 +65,7 @@ const FSD = () => {
           </div>
           <div className="flex gap-3 justify-center pt-2 print:hidden">
             <Link to="/brd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← BRD</Badge></Link>
+            <Link to="/sdd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">SDD →</Badge></Link>
             <Link to="/tsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">TSD →</Badge></Link>
           </div>
           <button onClick={() => scrollTo("intro")} className="mt-8 inline-flex items-center gap-1 text-accent hover:text-accent/80 transition-colors">
@@ -372,6 +373,7 @@ const FSD = () => {
             <p className="text-muted-foreground text-sm">Related Documents</p>
             <div className="flex gap-3 justify-center print:hidden">
               <Link to="/brd"><Button variant="outline">← BRD</Button></Link>
+              <Link to="/sdd"><Button variant="outline">SDD → <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
               <Link to="/tsd"><Button variant="outline">TSD → <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
             </div>
           </div>

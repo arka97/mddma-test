@@ -71,13 +71,16 @@ export function Footer() {
                 <div className="text-xs mt-1">Closed Sundays & Market Holidays</div>
               </div>
             </div>
-            <h3 className="font-semibold mb-2 text-accent text-sm">Resources</h3>
+            <h3 className="font-semibold mb-2 text-accent text-sm">Documents</h3>
             <ul className="space-y-1.5 text-sm">
               {[
-                { to: "/circulars", label: "Circulars & Notices" },
-                { to: "/leads", label: "Expo Lead Packs" },
-                { to: "/about", label: "About MDDMA" },
-                { to: "/admin", label: "Admin Panel" },
+                { to: "/pitch", label: "Sales Pitch" },
+                { to: "/sow", label: "SOW" },
+                { to: "/brd", label: "BRD" },
+                { to: "/prd", label: "PRD" },
+                { to: "/fsd", label: "FRD" },
+                { to: "/sdd", label: "SDD" },
+                { to: "/tsd", label: "TSD" },
               ].map((link) => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-primary-foreground/70 hover:text-accent transition-colors">
