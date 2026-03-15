@@ -23,8 +23,11 @@ import Login from "./pages/Login";
 import Apply from "./pages/Apply";
 import Admin from "./pages/Admin";
 import SalesPitch from "./pages/SalesPitch";
+import SOW from "./pages/SOW";
 import BRD from "./pages/BRD";
+import PRD from "./pages/PRD";
 import FSD from "./pages/FSD";
+import SDD from "./pages/SDD";
 import TSD from "./pages/TSD";
 import NotFound from "./pages/NotFound";
 
