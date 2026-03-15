@@ -378,8 +378,10 @@ const TSD = () => {
           <div className="text-center pt-6 space-y-4">
             <p className="text-muted-foreground text-sm">Related Documents</p>
             <div className="flex gap-3 justify-center print:hidden">
+              <Link to="/sow"><Button variant="outline">← SOW</Button></Link>
               <Link to="/brd"><Button variant="outline">← BRD</Button></Link>
-              <Link to="/fsd"><Button variant="outline">← FSD</Button></Link>
+              <Link to="/sdd"><Button variant="outline">← SDD</Button></Link>
+              <Link to="/fsd"><Button variant="outline">← FRD</Button></Link>
               <Link to="/pitch"><Button variant="outline">Sales Pitch <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
             </div>
           </div>

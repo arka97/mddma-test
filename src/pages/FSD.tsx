@@ -373,6 +373,7 @@ const FSD = () => {
             <p className="text-muted-foreground text-sm">Related Documents</p>
             <div className="flex gap-3 justify-center print:hidden">
               <Link to="/brd"><Button variant="outline">← BRD</Button></Link>
+              <Link to="/sdd"><Button variant="outline">SDD → <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
               <Link to="/tsd"><Button variant="outline">TSD → <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
             </div>
           </div>
