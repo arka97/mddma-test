@@ -29,6 +29,7 @@ import PRD from "./pages/PRD";
 import FSD from "./pages/FSD";
 import SDD from "./pages/SDD";
 import TSD from "./pages/TSD";
+import MVPCanvas from "./pages/MVPCanvas";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
