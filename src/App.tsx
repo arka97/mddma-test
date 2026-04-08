@@ -68,6 +68,7 @@ const App = () => (
             <Route path="/fsd" element={<FSD />} />
             <Route path="/sdd" element={<SDD />} />
             <Route path="/tsd" element={<TSD />} />
+            <Route path="/mvp-canvas" element={<MVPCanvas />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
