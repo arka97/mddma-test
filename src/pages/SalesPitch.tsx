@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { id: "why-now", label: "Why Now" },
   { id: "timeline", label: "Timeline" },
   { id: "roi", label: "ROI" },
+  { id: "letter", label: "Letter" },
   { id: "cta", label: "Next Steps" },
 ];
 
