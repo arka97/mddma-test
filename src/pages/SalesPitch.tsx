@@ -324,6 +324,115 @@ const SalesPitch = () => {
         </div>
       </PitchSection>
 
+      {/* — Committee Letter (One-Pager Email) */}
+      <PitchSection id="letter">
+        <div className="space-y-8 max-w-3xl mx-auto">
+          <div className="text-center space-y-3">
+            <Badge className="text-sm">📧 Committee Letter</Badge>
+            <h2 className="text-4xl font-bold text-primary">Plain-English Summary</h2>
+            <p className="text-muted-foreground">A simple overview for the committee — what we're building, what it costs, and what you get.</p>
+          </div>
+
+          <Card className="border-accent/30">
+            <CardContent className="p-8 space-y-6 text-[15px] leading-relaxed text-foreground">
+              <div>
+                <p className="font-semibold text-primary text-lg">Dear Committee Members,</p>
+              </div>
+
+              <p>
+                I am building a <strong>brand-new website and digital platform</strong> for MDDMA — something that replaces the old, broken website and gives our association a modern, professional presence online.
+              </p>
+
+              <div>
+                <h3 className="font-semibold text-primary text-lg mb-2">What does this platform do?</h3>
+                <p>In simple words, it does 5 things:</p>
+                <ol className="list-decimal list-inside space-y-2 mt-3 ml-2">
+                  <li><strong>Member Directory</strong> — Every member's business gets a profile page with their products, contact details, certifications, and a WhatsApp button. Buyers can search and find our members easily.</li>
+                  <li><strong>Product Catalog</strong> — All dry fruits, dates, and commodities are listed with photos, prices, packaging details, and seller information. Think of it like our own "IndiaMART" for dry fruits.</li>
+                  <li><strong>Lead Intelligence</strong> — Buyer contact lists from international expos (Gulfood, SIAL, Anuga) that members can purchase to grow their export business.</li>
+                  <li><strong>Advertising Space</strong> — We can sell banner ads and sponsored listings on the website to generate regular income for the association.</li>
+                  <li><strong>Admin Panel</strong> — The office staff can manage everything — members, products, ads, circulars — from one simple dashboard. No technical knowledge needed.</li>
+                </ol>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-primary text-lg mb-2">What does it cost?</h3>
+                <p className="mb-3">
+                  The one-time development cost is <strong>₹40,000 to ₹60,000</strong>. After that, there is a yearly running cost for the tools and services that keep the platform working. Here is the full breakdown of <strong>Year 1 running costs</strong>:
+                </p>
+                <Table className="border rounded-lg overflow-hidden">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Service / Tool</TableHead>
+                      <TableHead className="text-right">Monthly (₹)</TableHead>
+                      <TableHead className="text-right">Annual (₹)</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {[
+                      { name: "Claude (AI Assistant)", monthly: "1,859", annual: "22,310" },
+                      { name: "ChatGPT (AI Assistant)", monthly: "2,359", annual: "28,306" },
+                      { name: "Lovable (Website Builder)", monthly: "2,297", annual: "27,559" },
+                      { name: "Canva (Design Tool)", monthly: "4,720", annual: "4,720", note: "Annual plan" },
+                      { name: "Supabase (Database)", monthly: "2,734", annual: "32,808" },
+                      { name: "Vercel (Hosting)", monthly: "2,187", annual: "26,247" },
+                      { name: "MailGun (Emails)", monthly: "1,640", annual: "19,685" },
+                      { name: "n8n (Automation)", monthly: "2,551", annual: "30,614" },
+                      { name: "Discourse (Community Forum)", monthly: "10,936", annual: "1,31,233" },
+                      { name: "Apple Dev Program", monthly: "10,827", annual: "10,827", note: "Annual fee" },
+                      { name: "Sentry (Error Tracking)", monthly: "0", annual: "0", note: "Free tier" },
+                      { name: "Meilisearch (Search)", monthly: "0", annual: "0", note: "Free tier" },
+                      { name: "PostHog (Analytics)", monthly: "0", annual: "0", note: "Free tier" },
+                      { name: "Cloudflare (Security)", monthly: "0", annual: "0", note: "Free tier" },
+                    ].map((row) => (
+                      <TableRow key={row.name}>
+                        <TableCell className="font-medium">
+                          {row.name}
+                          {row.note && <span className="text-xs text-muted-foreground ml-1">({row.note})</span>}
+                        </TableCell>
+                        <TableCell className="text-right">₹{row.monthly}</TableCell>
+                        <TableCell className="text-right font-semibold">₹{row.annual}</TableCell>
+                      </TableRow>
+                    ))}
+                    <TableRow className="bg-accent/10 font-bold">
+                      <TableCell className="text-primary">Total Year 1 Running Cost</TableCell>
+                      <TableCell className="text-right">—</TableCell>
+                      <TableCell className="text-right text-accent text-lg">₹3,34,309</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+                <p className="text-sm text-muted-foreground mt-2">* Many services like Sentry, Meilisearch, PostHog and Cloudflare are free. Costs include GST where applicable.</p>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-primary text-lg mb-2">What do we get in return?</h3>
+                <ul className="list-disc list-inside space-y-1.5 ml-2">
+                  <li>A <strong>professional website</strong> that works on phones, tablets, and computers</li>
+                  <li>Our <strong>350+ members become discoverable</strong> to buyers across India and internationally</li>
+                  <li>A <strong>new revenue stream</strong> — from ads, lead packs, and memberships — estimated at ₹42–85L per year</li>
+                  <li>An <strong>online community forum</strong> replacing WhatsApp group chaos with organized discussions</li>
+                  <li>A <strong>modern image</strong> for MDDMA that attracts younger traders and international partners</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-primary text-lg mb-2">How long will it take?</h3>
+                <p>The platform will be ready in <strong>3–4 months</strong>, rolled out in phases. Phase 1 (the basic website and directory) can go live within <strong>4–6 weeks</strong>.</p>
+              </div>
+
+              <div className="border-t pt-5 mt-5">
+                <p>This is not just a website — it is a <strong>digital foundation</strong> for MDDMA's next 95 years. The investment is modest, the returns are significant, and the time to act is now.</p>
+                <p className="mt-4">Looking forward to your support and approval.</p>
+                <div className="mt-6">
+                  <p className="font-semibold text-primary">Warm regards,</p>
+                  <p className="text-muted-foreground text-sm mt-1">Your Technology Partner</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </PitchSection>
+
       {/* 9 — Call to Action */}
       <PitchSection id="cta" dark>
         <div className="text-center space-y-8">
