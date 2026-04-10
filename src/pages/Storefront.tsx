@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
@@ -6,16 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { sampleMembers } from "@/data/sampleData";
 import { productListings } from "@/data/productListings";
 import { useRole } from "@/contexts/RoleContext";
-import { useToast } from "@/hooks/use-toast";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
   ArrowLeft, Globe, Calendar, Package, Send,
 } from "lucide-react";
+import { StockBadge, PriceRange, TrendBadge } from "@/components/MarketSignals";
+import { RFQModal } from "@/components/RFQModal";
 
 const Storefront = () => {
   const { slug } = useParams();
   const { canAccess } = useRole();
-  const { toast } = useToast();
+  const [rfqProduct, setRfqProduct] = useState<string | null>(null);
   const member = sampleMembers.find((m) => m.slug === slug);
 
   if (!member) {
@@ -31,12 +33,6 @@ const Storefront = () => {
 
   const sellerListings = productListings.filter((pl) => pl.sellerId === member.id);
   const yearsInBusiness = new Date().getFullYear() - member.memberSince;
-
-  const handleInquiry = (listing: typeof sellerListings[0]) => {
-    const msg = `Hi, I'm interested in ${listing.commodity} (${listing.variant}) from ${listing.origin}. Quantity: ${listing.moq}. Please share details.`;
-    window.open(`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(msg)}`, "_blank");
-    toast({ title: "Inquiry Sent", description: `WhatsApp opened for ${listing.commodity}` });
-  };
 
   return (
     <Layout>
@@ -131,7 +127,7 @@ const Storefront = () => {
                 </CardContent>
               </Card>
 
-              {/* Product Catalog */}
+              {/* V2: Product Catalog with controlled pricing */}
               <Card className="bg-card border-border">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -145,9 +141,8 @@ const Storefront = () => {
                         <thead>
                           <tr className="border-b border-border text-left">
                             <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Origin</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">MOQ</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Price</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
                           </tr>
                         </thead>
@@ -156,22 +151,21 @@ const Storefront = () => {
                             <tr key={listing.id} className="border-b border-border/50">
                               <td className="py-2.5 px-2">
                                 <div className="font-medium text-foreground">{listing.commodity}</div>
-                                <div className="text-xs text-muted-foreground">{listing.variant}</div>
-                              </td>
-                              <td className="py-2.5 px-2 text-muted-foreground">{listing.origin}</td>
-                              <td className="py-2.5 px-2 text-muted-foreground">{listing.moq}</td>
-                              <td className="py-2.5 px-2">
-                                {listing.hidePrice || listing.price === null ? (
-                                  <Badge variant="secondary" className="text-xs">RFQ</Badge>
-                                ) : (
-                                  <span className="font-semibold text-accent">
-                                    {listing.price.toLocaleString()} {listing.priceUnit}
-                                  </span>
-                                )}
+                                <div className="text-xs text-muted-foreground">{listing.variant} · {listing.origin}</div>
                               </td>
                               <td className="py-2.5 px-2">
-                                <Button size="sm" variant="outline" onClick={() => handleInquiry(listing)}>
-                                  <Send className="h-3 w-3 mr-1" /> Inquire
+                                <StockBadge band={listing.stockBand} />
+                              </td>
+                              <td className="py-2.5 px-2">
+                                <PriceRange listing={listing} />
+                              </td>
+                              <td className="py-2.5 px-2">
+                                <Button
+                                  size="sm"
+                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                  onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
+                                >
+                                  <Send className="h-3 w-3 mr-1" /> Request Price
                                 </Button>
                               </td>
                             </tr>
@@ -229,6 +223,8 @@ const Storefront = () => {
           </div>
         </div>
       </section>
+
+      {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
     </Layout>
   );
 };

@@ -4,19 +4,16 @@ import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { sampleProducts, sampleMembers } from "@/data/sampleData";
 import { productListings } from "@/data/productListings";
 import { communityPosts } from "@/data/productListings";
-import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, ShieldCheck, ExternalLink, Package, MapPin, Send, MessageSquare } from "lucide-react";
+import { ArrowLeft, ShieldCheck, ExternalLink, Package, MapPin, Send, MessageSquare, Users, Flame, AlertTriangle } from "lucide-react";
+import { StockBadge, PriceRange, TrendBadge, DemandIndicator, MarketSignals } from "@/components/MarketSignals";
+import { RFQModal } from "@/components/RFQModal";
 
 const ProductPage = () => {
   const { slug } = useParams();
-  const { toast } = useToast();
-  const [showInquiryForm, setShowInquiryForm] = useState(false);
+  const [rfqProduct, setRfqProduct] = useState<string | null>(null);
   const product = sampleProducts.find((p) => p.slug === slug);
 
   if (!product) {
@@ -32,18 +29,12 @@ const ProductPage = () => {
 
   const sellers = sampleMembers.filter((m) => product.sellerMemberIds.includes(m.id));
   const relatedListings = productListings.filter((pl) => pl.commodityId === product.id);
-  // Find community discussions mentioning this product
   const productName = product.name.split("(")[0].trim().toLowerCase();
   const relatedDiscussions = communityPosts.filter((p) =>
-    p.title.toLowerCase().includes(productName) ||
-    p.title.toLowerCase().includes(product.slug)
+    p.title.toLowerCase().includes(productName) || p.title.toLowerCase().includes(product.slug)
   );
 
-  const handleInquiry = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast({ title: "Inquiry Submitted!", description: `Your inquiry for ${product.name} has been sent to the seller.` });
-    setShowInquiryForm(false);
-  };
+  const totalInquiries = relatedListings.reduce((sum, l) => sum + l.inquiryCount, 0);
 
   return (
     <Layout>
@@ -56,7 +47,14 @@ const ProductPage = () => {
             <div className="text-5xl">{product.image}</div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-primary-foreground">{product.name}</h1>
-              <Badge className="mt-1 bg-accent/20 text-accent border-accent/30">{product.category}</Badge>
+              <div className="flex items-center gap-2 mt-1">
+                <Badge className="bg-accent/20 text-accent border-accent/30">{product.category}</Badge>
+                {totalInquiries > 10 && (
+                  <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-xs">
+                    <Flame className="h-3 w-3 mr-0.5" /> {totalInquiries} inquiries
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -74,19 +72,19 @@ const ProductPage = () => {
                 </CardContent>
               </Card>
 
-              {/* Recent Listings with prices */}
+              {/* V2: Market Listings with controlled pricing */}
               {relatedListings.length > 0 && (
                 <Card className="bg-card border-border">
-                  <CardHeader><CardTitle>Current Market Listings</CardTitle></CardHeader>
+                  <CardHeader><CardTitle>Market Listings</CardTitle></CardHeader>
                   <CardContent>
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border text-left">
                             <th className="py-2 px-2 text-muted-foreground font-medium">Variant</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Origin</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Price</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Seller</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Trend</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
                           </tr>
                         </thead>
@@ -95,25 +93,35 @@ const ProductPage = () => {
                             const seller = sampleMembers.find((m) => m.id === listing.sellerId);
                             return (
                               <tr key={listing.id} className="border-b border-border/50">
-                                <td className="py-2.5 px-2 font-medium text-foreground">{listing.variant}</td>
-                                <td className="py-2.5 px-2 text-muted-foreground">{listing.origin}</td>
                                 <td className="py-2.5 px-2">
-                                  {listing.hidePrice || listing.price === null ? (
-                                    <Badge variant="secondary" className="text-xs">RFQ</Badge>
-                                  ) : (
-                                    <span className="font-semibold text-accent">{listing.price.toLocaleString()} {listing.priceUnit}</span>
+                                  <span className="font-medium text-foreground">{listing.variant}</span>
+                                  <br />
+                                  <span className="text-xs text-muted-foreground">{listing.origin}</span>
+                                  {listing.inquiryCount > 10 && (
+                                    <span className="text-[10px] text-orange-600 block">
+                                      <Users className="h-3 w-3 inline" /> {listing.inquiryCount} inquiries
+                                    </span>
                                   )}
                                 </td>
                                 <td className="py-2.5 px-2">
-                                  {seller && (
-                                    <Link to={`/store/${seller.slug}`} className="text-accent hover:underline text-xs">
-                                      {seller.firmName}
-                                    </Link>
+                                  <StockBadge band={listing.stockBand} />
+                                  {listing.stockBand === "low" && (
+                                    <span className="text-[10px] text-red-600 block mt-0.5">Limited!</span>
                                   )}
                                 </td>
                                 <td className="py-2.5 px-2">
-                                  <Button size="sm" variant="outline" onClick={() => setShowInquiryForm(true)}>
-                                    <Send className="h-3 w-3 mr-1" /> Inquire
+                                  <PriceRange listing={listing} />
+                                </td>
+                                <td className="py-2.5 px-2">
+                                  <TrendBadge direction={listing.trendDirection} />
+                                </td>
+                                <td className="py-2.5 px-2">
+                                  <Button
+                                    size="sm"
+                                    className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                    onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
+                                  >
+                                    <Send className="h-3 w-3 mr-1" /> Request Price
                                   </Button>
                                 </td>
                               </tr>
@@ -214,15 +222,23 @@ const ProductPage = () => {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              {/* Send Inquiry CTA */}
-              <Card className="bg-accent/5 border-accent/20">
+              {/* V2: Request Best Price CTA — Von Restorff */}
+              <Card className="bg-accent/10 border-accent/30 ring-2 ring-accent/20">
                 <CardContent className="p-5 text-center">
-                  <h3 className="font-semibold text-foreground mb-2">Send Inquiry</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Interested in {product.name}? Send an inquiry to verified sellers.
+                  <h3 className="font-bold text-foreground mb-1 text-lg">Request Best Price</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Get competitive quotes from {sellers.length} verified sellers
                   </p>
-                  <Button className="w-full bg-accent hover:bg-accent/90 text-primary" onClick={() => setShowInquiryForm(true)}>
-                    <Send className="mr-2 h-4 w-4" /> Send Inquiry
+                  {totalInquiries > 10 && (
+                    <p className="text-xs text-orange-600 mb-3 font-medium">
+                      <Flame className="h-3 w-3 inline" /> {totalInquiries} buyers inquired this week
+                    </p>
+                  )}
+                  <Button
+                    className="w-full bg-accent hover:bg-accent/90 text-primary font-bold text-base h-12"
+                    onClick={() => setRfqProduct(product.name)}
+                  >
+                    <Send className="mr-2 h-5 w-5" /> Request Best Price
                   </Button>
                 </CardContent>
               </Card>
@@ -272,40 +288,17 @@ const ProductPage = () => {
         </div>
       </section>
 
-      {/* Inquiry Modal */}
-      {showInquiryForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <Card className="w-full max-w-md bg-card">
-            <CardHeader>
-              <CardTitle>Send Inquiry — {product.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleInquiry} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="inq-name">Full Name</Label>
-                  <Input id="inq-name" required placeholder="Your name" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="inq-email">Email</Label>
-                  <Input id="inq-email" type="email" required placeholder="you@example.com" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="inq-qty">Quantity Required</Label>
-                  <Input id="inq-qty" required placeholder="e.g., 500 kg" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="inq-msg">Message</Label>
-                  <Textarea id="inq-msg" placeholder="Describe your requirements..." rows={3} />
-                </div>
-                <div className="flex gap-3">
-                  <Button type="submit" className="flex-1 bg-accent hover:bg-accent/90 text-primary">Submit Inquiry</Button>
-                  <Button type="button" variant="outline" onClick={() => setShowInquiryForm(false)}>Cancel</Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+      {/* Sticky CTA mobile — Fitts's Law */}
+      <div className="fixed bottom-0 left-0 right-0 bg-primary/95 backdrop-blur border-t border-accent/30 p-3 z-40 lg:hidden">
+        <Button
+          className="w-full bg-accent hover:bg-accent/90 text-primary font-bold text-sm h-11"
+          onClick={() => setRfqProduct(product.name)}
+        >
+          📩 Request Best Price — {product.name}
+        </Button>
+      </div>
+
+      {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
     </Layout>
   );
 };

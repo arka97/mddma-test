@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight, MapPin, Flame } from "lucide-react";
 import { productListings } from "@/data/productListings";
 import { sampleMembers } from "@/data/sampleData";
+import { StockBadge, PriceRange, TrendBadge } from "@/components/MarketSignals";
 
 export function RecentListingsSection() {
   const recentListings = productListings
@@ -39,16 +40,18 @@ export function RecentListingsSection() {
                         <h3 className="font-semibold text-foreground">{listing.commodity}</h3>
                         <p className="text-xs text-muted-foreground">{listing.variant}</p>
                       </div>
-                      {listing.hidePrice || listing.price === null ? (
-                        <Badge variant="secondary" className="text-xs">RFQ</Badge>
-                      ) : (
-                        <span className="text-sm font-bold text-accent">{listing.price.toLocaleString()} {listing.priceUnit}</span>
-                      )}
+                      <PriceRange listing={listing} />
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                    <div className="flex items-center gap-1.5 flex-wrap mb-2">
                       <Badge variant="outline" className="text-xs">{listing.origin}</Badge>
-                      <span>MOQ: {listing.moq}</span>
+                      <StockBadge band={listing.stockBand} />
+                      <TrendBadge direction={listing.trendDirection} />
                     </div>
+                    {listing.inquiryCount > 5 && (
+                      <p className="text-[10px] text-muted-foreground mb-2">
+                        <Flame className="h-3 w-3 inline text-orange-500" /> {listing.inquiryCount} inquiries this week
+                      </p>
+                    )}
                     {seller && (
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-2 border-t border-border">
                         <MapPin className="h-3 w-3" /> {seller.firmName} · {listing.location}

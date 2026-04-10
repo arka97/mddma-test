@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { sampleMembers, sampleProducts } from "@/data/sampleData";
 import { productListings } from "@/data/productListings";
+import { StockBadge, PriceRange } from "@/components/MarketSignals";
 import { useToast } from "@/hooks/use-toast";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
@@ -105,9 +106,8 @@ const MemberProfile = () => {
                         <thead>
                           <tr className="border-b border-border text-left">
                             <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Origin</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">MOQ</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Price</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
                           </tr>
                         </thead>
@@ -116,20 +116,17 @@ const MemberProfile = () => {
                             <tr key={listing.id} className="border-b border-border/50">
                               <td className="py-2.5 px-2">
                                 <div className="font-medium text-foreground">{listing.commodity}</div>
-                                <div className="text-xs text-muted-foreground">{listing.variant}</div>
+                                <div className="text-xs text-muted-foreground">{listing.variant} · {listing.origin}</div>
                               </td>
-                              <td className="py-2.5 px-2 text-muted-foreground">{listing.origin}</td>
-                              <td className="py-2.5 px-2 text-muted-foreground">{listing.moq}</td>
                               <td className="py-2.5 px-2">
-                                {listing.hidePrice || listing.price === null ? (
-                                  <Badge variant="secondary" className="text-xs">RFQ</Badge>
-                                ) : (
-                                  <span className="font-semibold text-accent">{listing.price.toLocaleString()} {listing.priceUnit}</span>
-                                )}
+                                <StockBadge band={listing.stockBand} />
+                              </td>
+                              <td className="py-2.5 px-2">
+                                <PriceRange listing={listing} />
                               </td>
                               <td className="py-2.5 px-2">
                                 <Button size="sm" variant="outline" onClick={() => handleInquiry(listing)}>
-                                  <Send className="h-3 w-3 mr-1" /> Inquire
+                                  <Send className="h-3 w-3 mr-1" /> Request Price
                                 </Button>
                               </td>
                             </tr>
