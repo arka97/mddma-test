@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { sampleMembers, sampleProducts } from "@/data/sampleData";
 import { productListings } from "@/data/productListings";
+import { StockBadge, PriceRange } from "@/components/MarketSignals";
 import { useToast } from "@/hooks/use-toast";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
