@@ -308,7 +308,7 @@ const TSD = () => {
               <CardContent className="p-6 space-y-3">
                 <h3 className="font-semibold text-accent">Database Tables</h3>
                 <ul className="space-y-2 text-sm text-primary-foreground/70">
-                  {["members — Company profiles & contact info", "products — Product catalog with variants", "lead_packs — Expo databases for sale", "advertisements — Banner ads & placements", "membership_applications — Application queue", "user_roles — Role-based access control", "circulars — Association announcements"].map((t) => (
+                  {["members — Company profiles & contact info", "products — Product catalog with variants", "commodities — Commodity types & categories", "inquiries — Trade inquiry leads", "bids — Product bidding offers", "broker_listings — Broker supply/demand posts", "lead_packs — Expo databases for sale", "advertisements — Banner ads & placements", "membership_applications — Application queue", "user_roles — Role-based access control", "circulars — Association announcements"].map((t) => (
                     <li key={t} className="flex items-start gap-2"><Database className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />{t}</li>
                   ))}
                 </ul>
