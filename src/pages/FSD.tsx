@@ -61,12 +61,16 @@ const FSD = () => {
           </p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>Document Version: 1.0 · March 2026</p>
+            <p>Document Version: 2.0 · April 2026</p>
           </div>
-          <div className="flex gap-3 justify-center pt-2 print:hidden">
+          <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
+            <Link to="/pitch"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← Pitch</Badge></Link>
+            <Link to="/sow"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← SOW</Badge></Link>
             <Link to="/brd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← BRD</Badge></Link>
+            <Link to="/prd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← PRD</Badge></Link>
             <Link to="/sdd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">SDD →</Badge></Link>
             <Link to="/tsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">TSD →</Badge></Link>
+            <Link to="/mvp-canvas"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">MVP Canvas →</Badge></Link>
           </div>
           <button onClick={() => scrollTo("intro")} className="mt-8 inline-flex items-center gap-1 text-accent hover:text-accent/80 transition-colors">
             <ChevronDown className="h-5 w-5 animate-bounce" />
@@ -82,9 +86,9 @@ const FSD = () => {
             <h2 className="text-4xl font-bold text-primary">Purpose & Audience</h2>
           </div>
           <div className="max-w-3xl mx-auto space-y-4 text-muted-foreground">
-            <p>This Functional Specification Document (FSD) translates the business requirements outlined in the <Link to="/brd" className="text-accent hover:underline font-medium">BRD</Link> into detailed functional requirements for the MDDMA digital platform.</p>
+            <p>This Functional Requirements Document (FRD) translates the business requirements outlined in the <Link to="/brd" className="text-accent hover:underline font-medium">BRD v2.0</Link> and product requirements from the <Link to="/prd" className="text-accent hover:underline font-medium">PRD v2.0</Link> into detailed functional requirements for the MDDMA digital platform.</p>
             <p><strong className="text-foreground">Audience:</strong> This document is intended for the MDDMA committee, development team, QA team, and project stakeholders who need to understand what the platform will do at a functional level.</p>
-            <p><strong className="text-foreground">References:</strong> Business Requirements Document (BRD v1.0), existing MDDMA website analysis, committee meeting minutes.</p>
+            <p><strong className="text-foreground">References:</strong> <Link to="/brd" className="text-accent hover:underline">BRD v2.0</Link>, <Link to="/prd" className="text-accent hover:underline">PRD v2.0</Link>, <Link to="/sow" className="text-accent hover:underline">SOW v2.0</Link>, <Link to="/mvp-canvas" className="text-accent hover:underline">MVP Canvas</Link>, existing MDDMA website analysis, committee meeting minutes.</p>
           </div>
         </div>
       </PitchSection>
@@ -371,10 +375,14 @@ const FSD = () => {
           </div>
           <div className="text-center pt-6 space-y-4">
             <p className="text-muted-foreground text-sm">Related Documents</p>
-            <div className="flex gap-3 justify-center print:hidden">
+            <div className="flex gap-3 justify-center flex-wrap print:hidden">
+              <Link to="/pitch"><Button variant="outline">← Pitch</Button></Link>
+              <Link to="/sow"><Button variant="outline">← SOW</Button></Link>
               <Link to="/brd"><Button variant="outline">← BRD</Button></Link>
-              <Link to="/sdd"><Button variant="outline">SDD → <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
-              <Link to="/tsd"><Button variant="outline">TSD → <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/prd"><Button variant="outline">← PRD</Button></Link>
+              <Link to="/sdd"><Button variant="outline">SDD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/tsd"><Button variant="outline">TSD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/mvp-canvas"><Button variant="outline">MVP Canvas <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
             </div>
           </div>
         </div>
