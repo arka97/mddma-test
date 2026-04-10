@@ -1,10 +1,7 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Lock, FileText, ArrowRight, ShieldCheck } from "lucide-react";
+import { FileText, ArrowRight } from "lucide-react";
 
 const DOCS = [
   { label: "Sales Pitch", to: "/pitch", desc: "Committee presentation deck with ROI projections and platform overview" },
