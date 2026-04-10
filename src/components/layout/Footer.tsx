@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Lock } from "lucide-react";
 
 export function Footer() {
   return (
@@ -71,25 +71,9 @@ export function Footer() {
                 <div className="text-xs mt-1">Closed Sundays & Market Holidays</div>
               </div>
             </div>
-            <h3 className="font-semibold mb-2 text-accent text-sm">Documents</h3>
-            <ul className="space-y-1.5 text-sm">
-              {[
-                { to: "/pitch", label: "Sales Pitch" },
-                { to: "/sow", label: "SOW" },
-                { to: "/brd", label: "BRD" },
-                { to: "/prd", label: "PRD" },
-                { to: "/fsd", label: "FRD" },
-                { to: "/sdd", label: "SDD" },
-                { to: "/tsd", label: "TSD" },
-                { to: "/mvp-canvas", label: "MVP Canvas" },
-              ].map((link) => (
-                <li key={link.to}>
-                  <Link to={link.to} className="text-primary-foreground/70 hover:text-accent transition-colors">
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <Link to="/documents" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-colors text-sm font-medium mt-2">
+              <Lock className="h-4 w-4" /> Documents
+            </Link>
           </div>
         </div>
       </div>
