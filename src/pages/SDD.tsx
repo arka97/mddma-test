@@ -8,18 +8,19 @@ import {
   Printer, ChevronDown, CheckCircle2, ArrowRight,
   Layers, Database, Globe, Shield, Server,
   Code, GitBranch, Box, Lock, Zap, Users,
-  ShoppingBag, BarChart3, MessageSquare, Gavel
+  ShoppingBag, BarChart3, MessageSquare, Gavel, Brain, Eye
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { id: "cover", label: "Cover" },
   { id: "overview", label: "Overview" },
   { id: "architecture", label: "Architecture" },
+  { id: "behavioral", label: "Behavioral Layer" },
   { id: "dataflow", label: "Data Flow" },
   { id: "modules", label: "Modules" },
   { id: "database", label: "Database" },
-  { id: "api", label: "API Design" },
-  { id: "integration", label: "Integrations" },
+  { id: "api", label: "API" },
+  { id: "principles", label: "Principles" },
   { id: "security", label: "Security" },
 ];
 
@@ -55,20 +56,16 @@ const SDD = () => {
             <span className="gold-gradient-text">Solution Design</span>
           </h1>
           <p className="text-xl sm:text-2xl text-primary-foreground/70 max-w-2xl mx-auto">
-            System architecture, data flows, module design, and integration patterns for the MDDMA B2B Trade Platform
+            Architecture with Behavioral Intelligence Layer for the controlled negotiation marketplace
           </p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
-            <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>Document Version: 2.0 · April 2026</p>
+            <p>Document Version: 3.0 · April 2026</p>
           </div>
           <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
-            <Link to="/pitch"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← Pitch</Badge></Link>
-            <Link to="/sow"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← SOW</Badge></Link>
             <Link to="/brd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← BRD</Badge></Link>
             <Link to="/prd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← PRD</Badge></Link>
             <Link to="/fsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← FRD</Badge></Link>
             <Link to="/tsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">TSD →</Badge></Link>
-            <Link to="/mvp-canvas"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">MVP Canvas →</Badge></Link>
           </div>
           <button onClick={() => scrollTo("overview")} className="mt-8 inline-flex items-center gap-1 text-accent hover:text-accent/80 transition-colors">
             <ChevronDown className="h-5 w-5 animate-bounce" />
@@ -76,7 +73,7 @@ const SDD = () => {
         </div>
       </PitchSection>
 
-      {/* Solution Overview */}
+      {/* Overview */}
       <PitchSection id="overview">
         <div className="space-y-8">
           <div className="text-center space-y-3">
@@ -84,14 +81,14 @@ const SDD = () => {
             <h2 className="text-4xl font-bold text-primary">Design Philosophy</h2>
           </div>
           <div className="max-w-3xl mx-auto space-y-4 text-muted-foreground">
-            <p>The MDDMA platform is designed as a <strong className="text-foreground">modular, component-driven SPA</strong> with clear separation between presentation, business logic, and data layers. The solution prioritizes:</p>
+            <p>The MDDMA platform is a <strong className="text-foreground">Behavioral Trade Operating System</strong> — a modular SPA with a critical new layer: the <strong className="text-foreground">Behavioral Intelligence Layer</strong> that sits between the frontend and API, handling price masking, stock band calculation, market signal generation, and RFQ routing.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { icon: Box, title: "Modularity", desc: "Each feature is an independent module with its own components, data, and routes" },
-              { icon: Zap, title: "Performance", desc: "Route-based code splitting, lazy loading, and optimistic UI updates" },
-              { icon: Shield, title: "Security", desc: "Row-level security, role-based access, and server-side validation" },
-              { icon: Globe, title: "Scalability", desc: "Supabase managed backend scales automatically with user growth" },
+              { icon: Box, title: "Modularity", desc: "Independent modules with own components, data, routes" },
+              { icon: Brain, title: "Behavioral Intelligence", desc: "Price masking, stock bands, nudges between frontend & API" },
+              { icon: Shield, title: "Security", desc: "RLS, RBAC, private RFQ responses, price data protection" },
+              { icon: Globe, title: "Scalability", desc: "Supabase managed backend scales with growth" },
             ].map((item) => (
               <Card key={item.title}>
                 <CardContent className="p-5 space-y-2">
@@ -105,18 +102,16 @@ const SDD = () => {
         </div>
       </PitchSection>
 
-      {/* System Architecture */}
+      {/* Architecture */}
       <PitchSection id="architecture" dark>
         <div className="space-y-10">
           <div className="text-center space-y-3">
             <Badge className="bg-accent text-primary text-sm"><Layers className="h-3 w-3 mr-1" /> System Architecture</Badge>
-            <h2 className="text-4xl font-bold">Architecture Diagram</h2>
+            <h2 className="text-4xl font-bold">Architecture with Behavioral Layer</h2>
           </div>
-          {/* Visual Architecture Diagram */}
           <Card className="bg-primary-foreground/5 border-primary-foreground/20 text-primary-foreground">
             <CardContent className="p-6">
               <div className="space-y-6">
-                {/* Client Layer */}
                 <div className="text-center">
                   <Badge className="bg-accent/20 text-accent border-0 mb-2">Client Layer</Badge>
                   <div className="grid grid-cols-3 gap-3">
@@ -126,7 +121,6 @@ const SDD = () => {
                   </div>
                 </div>
                 <div className="flex justify-center"><div className="w-0.5 h-6 bg-accent/30" /></div>
-                {/* Frontend Layer */}
                 <div className="text-center">
                   <Badge className="bg-accent/20 text-accent border-0 mb-2">Frontend — React SPA</Badge>
                   <div className="grid grid-cols-4 gap-2">
@@ -136,7 +130,16 @@ const SDD = () => {
                   </div>
                 </div>
                 <div className="flex justify-center"><div className="w-0.5 h-6 bg-accent/30" /></div>
-                {/* API Layer */}
+                {/* NEW: Behavioral Intelligence Layer */}
+                <div className="text-center">
+                  <Badge className="bg-destructive/20 text-destructive border-0 mb-2">🧠 Behavioral Intelligence Layer — NEW</Badge>
+                  <div className="grid grid-cols-4 gap-2">
+                    {["Price Masking Logic", "Stock Band Calc", "Market Signal Gen", "RFQ Routing Engine"].map((c) => (
+                      <div key={c} className="p-2 rounded bg-destructive/10 border border-destructive/20 text-[10px] text-center font-medium">{c}</div>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex justify-center"><div className="w-0.5 h-6 bg-accent/30" /></div>
                 <div className="text-center">
                   <Badge className="bg-accent/20 text-accent border-0 mb-2">API Layer — Supabase</Badge>
                   <div className="grid grid-cols-4 gap-2">
@@ -146,22 +149,11 @@ const SDD = () => {
                   </div>
                 </div>
                 <div className="flex justify-center"><div className="w-0.5 h-6 bg-accent/30" /></div>
-                {/* Data Layer */}
                 <div className="text-center">
                   <Badge className="bg-accent/20 text-accent border-0 mb-2">Data Layer — PostgreSQL</Badge>
                   <div className="grid grid-cols-5 gap-2">
                     {["members", "products", "inquiries", "bids", "user_roles"].map((c) => (
                       <div key={c} className="p-2 rounded bg-primary-foreground/10 border border-primary-foreground/15 text-[10px] text-center font-mono">{c}</div>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex justify-center"><div className="w-0.5 h-6 bg-accent/30" /></div>
-                {/* External Layer */}
-                <div className="text-center">
-                  <Badge className="bg-accent/20 text-accent border-0 mb-2">External Integrations</Badge>
-                  <div className="grid grid-cols-3 gap-3">
-                    {["WhatsApp API (wa.me)", "Discourse Forum", "Affiliate Links"].map((c) => (
-                      <div key={c} className="p-2 rounded bg-primary-foreground/10 border border-primary-foreground/15 text-[10px] text-center">{c}</div>
                     ))}
                   </div>
                 </div>
@@ -171,28 +163,53 @@ const SDD = () => {
         </div>
       </PitchSection>
 
-      {/* Data Flow */}
-      <PitchSection id="dataflow">
+      {/* Behavioral Intelligence Layer — NEW */}
+      <PitchSection id="behavioral">
         <div className="space-y-10">
           <div className="text-center space-y-3">
-            <Badge className="text-sm"><GitBranch className="h-3 w-3 mr-1" /> Data Flow</Badge>
-            <h2 className="text-4xl font-bold text-primary">Key Data Flows</h2>
+            <Badge className="text-sm"><Brain className="h-3 w-3 mr-1" /> Behavioral Intelligence Layer</Badge>
+            <h2 className="text-4xl font-bold text-primary">The Intelligence Between Frontend & API</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-6">
+            {[
+              { title: "Price Masking Logic", desc: "Transforms exact prices into ranges based on role. Free members see ranges; paid members choose full masking. Market reference calculated from aggregated seller data.", icon: Eye },
+              { title: "Stock Band Calculator", desc: "Converts exact inventory quantities into bands: High (>500kg), Medium (100-500kg), Low (<100kg), On Order. 'Fast Moving' flag added when depletion rate exceeds threshold.", icon: ShoppingBag },
+              { title: "Market Signal Generator", desc: "Analyzes price history to generate trend direction (↑ ↓ →). Calculates demand score from RFQ volume. Produces supply signals from stock band distributions.", icon: BarChart3 },
+              { title: "RFQ Routing Engine", desc: "Distributes buyer RFQs to selected sellers. Tracks response times. Calculates seller performance scores. Generates conversion funnel analytics for admin.", icon: Gavel },
+            ].map((item) => (
+              <Card key={item.title} className="border-accent/20">
+                <CardContent className="p-6 space-y-3">
+                  <item.icon className="h-6 w-6 text-accent" />
+                  <h3 className="font-semibold text-lg">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </PitchSection>
+
+      {/* Data Flow */}
+      <PitchSection id="dataflow" dark>
+        <div className="space-y-10">
+          <div className="text-center space-y-3">
+            <Badge className="bg-accent text-primary text-sm"><GitBranch className="h-3 w-3 mr-1" /> Data Flow</Badge>
+            <h2 className="text-4xl font-bold">Key Data Flows</h2>
           </div>
           <div className="space-y-6">
             {[
-              { title: "Trade Inquiry Flow", steps: ["Buyer browses directory or marketplace", "Clicks 'Send Inquiry' or 'Bid' on product", "Form captures: product, quantity, message, contact", "Inquiry saved to Supabase `inquiries` table", "Seller sees new lead in CRM dashboard", "WhatsApp notification sent to seller", "Seller updates status: New → Contacted → Negotiation → Converted"] },
-              { title: "Member Registration Flow", steps: ["Visitor clicks 'Apply for Membership'", "Fills application form with company details", "Uploads documents: GST cert, FSSAI, photos", "Application saved with status 'Pending'", "Admin reviews in approval queue", "Admin approves → member profile created", "Member receives credentials & can manage storefront"] },
-              { title: "Product Bidding Flow", steps: ["Buyer views product on storefront or marketplace", "Clicks 'Place Bid' button", "Enters: quantity, target price, delivery timeline", "Bid saved to `bids` table linked to product & seller", "Seller reviews bids in CRM dashboard", "Seller accepts, counters, or declines bid", "Accepted bid converts to inquiry for fulfillment"] },
+              { title: "RFQ Inquiry Flow (v3.0)", steps: ["Buyer browses → sees price ranges, stock bands, trends", "Clicks 'Request Best Price' on 1+ products", "Multi-step form: Product → Qty → Timeline → Message", "RFQ distributed to selected sellers simultaneously", "Behavioral layer: scores buyer, assigns priority", "Seller sees prioritized RFQ in CRM (Hot/Warm/Cold)", "Seller responds privately → buyer compares quotes"] },
+              { title: "Price Masking Flow", steps: ["Seller enters exact price in storefront admin", "Behavioral layer calculates min-max range", "Market reference price computed from aggregated data", "Guest/Free see: Price Range + Market Ref", "Paid members: 'Request Best Price' only", "Exact prices never exposed to any public role"] },
             ].map((flow) => (
-              <Card key={flow.title}>
+              <Card key={flow.title} className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
                 <CardContent className="p-6 space-y-4">
-                  <h3 className="text-lg font-semibold text-primary">{flow.title}</h3>
+                  <h3 className="text-lg font-semibold text-accent">{flow.title}</h3>
                   <div className="flex flex-wrap gap-2 items-center">
                     {flow.steps.map((step, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50 border border-border/50">
+                        <div className="flex items-center gap-2 p-2 rounded-lg bg-primary-foreground/5 border border-primary-foreground/10">
                           <span className="h-5 w-5 rounded-full bg-accent/20 flex items-center justify-center text-[10px] font-bold text-accent flex-shrink-0">{i + 1}</span>
-                          <span className="text-xs text-muted-foreground">{step}</span>
+                          <span className="text-xs text-primary-foreground/70">{step}</span>
                         </div>
                         {i < flow.steps.length - 1 && <ArrowRight className="h-3 w-3 text-accent flex-shrink-0 hidden sm:block" />}
                       </div>
@@ -206,22 +223,22 @@ const SDD = () => {
       </PitchSection>
 
       {/* Module Design */}
-      <PitchSection id="modules" dark>
+      <PitchSection id="modules">
         <div className="space-y-10">
           <div className="text-center space-y-3">
-            <Badge className="bg-accent text-primary text-sm"><Box className="h-3 w-3 mr-1" /> Module Design</Badge>
-            <h2 className="text-4xl font-bold">Module Architecture</h2>
+            <Badge className="text-sm"><Box className="h-3 w-3 mr-1" /> Module Design</Badge>
+            <h2 className="text-4xl font-bold text-primary">Module Architecture</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { icon: Users, title: "Directory Module", components: ["Directory.tsx — Search & filter grid", "MemberProfile.tsx — Full member page", "Storefront.tsx — Seller catalog view"], data: "members, products" },
-              { icon: ShoppingBag, title: "Marketplace Module", components: ["Products.tsx — Category browser", "ProductPage.tsx — Product detail", "Broker.tsx — Supply/demand board"], data: "products, commodities, broker_listings" },
-              { icon: Gavel, title: "Bidding Module", components: ["BidForm component — Quantity, price, timeline", "BidList in CRM — Seller bid review", "BidStatus — Accept/counter/decline"], data: "bids, products, inquiries" },
-              { icon: BarChart3, title: "Intelligence Module", components: ["Market.tsx — Price charts & signals", "LeadIntelligence.tsx — Expo packs", "Dashboard.tsx — CRM pipeline"], data: "inquiries, lead_packs, market_data" },
-              { icon: MessageSquare, title: "Community Module", components: ["Community.tsx — Forum preview", "DiscourseEmbed — Topic cards", "ProductDiscussions — Per-product threads"], data: "Discourse API (external)" },
-              { icon: Shield, title: "Admin Module", components: ["Admin.tsx — Dashboard & tools", "MemberApprovals — Application queue", "CircularManager — Publish & distribute"], data: "all tables (admin RLS)" },
+              { icon: ShoppingBag, title: "Marketplace Module", components: ["Products.tsx — Category browser", "ProductPage.tsx — Controlled product display", "Smart listing: range, band, trend, RFQ CTA"], data: "products, commodities" },
+              { icon: Gavel, title: "RFQ Engine Module", components: ["RFQForm — Multi-step inquiry", "RFQRouter — Distribute to sellers", "RFQTracker — Response monitoring"], data: "inquiries, rfq_responses" },
+              { icon: BarChart3, title: "Intelligence Module", components: ["Market.tsx — Signals & trends", "Dashboard.tsx — Behavioral CRM", "LeadScoring — Hot/Warm/Cold"], data: "inquiries, market_data" },
+              { icon: MessageSquare, title: "Community Module", components: ["Community.tsx — Forum preview", "DiscourseEmbed — Topic cards", "ProductDiscussions — Per-product threads"], data: "Discourse API" },
+              { icon: Shield, title: "Admin Module", components: ["Admin.tsx — Dashboard & tools", "RFQMonitor — Engine analytics", "MarketSignalManager — Edit signals"], data: "all tables (admin RLS)" },
             ].map((mod) => (
-              <Card key={mod.title} className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
+              <Card key={mod.title}>
                 <CardContent className="p-5 space-y-3">
                   <div className="flex items-center gap-2">
                     <mod.icon className="h-5 w-5 text-accent" />
@@ -229,10 +246,10 @@ const SDD = () => {
                   </div>
                   <ul className="space-y-1.5">
                     {mod.components.map((c) => (
-                      <li key={c} className="text-xs text-primary-foreground/60 font-mono pl-3 border-l-2 border-accent/30">{c}</li>
+                      <li key={c} className="text-xs text-muted-foreground font-mono pl-3 border-l-2 border-accent/30">{c}</li>
                     ))}
                   </ul>
-                  <p className="text-[10px] text-primary-foreground/40">Data: {mod.data}</p>
+                  <p className="text-[10px] text-muted-foreground/60">Data: {mod.data}</p>
                 </CardContent>
               </Card>
             ))}
@@ -240,55 +257,35 @@ const SDD = () => {
         </div>
       </PitchSection>
 
-      {/* Database Design */}
-      <PitchSection id="database">
+      {/* Database Design — UPDATED */}
+      <PitchSection id="database" dark>
         <div className="space-y-10">
           <div className="text-center space-y-3">
-            <Badge className="text-sm"><Database className="h-3 w-3 mr-1" /> Database Design</Badge>
-            <h2 className="text-4xl font-bold text-primary">Entity Relationship</h2>
+            <Badge className="bg-accent text-primary text-sm"><Database className="h-3 w-3 mr-1" /> Database Design</Badge>
+            <h2 className="text-4xl font-bold">Updated Data Model</h2>
           </div>
-          {/* ER Diagram Visual */}
-          <Card className="bg-muted/30">
+          <Card className="bg-primary-foreground/5 border-primary-foreground/20 text-primary-foreground">
             <CardContent className="p-6">
               <div className="grid md:grid-cols-3 gap-4">
                 {[
-                  { table: "users", fields: ["id UUID PK", "email TEXT UNIQUE", "role app_role", "company_name TEXT", "location TEXT", "verified BOOLEAN", "created_at TIMESTAMPTZ"], color: "border-accent" },
-                  { table: "members", fields: ["user_id UUID FK → users", "slug TEXT UNIQUE", "description TEXT", "years_in_business INT", "certifications TEXT[]", "markets_served TEXT[]", "whatsapp_number TEXT"], color: "border-accent" },
-                  { table: "commodities", fields: ["id UUID PK", "name TEXT", "category TEXT", "variants JSONB", "origins TEXT[]"], color: "border-accent" },
-                  { table: "products", fields: ["id UUID PK", "seller_id UUID FK → users", "commodity_id UUID FK", "variant TEXT", "origin TEXT", "packaging TEXT", "moq INT", "price NUMERIC", "stock_available BOOLEAN", "location TEXT"], color: "border-accent" },
-                  { table: "inquiries", fields: ["id UUID PK", "product_id UUID FK", "sender_name TEXT", "sender_email TEXT", "message TEXT", "quantity INT", "status inquiry_status", "created_at TIMESTAMPTZ"], color: "border-accent" },
-                  { table: "bids", fields: ["id UUID PK", "product_id UUID FK", "bidder_name TEXT", "bidder_email TEXT", "quantity INT", "target_price NUMERIC", "delivery_timeline TEXT", "status bid_status", "created_at TIMESTAMPTZ"], color: "border-accent" },
-                  { table: "circulars", fields: ["id UUID PK", "title TEXT", "content TEXT", "published_at TIMESTAMPTZ", "audience TEXT"], color: "border-accent" },
-                  { table: "advertisements", fields: ["id UUID PK", "title TEXT", "image_url TEXT", "target_url TEXT", "placement TEXT", "start_date DATE", "end_date DATE", "clicks INT", "impressions INT"], color: "border-accent" },
-                  { table: "user_roles", fields: ["id UUID PK", "user_id UUID FK → auth.users", "role app_role", "UNIQUE(user_id, role)"], color: "border-destructive" },
+                  { table: "products (UPDATED)", fields: ["id UUID PK", "seller_id UUID FK → users", "commodity_id UUID FK", "price_min NUMERIC — NEW", "price_max NUMERIC — NEW", "stock_band ENUM (high/medium/low/on_order) — NEW", "demand_score INT — NEW", "trend_direction ENUM (rising/falling/stable) — NEW", "variant TEXT, origin TEXT", "moq INT, packaging TEXT"], color: "border-destructive" },
+                  { table: "inquiries (UPDATED)", fields: ["id UUID PK", "product_id UUID FK", "sender_name TEXT", "multi_seller_flag BOOLEAN — NEW", "priority_score INT — NEW", "seller_response_time INTERVAL — NEW", "status inquiry_status", "created_at TIMESTAMPTZ"], color: "border-destructive" },
+                  { table: "rfq_responses (NEW)", fields: ["id UUID PK", "inquiry_id UUID FK → inquiries", "seller_id UUID FK → users", "quoted_price NUMERIC", "message TEXT", "responded_at TIMESTAMPTZ", "status ENUM (pending/sent/viewed)"], color: "border-destructive" },
+                  { table: "members", fields: ["user_id UUID FK → users", "slug TEXT UNIQUE", "description TEXT", "years_in_business INT", "certifications TEXT[]", "whatsapp_number TEXT"], color: "border-accent" },
+                  { table: "user_roles", fields: ["id UUID PK", "user_id UUID FK → auth.users", "role app_role", "UNIQUE(user_id, role)"], color: "border-accent" },
+                  { table: "market_signals (NEW)", fields: ["id UUID PK", "commodity_id UUID FK", "price_trend ENUM (rising/falling/stable)", "demand_level ENUM (hot/active/normal)", "supply_status TEXT", "updated_at TIMESTAMPTZ"], color: "border-destructive" },
                 ].map((t) => (
-                  <Card key={t.table} className={`border-l-4 ${t.color}`}>
+                  <Card key={t.table} className={`border-l-4 ${t.color} bg-primary-foreground/5`}>
                     <CardContent className="p-4 space-y-2">
                       <h4 className="font-mono font-semibold text-sm text-accent">{t.table}</h4>
                       <div className="space-y-1">
                         {t.fields.map((f) => (
-                          <p key={f} className="text-[11px] text-muted-foreground font-mono">{f}</p>
+                          <p key={f} className={`text-[11px] font-mono ${f.includes("NEW") ? "text-destructive font-semibold" : "text-primary-foreground/60"}`}>{f}</p>
                         ))}
                       </div>
                     </CardContent>
                   </Card>
                 ))}
-              </div>
-              {/* Relationships */}
-              <div className="mt-6 p-4 rounded-lg bg-muted/50">
-                <h4 className="font-semibold text-sm mb-2">Key Relationships</h4>
-                <div className="grid sm:grid-cols-2 gap-2">
-                  {[
-                    "users 1 ←→ 1 members (profile extension)",
-                    "users 1 ←→ N products (seller listings)",
-                    "products N ←→ 1 commodities (product type)",
-                    "products 1 ←→ N inquiries (trade leads)",
-                    "products 1 ←→ N bids (buyer offers)",
-                    "users 1 ←→ N user_roles (RBAC)",
-                  ].map((rel) => (
-                    <p key={rel} className="text-xs text-muted-foreground font-mono">{rel}</p>
-                  ))}
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -296,40 +293,36 @@ const SDD = () => {
       </PitchSection>
 
       {/* API Design */}
-      <PitchSection id="api" dark>
+      <PitchSection id="api">
         <div className="space-y-10">
           <div className="text-center space-y-3">
-            <Badge className="bg-accent text-primary text-sm"><Code className="h-3 w-3 mr-1" /> API Design</Badge>
-            <h2 className="text-4xl font-bold">API Endpoints</h2>
+            <Badge className="text-sm"><Code className="h-3 w-3 mr-1" /> API Design</Badge>
+            <h2 className="text-4xl font-bold text-primary">API Endpoints (Updated)</h2>
           </div>
-          <Table className="border border-primary-foreground/20 rounded-lg overflow-hidden">
+          <Table className="border rounded-lg overflow-hidden">
             <TableHeader>
-              <TableRow className="border-primary-foreground/20 hover:bg-transparent">
-                <TableHead className="text-primary-foreground/70">Method</TableHead>
-                <TableHead className="text-primary-foreground/70">Endpoint</TableHead>
-                <TableHead className="text-primary-foreground/70">Description</TableHead>
-                <TableHead className="text-primary-foreground/70">Auth</TableHead>
+              <TableRow>
+                <TableHead>Method</TableHead>
+                <TableHead>Endpoint</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Auth</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {[
-                { method: "GET", endpoint: "/rest/v1/members", desc: "List all members with filters", auth: "Public" },
-                { method: "GET", endpoint: "/rest/v1/members?slug=eq.{slug}", desc: "Get member by slug", auth: "Public" },
-                { method: "GET", endpoint: "/rest/v1/products", desc: "List marketplace products", auth: "Public" },
-                { method: "POST", endpoint: "/rest/v1/inquiries", desc: "Submit trade inquiry", auth: "Public" },
-                { method: "POST", endpoint: "/rest/v1/bids", desc: "Place bid on product", auth: "Public" },
-                { method: "PATCH", endpoint: "/rest/v1/inquiries?id=eq.{id}", desc: "Update inquiry status", auth: "Member" },
-                { method: "PATCH", endpoint: "/rest/v1/bids?id=eq.{id}", desc: "Accept/decline bid", auth: "Member" },
-                { method: "GET", endpoint: "/rest/v1/products?seller_id=eq.{id}", desc: "Get seller's products", auth: "Public" },
-                { method: "POST", endpoint: "/rest/v1/members", desc: "Create member profile", auth: "Admin" },
-                { method: "POST", endpoint: "/rest/v1/circulars", desc: "Publish circular", auth: "Admin" },
-                { method: "GET", endpoint: "/functions/v1/discourse-topics", desc: "Fetch community topics", auth: "Public" },
+                { method: "GET", endpoint: "/rest/v1/members", desc: "List members with filters", auth: "Public" },
+                { method: "GET", endpoint: "/rest/v1/products", desc: "List products (price ranges only)", auth: "Public" },
+                { method: "POST", endpoint: "/rest/v1/inquiries", desc: "Submit RFQ (multi-seller)", auth: "Public" },
+                { method: "POST", endpoint: "/rest/v1/rfq_responses", desc: "Seller responds to RFQ (private)", auth: "Member" },
+                { method: "GET", endpoint: "/functions/v1/market-signals", desc: "Get market signals by commodity", auth: "Public" },
+                { method: "GET", endpoint: "/functions/v1/rfq-analytics", desc: "RFQ engine performance metrics", auth: "Admin" },
+                { method: "PATCH", endpoint: "/rest/v1/products?id=eq.{id}", desc: "Update stock band, trend direction", auth: "Member" },
               ].map((api, i) => (
-                <TableRow key={i} className="border-primary-foreground/10 hover:bg-primary-foreground/5">
-                  <TableCell><Badge className={`text-xs ${api.method === "GET" ? "bg-accent/20 text-accent" : api.method === "POST" ? "bg-green-500/20 text-green-400" : "bg-blue-500/20 text-blue-400"} border-0`}>{api.method}</Badge></TableCell>
-                  <TableCell className="font-mono text-xs text-primary-foreground/80">{api.endpoint}</TableCell>
-                  <TableCell className="text-sm text-primary-foreground/70">{api.desc}</TableCell>
-                  <TableCell><Badge variant={api.auth === "Admin" ? "destructive" : "outline"} className={api.auth !== "Admin" ? "border-primary-foreground/30 text-primary-foreground/70" : ""} >{api.auth}</Badge></TableCell>
+                <TableRow key={i}>
+                  <TableCell><Badge className={`text-xs ${api.method === "GET" ? "bg-accent/20 text-accent" : api.method === "POST" ? "bg-green-500/20 text-green-600" : "bg-blue-500/20 text-blue-600"} border-0`}>{api.method}</Badge></TableCell>
+                  <TableCell className="font-mono text-xs">{api.endpoint}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{api.desc}</TableCell>
+                  <TableCell><Badge variant={api.auth === "Admin" ? "destructive" : "outline"} className="text-xs">{api.auth}</Badge></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -337,51 +330,21 @@ const SDD = () => {
         </div>
       </PitchSection>
 
-      {/* Integration Design */}
-      <PitchSection id="integration">
+      {/* Design Principles */}
+      <PitchSection id="principles" dark>
         <div className="space-y-10">
           <div className="text-center space-y-3">
-            <Badge className="text-sm"><Globe className="h-3 w-3 mr-1" /> Integration Design</Badge>
-            <h2 className="text-4xl font-bold text-primary">External Integrations</h2>
+            <Badge className="bg-accent text-primary text-sm"><Brain className="h-3 w-3 mr-1" /> Platform Design Principles</Badge>
+            <h2 className="text-4xl font-bold">Behavioral Operating Principles</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { title: "WhatsApp Integration", desc: "Pre-filled inquiry messages via wa.me deep links", details: ["Format: wa.me/{number}?text={encoded_message}", "Message includes: product, quantity, buyer info", "Used on: storefronts, product pages, directory", "No API key required — browser-based redirect"] },
-              { title: "Discourse Community", desc: "Structured forum at community.mddma.com", details: ["Embed latest topics on homepage via Discourse Embed API", "Per-product discussion threads via topic tags", "SSO with main platform authentication", "Categories: Market Intel, News, Trade, Events, Social"] },
-              { title: "Affiliate Links", desc: "Retail purchase links for consumer buyers", details: ["Amazon, Flipkart, BigBasket product links", "Affiliate tracking parameters appended", "Displayed on product detail pages", "Commission tracked via affiliate dashboards"] },
-              { title: "Email Notifications", desc: "Transactional emails via Supabase Edge Functions", details: ["New inquiry notification to sellers", "Bid received/accepted alerts", "Membership approval confirmations", "Circular distribution to member emails"] },
-            ].map((item) => (
-              <Card key={item.title}>
-                <CardContent className="p-6 space-y-3">
-                  <h3 className="font-semibold text-lg text-primary">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.desc}</p>
-                  <ul className="space-y-1.5">
-                    {item.details.map((d) => (
-                      <li key={d} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />{d}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </PitchSection>
-
-      {/* Security Design */}
-      <PitchSection id="security" dark>
-        <div className="space-y-10">
-          <div className="text-center space-y-3">
-            <Badge className="bg-accent text-primary text-sm"><Lock className="h-3 w-3 mr-1" /> Security Design</Badge>
-            <h2 className="text-4xl font-bold">Security Architecture</h2>
-          </div>
-          <div className="grid sm:grid-cols-2 gap-5">
-            {[
-              { title: "Authentication", desc: "Supabase Auth with email/password and OAuth (Google). JWT tokens with automatic refresh. Session management via httpOnly cookies." },
-              { title: "Authorization (RBAC)", desc: "5-role system: Guest, Free Member, Paid Member, Broker, Admin. Roles stored in separate user_roles table. has_role() security definer function prevents RLS recursion." },
-              { title: "Row-Level Security", desc: "All tables have RLS enabled. Public read for directory/products. Members can only update their own data. Admin required for write operations on most tables." },
-              { title: "Input Validation", desc: "Client-side: Zod schemas validate all form inputs. Server-side: PostgreSQL constraints and check functions. XSS prevention via React's built-in escaping." },
+              { title: "Controlled Transparency", desc: "Show signals, not exact data" },
+              { title: "Negotiation-First Design", desc: "Replace price display with RFQ" },
+              { title: "Trust Acceleration", desc: "Verification > price" },
+              { title: "Cognitive Simplicity", desc: "Reduce decision fatigue" },
+              { title: "Behavioral Nudging", desc: "Guide user actions intentionally" },
+              { title: "Platform Control", desc: "Structure and control market interactions" },
             ].map((item) => (
               <Card key={item.title} className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
                 <CardContent className="p-5 space-y-2">
@@ -391,40 +354,42 @@ const SDD = () => {
               </Card>
             ))}
           </div>
-          {/* RBAC Visual */}
-          <Card className="bg-primary-foreground/5 border-primary-foreground/20 text-primary-foreground">
-            <CardContent className="p-6">
-              <h3 className="font-semibold text-accent mb-4">Role Hierarchy & Permissions</h3>
-              <div className="space-y-2">
-                {[
-                  { role: "Admin", level: "100%", perms: "Full CRUD, approvals, analytics, moderation" },
-                  { role: "Paid Member", level: "70%", perms: "RFQ mode, priority listing, advanced CRM, lead packs" },
-                  { role: "Broker", level: "55%", perms: "Supply/demand posting, CRM, broker marketplace" },
-                  { role: "Free Member", level: "40%", perms: "Storefront, basic CRM, product listings" },
-                  { role: "Guest", level: "20%", perms: "Browse directory, view products, send inquiries" },
-                ].map((r) => (
-                  <div key={r.role} className="flex items-center gap-3">
-                    <span className="text-xs font-mono w-28 text-primary-foreground/60">{r.role}</span>
-                    <div className="flex-1 h-6 bg-primary-foreground/10 rounded overflow-hidden">
-                      <div className="h-full bg-accent/40 rounded flex items-center px-2" style={{ width: r.level }}>
-                        <span className="text-[10px] text-primary-foreground/80 truncate">{r.perms}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+          <Card className="bg-accent/10 border-accent/30 text-primary-foreground">
+            <CardContent className="p-6 text-center">
+              <p className="text-lg font-semibold italic">"This platform does not expose the market — it structures and controls it."</p>
             </CardContent>
           </Card>
-          <div className="text-center pt-6 space-y-4">
-            <p className="text-primary-foreground/50 text-sm">Related Documents</p>
+        </div>
+      </PitchSection>
+
+      {/* Security */}
+      <PitchSection id="security">
+        <div className="space-y-10">
+          <div className="text-center space-y-3">
+            <Badge className="text-sm"><Lock className="h-3 w-3 mr-1" /> Security Design</Badge>
+            <h2 className="text-4xl font-bold text-primary">Security Architecture</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-5">
+            {[
+              { title: "Price Data Protection", desc: "Exact prices stored in DB but never exposed via API to unauthorized roles. Behavioral layer transforms to ranges. RLS enforces price column visibility per role." },
+              { title: "RFQ Privacy", desc: "Seller responses stored in rfq_responses table. RLS ensures only requesting buyer and responding seller can see each response. Cross-seller data never exposed." },
+              { title: "Authentication & RBAC", desc: "Supabase Auth with JWT. 5-role system via user_roles table. has_role() security definer function prevents RLS recursion." },
+              { title: "Input Validation", desc: "Zod schemas validate all RFQ forms. Rate limiting: 10 RFQs/day per buyer. Server-side constraints on all tables." },
+            ].map((item) => (
+              <Card key={item.title}>
+                <CardContent className="p-5 space-y-2">
+                  <h3 className="font-semibold text-primary">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground">{item.desc}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <div className="text-center pt-6">
             <div className="flex gap-3 justify-center flex-wrap print:hidden">
-              <Link to="/pitch"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">← Pitch</Button></Link>
-              <Link to="/sow"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">← SOW</Button></Link>
-              <Link to="/brd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">← BRD</Button></Link>
-              <Link to="/prd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">← PRD</Button></Link>
-              <Link to="/fsd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">← FRD</Button></Link>
-              <Link to="/tsd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">TSD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
-              <Link to="/mvp-canvas"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">MVP Canvas <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/brd"><Button variant="outline">← BRD</Button></Link>
+              <Link to="/fsd"><Button variant="outline">← FRD</Button></Link>
+              <Link to="/tsd"><Button variant="outline">TSD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/mvp-canvas"><Button variant="outline">MVP Canvas <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
             </div>
           </div>
         </div>
