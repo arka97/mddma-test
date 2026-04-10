@@ -63,9 +63,7 @@ const SalesPitch = () => {
           <p className="text-xl sm:text-2xl text-primary-foreground/70 max-w-2xl mx-auto">
             A controlled transparency marketplace that protects sellers, empowers buyers, and shifts market power from brokers to the platform
           </p>
-          <div className="pt-2 mb-2">
-            <p className="text-sm text-primary-foreground/40 italic">"This platform does not expose the market — it structures and controls it."</p>
-          </p>
+          <p className="text-sm text-primary-foreground/40 italic pt-2">"This platform does not expose the market — it structures and controls it."</p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
             <p>April 2026 · v3.0 — Behavioral Trade OS</p>
