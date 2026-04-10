@@ -65,7 +65,16 @@ const SalesPitch = () => {
           </p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>February 2026 · v1.0</p>
+            <p>April 2026 · v2.0</p>
+          </div>
+          <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
+            <Link to="/sow"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">SOW →</Badge></Link>
+            <Link to="/brd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">BRD →</Badge></Link>
+            <Link to="/prd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">PRD →</Badge></Link>
+            <Link to="/fsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">FRD →</Badge></Link>
+            <Link to="/sdd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">SDD →</Badge></Link>
+            <Link to="/tsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">TSD →</Badge></Link>
+            <Link to="/mvp-canvas"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">MVP Canvas →</Badge></Link>
           </div>
           <button onClick={() => scrollTo("problem")} className="mt-8 inline-flex items-center gap-1 text-accent hover:text-accent/80 transition-colors">
             <ChevronDown className="h-5 w-5 animate-bounce" />
@@ -451,9 +460,18 @@ const SalesPitch = () => {
               <Printer className="h-5 w-5 mr-2" /> Export as PDF
             </Button>
           </div>
-          <div className="pt-8 text-sm text-primary-foreground/40 space-y-1">
+          <div className="pt-8 text-sm text-primary-foreground/40 space-y-3">
             <p>For questions or a live demo walkthrough, contact:</p>
             <p className="text-primary-foreground/60 font-medium">info@mddma.org · +91 22 2781 XXXX</p>
+            <div className="flex gap-2 justify-center flex-wrap pt-2 print:hidden">
+              <Link to="/sow"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/50 hover:text-primary-foreground cursor-pointer text-xs">SOW</Badge></Link>
+              <Link to="/brd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/50 hover:text-primary-foreground cursor-pointer text-xs">BRD</Badge></Link>
+              <Link to="/prd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/50 hover:text-primary-foreground cursor-pointer text-xs">PRD</Badge></Link>
+              <Link to="/fsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/50 hover:text-primary-foreground cursor-pointer text-xs">FRD</Badge></Link>
+              <Link to="/sdd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/50 hover:text-primary-foreground cursor-pointer text-xs">SDD</Badge></Link>
+              <Link to="/tsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/50 hover:text-primary-foreground cursor-pointer text-xs">TSD</Badge></Link>
+              <Link to="/mvp-canvas"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/50 hover:text-primary-foreground cursor-pointer text-xs">MVP Canvas</Badge></Link>
+            </div>
           </div>
         </div>
       </PitchSection>

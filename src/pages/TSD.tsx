@@ -59,12 +59,16 @@ const TSD = () => {
           </p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>Document Version: 1.0 · March 2026</p>
+            <p>Document Version: 2.0 · April 2026</p>
           </div>
-          <div className="flex gap-3 justify-center pt-2 print:hidden">
+          <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
+            <Link to="/pitch"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← Pitch</Badge></Link>
+            <Link to="/sow"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← SOW</Badge></Link>
             <Link to="/brd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← BRD</Badge></Link>
+            <Link to="/prd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← PRD</Badge></Link>
             <Link to="/fsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← FRD</Badge></Link>
             <Link to="/sdd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← SDD</Badge></Link>
+            <Link to="/mvp-canvas"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">MVP Canvas →</Badge></Link>
           </div>
           <button onClick={() => scrollTo("architecture")} className="mt-8 inline-flex items-center gap-1 text-accent hover:text-accent/80 transition-colors">
             <ChevronDown className="h-5 w-5 animate-bounce" />
@@ -104,17 +108,26 @@ const TSD = () => {
 ├── BrowserRouter
 │   ├── Layout (Header + Footer)
 │   │   ├── Index (Homepage)
-│   │   ├── Directory → MemberProfile
+│   │   ├── Directory → MemberProfile → Storefront
 │   │   ├── Products → ProductPage
+│   │   ├── Broker (Supply/Demand Board)
+│   │   ├── Market (Intelligence Dashboard)
+│   │   ├── Dashboard (Lead CRM)
+│   │   ├── Community (Forum Preview)
 │   │   ├── LeadIntelligence
 │   │   ├── MembershipPlans
+│   │   ├── Circulars / Forms / Apply
 │   │   ├── Admin
 │   │   └── ...other pages
-│   └── Standalone Pages
-│       ├── SalesPitch
-│       ├── BRD / FSD / TSD
-│       └── Login
+│   └── Standalone (Document Suite)
+│       ├── SalesPitch (/pitch)
+│       ├── SOW (/sow)
+│       ├── BRD (/brd) → PRD (/prd)
+│       ├── FRD (/fsd) → SDD (/sdd) → TSD (/tsd)
+│       ├── MVPCanvas (/mvp-canvas)
+│       └── Login (/login)
 ├── QueryClientProvider (TanStack Query)
+├── RoleProvider (RBAC Context)
 ├── TooltipProvider
 └── Toaster (Notifications)`}</pre>
             </CardContent>
@@ -245,22 +258,34 @@ const TSD = () => {
                 { path: "/about", comp: "About", desc: "Association history and information", auth: "Public" },
                 { path: "/directory", comp: "Directory", desc: "Searchable member directory", auth: "Public" },
                 { path: "/directory/:slug", comp: "MemberProfile", desc: "Individual member profile", auth: "Public" },
+                { path: "/store/:slug", comp: "Storefront", desc: "Seller storefront with product catalog", auth: "Public" },
                 { path: "/products", comp: "Products", desc: "Product category listing", auth: "Public" },
                 { path: "/products/:slug", comp: "ProductPage", desc: "Product detail with variants", auth: "Public" },
+                { path: "/broker", comp: "Broker", desc: "Broker marketplace (supply/demand)", auth: "Public" },
+                { path: "/market", comp: "Market", desc: "Market intelligence dashboard", auth: "Public" },
+                { path: "/dashboard", comp: "Dashboard", desc: "Lead CRM dashboard", auth: "Member" },
+                { path: "/community", comp: "Community", desc: "Trade community forum preview", auth: "Public" },
                 { path: "/leads", comp: "LeadIntelligence", desc: "Lead pack marketplace", auth: "Public" },
                 { path: "/membership", comp: "MembershipPlans", desc: "Tier comparison & application", auth: "Public" },
-                { path: "/admin", comp: "Admin", desc: "Admin dashboard", auth: "Admin" },
+                { path: "/circulars", comp: "Circulars", desc: "Association circulars & announcements", auth: "Member" },
+                { path: "/forms", comp: "Forms", desc: "Contact & inquiry forms", auth: "Public" },
+                { path: "/apply", comp: "Apply", desc: "Membership application", auth: "Public" },
+                { path: "/admin", comp: "Admin", desc: "Admin dashboard & moderation", auth: "Admin" },
                 { path: "/login", comp: "Login", desc: "Authentication page", auth: "Public" },
                 { path: "/pitch", comp: "SalesPitch", desc: "Sales presentation deck", auth: "Public" },
+                { path: "/sow", comp: "SOW", desc: "Statement of Work", auth: "Public" },
                 { path: "/brd", comp: "BRD", desc: "Business Requirements Document", auth: "Public" },
-                { path: "/fsd", comp: "FSD", desc: "Functional Specification Document", auth: "Public" },
+                { path: "/prd", comp: "PRD", desc: "Product Requirements Document", auth: "Public" },
+                { path: "/fsd", comp: "FSD", desc: "Functional Requirements Document", auth: "Public" },
+                { path: "/sdd", comp: "SDD", desc: "Solution Design Document", auth: "Public" },
                 { path: "/tsd", comp: "TSD", desc: "Technical Specification Document", auth: "Public" },
+                { path: "/mvp-canvas", comp: "MVPCanvas", desc: "MVP Lean Canvas", auth: "Public" },
               ].map((r) => (
                 <TableRow key={r.path}>
                   <TableCell className="font-mono text-sm text-accent">{r.path}</TableCell>
                   <TableCell className="font-medium">{r.comp}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">{r.desc}</TableCell>
-                  <TableCell><Badge variant={r.auth === "Admin" ? "destructive" : "outline"} className="text-xs">{r.auth}</Badge></TableCell>
+                  <TableCell><Badge variant={r.auth === "Admin" ? "destructive" : r.auth === "Member" ? "secondary" : "outline"} className="text-xs">{r.auth}</Badge></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -283,7 +308,7 @@ const TSD = () => {
               <CardContent className="p-6 space-y-3">
                 <h3 className="font-semibold text-accent">Database Tables</h3>
                 <ul className="space-y-2 text-sm text-primary-foreground/70">
-                  {["members — Company profiles & contact info", "products — Product catalog with variants", "lead_packs — Expo databases for sale", "advertisements — Banner ads & placements", "membership_applications — Application queue", "user_roles — Role-based access control", "circulars — Association announcements"].map((t) => (
+                  {["members — Company profiles & contact info", "products — Product catalog with variants", "commodities — Commodity types & categories", "inquiries — Trade inquiry leads", "bids — Product bidding offers", "broker_listings — Broker supply/demand posts", "lead_packs — Expo databases for sale", "advertisements — Banner ads & placements", "membership_applications — Application queue", "user_roles — Role-based access control", "circulars — Association announcements"].map((t) => (
                     <li key={t} className="flex items-start gap-2"><Database className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />{t}</li>
                   ))}
                 </ul>
@@ -377,12 +402,14 @@ const TSD = () => {
           </div>
           <div className="text-center pt-6 space-y-4">
             <p className="text-muted-foreground text-sm">Related Documents</p>
-            <div className="flex gap-3 justify-center print:hidden">
+            <div className="flex gap-3 justify-center flex-wrap print:hidden">
+              <Link to="/pitch"><Button variant="outline">← Pitch</Button></Link>
               <Link to="/sow"><Button variant="outline">← SOW</Button></Link>
               <Link to="/brd"><Button variant="outline">← BRD</Button></Link>
-              <Link to="/sdd"><Button variant="outline">← SDD</Button></Link>
+              <Link to="/prd"><Button variant="outline">← PRD</Button></Link>
               <Link to="/fsd"><Button variant="outline">← FRD</Button></Link>
-              <Link to="/pitch"><Button variant="outline">Sales Pitch <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/sdd"><Button variant="outline">← SDD</Button></Link>
+              <Link to="/mvp-canvas"><Button variant="outline">MVP Canvas <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
             </div>
           </div>
         </div>

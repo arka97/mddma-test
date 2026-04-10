@@ -81,6 +81,7 @@ export function Footer() {
                 { to: "/fsd", label: "FRD" },
                 { to: "/sdd", label: "SDD" },
                 { to: "/tsd", label: "TSD" },
+                { to: "/mvp-canvas", label: "MVP Canvas" },
               ].map((link) => (
                 <li key={link.to}>
                   <Link to={link.to} className="text-primary-foreground/70 hover:text-accent transition-colors">
