@@ -44,10 +44,11 @@ const MVPCanvas = () => {
       <section id="overview" className="min-h-screen flex items-center justify-center bg-primary text-primary-foreground pt-16 px-6 print:min-h-0 print:py-10">
         <div className="text-center max-w-4xl mx-auto space-y-6">
           <Badge className="bg-accent text-accent-foreground text-sm px-4 py-1">MVP Canvas</Badge>
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight">MDDMA Digital Trade Platform</h1>
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight">MDDMA Behavioral Trade OS</h1>
           <p className="text-xl text-primary-foreground/70 max-w-2xl mx-auto">
-            Lean Canvas — Defining the minimum viable product for India's first digital dry fruits trade hub
+            Lean Canvas — A controlled negotiation marketplace that protects sellers, empowers buyers, and shifts market power from brokers to the platform
           </p>
+          <p className="text-sm text-primary-foreground/40 italic">"This platform does not expose the market — it structures and controls it."</p>
           <div className="flex flex-wrap justify-center gap-3 pt-4">
             <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/80 text-xs">B2B Marketplace</Badge>
             <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/80 text-xs">Industry Directory</Badge>

@@ -55,11 +55,11 @@ const TSD = () => {
             <span className="gold-gradient-text">Technical Spec</span>
           </h1>
           <p className="text-xl sm:text-2xl text-primary-foreground/70 max-w-2xl mx-auto">
-            Architecture, technology stack, data models, and implementation details
+            Architecture, tech stack, and implementation details for the Behavioral Trade Operating System
           </p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>Document Version: 2.0 · April 2026</p>
+            <p>Document Version: 3.0 · April 2026</p>
           </div>
           <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
             <Link to="/pitch"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← Pitch</Badge></Link>
