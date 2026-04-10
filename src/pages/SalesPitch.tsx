@@ -61,11 +61,12 @@ const SalesPitch = () => {
             <span className="gold-gradient-text">Digital Platform</span>
           </h1>
           <p className="text-xl sm:text-2xl text-primary-foreground/70 max-w-2xl mx-auto">
-            A modern, verified trade network for Mumbai's dry fruits & dates industry
+            A controlled transparency marketplace that protects sellers, empowers buyers, and shifts market power from brokers to the platform
           </p>
+          <p className="text-sm text-primary-foreground/40 italic pt-2">"This platform does not expose the market — it structures and controls it."</p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>April 2026 · v2.0</p>
+            <p>April 2026 · v3.0 — Behavioral Trade OS</p>
           </div>
           <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
             <Link to="/sow"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">SOW →</Badge></Link>

@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
   Printer, ChevronDown, CheckCircle2, ArrowRight,
   Users, ShoppingBag, BarChart3, Megaphone, Settings,
-  Shield, FileText, Eye, UserCheck, Globe, Smartphone, Zap
+  Shield, FileText, Eye, UserCheck, Globe, Smartphone, Zap, Brain, Gavel, Lock
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -16,13 +16,12 @@ const NAV_ITEMS = [
   { id: "roles", label: "User Roles" },
   { id: "directory", label: "Directory" },
   { id: "products", label: "Products" },
+  { id: "rfq", label: "RFQ Engine" },
+  { id: "crm", label: "CRM" },
   { id: "leads", label: "Leads" },
-  { id: "advertising", label: "Advertising" },
   { id: "admin", label: "Admin" },
-  { id: "membership", label: "Membership" },
-  { id: "uiux", label: "UI/UX" },
+  { id: "principles", label: "Principles" },
   { id: "nonfunc", label: "Non-Functional" },
-  { id: "demos", label: "Demos" },
 ];
 
 const FSD = () => {
@@ -34,7 +33,7 @@ const FSD = () => {
     <div className="relative">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur border-b border-primary-foreground/10 print:hidden">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-2">
-          <span className="text-primary-foreground font-bold text-sm tracking-wide">MDDMA FSD</span>
+          <span className="text-primary-foreground font-bold text-sm tracking-wide">MDDMA FRD</span>
           <div className="flex gap-1 overflow-x-auto">
             {NAV_ITEMS.map((item) => (
               <button key={item.id} onClick={() => scrollTo(item.id)} className="text-xs text-primary-foreground/70 hover:text-primary-foreground px-2 py-1 rounded transition-colors whitespace-nowrap">
@@ -51,26 +50,23 @@ const FSD = () => {
       {/* Cover */}
       <PitchSection id="cover" dark>
         <div className="text-center space-y-6">
-          <Badge className="bg-accent text-primary font-semibold text-sm px-4 py-1">Functional Specification Document</Badge>
+          <Badge className="bg-accent text-primary font-semibold text-sm px-4 py-1">Functional Requirements Document</Badge>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight leading-tight">
             MDDMA<br />
             <span className="gold-gradient-text">Functional Spec</span>
           </h1>
           <p className="text-xl sm:text-2xl text-primary-foreground/70 max-w-2xl mx-auto">
-            Detailed functional requirements for every module of the MDDMA digital platform
+            Detailed functional requirements for the Behavioral Trade Operating System
           </p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>Document Version: 2.0 · April 2026</p>
+            <p>Document Version: 3.0 · April 2026</p>
           </div>
           <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
-            <Link to="/pitch"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← Pitch</Badge></Link>
-            <Link to="/sow"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← SOW</Badge></Link>
             <Link to="/brd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← BRD</Badge></Link>
             <Link to="/prd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← PRD</Badge></Link>
             <Link to="/sdd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">SDD →</Badge></Link>
             <Link to="/tsd"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">TSD →</Badge></Link>
-            <Link to="/mvp-canvas"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">MVP Canvas →</Badge></Link>
           </div>
           <button onClick={() => scrollTo("intro")} className="mt-8 inline-flex items-center gap-1 text-accent hover:text-accent/80 transition-colors">
             <ChevronDown className="h-5 w-5 animate-bounce" />
@@ -86,9 +82,12 @@ const FSD = () => {
             <h2 className="text-4xl font-bold text-primary">Purpose & Audience</h2>
           </div>
           <div className="max-w-3xl mx-auto space-y-4 text-muted-foreground">
-            <p>This Functional Requirements Document (FRD) translates the business requirements outlined in the <Link to="/brd" className="text-accent hover:underline font-medium">BRD v2.0</Link> and product requirements from the <Link to="/prd" className="text-accent hover:underline font-medium">PRD v2.0</Link> into detailed functional requirements for the MDDMA digital platform.</p>
-            <p><strong className="text-foreground">Audience:</strong> This document is intended for the MDDMA committee, development team, QA team, and project stakeholders who need to understand what the platform will do at a functional level.</p>
-            <p><strong className="text-foreground">References:</strong> <Link to="/brd" className="text-accent hover:underline">BRD v2.0</Link>, <Link to="/prd" className="text-accent hover:underline">PRD v2.0</Link>, <Link to="/sow" className="text-accent hover:underline">SOW v2.0</Link>, <Link to="/mvp-canvas" className="text-accent hover:underline">MVP Canvas</Link>, existing MDDMA website analysis, committee meeting minutes.</p>
+            <p>This FRD translates the business requirements from <Link to="/brd" className="text-accent hover:underline font-medium">BRD v3.0</Link> and product requirements from <Link to="/prd" className="text-accent hover:underline font-medium">PRD v3.0</Link> into detailed functional specifications for the MDDMA Behavioral Trade Operating System.</p>
+            <Card className="bg-accent/5 border-accent/30">
+              <CardContent className="p-4 text-center">
+                <p className="text-sm font-semibold text-primary italic">"This platform does not expose the market — it structures and controls it."</p>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </PitchSection>
@@ -98,13 +97,13 @@ const FSD = () => {
         <div className="space-y-10">
           <div className="text-center space-y-3">
             <Badge className="bg-accent text-primary text-sm"><UserCheck className="h-3 w-3 mr-1" /> User Roles</Badge>
-            <h2 className="text-4xl font-bold">System Users</h2>
+            <h2 className="text-4xl font-bold">System Users (5-Role RBAC)</h2>
           </div>
           <div className="grid sm:grid-cols-3 gap-6">
             {[
-              { icon: Eye, role: "Public Visitor", perms: ["Browse member directory", "View product catalog", "Access lead pack listings", "View association information", "Submit membership application"] },
-              { icon: UserCheck, role: "Registered Member", perms: ["All public visitor permissions", "Manage company profile", "Access member-only pricing", "Download purchased lead packs", "Receive circulars & announcements"] },
-              { icon: Settings, role: "Admin / Office Staff", perms: ["Full CRUD on members & products", "Manage advertisements", "Create & manage lead packs", "Process membership applications", "View analytics & reports"] },
+              { icon: Eye, role: "Guest / Buyer", perms: ["Browse directory", "View price ranges & stock bands", "Send RFQs to sellers", "View market signals", "Submit membership application"] },
+              { icon: UserCheck, role: "Free / Paid Member", perms: ["Manage storefront & products", "Receive & respond to RFQs", "CRM dashboard with lead scoring", "Market intelligence access (Paid)", "RFQ mode — hide prices (Paid)"] },
+              { icon: Settings, role: "Admin / Broker", perms: ["Admin: Full CRUD, approvals, analytics", "Admin: RFQ engine monitoring", "Admin: Market signal management", "Broker: Post supply/demand listings", "Broker: Optional deal facilitation"] },
             ].map((item) => (
               <Card key={item.role} className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
                 <CardContent className="p-6 space-y-4">
@@ -126,7 +125,7 @@ const FSD = () => {
         </div>
       </PitchSection>
 
-      {/* Member Directory Module */}
+      {/* Directory Module */}
       <PitchSection id="directory">
         <div className="space-y-8">
           <div className="text-center space-y-3">
@@ -137,12 +136,11 @@ const FSD = () => {
             {[
               { id: "FR-D01", req: "Directory page shall display members in a responsive card grid with company name, logo, location, and product tags" },
               { id: "FR-D02", req: "Search bar shall support real-time filtering by company name, owner name, or product keywords" },
-              { id: "FR-D03", req: "Filter sidebar shall allow filtering by membership tier (Silver/Gold/Platinum), verification status, and product categories" },
+              { id: "FR-D03", req: "Filter sidebar shall allow filtering by membership tier, verification status, and product categories" },
               { id: "FR-D04", req: "Each member card shall show verification badge (GST, FSSAI) and featured/sponsored indicators" },
-              { id: "FR-D05", req: "Clicking a member card navigates to a full profile page with contact details, product list, certifications, and company description" },
-              { id: "FR-D06", req: "Member profile shall include Call, WhatsApp, and Email action buttons" },
-              { id: "FR-D07", req: "Featured members shall appear in a highlighted section at the top of the directory" },
-              { id: "FR-D08", req: "Sponsored members shall display with a 'Sponsored' badge and elevated visual treatment" },
+              { id: "FR-D05", req: "Member profile page shall include contact actions: Call, WhatsApp, Email, and 'Send RFQ' button" },
+              { id: "FR-D06", req: "Featured members shall appear in highlighted section at top of directory" },
+              { id: "FR-D07", req: "Sponsored members shall display with 'Sponsored' badge and elevated visual treatment" },
             ].map((item) => (
               <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-muted/50">
                 <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5">{item.id}</Badge>
@@ -153,22 +151,25 @@ const FSD = () => {
         </div>
       </PitchSection>
 
-      {/* Product Catalog Module */}
+      {/* Product Discovery Module — UPDATED */}
       <PitchSection id="products" dark>
         <div className="space-y-8">
           <div className="text-center space-y-3">
-            <Badge className="bg-accent text-primary text-sm"><ShoppingBag className="h-3 w-3 mr-1" /> Module: Product Catalog</Badge>
-            <h2 className="text-4xl font-bold">Product Discovery</h2>
+            <Badge className="bg-accent text-primary text-sm"><ShoppingBag className="h-3 w-3 mr-1" /> Module: Product Discovery</Badge>
+            <h2 className="text-4xl font-bold">Controlled Product Display</h2>
           </div>
           <div className="space-y-4">
             {[
-              { id: "FR-P01", req: "Products page shall display 25+ product categories in a searchable grid with images and descriptions" },
-              { id: "FR-P02", req: "Each product page shall list variants (e.g., Kashmiri Mamra, Afghan Mamra) with origin details" },
-              { id: "FR-P03", req: "Verified sellers section on each product page shall link to corresponding member profiles" },
-              { id: "FR-P04", req: "Packaging formats (bulk, retail, custom) shall be displayed with typical quantities" },
-              { id: "FR-P05", req: "Affiliate retail links (Amazon, Flipkart, BigBasket) shall open in new tabs with proper tracking" },
-              { id: "FR-P06", req: "Related products section shall suggest similar categories based on product type" },
-              { id: "FR-P07", req: "Product search shall support filtering by category, origin country, and variant type" },
+              { id: "FR-P01", req: "Products page shall display 25+ categories in a searchable grid with images and descriptions" },
+              { id: "FR-P02", req: "Each product page shall list variants with origin details and market reference price" },
+              { id: "FR-P03", req: "Verified sellers section on each product page shall link to member profiles" },
+              { id: "FR-P04", req: "Packaging formats (bulk, retail, custom) shall be displayed with quantities" },
+              { id: "FR-P05", req: "Affiliate retail links (Amazon, Flipkart) shall open in new tabs" },
+              { id: "FR-P06", req: "Related products section shall suggest similar categories" },
+              { id: "FR-P07", req: "Product search shall support filtering by category, origin, stock band, and seller location" },
+              { id: "FR-P08", req: "System shall display: Price Range (min–max), Market Reference Price, and Trend indicator (↑ ↓ →) — never exact prices" },
+              { id: "FR-P09", req: "Stock visibility shall show: High / Medium / Low band with optional 'Fast Moving' indicator" },
+              { id: "FR-P10", req: "Each product must include 'Request Best Price' CTA that opens multi-step RFQ inquiry form" },
             ].map((item) => (
               <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-primary-foreground/5">
                 <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5 border-primary-foreground/30 text-primary-foreground/70">{item.id}</Badge>
@@ -179,7 +180,63 @@ const FSD = () => {
         </div>
       </PitchSection>
 
-      {/* Lead Intelligence Module */}
+      {/* RFQ System — NEW MODULE */}
+      <PitchSection id="rfq">
+        <div className="space-y-8">
+          <div className="text-center space-y-3">
+            <Badge className="text-sm"><Gavel className="h-3 w-3 mr-1" /> Module: RFQ Engine</Badge>
+            <h2 className="text-4xl font-bold text-primary">Request for Quote System</h2>
+            <p className="text-muted-foreground">Core negotiation-first module — replaces public pricing with private RFQ flow</p>
+          </div>
+          <div className="space-y-4">
+            {[
+              { id: "FR-RFQ01", req: "Buyer can send inquiry to multiple sellers simultaneously from product pages or storefronts" },
+              { id: "FR-RFQ02", req: "RFQ form shall be multi-step: Product Selection → Quantity & Timeline → Message & Contact Details" },
+              { id: "FR-RFQ03", req: "Seller receives RFQ notification in CRM dashboard with buyer details and product interests" },
+              { id: "FR-RFQ04", req: "Seller responds privately — response visible only to that specific buyer" },
+              { id: "FR-RFQ05", req: "Platform tracks all RFQ interactions: sent, viewed, responded, response time, conversion" },
+              { id: "FR-RFQ06", req: "Buyer can view all received quotes in a comparison view (without revealing seller-to-seller)" },
+              { id: "FR-RFQ07", req: "Rate limiting: max 10 RFQs per buyer per day to prevent spam" },
+              { id: "FR-RFQ08", req: "RFQ analytics dashboard for admin: total RFQs, response rates, conversion funnel" },
+            ].map((item) => (
+              <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-muted/50">
+                <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5">{item.id}</Badge>
+                <span className="text-sm text-muted-foreground">{item.req}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </PitchSection>
+
+      {/* CRM Module — UPDATED */}
+      <PitchSection id="crm" dark>
+        <div className="space-y-8">
+          <div className="text-center space-y-3">
+            <Badge className="bg-accent text-primary text-sm"><BarChart3 className="h-3 w-3 mr-1" /> Module: Behavioral CRM</Badge>
+            <h2 className="text-4xl font-bold">Lead CRM with Behavioral Scoring</h2>
+          </div>
+          <div className="space-y-4">
+            {[
+              { id: "FR-CRM01", req: "CRM dashboard shall show all incoming RFQs with buyer info, product, quantity, and status" },
+              { id: "FR-CRM02", req: "Pipeline stages: New → Responded → Negotiation → Converted → Lost" },
+              { id: "FR-CRM03", req: "Status update dropdown for each lead with timestamp tracking" },
+              { id: "FR-CRM04", req: "Filter leads by date, product, status, and priority score" },
+              { id: "FR-CRM05", req: "Export leads to CSV for offline analysis" },
+              { id: "FR-CRM06", req: "Response time tracking per seller — displayed in admin analytics" },
+              { id: "FR-CRM07", req: "Seller performance metrics: response rate, avg response time, conversion rate" },
+              { id: "FR-CRM08", req: "Lead prioritization scoring: Hot (high qty + repeat buyer) / Warm (new buyer) / Cold (low engagement)" },
+              { id: "FR-CRM09", req: "Push notifications: 'New RFQ received', 'High-value buyer inquiry', 'Follow-up reminder'" },
+            ].map((item) => (
+              <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-primary-foreground/5">
+                <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5 border-primary-foreground/30 text-primary-foreground/70">{item.id}</Badge>
+                <span className="text-sm text-primary-foreground/70">{item.req}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </PitchSection>
+
+      {/* Lead Intelligence */}
       <PitchSection id="leads">
         <div className="space-y-8">
           <div className="text-center space-y-3">
@@ -188,12 +245,11 @@ const FSD = () => {
           </div>
           <div className="space-y-4">
             {[
-              { id: "FR-L01", req: "Lead packs page shall display available expo databases with exhibitor count, expo name, year, and pricing" },
+              { id: "FR-L01", req: "Lead packs page shall display expo databases with exhibitor count, expo name, year, and pricing" },
               { id: "FR-L02", req: "Each lead pack shall show a preview sample (first 5 entries) before purchase" },
-              { id: "FR-L03", req: "Pricing shall differentiate between MDDMA member price and non-member price" },
-              { id: "FR-L04", req: "Purchase flow: Select pack → Confirm details → Payment → Download Excel/CSV" },
-              { id: "FR-L05", req: "Lead pack data shall include company name, contact person, email, phone, products, and country" },
-              { id: "FR-L06", req: "Admin shall be able to create, edit, and deactivate lead packs" },
+              { id: "FR-L03", req: "Pricing differentiation between MDDMA member and non-member" },
+              { id: "FR-L04", req: "Purchase flow: Select → Confirm → Payment → Download Excel/CSV" },
+              { id: "FR-L05", req: "Admin can create, edit, and deactivate lead packs" },
             ].map((item) => (
               <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-muted/50">
                 <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5">{item.id}</Badge>
@@ -204,20 +260,23 @@ const FSD = () => {
         </div>
       </PitchSection>
 
-      {/* Advertising Module */}
-      <PitchSection id="advertising" dark>
+      {/* Admin Module */}
+      <PitchSection id="admin" dark>
         <div className="space-y-8">
           <div className="text-center space-y-3">
-            <Badge className="bg-accent text-primary text-sm"><Megaphone className="h-3 w-3 mr-1" /> Module: Advertising</Badge>
-            <h2 className="text-4xl font-bold">Advertising Platform</h2>
+            <Badge className="bg-accent text-primary text-sm"><Settings className="h-3 w-3 mr-1" /> Module: Admin Panel</Badge>
+            <h2 className="text-4xl font-bold">Admin Dashboard</h2>
           </div>
           <div className="space-y-4">
             {[
-              { id: "FR-A01", req: "Homepage shall display rotating banner advertisements with click-through URLs" },
-              { id: "FR-A02", req: "Directory pages shall support sidebar ad placements" },
-              { id: "FR-A03", req: "Ad scheduling: admin can set start date, end date, and rotation frequency" },
-              { id: "FR-A04", req: "Click tracking and impression counting for all ad placements" },
-              { id: "FR-A05", req: "Admin can upload ad creatives (image), set target URLs, and configure placement zones" },
+              { id: "FR-AD01", req: "Admin dashboard: total members, pending applications, active ads, RFQ volume, response rates" },
+              { id: "FR-AD02", req: "CRUD operations for member profiles with featured/sponsored toggle" },
+              { id: "FR-AD03", req: "CRUD for products: categories, variants, seller links, price ranges" },
+              { id: "FR-AD04", req: "RFQ engine monitoring: total RFQs, response rates, conversion funnel" },
+              { id: "FR-AD05", req: "Market signal management: update price trends, stock bands, demand indicators" },
+              { id: "FR-AD06", req: "Membership application queue with approve/reject/request-more-info workflow" },
+              { id: "FR-AD07", req: "Circular management: create, distribute via email and in-app" },
+              { id: "FR-AD08", req: "Ad management: upload banners, set schedules, view click performance" },
             ].map((item) => (
               <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-primary-foreground/5">
                 <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5 border-primary-foreground/30 text-primary-foreground/70">{item.id}</Badge>
@@ -228,77 +287,26 @@ const FSD = () => {
         </div>
       </PitchSection>
 
-      {/* Admin Panel Module */}
-      <PitchSection id="admin">
-        <div className="space-y-8">
-          <div className="text-center space-y-3">
-            <Badge className="text-sm"><Settings className="h-3 w-3 mr-1" /> Module: Admin Panel</Badge>
-            <h2 className="text-4xl font-bold text-primary">Admin Dashboard</h2>
-          </div>
-          <div className="space-y-4">
-            {[
-              { id: "FR-AD01", req: "Admin dashboard shall show summary stats: total members, pending applications, active ads, lead pack sales" },
-              { id: "FR-AD02", req: "CRUD operations for member profiles: create, read, update, delete, toggle featured/sponsored" },
-              { id: "FR-AD03", req: "CRUD operations for products: add categories, manage variants, link sellers" },
-              { id: "FR-AD04", req: "CRUD operations for lead packs: create packs, upload data, set pricing, activate/deactivate" },
-              { id: "FR-AD05", req: "Ad management: upload banners, configure placements, set schedules, view performance" },
-              { id: "FR-AD06", req: "Membership application queue: review, approve, reject, with email notifications" },
-              { id: "FR-AD07", req: "Circular management: create, distribute to members via email and in-app notifications" },
-            ].map((item) => (
-              <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-muted/50">
-                <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5">{item.id}</Badge>
-                <span className="text-sm text-muted-foreground">{item.req}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </PitchSection>
-
-      {/* Membership Module */}
-      <PitchSection id="membership" dark>
-        <div className="space-y-8">
-          <div className="text-center space-y-3">
-            <Badge className="bg-accent text-primary text-sm"><Shield className="h-3 w-3 mr-1" /> Module: Membership</Badge>
-            <h2 className="text-4xl font-bold">Membership Workflow</h2>
-          </div>
-          <div className="space-y-4">
-            {[
-              { id: "FR-M01", req: "Public-facing membership page shall display three tiers (Silver, Gold, Platinum) with feature comparison" },
-              { id: "FR-M02", req: "Online application form: company details, owner info, product categories, document uploads (GST cert, FSSAI, photos)" },
-              { id: "FR-M03", req: "Application status tracking: Submitted → Under Review → Approved/Rejected" },
-              { id: "FR-M04", req: "Tier selection during application with clear pricing and benefit breakdown" },
-              { id: "FR-M05", req: "Renewal workflow: automated reminders 30/15/7 days before expiry, online renewal form" },
-              { id: "FR-M06", req: "Admin can manually approve, reject, or request additional info on applications" },
-            ].map((item) => (
-              <div key={item.id} className="flex gap-3 items-start p-3 rounded-lg bg-primary-foreground/5">
-                <Badge variant="outline" className="text-xs font-mono shrink-0 mt-0.5 border-primary-foreground/30 text-primary-foreground/70">{item.id}</Badge>
-                <span className="text-sm text-primary-foreground/70">{item.req}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </PitchSection>
-
-      {/* UI/UX Requirements */}
-      <PitchSection id="uiux">
+      {/* Design Principles */}
+      <PitchSection id="principles">
         <div className="space-y-10">
           <div className="text-center space-y-3">
-            <Badge className="text-sm"><Smartphone className="h-3 w-3 mr-1" /> UI/UX Requirements</Badge>
-            <h2 className="text-4xl font-bold text-primary">Design & Experience</h2>
+            <Badge className="text-sm"><Brain className="h-3 w-3 mr-1" /> Platform Design Principles</Badge>
+            <h2 className="text-4xl font-bold text-primary">Behavioral Operating Principles</h2>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
-              { icon: Smartphone, title: "Responsive Design", desc: "All pages must render correctly on mobile (320px), tablet (768px), and desktop (1280px+) viewports" },
-              { icon: Printer, title: "Print Support", desc: "Key pages (directory, profiles, pitch) must be print-optimized with @media print styles" },
-              { icon: Eye, title: "Accessibility", desc: "WCAG 2.1 AA compliance: proper contrast ratios, alt text, keyboard navigation, semantic HTML" },
-              { icon: Globe, title: "SEO Optimized", desc: "Semantic HTML, meta tags, Open Graph, JSON-LD structured data for products and organization" },
-              { icon: Zap, title: "Performance", desc: "Lighthouse score 90+ on all metrics, lazy loading for images, code splitting for routes" },
-              { icon: Shield, title: "Brand Consistency", desc: "Navy blue & gold design system, consistent typography, heritage badges, corporate tone" },
+              { title: "Controlled Transparency", desc: "Show signals, not exact data", icon: Eye },
+              { title: "Negotiation-First Design", desc: "Replace price display with RFQ", icon: Gavel },
+              { title: "Trust Acceleration", desc: "Verification > price", icon: Shield },
+              { title: "Cognitive Simplicity", desc: "Reduce decision fatigue", icon: Brain },
+              { title: "Behavioral Nudging", desc: "Guide user actions intentionally", icon: Zap },
+              { title: "Platform Control", desc: "Structure and control market interactions", icon: Lock },
             ].map((item) => (
-              <Card key={item.title}>
+              <Card key={item.title} className="border-accent/20">
                 <CardContent className="p-5 space-y-2">
                   <item.icon className="h-6 w-6 text-accent" />
-                  <h3 className="font-semibold text-foreground">{item.title}</h3>
+                  <h3 className="font-semibold">{item.title}</h3>
                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </CardContent>
               </Card>
@@ -326,11 +334,10 @@ const FSD = () => {
               {[
                 { cat: "Performance", req: "Initial page load time", target: "< 3 seconds on 4G" },
                 { cat: "Performance", req: "Lighthouse performance score", target: "90+" },
+                { cat: "Security", req: "Price data protection", target: "RLS — never expose exact prices to unauthorized roles" },
+                { cat: "Security", req: "RFQ privacy", target: "Seller responses visible only to requesting buyer" },
                 { cat: "Security", req: "Authentication", target: "Email/password + OAuth" },
-                { cat: "Security", req: "Authorization", target: "Role-based access (RLS)" },
-                { cat: "Security", req: "Data encryption", target: "TLS 1.3 in transit" },
                 { cat: "SEO", req: "Meta tags & Open Graph", target: "All public pages" },
-                { cat: "SEO", req: "Structured data (JSON-LD)", target: "Products & Organization" },
                 { cat: "Availability", req: "Uptime SLA", target: "99.9%" },
               ].map((row, i) => (
                 <TableRow key={i} className="border-primary-foreground/10 hover:bg-primary-foreground/5">
@@ -341,48 +348,12 @@ const FSD = () => {
               ))}
             </TableBody>
           </Table>
-        </div>
-      </PitchSection>
-
-      {/* Demo Links */}
-      <PitchSection id="demos">
-        <div className="space-y-10">
-          <div className="text-center space-y-3">
-            <Badge className="text-sm"><Globe className="h-3 w-3 mr-1" /> Live Demos</Badge>
-            <h2 className="text-4xl font-bold text-primary">Working Prototypes</h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">Each module has a functional demo. Click to explore the live implementation.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[
-              { label: "Member Directory", path: "/directory", icon: Users, desc: "Search, filter, and browse 350+ member profiles" },
-              { label: "Product Catalog", path: "/products", icon: ShoppingBag, desc: "25+ categories with variants & seller links" },
-              { label: "Lead Intelligence", path: "/leads", icon: BarChart3, desc: "Expo databases with preview & purchase flow" },
-              { label: "Membership Plans", path: "/membership", icon: Shield, desc: "Three-tier membership with feature comparison" },
-              { label: "Admin Dashboard", path: "/admin", icon: Settings, desc: "Content management and analytics" },
-              { label: "Sales Pitch", path: "/pitch", icon: Megaphone, desc: "Full presentation deck for committee" },
-            ].map((item) => (
-              <Link key={item.path} to={item.path} className="block print:hidden">
-                <Card className="card-hover h-full">
-                  <CardContent className="p-5 space-y-2">
-                    <item.icon className="h-6 w-6 text-accent" />
-                    <h3 className="font-semibold text-foreground">{item.label}</h3>
-                    <p className="text-sm text-muted-foreground">{item.desc}</p>
-                    <span className="inline-flex items-center gap-1 text-accent text-sm font-medium">View Demo <ArrowRight className="h-3 w-3" /></span>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
           <div className="text-center pt-6 space-y-4">
-            <p className="text-muted-foreground text-sm">Related Documents</p>
             <div className="flex gap-3 justify-center flex-wrap print:hidden">
-              <Link to="/pitch"><Button variant="outline">← Pitch</Button></Link>
-              <Link to="/sow"><Button variant="outline">← SOW</Button></Link>
-              <Link to="/brd"><Button variant="outline">← BRD</Button></Link>
-              <Link to="/prd"><Button variant="outline">← PRD</Button></Link>
-              <Link to="/sdd"><Button variant="outline">SDD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
-              <Link to="/tsd"><Button variant="outline">TSD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
-              <Link to="/mvp-canvas"><Button variant="outline">MVP Canvas <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/brd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">← BRD</Button></Link>
+              <Link to="/prd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">← PRD</Button></Link>
+              <Link to="/sdd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">SDD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
+              <Link to="/tsd"><Button variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">TSD <ArrowRight className="h-3 w-3 ml-1" /></Button></Link>
             </div>
           </div>
         </div>
