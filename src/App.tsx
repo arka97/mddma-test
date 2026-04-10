@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RoleProvider } from "@/contexts/RoleContext";
+import { DocAuthProvider, PasswordGate } from "@/components/PasswordGate";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import Directory from "./pages/Directory";
@@ -39,42 +40,44 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <RoleProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/directory" element={<Directory />} />
-            <Route path="/directory/:slug" element={<MemberProfile />} />
-            <Route path="/store/:slug" element={<Storefront />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/products/:slug" element={<ProductPage />} />
-            <Route path="/broker" element={<Broker />} />
-            <Route path="/market" element={<Market />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="/leads" element={<LeadIntelligence />} />
-            <Route path="/membership" element={<MembershipPlans />} />
-            <Route path="/circulars" element={<Circulars />} />
-            <Route path="/forms" element={<Forms />} />
-            <Route path="/contact" element={<Forms />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/apply" element={<Apply />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/pitch" element={<SalesPitch />} />
-            <Route path="/sow" element={<SOW />} />
-            <Route path="/brd" element={<BRD />} />
-            <Route path="/prd" element={<PRD />} />
-            <Route path="/fsd" element={<FSD />} />
-            <Route path="/sdd" element={<SDD />} />
-            <Route path="/tsd" element={<TSD />} />
-            <Route path="/mvp-canvas" element={<MVPCanvas />} />
-            <Route path="/documents" element={<Documents />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <DocAuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/directory" element={<Directory />} />
+              <Route path="/directory/:slug" element={<MemberProfile />} />
+              <Route path="/store/:slug" element={<Storefront />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/products/:slug" element={<ProductPage />} />
+              <Route path="/broker" element={<Broker />} />
+              <Route path="/market" element={<Market />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/leads" element={<LeadIntelligence />} />
+              <Route path="/membership" element={<MembershipPlans />} />
+              <Route path="/circulars" element={<Circulars />} />
+              <Route path="/forms" element={<Forms />} />
+              <Route path="/contact" element={<Forms />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/apply" element={<Apply />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/pitch" element={<PasswordGate><SalesPitch /></PasswordGate>} />
+              <Route path="/sow" element={<PasswordGate><SOW /></PasswordGate>} />
+              <Route path="/brd" element={<PasswordGate><BRD /></PasswordGate>} />
+              <Route path="/prd" element={<PasswordGate><PRD /></PasswordGate>} />
+              <Route path="/fsd" element={<PasswordGate><FSD /></PasswordGate>} />
+              <Route path="/sdd" element={<PasswordGate><SDD /></PasswordGate>} />
+              <Route path="/tsd" element={<PasswordGate><TSD /></PasswordGate>} />
+              <Route path="/mvp-canvas" element={<PasswordGate><MVPCanvas /></PasswordGate>} />
+              <Route path="/documents" element={<PasswordGate><Documents /></PasswordGate>} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </DocAuthProvider>
       </RoleProvider>
     </TooltipProvider>
   </QueryClientProvider>
