@@ -54,11 +54,11 @@ const SOW = () => {
             <span className="gold-gradient-text">Statement of Work</span>
           </h1>
           <p className="text-xl sm:text-2xl text-primary-foreground/70 max-w-2xl mx-auto">
-            Engagement terms, deliverables, timeline, and payment schedule for the MDDMA Digital Trade Platform
+            Engagement terms for the MDDMA Behavioral Trade Operating System — a controlled negotiation marketplace
           </p>
           <div className="pt-4 text-sm text-primary-foreground/50 space-y-1">
             <p>Prepared for: Mumbai Dry Fruits & Dates Merchants Association</p>
-            <p>Document Version: 2.0 · April 2026</p>
+            <p>Document Version: 3.0 · April 2026</p>
           </div>
           <div className="flex gap-2 justify-center pt-2 flex-wrap print:hidden">
             <Link to="/pitch"><Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground/70 hover:text-primary-foreground cursor-pointer">← Pitch</Badge></Link>
@@ -87,8 +87,9 @@ const SOW = () => {
               This Statement of Work (SOW) defines the engagement between the development team and the Mumbai Dry Fruits & Dates Merchants Association (MDDMA) for the design, development, and deployment of a comprehensive B2B digital trade platform.
             </p>
             <p>
-              The platform will serve as a hybrid of <strong className="text-foreground">IndiaMART + Alibaba + LinkedIn</strong> — providing member discovery, commodity marketplace, broker network, lead CRM, market intelligence, trade community, and advertising capabilities for the Indian dry fruits industry.
+              This SOW defines the engagement for a <strong className="text-foreground">Behavioral Trade Operating System</strong> — a controlled negotiation marketplace with RFQ-based trade, behavioral UX design, and market intelligence signals for the Indian dry fruits industry.
             </p>
+            <p className="italic text-foreground">"This platform does not expose the market — it structures and controls it."</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
@@ -118,10 +119,10 @@ const SOW = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             {[
-              { title: "Public-Facing Platform", items: ["Responsive homepage with hero, stats & featured sections", "Verified member directory with search & filters", "Commodity marketplace with 25+ product categories", "Broker marketplace with supply/demand tabs", "Market intelligence dashboard with price trends", "Community forum preview with category structure"] },
-              { title: "Member Features", items: ["Role-based access (Guest, Free, Paid, Broker, Admin)", "Seller storefront with product catalog", "Lead CRM dashboard with pipeline management", "Trade inquiry system with WhatsApp integration", "Product bidding across member storefronts", "Membership application & renewal workflow"] },
-              { title: "Admin & Operations", items: ["Admin dashboard with analytics & moderation", "Circular/announcement management system", "Ad placement management with scheduling", "Member approval queue & verification", "Lead pack management & distribution", "Category & product CRUD operations"] },
-              { title: "Technical Delivery", items: ["React SPA with TypeScript & Tailwind CSS", "Supabase backend (Auth, DB, Storage, Functions)", "SEO optimization with meta tags & JSON-LD", "Mobile-responsive design across all pages", "Print-optimized document pages (PDF export)", "Role simulator for demo/testing purposes"] },
+              { title: "Public-Facing Platform", items: ["Responsive homepage with hero, stats & featured sections", "Verified member directory with search & filters", "Controlled negotiation marketplace (price ranges, stock bands, RFQ)", "Broker marketplace with supply/demand tabs", "Market intelligence dashboard with signals & trends", "Community forum preview with category structure"] },
+              { title: "Member Features", items: ["Role-based access (Guest, Free, Paid, Broker, Admin)", "Seller storefront with controlled product display", "Multi-seller RFQ aggregation engine", "Behavioral CRM with lead scoring (Hot/Warm/Cold)", "Price masking system for paid members", "Membership application & renewal workflow"] },
+              { title: "Behavioral Intelligence Layer", items: ["Price masking logic (exact → range transformation)", "Stock band calculator (qty → High/Medium/Low/On Order)", "Market signal generator (trend direction, demand score)", "RFQ routing engine with response tracking", "Behavioral UX nudges (anchoring, social proof, urgency)", "Broker neutralization — optional facilitator positioning"] },
+              { title: "Technical Delivery", items: ["React SPA with TypeScript & Tailwind CSS", "Supabase backend (Auth, DB, Storage, Functions)", "Behavioral intelligence middleware layer", "Mobile-responsive design across all pages", "Print-optimized document pages (PDF export)", "Role simulator for demo/testing purposes"] },
             ].map((group) => (
               <Card key={group.title} className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
                 <CardContent className="p-6 space-y-3">
@@ -166,12 +167,13 @@ const SOW = () => {
                 { id: "D-06", name: "Homepage & Navigation Layout", format: "Deployed web app", phase: "Phase 1" },
                 { id: "D-07", name: "Member Directory & Storefronts", format: "Deployed web app", phase: "Phase 1" },
                 { id: "D-08", name: "Commodity & Broker Marketplace", format: "Deployed web app", phase: "Phase 1" },
-                { id: "D-09", name: "Inquiry & Bidding System", format: "Deployed web app", phase: "Phase 2" },
-                { id: "D-10", name: "Lead CRM & Market Intelligence", format: "Deployed web app", phase: "Phase 2" },
+                { id: "D-09", name: "RFQ Engine & Price Masking System", format: "Deployed web app", phase: "Phase 2" },
+                { id: "D-10", name: "Behavioral CRM & Market Intelligence", format: "Deployed web app", phase: "Phase 2" },
                 { id: "D-11", name: "Admin Dashboard & RBAC", format: "Deployed web app", phase: "Phase 3" },
                 { id: "D-12", name: "Community Forum Integration", format: "Deployed web app", phase: "Phase 3" },
                 { id: "D-13", name: "Advertising & Revenue Modules", format: "Deployed web app", phase: "Phase 3" },
                 { id: "D-14", name: "UAT Sign-Off & Production Deploy", format: "Live at mddma.com", phase: "Phase 4" },
+                { id: "D-15", name: "Behavioral UX Layer (anchoring, nudges, signals)", format: "Integrated in platform", phase: "Phase 2" },
               ].map((row) => (
                 <TableRow key={row.id}>
                   <TableCell><Badge variant="outline" className="text-xs font-mono">{row.id}</Badge></TableCell>
@@ -197,8 +199,8 @@ const SOW = () => {
             {[
               { phase: "Phase 0", weeks: "Week 1–2", title: "Discovery & Documentation", color: "bg-accent/20", items: ["Stakeholder interviews & requirements gathering", "BRD, PRD, FRD, SDD, TSD documentation", "Design system & wireframing", "Project setup & architecture decisions"] },
               { phase: "Phase 1", weeks: "Week 3–6", title: "Foundation & Core Pages", color: "bg-accent/30", items: ["Homepage with all sections", "Member directory with search & filters", "Seller storefronts with product catalogs", "Commodity marketplace & broker listings", "Navigation & responsive layout"] },
-              { phase: "Phase 2", weeks: "Week 7–10", title: "Member Features & Intelligence", color: "bg-accent/40", items: ["Role-based access control (5 roles)", "Inquiry & bidding system", "Lead CRM dashboard with pipeline", "Market intelligence with charts", "Membership application workflow"] },
-              { phase: "Phase 3", weeks: "Week 11–14", title: "Admin, Revenue & Community", color: "bg-accent/50", items: ["Admin dashboard with analytics", "Advertising platform & management", "Community forum integration", "Circular distribution system", "Lead intelligence portal"] },
+              { phase: "Phase 2", weeks: "Week 7–10", title: "Behavioral Trade System", color: "bg-accent/40", items: ["RFQ engine & multi-seller routing", "Price masking system", "Stock band & market signal generation", "Behavioral CRM with lead scoring", "Market intelligence dashboard"] },
+              { phase: "Phase 3", weeks: "Week 11–14", title: "Admin, Revenue & Community", color: "bg-accent/50", items: ["Admin dashboard with RFQ analytics", "Advertising platform & management", "Community forum integration", "Behavioral UX layer (nudges, anchoring)", "Broker neutralization features"] },
               { phase: "Phase 4", weeks: "Week 15–16", title: "Testing & Launch", color: "bg-accent/60", items: ["End-to-end testing", "Performance optimization", "SEO & meta tag setup", "Production deployment", "User training & handover"] },
             ].map((p, i) => (
               <div key={p.phase} className="flex gap-4">
