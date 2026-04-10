@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
   Printer, ChevronDown, CheckCircle2, ArrowRight,
-  FileText, Users, ShoppingBag, BarChart3, Megaphone,
+  FileText, Users, ShoppingBag, BarChart3, Megaphone, AlertTriangle,
   Shield, Target, Gavel, TrendingUp, MessageSquare,
   UserCheck, Eye, Settings, Briefcase, Globe, Brain, Lock, Zap
 } from "lucide-react";
