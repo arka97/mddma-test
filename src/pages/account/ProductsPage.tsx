@@ -103,8 +103,8 @@ const ProductsPage = () => {
       price_max: editing.price_max ?? null,
       market_avg_price: editing.market_avg_price ?? null,
       unit: editing.unit ?? "kg",
-      stock_band: editing.stock_band ?? "medium",
-      trend_direction: editing.trend_direction ?? "stable",
+      stock_band: (editing.stock_band ?? "medium") as "high" | "medium" | "low" | "on_order",
+      trend_direction: (editing.trend_direction ?? "stable") as "rising" | "stable" | "falling",
       is_hidden: !!editing.is_hidden,
     };
 
