@@ -148,6 +148,20 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
             </div>
           )}
 
+          {user && (
+            <div className="mb-4 p-3 rounded-lg border bg-muted/30 text-sm flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="text-muted-foreground">Your trust level:</span>
+                <BuyerTrustBadge tier={tier} score={score} compact />
+              </div>
+              {tier !== "gst" && (
+                <Button asChild size="sm" variant="ghost" className="h-7 text-xs">
+                  <Link to="/account/verify"><ShieldCheck className="h-3 w-3 mr-1" /> Verify · {dailyLimit}/day</Link>
+                </Button>
+              )}
+            </div>
+          )}
+
           {step === 0 && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
