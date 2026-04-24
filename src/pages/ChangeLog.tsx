@@ -53,9 +53,9 @@ const Decision = ({
 const Achievement = ({ done, label }: { done: boolean; label: string }) => (
   <div className="flex items-start gap-2 text-sm">
     {done ? (
-      <CheckCircle2 className="h-4 w-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+      <CheckCircle2 className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
     ) : (
-      <Clock className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+      <Clock className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
     )}
     <span className={done ? "text-foreground" : "text-muted-foreground"}>{label}</span>
   </div>
