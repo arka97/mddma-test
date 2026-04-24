@@ -161,35 +161,7 @@ const Admin = () => {
               </Card>
             </TabsContent>
 
-            {/* Lead Packs Tab */}
-            <TabsContent value="leads">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Lead Pack Management</CardTitle>
-                    <Button size="sm" className="bg-accent hover:bg-accent/90 text-primary" onClick={() => showToast("Upload Lead Pack")}>
-                      <Upload className="h-4 w-4 mr-1" /> Upload Pack
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {sampleLeadPacks.map((lp) => (
-                      <div key={lp.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                        <div>
-                          <p className="font-medium text-foreground text-sm">{lp.title}</p>
-                          <p className="text-xs text-muted-foreground">{lp.format} · {lp.recordCount} records · ₹{lp.price.toLocaleString()}</p>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => showToast(`Edit ${lp.title}`)}><Edit className="h-3 w-3" /></Button>
-                          <Button variant="ghost" size="sm" onClick={() => showToast(`Delete ${lp.title}`)}><Trash2 className="h-3 w-3" /></Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+            {/* Lead Packs tab removed — module deprecated per locked decision BIZ-001 */}
 
             {/* Ads Tab */}
             <TabsContent value="ads">
