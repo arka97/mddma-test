@@ -90,6 +90,7 @@ const App = () => (
                 <Route path="/tsd" element={<PasswordGate><TSD /></PasswordGate>} />
                 <Route path="/mvp-canvas" element={<PasswordGate><MVPCanvas /></PasswordGate>} />
                 <Route path="/documents" element={<PasswordGate><Documents /></PasswordGate>} />
+                <Route path="/changelog" element={<PasswordGate><ChangeLog /></PasswordGate>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
