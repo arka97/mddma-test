@@ -32,7 +32,7 @@ const Admin = () => {
             Admin Panel
           </h1>
           <p className="text-primary-foreground/70 text-sm">
-            Manage members, products, leads, and advertising (Demo Mode)
+            Manage members, products, and advertising (Demo Mode)
           </p>
         </div>
       </section>
