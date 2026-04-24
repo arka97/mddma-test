@@ -264,7 +264,6 @@ const TSD = () => {
                 { path: "/market", comp: "Market", desc: "Market intelligence dashboard", auth: "Public" },
                 { path: "/dashboard", comp: "Dashboard", desc: "Lead CRM dashboard", auth: "Member" },
                 { path: "/community", comp: "Community", desc: "Trade community forum preview", auth: "Public" },
-                { path: "/leads", comp: "LeadIntelligence", desc: "Lead pack marketplace", auth: "Public" },
                 { path: "/membership", comp: "MembershipPlans", desc: "Tier comparison & application", auth: "Public" },
                 { path: "/circulars", comp: "Circulars", desc: "Association circulars & announcements", auth: "Member" },
                 { path: "/forms", comp: "Forms", desc: "Contact & inquiry forms", auth: "Public" },
