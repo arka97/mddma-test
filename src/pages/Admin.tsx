@@ -64,7 +64,6 @@ const Admin = () => {
             <TabsList className="mb-4 flex flex-wrap gap-1">
               <TabsTrigger value="members">Members</TabsTrigger>
               <TabsTrigger value="products">Products</TabsTrigger>
-              <TabsTrigger value="leads">Lead Packs</TabsTrigger>
               <TabsTrigger value="ads">Banner Ads</TabsTrigger>
               <TabsTrigger value="featured">Featured</TabsTrigger>
             </TabsList>
