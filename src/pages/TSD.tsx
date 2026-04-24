@@ -114,7 +114,6 @@ const TSD = () => {
 │   │   ├── Market (Intelligence Dashboard)
 │   │   ├── Dashboard (Lead CRM)
 │   │   ├── Community (Forum Preview)
-│   │   ├── LeadIntelligence
 │   │   ├── MembershipPlans
 │   │   ├── Circulars / Forms / Apply
 │   │   ├── Admin
