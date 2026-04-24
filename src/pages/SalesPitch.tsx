@@ -117,16 +117,15 @@ const SalesPitch = () => {
         <div className="space-y-10">
           <div className="text-center space-y-3">
             <Badge className="bg-accent text-primary text-sm">The Solution</Badge>
-            <h2 className="text-4xl font-bold">Five Core Modules</h2>
+            <h2 className="text-4xl font-bold">Four Core Modules</h2>
             <p className="text-primary-foreground/70 max-w-xl mx-auto">A comprehensive digital platform built specifically for MDDMA's needs.</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { icon: Users, title: "Verified Member Directory", desc: "Searchable, filterable directory with verification badges, contact details, and company profiles.", link: "/directory" },
-              { icon: ShoppingBag, title: "Product Discovery Catalog", desc: "25+ product pages with variants, packaging info, verified sellers, and affiliate retail links.", link: "/products" },
-              { icon: BarChart3, title: "Lead Intelligence Portal", desc: "Curated expo exhibitor databases from Gulfood, SIAL, Anuga, and more.", link: "/leads" },
+              { icon: ShoppingBag, title: "Product Discovery Catalog", desc: "Controlled-transparency catalog with price ranges, stock bands, and demand signals.", link: "/products" },
               { icon: Megaphone, title: "Advertising Platform", desc: "Homepage banners, directory placements, and sponsored member listings for revenue generation.", link: "/" },
-              { icon: Settings, title: "Admin Dashboard", desc: "Manage members, products, ads, and lead packs — designed for office staff.", link: "/admin" },
+              { icon: Settings, title: "Admin Dashboard", desc: "Manage members, products, and ads — designed for office staff.", link: "/admin" },
             ].map((item) => (
               <Card key={item.title} className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
                 <CardContent className="p-6 space-y-3">

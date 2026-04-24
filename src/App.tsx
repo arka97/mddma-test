@@ -18,7 +18,7 @@ import Broker from "./pages/Broker";
 import Market from "./pages/Market";
 import Dashboard from "./pages/Dashboard";
 import Community from "./pages/Community";
-import LeadIntelligence from "./pages/LeadIntelligence";
+
 import MembershipPlans from "./pages/MembershipPlans";
 import Circulars from "./pages/Circulars";
 import Forms from "./pages/Forms";
@@ -64,7 +64,6 @@ const App = () => (
                 <Route path="/market" element={<Market />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/community" element={<Community />} />
-                <Route path="/leads" element={<LeadIntelligence />} />
                 <Route path="/membership" element={<MembershipPlans />} />
                 <Route path="/circulars" element={<Circulars />} />
                 <Route path="/forms" element={<Forms />} />

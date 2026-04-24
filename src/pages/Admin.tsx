@@ -12,10 +12,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Users, FileText, Image, Tag, ShieldCheck, Database, Megaphone, Star,
+  Users, FileText, Image, Tag, ShieldCheck, Megaphone, Star,
   Plus, Edit, Trash2, Upload, Eye,
 } from "lucide-react";
-import { sampleMembers, sampleProducts, sampleLeadPacks, sampleAdvertisers } from "@/data/sampleData";
+import { sampleMembers, sampleProducts, sampleAdvertisers } from "@/data/sampleData";
 
 const Admin = () => {
   const { toast } = useToast();
@@ -32,7 +32,7 @@ const Admin = () => {
             Admin Panel
           </h1>
           <p className="text-primary-foreground/70 text-sm">
-            Manage members, products, leads, and advertising (Demo Mode)
+            Manage members, products, and advertising (Demo Mode)
           </p>
         </div>
       </section>
@@ -40,11 +40,10 @@ const Admin = () => {
       <section className="py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {[
               { label: "Members", value: sampleMembers.length, icon: Users },
               { label: "Products", value: sampleProducts.length, icon: Tag },
-              { label: "Lead Packs", value: sampleLeadPacks.length, icon: Database },
               { label: "Advertisers", value: sampleAdvertisers.length, icon: Megaphone },
             ].map(({ label, value, icon: Icon }) => (
               <Card key={label} className="bg-card border-border">
@@ -65,7 +64,6 @@ const Admin = () => {
             <TabsList className="mb-4 flex flex-wrap gap-1">
               <TabsTrigger value="members">Members</TabsTrigger>
               <TabsTrigger value="products">Products</TabsTrigger>
-              <TabsTrigger value="leads">Lead Packs</TabsTrigger>
               <TabsTrigger value="ads">Banner Ads</TabsTrigger>
               <TabsTrigger value="featured">Featured</TabsTrigger>
             </TabsList>
@@ -163,35 +161,7 @@ const Admin = () => {
               </Card>
             </TabsContent>
 
-            {/* Lead Packs Tab */}
-            <TabsContent value="leads">
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Lead Pack Management</CardTitle>
-                    <Button size="sm" className="bg-accent hover:bg-accent/90 text-primary" onClick={() => showToast("Upload Lead Pack")}>
-                      <Upload className="h-4 w-4 mr-1" /> Upload Pack
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {sampleLeadPacks.map((lp) => (
-                      <div key={lp.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                        <div>
-                          <p className="font-medium text-foreground text-sm">{lp.title}</p>
-                          <p className="text-xs text-muted-foreground">{lp.format} · {lp.recordCount} records · ₹{lp.price.toLocaleString()}</p>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button variant="ghost" size="sm" onClick={() => showToast(`Edit ${lp.title}`)}><Edit className="h-3 w-3" /></Button>
-                          <Button variant="ghost" size="sm" onClick={() => showToast(`Delete ${lp.title}`)}><Trash2 className="h-3 w-3" /></Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+            {/* Lead Packs tab removed — module deprecated per locked decision BIZ-001 */}
 
             {/* Ads Tab */}
             <TabsContent value="ads">
