@@ -41,6 +41,7 @@ import CompanyPage from "./pages/account/CompanyPage";
 import ProductsPage from "./pages/account/ProductsPage";
 import RFQInbox from "./pages/account/RFQInbox";
 import AdminModeration from "./pages/account/AdminModeration";
+import VerificationCenter from "./pages/account/VerificationCenter";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => (
                 <Route path="/account/company" element={<ProtectedRoute><CompanyPage /></ProtectedRoute>} />
                 <Route path="/account/products" element={<ProtectedRoute><ProductsPage /></ProtectedRoute>} />
                 <Route path="/account/rfqs" element={<ProtectedRoute><RFQInbox /></ProtectedRoute>} />
+                <Route path="/account/verify" element={<ProtectedRoute><VerificationCenter /></ProtectedRoute>} />
                 <Route path="/account/moderation" element={<ProtectedRoute requireRole="admin"><AdminModeration /></ProtectedRoute>} />
 
                 {/* Document vault */}
