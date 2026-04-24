@@ -26,9 +26,9 @@ const Decision = ({
   implication: string; icon?: any;
 }) => {
   const statusMap = {
-    locked: { label: "✅ Locked", cls: "bg-emerald-500/10 text-emerald-700 border-emerald-500/30" },
-    deferred: { label: "🟡 Deferred", cls: "bg-amber-500/10 text-amber-700 border-amber-500/30" },
-    open: { label: "🔴 Open", cls: "bg-red-500/10 text-red-700 border-red-500/30" },
+    locked: { label: "✅ Locked", cls: "bg-accent/10 text-accent border-accent/30" },
+    deferred: { label: "🟡 Deferred", cls: "bg-muted text-muted-foreground border-border" },
+    open: { label: "🔴 Open", cls: "bg-destructive/10 text-destructive border-destructive/30" },
   };
   const s = statusMap[status];
   return (
