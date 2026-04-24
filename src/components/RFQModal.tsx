@@ -7,10 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { Send, ArrowRight, ArrowLeft, X, Loader2, LogIn } from "lucide-react";
+import { Send, ArrowRight, ArrowLeft, X, Loader2, LogIn, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Link, useNavigate } from "react-router-dom";
+import { BuyerTrustBadge, VerificationTier } from "@/components/trust/BuyerTrustBadge";
+
+const DAILY_LIMITS: Record<VerificationTier, number> = {
+  unverified: 1,
+  email: 3,
+  company: 10,
+  gst: 999,
+};
 
 interface RFQModalProps {
   productName: string;
@@ -47,6 +55,10 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
   const progress = ((step + 1) / STEPS.length) * 100;
   const updateField = (field: string, value: string | boolean) => setFormData((p) => ({ ...p, [field]: value }));
 
+  const tier = ((profile as any)?.verification_tier ?? "unverified") as VerificationTier;
+  const score = (profile as any)?.buyer_reputation_score ?? 0;
+  const dailyLimit = DAILY_LIMITS[tier];
+
   const handleSubmit = async () => {
     if (!user) {
       toast({ title: "Please sign in to send an RFQ", variant: "destructive" });
@@ -55,6 +67,23 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
     }
     if (!companyId) {
       toast({ title: "Missing seller info", description: "Could not identify the seller for this product.", variant: "destructive" });
+      return;
+    }
+
+    // Tier-based daily quota check
+    const since = new Date(); since.setHours(0, 0, 0, 0);
+    const { count } = await supabase
+      .from("rfqs")
+      .select("id", { count: "exact", head: true })
+      .eq("buyer_id", user.id)
+      .gte("created_at", since.toISOString());
+    if ((count ?? 0) >= dailyLimit) {
+      toast({
+        title: `Daily RFQ limit reached (${dailyLimit})`,
+        description: "Verify your account to unlock more RFQs.",
+        variant: "destructive",
+      });
+      navigate("/account/verify");
       return;
     }
 
@@ -73,6 +102,8 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
       buyer_company: formData.company || null,
       buyer_phone: formData.phone || null,
       buyer_email: formData.email || null,
+      // priority_score scales with buyer reputation — sellers see high-rep buyers first
+      priority_score: score,
       status: "new",
     });
     setSubmitting(false);
