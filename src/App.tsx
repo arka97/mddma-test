@@ -34,6 +34,7 @@ import SDD from "./pages/SDD";
 import TSD from "./pages/TSD";
 import MVPCanvas from "./pages/MVPCanvas";
 import Documents from "./pages/Documents";
+import ChangeLog from "./pages/ChangeLog";
 import NotFound from "./pages/NotFound";
 import ProfilePage from "./pages/account/ProfilePage";
 import CompanyPage from "./pages/account/CompanyPage";
