@@ -12,10 +12,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Users, FileText, Image, Tag, ShieldCheck, Database, Megaphone, Star,
+  Users, FileText, Image, Tag, ShieldCheck, Megaphone, Star,
   Plus, Edit, Trash2, Upload, Eye,
 } from "lucide-react";
-import { sampleMembers, sampleProducts, sampleLeadPacks, sampleAdvertisers } from "@/data/sampleData";
+import { sampleMembers, sampleProducts, sampleAdvertisers } from "@/data/sampleData";
 
 const Admin = () => {
   const { toast } = useToast();
