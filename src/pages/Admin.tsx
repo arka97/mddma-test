@@ -40,11 +40,10 @@ const Admin = () => {
       <section className="py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             {[
               { label: "Members", value: sampleMembers.length, icon: Users },
               { label: "Products", value: sampleProducts.length, icon: Tag },
-              { label: "Lead Packs", value: sampleLeadPacks.length, icon: Database },
               { label: "Advertisers", value: sampleAdvertisers.length, icon: Megaphone },
             ].map(({ label, value, icon: Icon }) => (
               <Card key={label} className="bg-card border-border">
