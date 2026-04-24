@@ -34,6 +34,7 @@ import SDD from "./pages/SDD";
 import TSD from "./pages/TSD";
 import MVPCanvas from "./pages/MVPCanvas";
 import Documents from "./pages/Documents";
+import ChangeLog from "./pages/ChangeLog";
 import NotFound from "./pages/NotFound";
 import ProfilePage from "./pages/account/ProfilePage";
 import CompanyPage from "./pages/account/CompanyPage";
@@ -89,6 +90,7 @@ const App = () => (
                 <Route path="/tsd" element={<PasswordGate><TSD /></PasswordGate>} />
                 <Route path="/mvp-canvas" element={<PasswordGate><MVPCanvas /></PasswordGate>} />
                 <Route path="/documents" element={<PasswordGate><Documents /></PasswordGate>} />
+                <Route path="/changelog" element={<PasswordGate><ChangeLog /></PasswordGate>} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
