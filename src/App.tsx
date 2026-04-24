@@ -18,7 +18,7 @@ import Broker from "./pages/Broker";
 import Market from "./pages/Market";
 import Dashboard from "./pages/Dashboard";
 import Community from "./pages/Community";
-import LeadIntelligence from "./pages/LeadIntelligence";
+
 import MembershipPlans from "./pages/MembershipPlans";
 import Circulars from "./pages/Circulars";
 import Forms from "./pages/Forms";
