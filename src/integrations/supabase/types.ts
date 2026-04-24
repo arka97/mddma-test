@@ -195,32 +195,62 @@ export type Database = {
         Row: {
           avatar_url: string | null
           bio: string | null
+          buyer_reputation_score: number
+          company_name: string | null
+          company_verified_at: string | null
           created_at: string
           designation: string | null
+          email_verified_at: string | null
           full_name: string | null
+          gst_verified_at: string | null
+          gstin: string | null
           id: string
+          is_broker: boolean
           phone: string | null
+          rfq_count: number
+          rfq_response_rate: number
           updated_at: string
+          verification_tier: Database["public"]["Enums"]["verification_tier"]
         }
         Insert: {
           avatar_url?: string | null
           bio?: string | null
+          buyer_reputation_score?: number
+          company_name?: string | null
+          company_verified_at?: string | null
           created_at?: string
           designation?: string | null
+          email_verified_at?: string | null
           full_name?: string | null
+          gst_verified_at?: string | null
+          gstin?: string | null
           id: string
+          is_broker?: boolean
           phone?: string | null
+          rfq_count?: number
+          rfq_response_rate?: number
           updated_at?: string
+          verification_tier?: Database["public"]["Enums"]["verification_tier"]
         }
         Update: {
           avatar_url?: string | null
           bio?: string | null
+          buyer_reputation_score?: number
+          company_name?: string | null
+          company_verified_at?: string | null
           created_at?: string
           designation?: string | null
+          email_verified_at?: string | null
           full_name?: string | null
+          gst_verified_at?: string | null
+          gstin?: string | null
           id?: string
+          is_broker?: boolean
           phone?: string | null
+          rfq_count?: number
+          rfq_response_rate?: number
           updated_at?: string
+          verification_tier?: Database["public"]["Enums"]["verification_tier"]
         }
         Relationships: []
       }
@@ -369,6 +399,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_buyer_reputation_tier: { Args: { _score: number }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -388,6 +419,7 @@ export type Database = {
         | "closed"
       stock_band: "high" | "medium" | "low" | "on_order"
       trend_direction: "rising" | "stable" | "falling"
+      verification_tier: "unverified" | "email" | "company" | "gst"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -526,6 +558,7 @@ export const Constants = {
       ],
       stock_band: ["high", "medium", "low", "on_order"],
       trend_direction: ["rising", "stable", "falling"],
+      verification_tier: ["unverified", "email", "company", "gst"],
     },
   },
 } as const

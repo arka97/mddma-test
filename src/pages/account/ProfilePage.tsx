@@ -6,12 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Loader2, Upload, User as UserIcon } from "lucide-react";
+import { Loader2, Upload, User as UserIcon, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadFile } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "react-router-dom";
+import { BuyerTrustBadge, VerificationTier } from "@/components/trust/BuyerTrustBadge";
 
 const ProfilePage = () => {
   const { user, profile, refresh } = useAuth();
@@ -57,7 +58,18 @@ const ProfilePage = () => {
     <Layout>
       <section className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-          <h1 className="text-3xl font-bold mb-6">Your Profile</h1>
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+            <h1 className="text-3xl font-bold">Your Profile</h1>
+            <div className="flex items-center gap-2">
+              <BuyerTrustBadge
+                tier={((profile as any)?.verification_tier ?? "unverified") as VerificationTier}
+                score={(profile as any)?.buyer_reputation_score ?? 0}
+              />
+              <Button asChild size="sm" variant="outline">
+                <Link to="/account/verify"><ShieldCheck className="h-4 w-4 mr-1" /> Verify</Link>
+              </Button>
+            </div>
+          </div>
           <Card>
             <CardHeader>
               <CardTitle>Personal Information</CardTitle>
