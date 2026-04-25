@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { sampleMembers } from "@/data/sampleData";
 import { productListings } from "@/data/productListings";
 import { useRole } from "@/contexts/RoleContext";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
-  ArrowLeft, Globe, Calendar, Package, Send,
+  ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye,
 } from "lucide-react";
 import { StockBadge, PriceRange, TrendBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
@@ -17,8 +18,12 @@ import { RFQModal } from "@/components/RFQModal";
 const Storefront = () => {
   const { slug } = useParams();
   const { canAccess } = useRole();
+  const { company: ownCompany, hasRole } = useAuth();
   const [rfqProduct, setRfqProduct] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
   const member = sampleMembers.find((m) => m.slug === slug);
+  const isOwner = !!ownCompany && ownCompany.slug === slug;
+  const canManage = isOwner || hasRole("admin");
 
   if (!member) {
     return (
@@ -36,6 +41,40 @@ const Storefront = () => {
 
   return (
     <Layout>
+      {/* Owner / Admin toolbar */}
+      {canManage && !previewMode && (
+        <div className="bg-accent/10 border-b border-accent/30">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2 text-xs">
+              <ShieldCheck className="h-3.5 w-3.5 text-accent" />
+              <span className="font-medium text-foreground">
+                {isOwner ? "You're viewing your own storefront" : "Admin moderation view"}
+              </span>
+              <span className="text-muted-foreground">— buyers see this layout, with prices masked.</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" onClick={() => setPreviewMode(true)}>
+                <Eye className="h-3 w-3 mr-1" /> View as buyer
+              </Button>
+              <Button size="sm" asChild>
+                <Link to="/account/company"><Pencil className="h-3 w-3 mr-1" /> Edit company</Link>
+              </Button>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/account/products"><Package className="h-3 w-3 mr-1" /> Edit catalog</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+      {previewMode && canManage && (
+        <div className="bg-muted border-b border-border">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Buyer preview mode</span>
+            <Button size="sm" variant="ghost" className="h-7" onClick={() => setPreviewMode(false)}>Exit preview</Button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <section className="bg-primary py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
