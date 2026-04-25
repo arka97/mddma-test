@@ -92,21 +92,16 @@ export function Header() {
             )}
 
             {user ? <UserMenu /> : (
-              <>
-                <Button variant="ghost" size="sm" className="text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10 h-8 text-xs" asChild>
-                  <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Sign In</Link>
-                </Button>
-                <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
-                  <Link to="/login">Get Started</Link>
-                </Button>
-              </>
+              <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
+                <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
+              </Button>
             )}
           </div>
 
           <div className="lg:hidden flex items-center gap-2">
             {user ? <UserMenu /> : (
               <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
-                <Link to="/login">Sign In</Link>
+                <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
               </Button>
             )}
             <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-primary-foreground p-2">
