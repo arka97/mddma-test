@@ -330,6 +330,23 @@ const ChangeLog = () => {
           <Decision id="GTM-004" status="open"
             title="Buyer acquisition: Unbudgeted gap identified"
             implication="No buyer acquisition budget or channels defined. Must allocate ₹50K–₹1L for Google Ads (buyer keywords) and MDDMA office-led buyer email invites." />
+
+          <h3 className="text-lg font-semibold text-primary pt-6">G. CRUD Ownership & Content Operations (v3.1.1)</h3>
+          <Decision id="CRUD-001" status="locked"
+            title="Single Login button replaces dual Sign In + Get Started"
+            implication="Header CTA unified to one 'Login' button with LogIn icon. Reduces choice overload and aligns with Hick's Law on the marketing nav. ✅ Implemented." />
+          <Decision id="CRUD-002" status="locked"
+            title="Sellers can view & manage their own /store/:slug"
+            implication="Owner Toolbar surfaces on the public storefront when slug matches the logged-in company. Provides 'View as buyer' preview, 'Edit company', and 'Edit catalog' shortcuts. Admins inherit the same toolbar via role check. ✅ Implemented." />
+          <Decision id="CRUD-003" status="locked"
+            title="Product Variants table introduced (SKU-level CRUD)"
+            implication="New product_variants table holds grade, packaging, MOQ, price band, stock band, lead time per SKU. Sellers CRUD via /account/products → Variants. Admins inherit via RLS. Buyers will RFQ at the variant level in Phase 2. ✅ Schema + UI shipped." />
+          <Decision id="CRUD-004" status="locked"
+            title="Admin product moderation: full CRUD with seller attribution"
+            implication="Admin /account/moderation now exposes feature, hide, delete, view-on-site, and shows seller name per product row. Removes the dependency on developers for catalog hygiene. ✅ Implemented." />
+          <Decision id="CMS-001" status="deferred"
+            title="Static-page CMS (About, Membership, Pitch) → Phase 2"
+            implication="Marketing copy for static pages stays in code for v3.1.1. A page_blocks JSON CMS will be added in Phase 2 once dynamic-entity CRUD has been validated with the Pilot 30." />
         </Section>
 
         {/* Gap Register */}
