@@ -67,8 +67,8 @@ const ChangeLog = () => {
       {/* Header */}
       <div className="bg-primary text-primary-foreground py-12 print:py-6">
         <div className="max-w-5xl mx-auto px-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <Badge className="bg-accent text-primary font-semibold">v3.1 · April 2026</Badge>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className="bg-accent text-primary font-semibold">v3.1.1 · April 2026</Badge>
             <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground">
               Supersedes v3.0 docs
             </Badge>
@@ -88,7 +88,34 @@ const ChangeLog = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-12">
-        {/* Executive Summary */}
+        {/* v3.1.1 Recent Updates */}
+        <Section title="0. v3.1.1 Recent Updates (CRUD Ownership Pass)" id="v311">
+          <Card className="border-accent/40 bg-accent/5">
+            <CardContent className="p-5 space-y-3">
+              <p className="text-sm text-foreground">
+                <strong>Goal:</strong> make every dynamic entity editable by the right role so the
+                MDDMA team is never blocked on a developer for content changes.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-2 text-sm">
+                <Achievement done label="Header unified: single 'Login' button replaces Sign In + Get Started" />
+                <Achievement done label="Sellers can view & edit their own /store/:slug (Owner Toolbar + buyer preview)" />
+                <Achievement done label="Admins inherit storefront moderation toolbar via RLS + role check" />
+                <Achievement done label="Product Variants table live (SKU, grade, packaging, MOQ, price band, stock band, lead time)" />
+                <Achievement done label="Sellers CRUD variants under each parent product from /account/products" />
+                <Achievement done label="Admin product moderation: feature, hide, delete, link to seller, view on site" />
+                <Achievement done={false} label="CMS for static pages (About, Membership, Pitch) — Phase 2, see CMS-001" />
+              </div>
+              <p className="text-xs text-muted-foreground pt-2 border-t border-border">
+                CRUD Ownership Matrix · <strong>Admin</strong>: all companies, all products, all variants, all RFQs, user roles ·
+                <strong> Seller</strong>: own company, own products, own variants, RFQs to their company ·
+                <strong> Buyer</strong>: own profile, own RFQs, own draft state ·
+                <strong> Guest</strong>: read-only browse.
+              </p>
+            </CardContent>
+          </Card>
+        </Section>
+
+
         <Section title="1. Executive Summary" id="summary">
           <div className="grid sm:grid-cols-2 gap-3">
             {[
