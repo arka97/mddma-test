@@ -17,6 +17,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { MapPin, Flame, Users } from "lucide-react";
 import { StockBadge, PriceRange, TrendBadge, DemandIndicator } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
+import { RecencyCue, LiveViewersCue, PriceAnchorCue, ScarcityCue, InquiryProofCue, ReciprocityChip } from "@/components/behavioral/BehavioralCues";
 
 const origins = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
 
@@ -164,20 +165,20 @@ const Products = () => {
                         <DemandIndicator level={listing.demandScore} />
                       </div>
 
-                      {/* Social proof */}
-                      {listing.inquiryCount > 5 && (
-                        <p className="text-[10px] text-muted-foreground mb-2 flex items-center gap-1">
-                          <Users className="h-3 w-3" /> {listing.inquiryCount} inquiries this week
-                        </p>
-                      )}
+                      {/* Anchoring + recency */}
+                      <div className="flex items-center justify-between mb-1.5">
+                        <PriceAnchorCue listing={listing} />
+                        <RecencyCue dateStr={listing.listingDate} />
+                      </div>
 
-                      {/* Loss aversion */}
-                      {listing.stockBand === "low" && (
-                        <p className="text-[10px] text-red-600 font-medium mb-2">⚠️ Limited stock — request price now</p>
-                      )}
-                      {listing.demandScore === "high" && listing.stockBand !== "low" && (
-                        <p className="text-[10px] text-orange-600 font-medium mb-2">🔥 High demand this week</p>
-                      )}
+                      {/* Loss aversion / scarcity */}
+                      <div className="mb-1.5"><ScarcityCue listing={listing} /></div>
+
+                      {/* Social proof */}
+                      <div className="flex items-center justify-between mb-2">
+                        <InquiryProofCue count={listing.inquiryCount} />
+                        <LiveViewersCue id={listing.id} base={listing.inquiryCount} />
+                      </div>
 
                       <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                         <Badge variant="outline" className="text-xs">{listing.origin}</Badge>
@@ -189,14 +190,16 @@ const Products = () => {
                           <Link to={`/store/${seller.slug}`} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-accent">
                             <MapPin className="h-3 w-3" /> {seller.firmName}
                           </Link>
-                          {/* Von Restorff: visually distinct CTA — Fitts's Law: large target */}
-                          <Button
-                            size="sm"
-                            className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                            onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
-                          >
-                            Request Best Price
-                          </Button>
+                          <div className="flex flex-col items-end gap-0.5">
+                            <Button
+                              size="sm"
+                              className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                              onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
+                            >
+                              Request Best Price
+                            </Button>
+                            <ReciprocityChip>No obligation</ReciprocityChip>
+                          </div>
                         </div>
                       )}
                     </CardContent>
