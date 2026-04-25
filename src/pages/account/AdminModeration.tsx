@@ -4,17 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 
 const AdminModeration = () => {
   const { hasRole, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const [companies, setCompanies] = useState<{ id: string; name: string; slug: string; is_verified: boolean; is_hidden: boolean; city: string | null; logo_url: string | null }[]>([]);
-  const [products, setProducts] = useState<{ id: string; name: string; is_hidden: boolean; company_id: string }[]>([]);
+  const [products, setProducts] = useState<{ id: string; name: string; slug: string; is_hidden: boolean; is_featured: boolean; company_id: string; image_url: string | null }[]>([]);
   const [users, setUsers] = useState<{ id: string; full_name: string | null; avatar_url: string | null; roles: string[] }[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +22,7 @@ const AdminModeration = () => {
     setLoading(true);
     const [{ data: c }, { data: p }, { data: prof }, { data: r }] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url").order("created_at", { ascending: false }),
-      supabase.from("products").select("id,name,is_hidden,company_id").order("created_at", { ascending: false }),
+      supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
     ]);
@@ -50,6 +50,16 @@ const AdminModeration = () => {
   const toggleProductHidden = async (id: string, val: boolean) => {
     const { error } = await supabase.from("products").update({ is_hidden: val }).eq("id", id);
     if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const toggleProductFeatured = async (id: string, val: boolean) => {
+    const { error } = await supabase.from("products").update({ is_featured: val }).eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const deleteProduct = async (id: string) => {
+    if (!confirm("Permanently delete this product and its variants?")) return;
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    else { toast({ title: "Product deleted" }); load(); }
   };
   const setRole = async (uid: string, role: "admin" | "broker" | "paid_member" | "free_member", add: boolean) => {
     const { error } = add
@@ -97,15 +107,42 @@ const AdminModeration = () => {
               </TabsContent>
 
               <TabsContent value="products" className="space-y-2 mt-4">
-                {products.map((p) => (
-                  <Card key={p.id}>
-                    <CardContent className="p-3 flex items-center gap-3">
-                      <div className="flex-1"><p className="font-medium">{p.name}</p></div>
-                      {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
-                      <Button size="sm" variant="outline" onClick={() => toggleProductHidden(p.id, !p.is_hidden)}>{p.is_hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}</Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                {products.map((p) => {
+                  const owner = companies.find((c) => c.id === p.company_id);
+                  return (
+                    <Card key={p.id}>
+                      <CardContent className="p-3 flex items-center gap-3 flex-wrap">
+                        <div className="h-10 w-10 rounded bg-muted overflow-hidden flex-shrink-0">
+                          {p.image_url && <img src={p.image_url} alt="" className="h-full w-full object-cover" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{p.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {owner ? `Seller: ${owner.name}` : "Unknown seller"} · /{p.slug}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-1">
+                          {p.is_featured && <Badge className="bg-accent text-primary">Featured</Badge>}
+                          {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
+                        </div>
+                        <div className="flex gap-1">
+                          <Button size="sm" variant="outline" asChild title="View on site">
+                            <Link to={`/products/${p.slug}`}><Eye className="h-3 w-3" /></Link>
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => toggleProductFeatured(p.id, !p.is_featured)} title={p.is_featured ? "Unfeature" : "Feature"}>
+                            <Star className={`h-3 w-3 ${p.is_featured ? "fill-current" : ""}`} />
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => toggleProductHidden(p.id, !p.is_hidden)} title={p.is_hidden ? "Unhide" : "Hide"}>
+                            {p.is_hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => deleteProduct(p.id)} title="Delete">
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </TabsContent>
 
               <TabsContent value="users" className="space-y-2 mt-4">
