@@ -10,6 +10,7 @@ import { communityPosts } from "@/data/productListings";
 import { ArrowLeft, ShieldCheck, ExternalLink, Package, MapPin, Send, MessageSquare, Users, Flame, AlertTriangle } from "lucide-react";
 import { StockBadge, PriceRange, TrendBadge, DemandIndicator, MarketSignals } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
+import { RecencyCue, LiveViewersCue, PriceAnchorCue, ScarcityCue, InquiryProofCue, ReciprocityChip } from "@/components/behavioral/BehavioralCues";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -97,20 +98,19 @@ const ProductPage = () => {
                                   <span className="font-medium text-foreground">{listing.variant}</span>
                                   <br />
                                   <span className="text-xs text-muted-foreground">{listing.origin}</span>
-                                  {listing.inquiryCount > 10 && (
-                                    <span className="text-[10px] text-orange-600 block">
-                                      <Users className="h-3 w-3 inline" /> {listing.inquiryCount} inquiries
-                                    </span>
-                                  )}
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <InquiryProofCue count={listing.inquiryCount} />
+                                    <LiveViewersCue id={listing.id} base={listing.inquiryCount} />
+                                  </div>
+                                  <div className="mt-0.5"><RecencyCue dateStr={listing.listingDate} /></div>
                                 </td>
                                 <td className="py-2.5 px-2">
                                   <StockBadge band={listing.stockBand} />
-                                  {listing.stockBand === "low" && (
-                                    <span className="text-[10px] text-red-600 block mt-0.5">Limited!</span>
-                                  )}
+                                  <div className="mt-0.5"><ScarcityCue listing={listing} /></div>
                                 </td>
                                 <td className="py-2.5 px-2">
                                   <PriceRange listing={listing} />
+                                  <div className="mt-0.5"><PriceAnchorCue listing={listing} /></div>
                                 </td>
                                 <td className="py-2.5 px-2">
                                   <TrendBadge direction={listing.trendDirection} />
@@ -230,7 +230,7 @@ const ProductPage = () => {
                     Get competitive quotes from {sellers.length} verified sellers
                   </p>
                   {totalInquiries > 10 && (
-                    <p className="text-xs text-orange-600 mb-3 font-medium">
+                    <p className="text-xs text-orange-600 mb-2 font-medium">
                       <Flame className="h-3 w-3 inline" /> {totalInquiries} buyers inquired this week
                     </p>
                   )}
@@ -240,6 +240,7 @@ const ProductPage = () => {
                   >
                     <Send className="mr-2 h-5 w-5" /> Request Best Price
                   </Button>
+                  <div className="mt-2 flex justify-center"><ReciprocityChip /></div>
                 </CardContent>
               </Card>
 

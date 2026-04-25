@@ -33,14 +33,37 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
   const { toast } = useToast();
   const navigate = useNavigate();
   const { user, profile, company: myCompany } = useAuth();
+  const draftKey = `mddma:rfq:draft:${productId ?? productName}`;
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "", email: "", company: "", phone: "",
-    quantity: "", packaging: "",
-    deliveryTimeline: "", deliveryLocation: "",
-    message: "", sendToMultiple: false,
+  const [restoredDraft, setRestoredDraft] = useState(false);
+  const [formData, setFormData] = useState(() => {
+    // Zeigarnik: restore unfinished RFQ on reopen
+    try {
+      const raw = localStorage.getItem(draftKey);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === "object") return parsed;
+      }
+    } catch { /* ignore */ }
+    return {
+      name: "", email: "", company: "", phone: "",
+      quantity: "", packaging: "",
+      deliveryTimeline: "", deliveryLocation: "",
+      message: "", sendToMultiple: false,
+    };
   });
+
+  useEffect(() => {
+    // Surface restoration toast once per open
+    try {
+      if (localStorage.getItem(draftKey) && !restoredDraft) {
+        setRestoredDraft(true);
+        toast({ title: "Draft restored", description: "We saved your previous answers — pick up where you left off." });
+      }
+    } catch { /* ignore */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (user) setFormData((f) => ({
@@ -51,6 +74,11 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
       phone: f.phone || profile?.phone || "",
     }));
   }, [user, profile, myCompany]);
+
+  // Auto-save draft on every change
+  useEffect(() => {
+    try { localStorage.setItem(draftKey, JSON.stringify(formData)); } catch { /* ignore */ }
+  }, [formData, draftKey]);
 
   const progress = ((step + 1) / STEPS.length) * 100;
   const updateField = (field: string, value: string | boolean) => setFormData((p) => ({ ...p, [field]: value }));
@@ -117,6 +145,7 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
       title: "✅ RFQ Submitted",
       description: `Your request for ${productName} has been sent. Track responses in your dashboard.`,
     });
+    try { localStorage.removeItem(draftKey); } catch { /* ignore */ }
     onClose();
   };
 
