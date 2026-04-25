@@ -98,6 +98,77 @@ export type Database = {
         }
         Relationships: []
       }
+      product_variants: {
+        Row: {
+          certifications: string[] | null
+          created_at: string
+          grade: string | null
+          id: string
+          is_active: boolean
+          lead_time_days: number | null
+          moq: number | null
+          moq_unit: string | null
+          name: string
+          packaging: string | null
+          price_max: number | null
+          price_min: number | null
+          price_unit: string | null
+          product_id: string
+          sku: string | null
+          sort_order: number
+          stock_band: Database["public"]["Enums"]["stock_band"] | null
+          updated_at: string
+        }
+        Insert: {
+          certifications?: string[] | null
+          created_at?: string
+          grade?: string | null
+          id?: string
+          is_active?: boolean
+          lead_time_days?: number | null
+          moq?: number | null
+          moq_unit?: string | null
+          name: string
+          packaging?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          price_unit?: string | null
+          product_id: string
+          sku?: string | null
+          sort_order?: number
+          stock_band?: Database["public"]["Enums"]["stock_band"] | null
+          updated_at?: string
+        }
+        Update: {
+          certifications?: string[] | null
+          created_at?: string
+          grade?: string | null
+          id?: string
+          is_active?: boolean
+          lead_time_days?: number | null
+          moq?: number | null
+          moq_unit?: string | null
+          name?: string
+          packaging?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          price_unit?: string | null
+          product_id?: string
+          sku?: string | null
+          sort_order?: number
+          stock_band?: Database["public"]["Enums"]["stock_band"] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_variants_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string | null
