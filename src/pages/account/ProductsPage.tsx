@@ -9,11 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Pencil, Trash2, Upload, Package, EyeOff, Eye } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Upload, Package, EyeOff, Eye, Layers } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadFile, slugify } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
+import { VariantManager } from "@/components/products/VariantManager";
 
 interface Product {
   id: string;
@@ -45,6 +46,7 @@ const ProductsPage = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<Product> | null>(null);
   const [open, setOpen] = useState(false);
+  const [variantsFor, setVariantsFor] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -168,6 +170,7 @@ const ProductsPage = () => {
                       </div>
                       <div className="flex gap-2 pt-2">
                         <Button size="sm" variant="outline" className="flex-1" onClick={() => startEdit(p)}><Pencil className="h-3 w-3 mr-1" /> Edit</Button>
+                        <Button size="sm" variant="outline" onClick={() => setVariantsFor(p)} title="Manage variants"><Layers className="h-3 w-3" /></Button>
                         <Button size="sm" variant="outline" onClick={() => toggleHidden(p)}>{p.is_hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}</Button>
                         <Button size="sm" variant="outline" onClick={() => handleDelete(p.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
@@ -238,6 +241,13 @@ const ProductsPage = () => {
               </div>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!variantsFor} onOpenChange={(v) => !v && setVariantsFor(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Manage variants</DialogTitle></DialogHeader>
+          {variantsFor && <VariantManager productId={variantsFor.id} productName={variantsFor.name} />}
         </DialogContent>
       </Dialog>
     </Layout>
