@@ -67,8 +67,8 @@ const ChangeLog = () => {
       {/* Header */}
       <div className="bg-primary text-primary-foreground py-12 print:py-6">
         <div className="max-w-5xl mx-auto px-6 space-y-4">
-          <div className="flex items-center gap-2">
-            <Badge className="bg-accent text-primary font-semibold">v3.1 · April 2026</Badge>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge className="bg-accent text-primary font-semibold">v3.1.1 · April 2026</Badge>
             <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground">
               Supersedes v3.0 docs
             </Badge>
@@ -88,7 +88,34 @@ const ChangeLog = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-12">
-        {/* Executive Summary */}
+        {/* v3.1.1 Recent Updates */}
+        <Section title="0. v3.1.1 Recent Updates (CRUD Ownership Pass)" id="v311">
+          <Card className="border-accent/40 bg-accent/5">
+            <CardContent className="p-5 space-y-3">
+              <p className="text-sm text-foreground">
+                <strong>Goal:</strong> make every dynamic entity editable by the right role so the
+                MDDMA team is never blocked on a developer for content changes.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-2 text-sm">
+                <Achievement done label="Header unified: single 'Login' button replaces Sign In + Get Started" />
+                <Achievement done label="Sellers can view & edit their own /store/:slug (Owner Toolbar + buyer preview)" />
+                <Achievement done label="Admins inherit storefront moderation toolbar via RLS + role check" />
+                <Achievement done label="Product Variants table live (SKU, grade, packaging, MOQ, price band, stock band, lead time)" />
+                <Achievement done label="Sellers CRUD variants under each parent product from /account/products" />
+                <Achievement done label="Admin product moderation: feature, hide, delete, link to seller, view on site" />
+                <Achievement done={false} label="CMS for static pages (About, Membership, Pitch) — Phase 2, see CMS-001" />
+              </div>
+              <p className="text-xs text-muted-foreground pt-2 border-t border-border">
+                CRUD Ownership Matrix · <strong>Admin</strong>: all companies, all products, all variants, all RFQs, user roles ·
+                <strong> Seller</strong>: own company, own products, own variants, RFQs to their company ·
+                <strong> Buyer</strong>: own profile, own RFQs, own draft state ·
+                <strong> Guest</strong>: read-only browse.
+              </p>
+            </CardContent>
+          </Card>
+        </Section>
+
+
         <Section title="1. Executive Summary" id="summary">
           <div className="grid sm:grid-cols-2 gap-3">
             {[
@@ -303,6 +330,23 @@ const ChangeLog = () => {
           <Decision id="GTM-004" status="open"
             title="Buyer acquisition: Unbudgeted gap identified"
             implication="No buyer acquisition budget or channels defined. Must allocate ₹50K–₹1L for Google Ads (buyer keywords) and MDDMA office-led buyer email invites." />
+
+          <h3 className="text-lg font-semibold text-primary pt-6">G. CRUD Ownership & Content Operations (v3.1.1)</h3>
+          <Decision id="CRUD-001" status="locked"
+            title="Single Login button replaces dual Sign In + Get Started"
+            implication="Header CTA unified to one 'Login' button with LogIn icon. Reduces choice overload and aligns with Hick's Law on the marketing nav. ✅ Implemented." />
+          <Decision id="CRUD-002" status="locked"
+            title="Sellers can view & manage their own /store/:slug"
+            implication="Owner Toolbar surfaces on the public storefront when slug matches the logged-in company. Provides 'View as buyer' preview, 'Edit company', and 'Edit catalog' shortcuts. Admins inherit the same toolbar via role check. ✅ Implemented." />
+          <Decision id="CRUD-003" status="locked"
+            title="Product Variants table introduced (SKU-level CRUD)"
+            implication="New product_variants table holds grade, packaging, MOQ, price band, stock band, lead time per SKU. Sellers CRUD via /account/products → Variants. Admins inherit via RLS. Buyers will RFQ at the variant level in Phase 2. ✅ Schema + UI shipped." />
+          <Decision id="CRUD-004" status="locked"
+            title="Admin product moderation: full CRUD with seller attribution"
+            implication="Admin /account/moderation now exposes feature, hide, delete, view-on-site, and shows seller name per product row. Removes the dependency on developers for catalog hygiene. ✅ Implemented." />
+          <Decision id="CMS-001" status="deferred"
+            title="Static-page CMS (About, Membership, Pitch) → Phase 2"
+            implication="Marketing copy for static pages stays in code for v3.1.1. A page_blocks JSON CMS will be added in Phase 2 once dynamic-entity CRUD has been validated with the Pilot 30." />
         </Section>
 
         {/* Gap Register */}
