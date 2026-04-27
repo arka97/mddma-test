@@ -1,163 +1,110 @@
-import { Link } from "react-router-dom";
-import { CheckCircle2, FileText, CreditCard, Users } from "lucide-react";
+import { friendlyErrorMessage } from "@/lib/errors";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-const benefits = [
-  "Access to complete member directory with contact details",
-  "Members-only circulars and trade updates",
-  "Dispute resolution and arbitration services",
-  "Government liaison support for trade matters",
-  "Networking opportunities with 850+ merchants",
-  "Official MDDMA membership certificate",
-  "Priority market information and price alerts",
-  "Participation in annual events and meetings",
-];
-
-const steps = [
-  {
-    icon: FileText,
-    title: "Fill Application",
-    description: "Complete the online form with your business details",
-  },
-  {
-    icon: Users,
-    title: "Document Upload",
-    description: "Upload GST certificate, Shop Act, and ID proof",
-  },
-  {
-    icon: CreditCard,
-    title: "Pay Fees",
-    description: "Complete payment via UPI, Cards, or NetBanking",
-  },
-  {
-    icon: CheckCircle2,
-    title: "Get Approved",
-    description: "Committee reviews and approves your application",
-  },
-];
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { slugify } from "@/lib/storage";
+import { Loader2, ShieldCheck, Building2 } from "lucide-react";
 
 const Apply = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [form, setForm] = useState({
+    name: "", tagline: "", description: "", city: "Mumbai", phone: "",
+    email: "", gstin: "", categories: "",
+  });
+
+  const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast({ title: "Please sign in first", description: "You need an account to submit a membership application." });
+      navigate("/login", { state: { from: "/apply" } });
+      return;
+    }
+    setSubmitting(true);
+    const { error } = await supabase.from("companies").insert({
+      owner_id: user.id,
+      name: form.name,
+      slug: slugify(form.name),
+      tagline: form.tagline || null,
+      description: form.description || null,
+      city: form.city,
+      phone: form.phone || null,
+      email: form.email || user.email || null,
+      gstin: form.gstin || null,
+      categories: form.categories.split(",").map((s) => s.trim()).filter(Boolean),
+      is_hidden: true,
+      review_status: "pending",
+    } as any);
+    setSubmitting(false);
+    if (error) {
+      toast({ title: "Submission failed", description: friendlyErrorMessage(error), variant: "destructive" });
+      return;
+    }
+    toast({ title: "✅ Application submitted", description: "MDDMA committee will review within 48 hours." });
+    navigate("/account/company");
+  };
+
   return (
     <Layout>
-      {/* Header */}
-      <section className="bg-primary py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
-              Apply for Membership
-            </h1>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-              Join Mumbai's premier dry fruits and dates trade association with
-              over 850 members across 5 major markets
-            </p>
-          </div>
+      <section className="bg-primary py-10">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-2">Apply for Membership</h1>
+          <p className="text-primary-foreground/80 max-w-2xl mx-auto">Submit your firm details for committee review.</p>
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="py-16 bg-muted/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-primary mb-8 text-center">
-              Membership Benefits
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {benefits.map((benefit) => (
-                <div key={benefit} className="flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
-                  <span className="text-foreground">{benefit}</span>
+      <section className="py-10">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Building2 className="h-5 w-5 text-accent" /> Firm Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={submit} className="space-y-4">
+                <div className="space-y-1.5"><Label>Firm Name *</Label>
+                  <Input required maxLength={120} value={form.name} onChange={(e) => update("name", e.target.value)} /></div>
+                <div className="space-y-1.5"><Label>Tagline</Label>
+                  <Input maxLength={140} value={form.tagline} onChange={(e) => update("tagline", e.target.value)} placeholder="e.g., Premium California almond importer" /></div>
+                <div className="space-y-1.5"><Label>Description</Label>
+                  <Textarea rows={3} maxLength={800} value={form.description} onChange={(e) => update("description", e.target.value)} /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label>City *</Label>
+                    <Input required value={form.city} onChange={(e) => update("city", e.target.value)} /></div>
+                  <div className="space-y-1.5"><Label>Phone</Label>
+                    <Input value={form.phone} onChange={(e) => update("phone", e.target.value)} placeholder="+91…" /></div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Application Process */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-primary mb-8 text-center">
-              Application Process
-            </h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {steps.map((step, index) => (
-                <Card key={step.title} className="bg-card border-border text-center">
-                  <CardContent className="pt-6">
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent mb-4">
-                      <step.icon className="h-6 w-6" />
-                    </div>
-                    <div className="text-xs text-accent font-semibold mb-2">
-                      Step {index + 1}
-                    </div>
-                    <h3 className="font-semibold text-foreground mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      {step.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Fees */}
-      <section className="py-16 bg-muted/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-bold text-primary mb-4">
-              Membership Fees
-            </h2>
-            <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-accent text-4xl">₹5,000</CardTitle>
-                <p className="text-muted-foreground">Annual Membership Fee</p>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-sm text-muted-foreground">
-                  <p>+ ₹2,500 One-time Registration Fee (for new members)</p>
-                  <p className="mt-2">GST applicable as per government norms</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5"><Label>Email</Label>
+                    <Input type="email" value={form.email} onChange={(e) => update("email", e.target.value)} /></div>
+                  <div className="space-y-1.5"><Label>GSTIN</Label>
+                    <Input maxLength={15} value={form.gstin} onChange={(e) => update("gstin", e.target.value)} /></div>
                 </div>
-                <div className="pt-4">
-                  <p className="text-sm font-medium text-foreground mb-2">
-                    Payment Methods Accepted:
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    UPI • Credit/Debit Cards • Net Banking • Bank Transfer
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
+                <div className="space-y-1.5"><Label>Product Categories (comma-separated)</Label>
+                  <Input value={form.categories} onChange={(e) => update("categories", e.target.value)} placeholder="Almonds, Cashews, Dates" /></div>
 
-      {/* CTA */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-2xl font-bold text-primary mb-4">
-              Ready to Join?
-            </h2>
-            <p className="text-muted-foreground mb-8">
-              Start your membership application today and become part of
-              Mumbai's largest dry fruits trade community.
-            </p>
-            <Button
-              size="lg"
-              className="bg-accent hover:bg-accent/90 text-primary font-semibold px-8"
-            >
-              Start Application
-            </Button>
-            <p className="text-xs text-muted-foreground mt-4">
-              Application form will be available once backend is connected
-            </p>
-          </div>
+                <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground flex items-start gap-2">
+                  <ShieldCheck className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
+                  Your application will be hidden from the public directory until an MDDMA admin approves it. You can still edit your storefront from your account in the meantime.
+                </div>
+
+                <Button type="submit" disabled={submitting} className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit Application"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </section>
     </Layout>
