@@ -2,9 +2,8 @@ import { useState, createContext, useContext, type ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Lock, ShieldCheck } from "lucide-react";
-
-const CORRECT_PASSWORD = "271195";
+import { Lock, ShieldCheck, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const AuthContext = createContext(false);
 const AuthSetContext = createContext<(() => void) | null>(null);
@@ -27,16 +26,28 @@ export function PasswordGate({ children }: { children: ReactNode }) {
   const unlock = useContext(AuthSetContext);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
+  const [busy, setBusy] = useState(false);
 
   if (unlocked) return <>{children}</>;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === CORRECT_PASSWORD) {
-      unlock?.();
-      setError(false);
-    } else {
+    if (!password || password.length > 200) { setError(true); return; }
+    setBusy(true);
+    try {
+      const { data, error: fnErr } = await supabase.functions.invoke("verify-doc-password", {
+        body: { password },
+      });
+      if (!fnErr && (data as any)?.ok) {
+        unlock?.();
+        setError(false);
+      } else {
+        setError(true);
+      }
+    } catch {
       setError(true);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -55,11 +66,13 @@ export function PasswordGate({ children }: { children: ReactNode }) {
               placeholder="Enter password"
               value={password}
               onChange={(e) => { setPassword(e.target.value); setError(false); }}
+              maxLength={200}
               className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/40 text-center text-lg"
             />
             {error && <p className="text-destructive text-sm">Incorrect password. Try again.</p>}
-            <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold">
-              <ShieldCheck className="h-4 w-4 mr-2" /> Unlock Documents
+            <Button type="submit" disabled={busy} className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold">
+              {busy ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
+              Unlock Documents
             </Button>
           </form>
         </CardContent>
