@@ -11,6 +11,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import { Inbox, Phone, Handshake, CheckCircle, Lock, ArrowRight, Bell, Flame, Users, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
+import { MembershipStatusCard } from "@/components/account/MembershipStatusCard";
 
 const statusConfig = {
   new: { label: "New", color: "bg-blue-100 text-blue-800 border-blue-200", icon: Inbox },
@@ -94,6 +95,9 @@ const Dashboard = () => {
 
       <section className="py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Membership status (hidden when no auth) */}
+          <div className="mb-6"><MembershipStatusCard /></div>
+
           {/* Notifications */}
           <Card className="mb-6 border-accent/20 bg-accent/5">
             <CardContent className="p-4">

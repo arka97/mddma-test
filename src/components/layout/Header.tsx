@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRole, roleLabels, type UserRole } from "@/contexts/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { Logo } from "@/components/brand/Logo";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
@@ -51,6 +52,7 @@ export function Header() {
         {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="h-4 w-4 mr-2" /> View My Storefront</Link></DropdownMenuItem>}
         <DropdownMenuItem asChild><Link to="/account/products"><Package className="h-4 w-4 mr-2" /> My Products</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/rfqs"><Inbox className="h-4 w-4 mr-2" /> RFQ Center</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link to="/account/verify"><ShieldCheck className="h-4 w-4 mr-2" /> Verification</Link></DropdownMenuItem>
         {hasRole("admin") && <DropdownMenuItem asChild><Link to="/account/moderation"><ShieldCheck className="h-4 w-4 mr-2" /> Moderation</Link></DropdownMenuItem>}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}><LogOut className="h-4 w-4 mr-2" /> Sign out</DropdownMenuItem>
@@ -62,12 +64,8 @@ export function Header() {
     <header className="sticky top-0 z-40 bg-primary shadow-lg">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-primary font-bold text-sm">M</div>
-            <div className="hidden sm:block">
-              <div className="text-primary-foreground font-bold text-sm leading-tight">MDDMA</div>
-              <div className="text-primary-foreground/60 text-[10px]">Digital Trade Hub</div>
-            </div>
+          <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
+            <Logo inverted />
           </Link>
 
           <div className="hidden lg:flex lg:items-center lg:gap-0.5">
