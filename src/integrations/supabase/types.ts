@@ -467,7 +467,42 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          designation: string | null
+          full_name: string | null
+          id: string | null
+          verification_tier:
+            | Database["public"]["Enums"]["verification_tier"]
+            | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          designation?: string | null
+          full_name?: string | null
+          id?: string | null
+          verification_tier?:
+            | Database["public"]["Enums"]["verification_tier"]
+            | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          designation?: string | null
+          full_name?: string | null
+          id?: string | null
+          verification_tier?:
+            | Database["public"]["Enums"]["verification_tier"]
+            | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_buyer_reputation_tier: { Args: { _score: number }; Returns: string }
