@@ -148,7 +148,7 @@ const VerificationCenter = () => {
                   onClick={async () => {
                     if (!user.email) return;
                     const { error } = await supabase.auth.resend({ type: "signup", email: user.email });
-                    if (error) toast({ title: "Could not resend", description: error.message, variant: "destructive" });
+                    if (error) toast({ title: "Could not resend", description: "Please try again in a moment.", variant: "destructive" });
                     else toast({ title: "Confirmation email sent" });
                   }}
                 >
