@@ -106,7 +106,8 @@ const Directory = () => {
             </Select>
           </div>
           <p className="text-sm text-muted-foreground mt-3">
-            Showing {sorted.length} of {sampleMembers.length} members
+            {loading ? <Loader2 className="h-3 w-3 inline animate-spin mr-1" /> : null}
+            Showing {sorted.length} of {allMembers.length} members
           </p>
         </div>
       </section>
@@ -120,13 +121,18 @@ const Directory = () => {
                 <Link key={member.id} to={`/store/${member.slug}`}>
                   <Card className="bg-card border-border hover:border-accent/50 card-hover h-full">
                     <CardContent className="p-5">
-                      {/* Sponsored label */}
-                      {member.isSponsored && (
-                        <div className="flex items-center gap-1 mb-2">
-                          <Star className="h-3 w-3 text-accent" />
-                          <span className="text-xs text-accent font-medium">Sponsored</span>
-                        </div>
-                      )}
+                      {/* Live / Sponsored label */}
+                      <div className="flex items-center gap-2 mb-2">
+                        {member.source === "live" && (
+                          <span className="text-[10px] uppercase tracking-wide text-accent font-semibold bg-accent/10 px-1.5 py-0.5 rounded">Live</span>
+                        )}
+                        {member.isSponsored && (
+                          <div className="flex items-center gap-1">
+                            <Star className="h-3 w-3 text-accent" />
+                            <span className="text-xs text-accent font-medium">Sponsored</span>
+                          </div>
+                        )}
+                      </div>
 
                       <div className="flex items-start gap-3 mb-3">
                         <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
