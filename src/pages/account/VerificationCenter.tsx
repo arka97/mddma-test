@@ -41,23 +41,28 @@ const VerificationCenter = () => {
 
   const progress = useMemo(() => (TIER_INDEX(tier) / 3) * 100, [tier]);
 
-  const promoteTo = async (next: VerificationTier, extra: Record<string, unknown> = {}) => {
+  const promoteTo = async (
+    next: VerificationTier,
+    payload: Record<string, unknown> = {},
+  ) => {
     if (!user) return;
     if (TIER_INDEX(next) <= TIER_INDEX(tier)) return; // never demote
     setSaving(next);
-    // Boost reputation: +20 per tier achieved (capped 100)
-    const newScore = Math.min(100, TIER_INDEX(next) * 20 + (next === "gst" ? 20 : 0));
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        verification_tier: next,
-        buyer_reputation_score: newScore,
-        ...extra,
-      } as any)
-      .eq("id", user.id);
+    const { data, error } = await supabase.functions.invoke("promote-verification", {
+      body: { target: next, ...payload },
+    });
     setSaving(null);
-    if (error) toast({ title: "Update failed", description: error.message, variant: "destructive" });
-    else { toast({ title: `Verified · ${next.toUpperCase()}` }); refresh(); }
+    const fnError = (data as { error?: string } | null)?.error;
+    if (error || fnError) {
+      toast({
+        title: "Verification failed",
+        description: fnError ?? "Could not update your verification. Please try again.",
+        variant: "destructive",
+      });
+      return;
+    }
+    toast({ title: `Verified · ${next.toUpperCase()}` });
+    refresh();
   };
 
   const verifyCompany = async () => {
@@ -65,23 +70,16 @@ const VerificationCenter = () => {
       toast({ title: "Enter your company name", variant: "destructive" });
       return;
     }
-    await promoteTo("company", {
-      company_name: companyName.trim(),
-      company_verified_at: new Date().toISOString(),
-    });
+    await promoteTo("company", { company_name: companyName.trim() });
   };
 
   const verifyGst = async () => {
     const cleaned = gstin.trim().toUpperCase();
-    // Basic GSTIN format check: 15 chars alphanumeric
     if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(cleaned)) {
       toast({ title: "Invalid GSTIN format", description: "Expected 15-char GSTIN like 27AAAPL1234C1Z5", variant: "destructive" });
       return;
     }
-    await promoteTo("gst", {
-      gstin: cleaned,
-      gst_verified_at: new Date().toISOString(),
-    });
+    await promoteTo("gst", { gstin: cleaned });
   };
 
   if (!user) return null;
