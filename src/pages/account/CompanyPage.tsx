@@ -1,3 +1,4 @@
+import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -120,7 +121,7 @@ const CompanyPage = () => {
       ({ error } = await supabase.from("companies").insert(payload));
     }
     setSaving(false);
-    if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
+    if (error) toast({ title: "Save failed", description: friendlyErrorMessage(error), variant: "destructive" });
     else {
       toast({ title: companyId ? "Company updated" : "Company profile created" });
       await refresh();

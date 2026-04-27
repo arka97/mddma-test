@@ -1,3 +1,4 @@
+import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -115,7 +116,7 @@ const ProductsPage = () => {
     else ({ error } = await supabase.from("products").insert(payload));
 
     setSaving(false);
-    if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
+    if (error) toast({ title: "Save failed", description: friendlyErrorMessage(error), variant: "destructive" });
     else { toast({ title: editing.id ? "Product updated" : "Product added" }); setOpen(false); setEditing(null); load(); }
   };
 
