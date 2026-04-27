@@ -5,30 +5,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2 } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link, Navigate } from "react-router-dom";
 
 const AdminModeration = () => {
-  const { hasRole, loading: authLoading } = useAuth();
+  const { hasRole, loading: authLoading, user } = useAuth();
   const { toast } = useToast();
-  const [companies, setCompanies] = useState<{ id: string; name: string; slug: string; is_verified: boolean; is_hidden: boolean; city: string | null; logo_url: string | null }[]>([]);
+  const [companies, setCompanies] = useState<{ id: string; name: string; slug: string; is_verified: boolean; is_hidden: boolean; city: string | null; logo_url: string | null; review_status?: string }[]>([]);
   const [products, setProducts] = useState<{ id: string; name: string; slug: string; is_hidden: boolean; is_featured: boolean; company_id: string; image_url: string | null }[]>([]);
   const [users, setUsers] = useState<{ id: string; full_name: string | null; avatar_url: string | null; roles: string[] }[]>([]);
+  const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string }[]>([]);
+  const [circularForm, setCircularForm] = useState({ title: "", body: "", category: "general" });
+  const [savingCircular, setSavingCircular] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }] = await Promise.all([
-      supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url").order("created_at", { ascending: false }),
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }] = await Promise.all([
+      supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
+      supabase.from("circulars").select("id,title,body,is_published,created_at").order("created_at", { ascending: false }),
     ]);
-    setCompanies(c ?? []);
+    setCompanies((c ?? []) as any);
     setProducts(p ?? []);
+    setCirculars((circ ?? []) as any);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
     setUsers((prof ?? []).map((u) => ({ ...u, roles: rolesByUser[u.id] ?? [] })));
