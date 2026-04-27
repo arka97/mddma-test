@@ -72,7 +72,7 @@ const App = () => (
                 <Route path="/contact" element={<Forms />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/apply" element={<Apply />} />
-                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin" element={<ProtectedRoute requireRole="admin"><Admin /></ProtectedRoute>} />
 
                 {/* Authenticated user space */}
                 <Route path="/account/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
