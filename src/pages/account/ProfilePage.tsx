@@ -1,3 +1,4 @@
+import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -50,7 +51,7 @@ const ProfilePage = () => {
     setSaving(true);
     const { error } = await supabase.from("profiles").upsert({ id: user.id, ...form }).select().single();
     setSaving(false);
-    if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
+    if (error) toast({ title: "Save failed", description: friendlyErrorMessage(error), variant: "destructive" });
     else { toast({ title: "Profile updated" }); refresh(); }
   };
 

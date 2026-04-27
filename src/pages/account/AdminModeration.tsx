@@ -1,3 +1,4 @@
+import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,14 +59,14 @@ const AdminModeration = () => {
   const deleteProduct = async (id: string) => {
     if (!confirm("Permanently delete this product and its variants?")) return;
     const { error } = await supabase.from("products").delete().eq("id", id);
-    if (error) toast({ title: "Delete failed", description: error.message, variant: "destructive" });
+    if (error) toast({ title: "Delete failed", description: friendlyErrorMessage(error), variant: "destructive" });
     else { toast({ title: "Product deleted" }); load(); }
   };
   const setRole = async (uid: string, role: "admin" | "broker" | "paid_member" | "free_member", add: boolean) => {
     const { error } = add
       ? await supabase.from("user_roles").insert({ user_id: uid, role })
       : await supabase.from("user_roles").delete().eq("user_id", uid).eq("role", role);
-    if (error) toast({ title: "Failed", description: error.message, variant: "destructive" }); else load();
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); else load();
   };
 
   return (

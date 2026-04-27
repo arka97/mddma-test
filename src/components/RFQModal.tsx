@@ -1,3 +1,4 @@
+import { friendlyErrorMessage } from "@/lib/errors";
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -137,7 +138,7 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
     setSubmitting(false);
 
     if (error) {
-      toast({ title: "RFQ failed", description: error.message, variant: "destructive" });
+      toast({ title: "RFQ failed", description: friendlyErrorMessage(error), variant: "destructive" });
       return;
     }
 

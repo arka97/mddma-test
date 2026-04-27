@@ -1,3 +1,4 @@
+import { friendlyErrorMessage } from "@/lib/errors";
 // SKU-style variants under a parent product (v3.1.1).
 // Sellers CRUD their variants; admins inherit via RLS.
 
@@ -81,7 +82,7 @@ export function VariantManager({ productId, productName }: { productId: string; 
       ? await supabase.from("product_variants").update(payload).eq("id", editing.id)
       : await supabase.from("product_variants").insert(payload);
     setSaving(false);
-    if (error) { toast({ title: "Save failed", description: error.message, variant: "destructive" }); return; }
+    if (error) { toast({ title: "Save failed", description: friendlyErrorMessage(error), variant: "destructive" }); return; }
     toast({ title: editing.id ? "Variant updated" : "Variant added" });
     setEditing(null);
     load();

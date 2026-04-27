@@ -1,3 +1,4 @@
+import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -105,7 +106,7 @@ const RFQInbox = () => {
       await supabase.from("rfqs").update({ status: "responded" }).eq("id", respondTo.id);
     }
     setSavingResp(false);
-    if (error) toast({ title: "Response failed", description: error.message, variant: "destructive" });
+    if (error) toast({ title: "Response failed", description: friendlyErrorMessage(error), variant: "destructive" });
     else { toast({ title: "Quote sent" }); setRespondTo(null); setRespForm({ price_quoted: "", unit: "kg", message: "", valid_until: "" }); load(); }
   };
 
