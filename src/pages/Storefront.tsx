@@ -233,7 +233,47 @@ const Storefront = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {sellerListings.length > 0 ? (
+                  {liveMember && liveProducts.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border text-left">
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {liveProducts.map((p) => (
+                            <tr key={p.id} className="border-b border-border/50">
+                              <td className="py-2.5 px-2">
+                                <div className="font-medium text-foreground">{p.name}</div>
+                                <div className="text-xs text-muted-foreground">{p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}</div>
+                              </td>
+                              <td className="py-2.5 px-2">
+                                <Badge variant="outline" className="text-xs capitalize">{p.stock_band ?? "medium"}</Badge>
+                              </td>
+                              <td className="py-2.5 px-2 text-xs">
+                                {p.price_min && p.price_max
+                                  ? `₹${p.price_min}–${p.price_max} / ${p.unit ?? "kg"}`
+                                  : "On request"}
+                              </td>
+                              <td className="py-2.5 px-2">
+                                <Button
+                                  size="sm"
+                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                  onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
+                                >
+                                  <Send className="h-3 w-3 mr-1" /> Request Price
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : sellerListings.length > 0 ? (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
@@ -251,17 +291,13 @@ const Storefront = () => {
                                 <div className="font-medium text-foreground">{listing.commodity}</div>
                                 <div className="text-xs text-muted-foreground">{listing.variant} · {listing.origin}</div>
                               </td>
-                              <td className="py-2.5 px-2">
-                                <StockBadge band={listing.stockBand} />
-                              </td>
-                              <td className="py-2.5 px-2">
-                                <PriceRange listing={listing} />
-                              </td>
+                              <td className="py-2.5 px-2"><StockBadge band={listing.stockBand} /></td>
+                              <td className="py-2.5 px-2"><PriceRange listing={listing} /></td>
                               <td className="py-2.5 px-2">
                                 <Button
                                   size="sm"
                                   className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                                  onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
+                                  onClick={() => setRfqProduct({ name: `${listing.commodity} — ${listing.variant}` })}
                                 >
                                   <Send className="h-3 w-3 mr-1" /> Request Price
                                 </Button>
@@ -272,7 +308,7 @@ const Storefront = () => {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-center py-6">No active listings. Contact this seller directly.</p>
+                    <p className="text-muted-foreground text-center py-6">No active listings yet.</p>
                   )}
                 </CardContent>
               </Card>
@@ -322,7 +358,14 @@ const Storefront = () => {
         </div>
       </section>
 
-      {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
+      {rfqProduct && (
+        <RFQModal
+          productName={rfqProduct.name}
+          productId={rfqProduct.productId}
+          companyId={rfqProduct.companyId}
+          onClose={() => setRfqProduct(null)}
+        />
+      )}
     </Layout>
   );
 };
