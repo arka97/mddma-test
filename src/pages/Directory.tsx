@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/select";
 import { AdBanner } from "@/components/home/AdBanner";
 import { sampleMembers, tradingAreas } from "@/data/sampleData";
+import { useLiveCompanies } from "@/hooks/useLiveCompanies";
+import { Loader2 } from "lucide-react";
 
 const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor"];
 
@@ -19,8 +21,9 @@ const Directory = () => {
   const [areaFilter, setAreaFilter] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [verificationFilter, setVerificationFilter] = useState<string>("all");
+  const { entries: allMembers, loading } = useLiveCompanies();
 
-  const filteredMembers = sampleMembers.filter((member) => {
+  const filteredMembers = allMembers.filter((member) => {
     const s = searchTerm.toLowerCase();
     const matchesSearch =
       member.firmName.toLowerCase().includes(s) ||
