@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck } from "lucide-react";
+import { Menu, X, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRole, roleLabels, type UserRole } from "@/contexts/RoleContext";
@@ -48,6 +48,7 @@ export function Header() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild><Link to="/account/profile"><User className="h-4 w-4 mr-2" /> My Profile</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/company"><Building2 className="h-4 w-4 mr-2" /> {company ? "My Company" : "Create Company"}</Link></DropdownMenuItem>
+        {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="h-4 w-4 mr-2" /> View My Storefront</Link></DropdownMenuItem>}
         <DropdownMenuItem asChild><Link to="/account/products"><Package className="h-4 w-4 mr-2" /> My Products</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/rfqs"><Inbox className="h-4 w-4 mr-2" /> RFQ Center</Link></DropdownMenuItem>
         {hasRole("admin") && <DropdownMenuItem asChild><Link to="/account/moderation"><ShieldCheck className="h-4 w-4 mr-2" /> Moderation</Link></DropdownMenuItem>}
