@@ -2,10 +2,14 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, MapPin, ShieldCheck, Star } from "lucide-react";
-import { sampleMembers } from "@/data/sampleData";
+import { useLiveCompanies } from "@/hooks/useLiveCompanies";
 
 export function FeaturedMembersSection() {
-  const featured = sampleMembers.filter((m) => m.isFeatured).slice(0, 6);
+  const { entries } = useLiveCompanies();
+  // Live verified/paid first, then any featured demo entry
+  const featured = entries
+    .filter((m) => m.source === "live" || m.isFeatured)
+    .slice(0, 6);
 
   return (
     <section className="py-16 sm:py-20 bg-muted/50">
@@ -26,7 +30,7 @@ export function FeaturedMembersSection() {
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featured.map((member) => (
-            <Link key={member.id} to={`/directory/${member.slug}`}>
+            <Link key={member.id} to={`/store/${member.slug}`}>
               <Card className="bg-card border-border hover:border-accent/50 card-hover h-full">
                 <CardContent className="p-5">
                   <div className="flex items-start gap-3 mb-3">
@@ -38,6 +42,9 @@ export function FeaturedMembersSection() {
                         <h3 className="font-semibold text-foreground truncate text-sm">
                           {member.firmName}
                         </h3>
+                        {member.source === "live" && (
+                          <span className="text-[9px] uppercase tracking-wide text-accent font-semibold">Live</span>
+                        )}
                         {member.isSponsored && (
                           <Star className="h-3.5 w-3.5 text-accent flex-shrink-0" />
                         )}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
@@ -8,22 +8,81 @@ import { sampleMembers } from "@/data/sampleData";
 import { productListings } from "@/data/productListings";
 import { useRole } from "@/contexts/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { liveCompanyToEntry, type DirectoryEntry } from "@/lib/directoryAdapter";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
-  ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye,
+  ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye, Loader2,
 } from "lucide-react";
 import { StockBadge, PriceRange, TrendBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
+
+interface LiveProduct {
+  id: string;
+  name: string;
+  slug: string;
+  category: string | null;
+  origin: string | null;
+  image_url: string | null;
+  price_min: number | null;
+  price_max: number | null;
+  unit: string | null;
+  stock_band: string | null;
+  description: string | null;
+}
 
 const Storefront = () => {
   const { slug } = useParams();
   const { canAccess } = useRole();
   const { company: ownCompany, hasRole } = useAuth();
-  const [rfqProduct, setRfqProduct] = useState<string | null>(null);
+  const [rfqProduct, setRfqProduct] = useState<{ name: string; productId?: string; companyId?: string } | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
-  const member = sampleMembers.find((m) => m.slug === slug);
+  const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
+  const [liveCompanyId, setLiveCompanyId] = useState<string | null>(null);
+  const [liveProducts, setLiveProducts] = useState<LiveProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!slug) return;
+    let alive = true;
+    setLoading(true);
+    supabase
+      .from("companies")
+      .select("id,slug,name,tagline,description,logo_url,city,state,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
+      .eq("slug", slug)
+      .maybeSingle()
+      .then(async ({ data }) => {
+        if (!alive) return;
+        if (data) {
+          setLiveMember(liveCompanyToEntry(data as any));
+          setLiveCompanyId(data.id);
+          const { data: prods } = await supabase
+            .from("products")
+            .select("id,name,slug,category,origin,image_url,price_min,price_max,unit,stock_band,description")
+            .eq("company_id", data.id)
+            .eq("is_hidden", false)
+            .order("is_featured", { ascending: false });
+          if (alive) setLiveProducts((prods ?? []) as LiveProduct[]);
+        }
+        if (alive) setLoading(false);
+      });
+    return () => { alive = false; };
+  }, [slug]);
+
+  const demoMember = sampleMembers.find((m) => m.slug === slug);
+  const member = liveMember ?? demoMember;
   const isOwner = !!ownCompany && ownCompany.slug === slug;
   const canManage = isOwner || hasRole("admin");
+
+  if (loading && !demoMember) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto text-accent" />
+        </div>
+      </Layout>
+    );
+  }
 
   if (!member) {
     return (
@@ -36,7 +95,7 @@ const Storefront = () => {
     );
   }
 
-  const sellerListings = productListings.filter((pl) => pl.sellerId === member.id);
+  const sellerListings = liveMember ? [] : productListings.filter((pl) => pl.sellerId === member.id);
   const yearsInBusiness = new Date().getFullYear() - member.memberSince;
 
   return (
@@ -174,7 +233,47 @@ const Storefront = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {sellerListings.length > 0 ? (
+                  {liveMember && liveProducts.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border text-left">
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
+                            <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {liveProducts.map((p) => (
+                            <tr key={p.id} className="border-b border-border/50">
+                              <td className="py-2.5 px-2">
+                                <div className="font-medium text-foreground">{p.name}</div>
+                                <div className="text-xs text-muted-foreground">{p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}</div>
+                              </td>
+                              <td className="py-2.5 px-2">
+                                <Badge variant="outline" className="text-xs capitalize">{p.stock_band ?? "medium"}</Badge>
+                              </td>
+                              <td className="py-2.5 px-2 text-xs">
+                                {p.price_min && p.price_max
+                                  ? `₹${p.price_min}–${p.price_max} / ${p.unit ?? "kg"}`
+                                  : "On request"}
+                              </td>
+                              <td className="py-2.5 px-2">
+                                <Button
+                                  size="sm"
+                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                  onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
+                                >
+                                  <Send className="h-3 w-3 mr-1" /> Request Price
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : sellerListings.length > 0 ? (
                     <div className="overflow-x-auto">
                       <table className="w-full text-sm">
                         <thead>
@@ -192,17 +291,13 @@ const Storefront = () => {
                                 <div className="font-medium text-foreground">{listing.commodity}</div>
                                 <div className="text-xs text-muted-foreground">{listing.variant} · {listing.origin}</div>
                               </td>
-                              <td className="py-2.5 px-2">
-                                <StockBadge band={listing.stockBand} />
-                              </td>
-                              <td className="py-2.5 px-2">
-                                <PriceRange listing={listing} />
-                              </td>
+                              <td className="py-2.5 px-2"><StockBadge band={listing.stockBand} /></td>
+                              <td className="py-2.5 px-2"><PriceRange listing={listing} /></td>
                               <td className="py-2.5 px-2">
                                 <Button
                                   size="sm"
                                   className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                                  onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
+                                  onClick={() => setRfqProduct({ name: `${listing.commodity} — ${listing.variant}` })}
                                 >
                                   <Send className="h-3 w-3 mr-1" /> Request Price
                                 </Button>
@@ -213,7 +308,7 @@ const Storefront = () => {
                       </table>
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-center py-6">No active listings. Contact this seller directly.</p>
+                    <p className="text-muted-foreground text-center py-6">No active listings yet.</p>
                   )}
                 </CardContent>
               </Card>
@@ -263,7 +358,14 @@ const Storefront = () => {
         </div>
       </section>
 
-      {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
+      {rfqProduct && (
+        <RFQModal
+          productName={rfqProduct.name}
+          productId={rfqProduct.productId}
+          companyId={rfqProduct.companyId}
+          onClose={() => setRfqProduct(null)}
+        />
+      )}
     </Layout>
   );
 };

@@ -14,6 +14,119 @@ export type Database = {
   }
   public: {
     Tables: {
+      advertisements: {
+        Row: {
+          clicks: number
+          created_at: string
+          end_date: string | null
+          id: string
+          image_url: string
+          impressions: number
+          is_active: boolean
+          link_url: string | null
+          placement: string
+          start_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          clicks?: number
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          image_url: string
+          impressions?: number
+          is_active?: boolean
+          link_url?: string | null
+          placement?: string
+          start_date?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          clicks?: number
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          image_url?: string
+          impressions?: number
+          is_active?: boolean
+          link_url?: string | null
+          placement?: string
+          start_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      circulars: {
+        Row: {
+          body: string
+          category: string | null
+          created_at: string
+          created_by: string
+          id: string
+          is_published: boolean
+          published_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body: string
+          category?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          category?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          is_published?: boolean
+          published_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      comments: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           address: string | null
@@ -35,6 +148,8 @@ export type Database = {
           name: string
           owner_id: string
           phone: string | null
+          rejection_reason: string | null
+          review_status: Database["public"]["Enums"]["review_status"]
           slug: string
           social_links: Json | null
           state: string | null
@@ -62,6 +177,8 @@ export type Database = {
           name: string
           owner_id: string
           phone?: string | null
+          rejection_reason?: string | null
+          review_status?: Database["public"]["Enums"]["review_status"]
           slug: string
           social_links?: Json | null
           state?: string | null
@@ -89,12 +206,105 @@ export type Database = {
           name?: string
           owner_id?: string
           phone?: string | null
+          rejection_reason?: string | null
+          review_status?: Database["public"]["Enums"]["review_status"]
           slug?: string
           social_links?: Json | null
           state?: string | null
           tagline?: string | null
           updated_at?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      inquiry_products: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          product_id: string | null
+          product_name: string
+          quantity: string
+          rfq_id: string
+          variant_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id?: string | null
+          product_name: string
+          quantity: string
+          rfq_id: string
+          variant_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: string
+          rfq_id?: string
+          variant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiry_products_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfqs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiry_products_variant_id_fkey"
+            columns: ["variant_id"]
+            isOneToOne: false
+            referencedRelation: "product_variants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          author_id: string
+          body: string
+          category: string
+          created_at: string
+          id: string
+          is_pinned: boolean
+          title: string
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          author_id: string
+          body: string
+          category?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          title: string
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          title?: string
+          updated_at?: string
+          view_count?: number
         }
         Relationships: []
       }
@@ -516,6 +726,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "broker" | "paid_member" | "free_member"
+      review_status: "pending" | "approved" | "rejected"
       rfq_status:
         | "new"
         | "viewed"
@@ -654,6 +865,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "broker", "paid_member", "free_member"],
+      review_status: ["pending", "approved", "rejected"],
       rfq_status: [
         "new",
         "viewed",
