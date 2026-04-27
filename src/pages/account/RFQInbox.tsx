@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Loader2, Inbox, Send, Clock, IndianRupee } from "lucide-react";
+import { Loader2, Inbox, Send, Clock, IndianRupee, MessageCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -151,6 +151,19 @@ const RFQInbox = () => {
             <span className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{new Date(rfq.created_at).toLocaleDateString()}</span>
             {side === "received" && (
               <>
+                {rfq.buyer_phone && (
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" asChild>
+                    <a
+                      href={`https://wa.me/${rfq.buyer_phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                        `Hi ${rfq.buyer_name ?? rfq.buyer_company ?? "there"},\n\nI received your RFQ via MDDMA for ${rfq.product_name} (${rfq.quantity}).\n${rfq.delivery_location ? `Delivery: ${rfq.delivery_location}` : ""}${rfq.delivery_timeline ? ` by ${rfq.delivery_timeline}` : ""}\n\nMy company: ${company?.name ?? "MDDMA member"}.\nPlease let me know if you need samples or have questions.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <MessageCircle className="h-3 w-3 mr-1" /> WhatsApp Buyer
+                    </a>
+                  </Button>
+                )}
                 {rfq.status === "new" && <Button size="sm" variant="outline" onClick={() => updateStatus(rfq, "viewed")}>Mark viewed</Button>}
                 <Button size="sm" onClick={() => setRespondTo(rfq)}>Send quote</Button>
                 {rfq.status !== "converted" && <Button size="sm" variant="outline" onClick={() => updateStatus(rfq, "converted")}>Mark won</Button>}
