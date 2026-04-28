@@ -101,8 +101,9 @@ const App = () => (
                 <Route path="/changelog" element={<PasswordGate><ChangeLog /></PasswordGate>} />
 
                 <Route path="*" element={<NotFound />} />
-              </Routes>
-            </DocAuthProvider>
+                </Routes>
+              </DocAuthProvider>
+            </CartProvider>
           </RoleProvider>
         </AuthProvider>
       </BrowserRouter>
