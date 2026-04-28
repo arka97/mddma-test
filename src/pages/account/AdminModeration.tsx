@@ -240,6 +240,70 @@ const AdminModeration = () => {
                   </Card>
                 ))}
               </TabsContent>
+
+              <TabsContent value="circulars" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader><CardTitle className="text-base">Compose New Circular</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-1.5"><Label>Title</Label><Input maxLength={200} value={circularForm.title} onChange={(e) => setCircularForm({ ...circularForm, title: e.target.value })} /></div>
+                    <div className="space-y-1.5"><Label>Body</Label><Textarea rows={4} maxLength={4000} value={circularForm.body} onChange={(e) => setCircularForm({ ...circularForm, body: e.target.value })} /></div>
+                    <div className="space-y-1.5"><Label>Category</Label><Input maxLength={50} value={circularForm.category} onChange={(e) => setCircularForm({ ...circularForm, category: e.target.value })} /></div>
+                    <Button onClick={saveCircular} disabled={savingCircular} className="bg-accent hover:bg-accent/90 text-primary">
+                      {savingCircular ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Publish</>}
+                    </Button>
+                  </CardContent>
+                </Card>
+                {circulars.map((c) => (
+                  <Card key={c.id}>
+                    <CardContent className="p-3 flex items-start gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium">{c.title}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">{c.body}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{new Date(c.created_at).toLocaleDateString()}</p>
+                      </div>
+                      {c.is_published ? <Badge className="bg-accent text-primary">Live</Badge> : <Badge variant="outline">Draft</Badge>}
+                      <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>
+                      <Button size="sm" variant="outline" onClick={() => deleteCircular(c.id)}><Trash2 className="h-3 w-3" /></Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="ads" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader><CardTitle className="text-base">Upload New Ad</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-1.5"><Label>Title</Label><Input maxLength={120} value={adForm.title} onChange={(e) => setAdForm({ ...adForm, title: e.target.value })} /></div>
+                    <div className="space-y-1.5"><Label>Click-through URL</Label><Input maxLength={500} placeholder="https://..." value={adForm.link_url} onChange={(e) => setAdForm({ ...adForm, link_url: e.target.value })} /></div>
+                    <div className="space-y-1.5">
+                      <Label>Placement</Label>
+                      <select className="w-full border rounded h-9 px-2 text-sm bg-background" value={adForm.placement} onChange={(e) => setAdForm({ ...adForm, placement: e.target.value })}>
+                        <option value="homepage-banner">Homepage Banner</option>
+                        <option value="directory-banner">Directory Banner</option>
+                        <option value="products-banner">Products Banner</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setAdForm({ ...adForm, file: e.target.files?.[0] ?? null })} /></div>
+                    <Button onClick={saveAd} disabled={savingAd} className="bg-accent hover:bg-accent/90 text-primary">
+                      {savingAd ? <Loader2 className="h-3 w-3 animate-spin" /> : "Publish Ad"}
+                    </Button>
+                  </CardContent>
+                </Card>
+                {ads.map((a) => (
+                  <Card key={a.id}>
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <img src={a.image_url} alt={a.title} className="h-12 w-20 object-cover rounded" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{a.title}</p>
+                        <p className="text-xs text-muted-foreground">{a.placement} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                      </div>
+                      {a.is_active ? <Badge className="bg-accent text-primary">Active</Badge> : <Badge variant="outline">Paused</Badge>}
+                      <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>
+                      <Button size="sm" variant="outline" onClick={() => deleteAd(a.id)}><Trash2 className="h-3 w-3" /></Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
             </Tabs>
           )}
         </div>
