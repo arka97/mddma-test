@@ -1,135 +1,122 @@
+# MDDMA — Code Architecture Refactor Plan
 
-## Why KGVPL doesn't show up
-
-KGVPL exists in the `companies` table (owner: your account, `is_hidden=false`). But `/directory`, `/products`, `/store/:slug`, the homepage "Featured Members" section, and the seller cards everywhere still read from the static file `src/data/sampleData.ts`. Real Supabase rows are never queried.
-
-This is the root cause of the disconnect — and it's the same reason newly created products, variants, and storefronts also don't appear anywhere on the public site. Fixing this is the foundation of this pass.
+A creative-process pass (DISCOVER → DIVERGE → SYNTHESIZE → CRAFT → POLISH) on the codebase as it stands at v3.1.2.
 
 ---
 
-## Scope: "Wire It Live" + Master-Doc Gap Pass
+## 1. DISCOVER — what the audit found
 
-Two intertwined goals:
+A scan of `src/` (≈9.1k LOC of pages, ≈6.9k LOC of components) surfaced five structural issues holding the platform back:
 
-1. **Wire live DB into every discovery surface** so anything a user CRUDs immediately appears on the public site.
-2. **Close the highest-value gaps** from the uploaded `MDDMA_Master_Build_Document_v1.md` that the current build is missing.
 
-I'm explicitly *not* re-introducing things v3.1 already killed (Lead Packs, WhatsApp Business API, Discourse, multi-tier silver/gold/platinum, generic "buyer verification kills RFQ") — those are locked decisions in memory and the master doc itself uses `wa.me` links and a Free / Paid / Broker tier model that already matches v3.1.
+| #   | Symptom                                   | Evidence                                                                                                                                                                                                                    |
+| --- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **No data-fetching layer**                | `QueryClientProvider` is mounted in `App.tsx`, but **zero** files use `useQuery`/`useMutation`. Every page hand-rolls `useEffect` + `useState` + `try/catch`.                                                               |
+| 2   | **Sample data leaks everywhere**          | 22 files import from `@/data/sampleData` or `@/data/productListings` directly. `directoryAdapter.ts` exists but is only used in 4 surfaces. This is the root cause of the *"KGVPL doesn't show in directory"* class of bug. |
+| 3   | **Supabase calls scattered**              | 11+ files call `supabase.from(...)` inline. No repository, no shared error handling, no shared types beyond auto-generated.                                                                                                 |
+| 4   | **Doc pages bloat the bundle**            | 8 doc pages (SOW, BRD, PRD, FSD, SDD, TSD, MVPCanvas, SalesPitch, ChangeLog) total **~3,800 LOC of static prose** living inside React components. They ship in the main bundle and slow every build.                        |
+| 5   | **Inconsistent layout & oversized pages** | 11 pages skip `<Layout>`. `AdminModeration.tsx` is 596 LOC, `Storefront.tsx` 431, `ProductPage.tsx` 309 — each mixes fetching, mutations, and presentation.                                                                 |
 
-### Part A — Live data wiring (fixes KGVPL + everything like it)
 
-1. **Member Directory (`/directory`)**
-   - Query `companies` (joined with `profiles` for owner display name, `products` count, optional `user_roles` for broker badge).
-   - Merge live companies with `sampleMembers` so the demo catalogue stays rich, but real companies always render first and are tagged with a small "Live" indicator in the owner toolbar only.
-   - Filters (area/type/verification) work on both sources via a unified `DirectoryEntry` adapter.
-
-2. **Storefront (`/store/:slug`)**
-   - First look up `companies` by slug. Fall back to `sampleMembers` only if no DB row exists (so demo storefronts still work).
-   - When DB-backed, render `products` for that company and their `product_variants`.
-   - Owner toolbar (already built) keeps working.
-
-3. **Products page (`/products`)**
-   - New "Live Listings" tab as the default. Pulls from `products` + nested `product_variants`, joined to `companies` for the seller chip.
-   - Existing demo `productListings` becomes a secondary "Sample Catalogue" tab so the page never looks empty pre-seed.
-
-4. **Homepage**
-   - `FeaturedMembersSection` queries `companies WHERE is_verified OR membership_tier='paid' LIMIT 6`, falls back to sample featured.
-   - `RecentListingsSection` queries newest 8 `products` joined to `companies`.
-   - `FeaturedCategoriesSection` derives counts from live `products.category` aggregations.
-
-5. **Auth → Header → Account**
-   - Header already uses live auth. Add a "View my storefront" link for users that own a `companies` row (uses `useAuth().company.slug`).
-
-### Part B — Missing v1 master-doc features
-
-Picked by ROI; everything else can come later.
-
-1. **Global RFQ Cart (P10 in master doc)** — currently RFQs are single-product via `RFQModal`. Add:
-   - `CartContext` with `addItem(productId, variantId?, qty)`, `removeItem`, `clear`, persisted to `localStorage`.
-   - Floating cart FAB + slide-out `Sheet` drawer listing items grouped by seller company.
-   - "Send RFQ" → opens existing `RFQModal` in **multi-item mode** that creates one `rfqs` row per unique seller and inserts cart items into the `message`/`product_name` fields (until we add `inquiry_products` table).
-
-2. **`inquiry_products` junction table** — small migration so a single RFQ can carry N products. Master doc requires it; current `rfqs` table only stores one `product_name`.
-
-3. **Circulars** (P16)
-   - Migration: `circulars (id, title, body, created_by, published_at, is_published)` with RLS: public SELECT where `is_published`, admin INSERT/UPDATE/DELETE.
-   - Admin tab in `AdminModeration` to compose + publish.
-   - Public `/circulars` archive + "Latest Updates" strip on homepage.
-
-4. **Member Application (`/apply`)** (P3)
-   - Current `Apply.tsx` is mostly static. Refactor into a 4-step form that, on submit, creates a `companies` row with `is_hidden=true` + flag `pending_review`. Admin approves in moderation.
-   - Add `companies.review_status` enum (`pending|approved|rejected`) via migration.
-
-5. **Advertisements** (P17)
-   - Migration: `advertisements (id, title, image_url, link_url, placement, start_date, end_date, is_active, impressions, clicks)` + RLS (public SELECT active+in-window, admin write).
-   - `AdBanner` component (already exists statically) reads live ads first, falls back to placeholder.
-   - Admin tab to upload ads (uses existing `company-assets` bucket or new `ad-assets` bucket).
-
-6. **Community Forum** (P15)
-   - Migrations: `posts`, `comments` with RLS (public SELECT, authenticated INSERT, author/admin UPDATE/DELETE).
-   - Replace stub `/community` with live list + post detail route.
-
-7. **WhatsApp handoff in Seller CRM** (P11/P13 + Section 11)
-   - In `RFQInbox`, add primary "Contact buyer on WhatsApp" button on each RFQ detail that builds the master-doc message template and opens `wa.me/91<phone>?text=...` in a new tab. Phone comes from the `rfqs.buyer_phone` column already present.
-
-### Part C — Logical connections / polish
-
-- After signup, if the user has no `companies` row, show a one-time prompt on `/account` to "Create your storefront" linking to `/account/company`.
-- After creating a company, redirect to `/store/<slug>` so the user immediately sees their public page.
-- Seed `categories` from live `products` so filter dropdowns aren't hardcoded.
-- Update `mem://architecture/v3-1-locked-decisions` and `/changelog` with v3.1.2 "Live Discovery Pass" notes.
+architecture blueprint
 
 ---
 
-## Technical details
+## 2. SYNTHESIZE — the target architecture
 
-**New tables (migrations):**
-```sql
--- inquiry_products junction
-create table public.inquiry_products (
-  id uuid primary key default gen_random_uuid(),
-  rfq_id uuid not null references public.rfqs(id) on delete cascade,
-  product_id uuid references public.products(id) on delete set null,
-  variant_id uuid references public.product_variants(id) on delete set null,
-  product_name text not null,
-  quantity text not null,
-  created_at timestamptz not null default now()
-);
+A clean five-layer stack. Each layer only knows about the layer below it.
 
--- circulars, advertisements, posts, comments  (sketch — full DDL in implementation)
--- companies.review_status enum addition
+```text
+┌─────────────────────────────────────────────────┐
+│  Pages          (routing + composition only)    │
+├─────────────────────────────────────────────────┤
+│  Feature Modules   src/features/<domain>/...    │
+│   ├─ components/   (presentational)             │
+│   ├─ hooks/        (useXxxQuery, useXxxMutate)  │
+│   └─ types.ts                                   │
+├─────────────────────────────────────────────────┤
+│  Repositories      src/repositories/*.ts        │
+│   one file per table — getById, list, upsert    │
+├─────────────────────────────────────────────────┤
+│  Data Sources      live (Supabase) + sample     │
+│   merged via src/lib/dataSource.ts adapter      │
+├─────────────────────────────────────────────────┤
+│  Supabase Cloud                                 │
+└─────────────────────────────────────────────────┘
 ```
-All new tables get RLS with the same `has_role(auth.uid(), 'admin')` pattern already used.
 
-**New context:** `src/contexts/CartContext.tsx` (provider mounted in `App.tsx`).
-
-**New components:**
-- `src/components/cart/CartFab.tsx`, `CartDrawer.tsx`
-- `src/components/admin/CircularEditor.tsx`, `AdEditor.tsx`
-- `src/pages/CircularsArchive.tsx` (replaces stub)
-- `src/pages/CommunityPost.tsx`
-
-**Adapter:** `src/lib/directoryAdapter.ts` — converts a `companies` row into the same shape the existing `MemberCard` UI expects, so we don't have to rewrite cards.
-
-**Reuse:** existing `RFQModal`, `VariantManager`, `AdminModeration`, `friendlyErrorMessage`, `lib/storage.ts` upload helper.
-
-**Out of scope (deferred):**
-- Email Edge Functions for circular blasts and RFQ notifications (Section 13 of master doc) — stub the call sites with TODO comments; we'll wire actual SMTP once Resend/Mailgun is chosen.
-- Static-page CMS (still CMS-001, Phase 2).
-- Buyer verification document upload flow (already partially built in VerificationCenter; not changed in this pass).
+Feature folders proposed: `directory`, `storefront`, `products`, `rfq`, `community`, `admin`, `account`, `documents`.
 
 ---
 
-## Deliverable order
+## 3. CRAFT — the work, in five focused phases
 
-1. DB migrations (junction, circulars, ads, posts, comments, companies.review_status).
-2. Live wiring of Directory + Storefront + Products + Homepage sections.
-3. Cart context + FAB + drawer + multi-item RFQ submit.
-4. Circulars admin + public archive + homepage strip.
-5. Ads admin + AdBanner live read.
-6. Forum tables + minimal `/community` list & post detail.
-7. WhatsApp button in RFQ inbox.
-8. Apply.tsx refactor → creates pending company.
-9. Memory + changelog update.
+Phases are independently shippable. Nothing changes user-visible behaviour unless explicitly noted.
 
-After approval I'll execute these in implementation mode.
+### Phase A — Repository + React Query foundation (no UI changes)
+
+- Create `src/repositories/` with one module per table: `companies.ts`, `products.ts`, `rfqs.ts`, `inquiryProducts.ts`, `circulars.ts`, `advertisements.ts`, `posts.ts`, `comments.ts`, `profiles.ts`, `userRoles.ts`. Each exports typed `list`, `getById`, `create`, `update`, `remove`.
+- Centralise error handling through existing `src/lib/errors.ts`.
+- Add `src/hooks/queries/` with `useCompanies`, `useCompany(slug)`, `useProducts`, `useRfqs`, `useCirculars`, `useAds`, `usePosts`. Built on `@tanstack/react-query` with sensible `staleTime` defaults (60s for catalogue, 10s for RFQ inbox).
+- Define query-key factory: `qk.companies.list({filters})`, `qk.companies.bySlug(slug)` etc.
+
+### Phase B — Unified data source (kills the KGVPL-class bug for good)
+
+- Promote `directoryAdapter.ts` into `src/lib/dataSource.ts` as the **only** allowed reader of sample data.
+- Rule: nothing outside `dataSource.ts` may `import "@/data/sampleData"` or `"@/data/productListings"`. Enforced by an ESLint `no-restricted-imports` rule.
+- `dataSource` merges live Supabase rows with the sample seed, deduping by slug, live-wins-on-conflict. All 22 importers migrate to consume `useCompanies()` / `useProducts()` from Phase A.
+
+### Phase C — Feature-folder migration of the four oversized surfaces
+
+Move and split, no behaviour change:
+
+- `pages/Storefront.tsx` (431) → `features/storefront/{StorefrontPage, StorefrontHeader, ProductGrid, AddToCartButton}.tsx`
+- `pages/account/AdminModeration.tsx` (596) → `features/admin/{tabs/CircularsTab, tabs/AdsTab, tabs/RfqTab, tabs/UsersTab}.tsx`
+- `pages/ProductPage.tsx` (309) → `features/products/{ProductPage, VariantPicker, PriceBand, RfqCta}.tsx`
+- `pages/account/RFQInbox.tsx` (229) → `features/rfq/{InboxPage, InboxList, InboxRow, BuyerWhatsAppButton}.tsx`
+
+Each new file caps at ~150 LOC. Pages become 30-80 LOC routing shells.
+
+### Phase D — Docs out of the bundle
+
+- Move all prose from SOW/BRD/PRD/FSD/SDD/TSD/MVPCanvas/SalesPitch/ChangeLog into `src/content/docs/*.mdx`.
+- One generic `<DocPage slug>` component lazy-loads the MDX via `React.lazy` + `Suspense`.
+- Routes registered from a single `docsManifest.ts` (title, slug, password-gated bool).
+- Expected: drop ~3,500 LOC from the main chunk; faster first paint on `/`.
+
+### Phase E — Polish
+
+- Wrap every page in `<Layout>` (fix the 11 doc pages that skip it).
+- Add `<ErrorBoundary>` around `<Routes>` in `App.tsx` with a branded fallback (navy + gold).
+- Replace ad-hoc skeletons with a shared `<SectionSkeleton>` and `<CardGridSkeleton>`.
+- Add `src/lib/__tests__/dataSource.test.ts` covering live-wins-on-conflict and the KGVPL regression scenario.
+- ESLint rules: `no-restricted-imports` for sample data + raw `supabase.from` outside `repositories/`.
+
+---
+
+## 4. POLISH — guardrails so this doesn't decay
+
+1. **Import rules** prevent regressions (sample data, raw Supabase).
+2. **One file = one concern.** Pages route, features render, hooks fetch, repos talk to DB.
+3. **Query keys** in a single factory — refactors stay safe.
+4. **Docs as content**, not code.
+5. **Layout always present** — header / ticker / trust strip are part of the brand promise.
+
+---
+
+## Out of scope (called out, not done here)
+
+- Visual redesign / brand system pass — separate workstream.
+- Behavioral Intelligence Layer external API (TECH-001).
+- Edge function consolidation.
+- Roles/RLS audit — already solid; not touched.
+
+---
+
+## Suggested execution order
+
+A → B → C → D → E. Phases A + B unlock everything else and resolve the live-data invisibility class of bugs immediately. Phases C and D are pure cleanup with measurable bundle wins. Phase E locks the gains.
+
+Approve this plan and I'll start with **Phase A (repositories + React Query foundation)**, which is invisible to users but pays back on every subsequent change.  
+  
+Keep in mind users are non technical non tech people who are majority boomers. Admin to have full fledeged ecommerce headless cms similar to Payload Headless CMS for Ecommerce 
