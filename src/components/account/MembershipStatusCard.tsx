@@ -3,11 +3,12 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, BadgeCheck, Crown, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
+import { ArrowRight, BadgeCheck, Crown, ExternalLink, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   STATUS_LABEL,
   TIER_LABEL,
+  TIER_PRICE_INR,
   daysUntilExpiry,
   formatINR,
   getLatestMembershipForUser,
@@ -85,19 +86,21 @@ export function MembershipStatusCard() {
   const active = isMembershipActive(m);
   const days = daysUntilExpiry(m.expires_at);
   const Icon = active ? BadgeCheck : m.status === "pending" ? ShieldCheck : ShieldAlert;
+  const hasPaymentLink = m.status === "pending" && !!m.payment_link_url;
 
   return (
     <Card className="border-accent/20 bg-accent/5">
-      <CardContent className="p-4 flex items-center justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <Icon className="h-5 w-5 text-accent mt-0.5" />
-          <div>
-            <div className="flex items-center gap-2">
+      <CardContent className="p-4 flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex items-start gap-3 min-w-0 flex-1">
+          <Icon className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
               <span className="font-semibold">{TIER_LABEL[m.tier]}</span>
               <Badge variant="outline" className={statusTone(m.status)}>{STATUS_LABEL[m.status]}</Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
-              {m.status === "pending" && "Awaiting committee review · payment link will arrive on approval."}
+              {m.status === "pending" && !hasPaymentLink && "Application under committee review. You'll get a payment link here once approved."}
+              {m.status === "pending" && hasPaymentLink && `Approved — pay ${formatINR(TIER_PRICE_INR[m.tier])} to activate your founding-member spot.`}
               {m.status === "active" && days !== null && `Renews in ${days} day${days === 1 ? "" : "s"}.`}
               {m.status === "active" && days === null && "Active · founding-member rate locked."}
               {(m.status === "expired" || m.status === "cancelled") && "Renew to restore directory + RFQ access."}
@@ -105,9 +108,18 @@ export function MembershipStatusCard() {
             </div>
           </div>
         </div>
-        <Button asChild size="sm" variant="outline">
-          <Link to="/account/verify">{active ? "Manage" : "Continue"} <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link>
-        </Button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {hasPaymentLink && (
+            <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold">
+              <a href={m.payment_link_url!} target="_blank" rel="noopener noreferrer">
+                Pay {formatINR(TIER_PRICE_INR[m.tier])} <ExternalLink className="ml-1 h-3.5 w-3.5" />
+              </a>
+            </Button>
+          )}
+          <Button asChild size="sm" variant="outline">
+            <Link to="/account/verify">{active ? "Manage" : "Continue"} <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

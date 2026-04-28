@@ -61,23 +61,9 @@ export function validateDocNumber(doc: KycDocType, value: string): string | null
 }
 
 // Tables aren't in generated types.ts yet; isolate the cast here.
-type KycDb = {
-  from: (table: string) => {
-    select: (cols?: string) => {
-      eq: (col: string, val: unknown) => {
-        order: (col: string, opts?: { ascending?: boolean }) => Promise<{
-          data: KycSubmission[] | null;
-          error: Error | null;
-        }>;
-      };
-    };
-    insert: (row: Partial<KycSubmission>) => {
-      select: () => {
-        single: () => Promise<{ data: KycSubmission | null; error: Error | null }>;
-      };
-    };
-  };
-};
+// Loose chain — the actual contract is enforced server-side by RLS.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type KycDb = any;
 const db = supabase as unknown as KycDb;
 
 function safeExt(name: string): string {
@@ -180,4 +166,61 @@ export function statusTone(status: KycDocStatus | null | undefined): {
     default:
       return { label: "Not submitted", className: "bg-muted text-muted-foreground border-border" };
   }
+}
+
+// ============================================================
+// Admin queue helpers (Phase D)
+// ============================================================
+
+export interface KycSubmissionWithProfile extends KycSubmission {
+  profile?: { full_name: string | null; phone: string | null } | null;
+}
+
+export async function listAllKycSubmissions(
+  status?: KycDocStatus | "all",
+): Promise<KycSubmissionWithProfile[]> {
+  let q = db
+    .from("verification_submissions")
+    .select("*, profile:profiles!verification_submissions_profile_id_fkey(full_name, phone)")
+    .order("submitted_at", { ascending: false });
+  if (status && status !== "all") q = q.eq("status", status);
+  const { data, error } = await q;
+  if (error) {
+    console.error("listAllKycSubmissions", error);
+    return [];
+  }
+  return (data ?? []) as KycSubmissionWithProfile[];
+}
+
+export async function approveKycSubmission(
+  submissionId: string,
+  reviewerUid: string,
+): Promise<{ error: Error | null }> {
+  const { error } = await db
+    .from("verification_submissions")
+    .update({
+      status: "approved",
+      reviewed_by: reviewerUid,
+      reviewed_at: new Date().toISOString(),
+      rejection_reason: null,
+    })
+    .eq("id", submissionId);
+  return { error };
+}
+
+export async function rejectKycSubmission(
+  submissionId: string,
+  reviewerUid: string,
+  reason: string,
+): Promise<{ error: Error | null }> {
+  const { error } = await db
+    .from("verification_submissions")
+    .update({
+      status: "rejected",
+      reviewed_by: reviewerUid,
+      reviewed_at: new Date().toISOString(),
+      rejection_reason: reason.trim().slice(0, 500),
+    })
+    .eq("id", submissionId);
+  return { error };
 }

@@ -14,6 +14,7 @@ export interface Membership {
   price_paid_inr: number | null;
   razorpay_payment_id: string | null;
   razorpay_order_id: string | null;
+  payment_link_url: string | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
@@ -61,28 +62,16 @@ export function daysUntilExpiry(expiresAt: string | null): number | null {
 
 // New tables aren't yet in generated types.ts; cast at the boundary so the
 // rest of the app stays typed. Regenerating Supabase types removes the cast.
-type AnySupabase = {
-  from: (table: string) => {
-    select: (cols?: string) => {
-      eq: (col: string, val: unknown) => {
-        order: (
-          col: string,
-          opts?: { ascending?: boolean; nullsFirst?: boolean },
-        ) => {
-          maybeSingle: () => Promise<{ data: Membership | null; error: Error | null }>;
-        };
-        maybeSingle: () => Promise<{ data: Membership | null; error: Error | null }>;
-      };
-    };
-    insert: (row: Partial<Membership>) => {
-      select: () => {
-        single: () => Promise<{ data: Membership | null; error: Error | null }>;
-      };
-    };
-  };
-};
+// Loose AnySupabase chain — calls are validated server-side by RLS regardless.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnySupabase = any;
 
 const db = supabase as unknown as AnySupabase;
+
+export interface MembershipWithProfile extends Membership {
+  profile?: { full_name: string | null; phone: string | null } | null;
+  email?: string | null;
+}
 
 export async function getLatestMembershipForUser(userId: string): Promise<Membership | null> {
   const { data, error } = await db
@@ -108,9 +97,79 @@ export async function createPendingMembership(
       profile_id: userId,
       tier,
       status: "pending",
-      price_paid_inr: TIER_PRICE_INR[tier],
+      // price_paid_inr stays NULL until the webhook captures the actual amount.
     })
     .select()
     .single();
   return { data: result.data, error: result.error };
+}
+
+// ============================================================
+// Admin queue helpers (Phase D)
+// ============================================================
+
+export async function listMembershipsByStatus(
+  status: MembershipStatus | "all" = "all",
+): Promise<MembershipWithProfile[]> {
+  let q = db
+    .from("memberships")
+    .select("*, profile:profiles!memberships_profile_id_fkey(full_name, phone)")
+    .order("created_at", { ascending: false });
+  if (status !== "all") q = q.eq("status", status);
+  const { data, error } = await q;
+  if (error) {
+    console.error("listMembershipsByStatus", error);
+    return [];
+  }
+  return (data ?? []) as MembershipWithProfile[];
+}
+
+// Calls the razorpay-create-payment-link edge function. Returns the short
+// URL the admin can paste into WhatsApp / email. Requires admin auth.
+export async function createPaymentLinkForMembership(
+  membershipId: string,
+): Promise<{ payment_url: string | null; razorpay_order_id: string | null; error: string | null }> {
+  const { data, error } = await supabase.functions.invoke("razorpay-create-payment-link", {
+    body: { membership_id: membershipId },
+  });
+  if (error) {
+    return { payment_url: null, razorpay_order_id: null, error: error.message };
+  }
+  const r = (data ?? {}) as { payment_url?: string; razorpay_order_id?: string; error?: string };
+  if (r.error) return { payment_url: null, razorpay_order_id: null, error: r.error };
+  return {
+    payment_url: r.payment_url ?? null,
+    razorpay_order_id: r.razorpay_order_id ?? null,
+    error: null,
+  };
+}
+
+// Manual override path: admin marks a membership active without a Razorpay
+// callback (e.g. they collected payment offline). Server-side activate_membership()
+// applies the founding-lock window + grants paid_member role.
+export async function manuallyActivateMembership(
+  membershipId: string,
+  amountPaidInr: number,
+  notes?: string,
+): Promise<{ error: Error | null }> {
+  const { error } = await db.rpc("activate_membership", {
+    _membership_id: membershipId,
+    _payload: {
+      amount_paid_inr: String(amountPaidInr),
+      razorpay_payment_id: null,
+      razorpay_order_id: null,
+      manual_note: notes ?? null,
+    },
+  });
+  return { error };
+}
+
+export async function cancelMembership(
+  membershipId: string,
+): Promise<{ error: Error | null }> {
+  const { error } = await db
+    .from("memberships")
+    .update({ status: "cancelled" })
+    .eq("id", membershipId);
+  return { error };
 }

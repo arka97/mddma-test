@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
@@ -27,7 +27,6 @@ import Circulars from "./pages/Circulars";
 import Forms from "./pages/Forms";
 import Login from "./pages/Login";
 import Apply from "./pages/Apply";
-import Admin from "./pages/Admin";
 import SalesPitch from "./pages/SalesPitch";
 import SOW from "./pages/SOW";
 import BRD from "./pages/BRD";
@@ -78,7 +77,7 @@ const App = () => (
                   <Route path="/contact" element={<Forms />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/apply" element={<Apply />} />
-                  <Route path="/admin" element={<ProtectedRoute requireRole="admin"><Admin /></ProtectedRoute>} />
+                  <Route path="/admin" element={<Navigate to="/account/moderation" replace />} />
 
                   {/* Authenticated user space */}
                   <Route path="/account/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />

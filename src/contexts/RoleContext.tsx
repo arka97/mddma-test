@@ -1,9 +1,15 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { getLatestMembershipForUser, isMembershipActive, type Membership } from "@/lib/membership";
 
 export type UserRole = "guest" | "free_member" | "paid_member" | "broker" | "admin";
 
 interface RoleContextType {
+  // Effective role: derived from real auth + active membership when signed in;
+  // falls back to the demo override when signed out (so the unauth header
+  // dropdown can still preview different role experiences).
   role: UserRole;
+  // Demo override — only honored while user is signed out.
   setRole: (role: UserRole) => void;
   canAccess: (feature: string) => boolean;
 }
@@ -19,14 +25,37 @@ const rolePermissions: Record<UserRole, string[]> = {
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
-  const [role, setRole] = useState<UserRole>("guest");
+  const { user, hasRole } = useAuth();
+  const [demoRole, setDemoRole] = useState<UserRole>("guest");
+  const [membership, setMembership] = useState<Membership | null>(null);
 
-  const canAccess = (feature: string) => {
-    return rolePermissions[role]?.includes(feature) ?? false;
-  };
+  useEffect(() => {
+    if (!user) {
+      setMembership(null);
+      return;
+    }
+    let alive = true;
+    getLatestMembershipForUser(user.id).then((m) => {
+      if (alive) setMembership(m);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [user]);
+
+  const effectiveRole = useMemo<UserRole>(() => {
+    if (!user) return demoRole;
+    // Real role precedence: admin > broker > paid (active membership OR explicit role) > free
+    if (hasRole("admin")) return "admin";
+    if (hasRole("broker")) return "broker";
+    if (isMembershipActive(membership) || hasRole("paid_member")) return "paid_member";
+    return "free_member";
+  }, [user, hasRole, membership, demoRole]);
+
+  const canAccess = (feature: string) => rolePermissions[effectiveRole]?.includes(feature) ?? false;
 
   return (
-    <RoleContext.Provider value={{ role, setRole, canAccess }}>
+    <RoleContext.Provider value={{ role: effectiveRole, setRole: setDemoRole, canAccess }}>
       {children}
     </RoleContext.Provider>
   );
