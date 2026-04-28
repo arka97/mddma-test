@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { extractError } from "@/lib/errors";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 export interface PostRow {
   id: string;
@@ -21,7 +21,7 @@ export async function listPosts(category?: string) {
     .order("created_at", { ascending: false });
   if (category) q = q.eq("category", category);
   const { data, error } = await q;
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? []) as PostRow[];
 }
 
@@ -31,6 +31,6 @@ export async function getPost(id: string) {
     .select("*")
     .eq("id", id)
     .maybeSingle();
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? null) as PostRow | null;
 }

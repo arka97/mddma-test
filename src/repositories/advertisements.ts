@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { extractError } from "@/lib/errors";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 export interface AdRow {
   id: string;
@@ -25,6 +25,6 @@ export async function listAdsByPlacement(placement: string) {
     .eq("is_active", true)
     .lte("start_date", today)
     .or(`end_date.is.null,end_date.gte.${today}`);
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? []) as AdRow[];
 }

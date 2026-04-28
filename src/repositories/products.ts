@@ -1,6 +1,6 @@
 // Products repository.
 import { supabase } from "@/integrations/supabase/client";
-import { extractError } from "@/lib/errors";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 const PRODUCT_COLUMNS =
   "id,company_id,name,slug,category,origin,description,image_url,gallery,price_min,price_max,market_avg_price,unit,stock_band,trend_direction,demand_score,packaging_options,certifications,is_hidden,is_featured,view_count,inquiry_count,created_at,updated_at" as const;
@@ -42,7 +42,7 @@ export async function listProducts(opts: { companyId?: string; category?: string
   if (opts.companyId) q = q.eq("company_id", opts.companyId);
   if (opts.category) q = q.eq("category", opts.category);
   const { data, error } = await q;
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? []) as ProductRow[];
 }
 
@@ -52,6 +52,6 @@ export async function getProductBySlug(slug: string) {
     .select(PRODUCT_COLUMNS)
     .eq("slug", slug)
     .maybeSingle();
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? null) as ProductRow | null;
 }

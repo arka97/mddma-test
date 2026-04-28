@@ -2,7 +2,7 @@
 // Returns typed rows; consumers should never reach into supabase.from directly.
 
 import { supabase } from "@/integrations/supabase/client";
-import { extractError } from "@/lib/errors";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 const COMPANY_COLUMNS =
   "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
@@ -42,7 +42,7 @@ export async function listCompanies(opts: { includeHidden?: boolean } = {}) {
     .order("created_at", { ascending: false });
   if (!opts.includeHidden) q = q.eq("is_hidden", false);
   const { data, error } = await q;
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? []) as CompanyRow[];
 }
 
@@ -52,7 +52,7 @@ export async function getCompanyBySlug(slug: string) {
     .select(COMPANY_COLUMNS)
     .eq("slug", slug)
     .maybeSingle();
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? null) as CompanyRow | null;
 }
 
@@ -62,6 +62,6 @@ export async function getCompanyByOwner(ownerId: string) {
     .select(COMPANY_COLUMNS)
     .eq("owner_id", ownerId)
     .maybeSingle();
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? null) as CompanyRow | null;
 }

@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import { extractError } from "@/lib/errors";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 export interface CircularRow {
   id: string;
@@ -21,6 +21,6 @@ export async function listCirculars(opts: { publishedOnly?: boolean } = { publis
     .order("created_at", { ascending: false });
   if (opts.publishedOnly) q = q.eq("is_published", true);
   const { data, error } = await q;
-  if (error) throw new Error(extractError(error));
+  if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? []) as CircularRow[];
 }
