@@ -1,73 +1,162 @@
+import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { communityPosts } from "@/data/productListings";
-import { MessageSquare, Eye, Pin, ExternalLink, AlertTriangle } from "lucide-react";
+import { MessageSquare, Send, Loader2, Pin, ArrowLeft } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { friendlyErrorMessage } from "@/lib/errors";
+import { Link } from "react-router-dom";
 
 const categories = ["Market Updates", "Trade Discussions", "Association Circulars"] as const;
 
+interface Post {
+  id: string; title: string; body: string; category: string;
+  is_pinned: boolean; created_at: string; author_id: string; view_count: number;
+}
+interface Comment { id: string; body: string; author_id: string; created_at: string; }
+
 const Community = () => {
-  const renderPost = (post: typeof communityPosts[0]) => (
-    <div key={post.id} className="flex items-start gap-3 p-4 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
-      {post.pinned && <Pin className="h-4 w-4 text-accent flex-shrink-0 mt-1" />}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-medium text-foreground text-sm leading-tight">{post.title}</h3>
-        <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-          <span>{post.author} · {post.authorCompany}</span>
-          <span className="flex items-center gap-1"><MessageSquare className="h-3 w-3" />{post.replies}</span>
-          <span className="flex items-center gap-1"><Eye className="h-3 w-3" />{post.views}</span>
-          <span>{new Date(post.lastActivity).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
-        </div>
-      </div>
-    </div>
-  );
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [authors, setAuthors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
+  const [openPost, setOpenPost] = useState<Post | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState("");
+  const [form, setForm] = useState({ title: "", body: "", category: categories[1] as string });
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = async () => {
+    setLoading(true);
+    const { data } = await supabase.from("posts").select("*").order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
+    setPosts((data ?? []) as any);
+    const ids = Array.from(new Set((data ?? []).map((p: any) => p.author_id)));
+    if (ids.length) {
+      const { data: profs } = await supabase.from("profiles").select("id,full_name").in("id", ids);
+      const map: Record<string, string> = {};
+      (profs ?? []).forEach((p: any) => { map[p.id] = p.full_name ?? "Member"; });
+      setAuthors(map);
+    }
+    setLoading(false);
+  };
+  useEffect(() => { load(); }, []);
+
+  const openDetail = async (p: Post) => {
+    setOpenPost(p);
+    const { data } = await supabase.from("comments").select("*").eq("post_id", p.id).order("created_at", { ascending: true });
+    setComments((data ?? []) as any);
+  };
+
+  const submitPost = async () => {
+    if (!user) { toast({ title: "Sign in to post", variant: "destructive" }); return; }
+    if (!form.title.trim() || !form.body.trim()) return;
+    setSubmitting(true);
+    const { error } = await supabase.from("posts").insert({
+      title: form.title, body: form.body, category: form.category, author_id: user.id,
+    });
+    setSubmitting(false);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+    else { toast({ title: "Posted" }); setForm({ title: "", body: "", category: categories[1] }); load(); }
+  };
+
+  const submitComment = async () => {
+    if (!user || !openPost || !newComment.trim()) return;
+    const { error } = await supabase.from("comments").insert({
+      post_id: openPost.id, author_id: user.id, body: newComment,
+    });
+    if (error) toast({ title: "Failed", variant: "destructive" });
+    else { setNewComment(""); openDetail(openPost); }
+  };
+
+  if (openPost) {
+    return (
+      <Layout>
+        <section className="py-8">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+            <Button variant="ghost" size="sm" onClick={() => setOpenPost(null)} className="mb-4"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Button>
+            <Card>
+              <CardHeader>
+                <Badge variant="outline" className="w-fit text-xs">{openPost.category}</Badge>
+                <CardTitle className="text-xl">{openPost.title}</CardTitle>
+                <p className="text-xs text-muted-foreground">By {authors[openPost.author_id] ?? "Member"} · {new Date(openPost.created_at).toLocaleDateString()}</p>
+              </CardHeader>
+              <CardContent><p className="text-sm whitespace-pre-wrap">{openPost.body}</p></CardContent>
+            </Card>
+
+            <h2 className="text-base font-semibold mt-6 mb-3">Comments ({comments.length})</h2>
+            <div className="space-y-3">
+              {comments.map((c) => (
+                <Card key={c.id}><CardContent className="p-3">
+                  <p className="text-xs text-muted-foreground mb-1">{authors[c.author_id] ?? "Member"} · {new Date(c.created_at).toLocaleDateString()}</p>
+                  <p className="text-sm whitespace-pre-wrap">{c.body}</p>
+                </CardContent></Card>
+              ))}
+              {comments.length === 0 && <p className="text-sm text-muted-foreground">No comments yet.</p>}
+            </div>
+
+            {user ? (
+              <div className="mt-4 space-y-2">
+                <Textarea rows={3} maxLength={1500} placeholder="Add a comment..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
+                <Button onClick={submitComment} className="bg-accent hover:bg-accent/90 text-primary"><Send className="h-3 w-3 mr-1" /> Comment</Button>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground mt-4"><Link to="/login" className="text-accent hover:underline">Sign in</Link> to comment.</p>
+            )}
+          </div>
+        </section>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
       <section className="bg-primary py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Trade Community</h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            Market intelligence, industry discussions and association updates
-          </p>
-        </div>
-      </section>
-
-      {/* Rules Banner */}
-      <section className="py-4 bg-accent/5 border-b border-accent/20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 text-sm">
-            <AlertTriangle className="h-4 w-4 text-accent flex-shrink-0" />
-            <p className="text-muted-foreground">
-              <span className="font-semibold text-foreground">Community Rules:</span> This is a discussion forum for market intelligence and industry news.{" "}
-              <span className="text-destructive font-medium">❌ No trade offers</span> ·{" "}
-              <span className="text-destructive font-medium">❌ No buy/sell requests</span>. Use the{" "}
-              <a href="/broker" className="text-accent hover:underline">Broker Marketplace</a> for trade.
-            </p>
-          </div>
+          <p className="text-primary-foreground/80 max-w-2xl mx-auto">Market intelligence, discussions and association updates</p>
         </div>
       </section>
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
+          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
             <div>
-              <Tabs defaultValue="Market Updates">
-                <TabsList className="mb-4">
-                  {categories.map((cat) => (
-                    <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>
-                  ))}
+              <Tabs defaultValue="all">
+                <TabsList className="mb-4 flex-wrap h-auto">
+                  <TabsTrigger value="all">All</TabsTrigger>
+                  {categories.map((cat) => <TabsTrigger key={cat} value={cat}>{cat}</TabsTrigger>)}
                 </TabsList>
-                {categories.map((cat) => (
-                  <TabsContent key={cat} value={cat}>
+
+                {(["all", ...categories] as const).map((tab) => (
+                  <TabsContent key={tab} value={tab}>
                     <Card>
                       <CardContent className="p-0">
-                        {communityPosts
-                          .filter((p) => p.category === cat)
-                          .sort((a, b) => (a.pinned === b.pinned ? 0 : a.pinned ? -1 : 1))
-                          .map(renderPost)}
+                        {loading ? (
+                          <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>
+                        ) : (
+                          (tab === "all" ? posts : posts.filter((p) => p.category === tab)).map((post) => (
+                            <button key={post.id} onClick={() => openDetail(post)} className="w-full text-left flex items-start gap-3 p-4 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
+                              {post.is_pinned && <Pin className="h-4 w-4 text-accent flex-shrink-0 mt-1" />}
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-medium text-foreground text-sm leading-tight">{post.title}</h3>
+                                <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                                  <span>{authors[post.author_id] ?? "Member"}</span>
+                                  <Badge variant="outline" className="text-xs">{post.category}</Badge>
+                                  <span>{new Date(post.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                                </div>
+                              </div>
+                            </button>
+                          ))
+                        )}
+                        {!loading && posts.length === 0 && <p className="p-6 text-sm text-muted-foreground text-center">No posts yet. Be the first.</p>}
                       </CardContent>
                     </Card>
                   </TabsContent>
@@ -75,45 +164,27 @@ const Community = () => {
               </Tabs>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-4">
-              <Card className="bg-accent/5 border-accent/20">
-                <CardContent className="p-5 text-center">
-                  <h3 className="font-semibold text-foreground mb-2">Full Community Forum</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Join deeper discussions on community.mddma.com powered by Discourse.
-                  </p>
-                  <Button className="w-full bg-accent hover:bg-accent/90 text-primary" asChild>
-                    <a href="https://community.mddma.com" target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" /> Visit Forum
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-
               <Card className="bg-card border-border">
-                <CardHeader><CardTitle className="text-base">Popular Topics</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {communityPosts
-                      .sort((a, b) => b.views - a.views)
-                      .slice(0, 5)
-                      .map((p) => (
-                        <div key={p.id} className="text-sm">
-                          <p className="text-foreground line-clamp-1">{p.title}</p>
-                          <p className="text-xs text-muted-foreground">{p.views} views · {p.replies} replies</p>
-                        </div>
-                      ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card border-border">
-                <CardHeader><CardTitle className="text-base">Forum Categories</CardTitle></CardHeader>
-                <CardContent className="space-y-2">
-                  {["Market Intelligence", "Industry News", "Trade Discussions", "Association Updates", "Events", "Social Lounge"].map((cat) => (
-                    <Badge key={cat} variant="outline" className="mr-1 mb-1 text-xs">{cat}</Badge>
-                  ))}
+                <CardHeader><CardTitle className="text-base flex items-center gap-2"><MessageSquare className="h-4 w-4" /> Start a discussion</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  {!user ? (
+                    <p className="text-sm text-muted-foreground"><Link to="/login" className="text-accent hover:underline">Sign in</Link> to post.</p>
+                  ) : (
+                    <>
+                      <div className="space-y-1.5"><Label>Title</Label><Input maxLength={150} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
+                      <div className="space-y-1.5">
+                        <Label>Category</Label>
+                        <select className="w-full border rounded h-9 px-2 text-sm bg-background" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+                          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                        </select>
+                      </div>
+                      <div className="space-y-1.5"><Label>Message</Label><Textarea rows={4} maxLength={2000} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} /></div>
+                      <Button onClick={submitPost} disabled={submitting} className="w-full bg-accent hover:bg-accent/90 text-primary">
+                        {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Post</>}
+                      </Button>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
