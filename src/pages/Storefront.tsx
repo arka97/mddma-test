@@ -279,7 +279,7 @@ const Storefront = () => {
                                         productId: p.id,
                                         productName: p.name,
                                         companyId: liveCompanyId,
-                                        companyName: member.companyName,
+                                        companyName: member.firmName,
                                         companySlug: slug,
                                         imageUrl: p.image_url,
                                         quantity: "",
