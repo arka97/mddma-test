@@ -1,15 +1,16 @@
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { CommodityImage } from "@/components/commodity/CommodityImage";
 
 const featuredCategories = [
-  { name: "Almonds", icon: "🥜", slug: "almonds", count: 5 },
-  { name: "Cashews", icon: "🥜", slug: "cashews", count: 5 },
-  { name: "Dates", icon: "🌴", slug: "dates", count: 3 },
-  { name: "Raisins", icon: "🍇", slug: "raisins", count: 3 },
-  { name: "Pistachios", icon: "🥜", slug: "pistachios", count: 3 },
-  { name: "Walnuts", icon: "🥜", slug: "walnuts", count: 2 },
-  { name: "Seeds", icon: "🌱", slug: "pumpkin-seeds", count: 5 },
+  { name: "Almonds", slug: "almonds", count: 5 },
+  { name: "Cashews", slug: "cashews", count: 5 },
+  { name: "Dates", slug: "dates", count: 3 },
+  { name: "Raisins", slug: "raisins", count: 3 },
+  { name: "Pistachios", slug: "pistachios", count: 3 },
+  { name: "Walnuts", slug: "walnuts", count: 2 },
+  { name: "Pumpkin Seeds", slug: "pumpkin-seeds", count: 5 },
 ];
 
 export function FeaturedCategoriesSection() {
@@ -21,23 +22,21 @@ export function FeaturedCategoriesSection() {
             Browse by Category
           </h2>
           <p className="text-muted-foreground">
-            Discover products and find verified sellers across Mumbai's top traded categories
+            Discover products and find verified sellers across Mumbai&apos;s top traded categories
           </p>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
           {featuredCategories.map((cat) => (
             <Link key={cat.name} to={`/products/${cat.slug}`}>
-              <Card className="bg-card border-border hover:border-accent/50 card-hover text-center h-full">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="text-3xl sm:text-4xl mb-3">{cat.icon}</div>
-                  <h3 className="font-semibold text-foreground text-sm sm:text-base">
-                    {cat.name}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
+              <Card className="bg-card border-border hover:border-accent/60 card-hover h-full overflow-hidden">
+                <CommodityImage commodity={cat.name} aspect="1/1" rounded={false} />
+                <div className="p-3 text-center">
+                  <h3 className="font-semibold text-foreground text-sm">{cat.name}</h3>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
                     {cat.count} sellers
                   </p>
-                </CardContent>
+                </div>
               </Card>
             </Link>
           ))}

@@ -8,9 +8,11 @@ import { sampleProducts, sampleMembers } from "@/data/sampleData";
 import { productListings } from "@/data/productListings";
 import { communityPosts } from "@/data/productListings";
 import { ArrowLeft, ShieldCheck, ExternalLink, Package, MapPin, Send, MessageSquare, Users, Flame, AlertTriangle } from "lucide-react";
-import { StockBadge, PriceRange, TrendBadge, DemandIndicator, MarketSignals } from "@/components/MarketSignals";
+import { StockBadge, TrendBadge, DemandIndicator, MarketSignals } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
 import { RecencyCue, LiveViewersCue, PriceAnchorCue, ScarcityCue, InquiryProofCue, ReciprocityChip } from "@/components/behavioral/BehavioralCues";
+import { CommodityImage } from "@/components/commodity/CommodityImage";
+import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 
 const ProductPage = () => {
   const { slug } = useParams();
@@ -45,10 +47,10 @@ const ProductPage = () => {
             <ArrowLeft className="mr-1 h-4 w-4" /> Back to Products
           </Link>
           <div className="flex items-center gap-4">
-            <div className="text-5xl">{product.image}</div>
+            <CommodityImage commodity={product.name} aspect="1/1" className="w-20 sm:w-24 flex-shrink-0" />
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-primary-foreground">{product.name}</h1>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <Badge className="bg-accent/20 text-accent border-accent/30">{product.category}</Badge>
                 {totalInquiries > 10 && (
                   <Badge className="bg-orange-500/20 text-orange-300 border-orange-500/30 text-xs">
@@ -109,7 +111,7 @@ const ProductPage = () => {
                                   <div className="mt-0.5"><ScarcityCue listing={listing} /></div>
                                 </td>
                                 <td className="py-2.5 px-2">
-                                  <PriceRange listing={listing} />
+                                  <GuardedPrice listing={listing} />
                                   <div className="mt-0.5"><PriceAnchorCue listing={listing} /></div>
                                 </td>
                                 <td className="py-2.5 px-2">
@@ -295,7 +297,7 @@ const ProductPage = () => {
           className="w-full bg-accent hover:bg-accent/90 text-primary font-bold text-sm h-11"
           onClick={() => setRfqProduct(product.name)}
         >
-          📩 Request Best Price — {product.name}
+          <Send className="h-4 w-4 mr-1.5" /> Request Quote — {product.name}
         </Button>
       </div>
 
