@@ -14,12 +14,13 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
+    preserveSymlinks: true,
     dedupe: ["react", "react-dom", "@tanstack/react-query", "@tanstack/query-core"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
   optimizeDeps: {
-    include: ["@tanstack/react-query", "@tanstack/query-core"],
+    exclude: ["@tanstack/react-query"],
   },
 }));
