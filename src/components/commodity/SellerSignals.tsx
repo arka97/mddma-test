@@ -1,30 +1,36 @@
 import { BadgeCheck, Sparkles } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  type TradeSignals,
+  TRADE_HISTORY_THRESHOLD,
+  formatResponseTime,
+  isEstablishingHistory,
+} from "@/lib/tradeSignals";
 
 interface SellerSignalsProps {
-  // memberSince year, e.g. 2018 — derived from seller record
+  // Year the seller joined MDDMA / first onboarded.
   memberSince?: number;
-  // total completed trades; placeholder for the Phase-C scoreboard
-  tradesCompleted?: number;
-  // optional: minutes-to-first-response SLA
-  avgResponseMinutes?: number;
   verified?: boolean;
   compact?: boolean;
+  // Live trade signals row from Phase-C schema. When null/undefined or
+  // trades_completed below TRADE_HISTORY_THRESHOLD, the placeholder pill
+  // ("Establishing trade history") is shown instead of raw zeros.
+  signals?: TradeSignals | null;
 }
 
-// Small inline trust strip used on listing cards + microsite hero.
-// Phase A ships placeholder copy ("Establishing trade history") for new
-// sellers; Phase C replaces tradesCompleted/avgResponseMinutes with
-// real columns from the seller_trade_signals table.
+// Inline trust strip used on listing + directory cards. Phase A introduced
+// this with placeholder copy; Phase C lights it up with real numbers when a
+// company has crossed the trade-history threshold.
 export function SellerSignals({
   memberSince,
-  tradesCompleted = 0,
-  avgResponseMinutes,
   verified = true,
   compact = false,
+  signals,
 }: SellerSignalsProps) {
   const yearsActive = memberSince ? Math.max(0, new Date().getFullYear() - memberSince) : null;
-  const isNew = tradesCompleted < 1;
+  const establishing = isEstablishingHistory(signals);
+  const trades = signals?.trades_completed ?? 0;
+  const respMin = signals?.avg_response_minutes ?? 0;
 
   return (
     <div className={`inline-flex items-center gap-1.5 text-[10px] ${compact ? "" : "flex-wrap"}`}>
@@ -43,7 +49,7 @@ export function SellerSignals({
       {yearsActive !== null && yearsActive > 0 && (
         <span className="text-muted-foreground">· {yearsActive}y on MDDMA</span>
       )}
-      {isNew ? (
+      {establishing ? (
         <Tooltip>
           <TooltipTrigger asChild>
             <span className="inline-flex items-center gap-0.5 text-muted-foreground">
@@ -51,14 +57,19 @@ export function SellerSignals({
             </span>
           </TooltipTrigger>
           <TooltipContent>
-            <p className="text-xs max-w-xs">Trade signals build from completed RFQs. New sellers show this pill until their first 5 trades are recorded.</p>
+            <p className="text-xs max-w-xs">
+              Trade signals build from completed RFQs. Sellers below {TRADE_HISTORY_THRESHOLD} trades
+              show this pill until the threshold is crossed.
+            </p>
           </TooltipContent>
         </Tooltip>
       ) : (
-        <span className="text-muted-foreground">· {tradesCompleted} trades</span>
-      )}
-      {avgResponseMinutes !== undefined && avgResponseMinutes > 0 && (
-        <span className="text-muted-foreground">· responds in ~{avgResponseMinutes < 60 ? `${avgResponseMinutes}m` : `${Math.round(avgResponseMinutes / 60)}h`}</span>
+        <>
+          <span className="text-muted-foreground">· {trades} trades</span>
+          {respMin > 0 && (
+            <span className="text-muted-foreground">· responds in ~{formatResponseTime(respMin)}</span>
+          )}
+        </>
       )}
     </div>
   );

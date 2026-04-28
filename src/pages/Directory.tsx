@@ -13,6 +13,7 @@ import { tradingAreas } from "@/data/sampleData";
 import { useLiveCompanies } from "@/hooks/useLiveCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
+import { useSellerTradeSignalsBatch } from "@/lib/tradeSignals";
 
 const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor"];
 
@@ -43,6 +44,12 @@ const Directory = () => {
     if (!a.isFeatured && b.isFeatured) return 1;
     return 0;
   });
+
+  // Phase C: batch-fetch trade signals for the live companies on screen.
+  // Demo entries don't have a Supabase row, so we just show the placeholder
+  // for them — the SellerSignals component handles signals=null gracefully.
+  const liveIds = sorted.filter((m) => m.source === "live").map((m) => m.id);
+  const { map: signalsMap } = useSellerTradeSignalsBatch(liveIds);
 
   return (
     <Layout>
@@ -186,12 +193,12 @@ const Directory = () => {
                           )}
                         </div>
 
-                        {/* Trade signals — placeholder until Phase C */}
+                        {/* Trade signals — live for Supabase entries, placeholder for demo */}
                         <div className="mt-auto pt-2 border-t border-border">
                           <SellerSignals
                             memberSince={member.memberSince}
-                            tradesCompleted={0}
                             verified={member.verificationStatus === "Verified"}
+                            signals={member.source === "live" ? signalsMap.get(member.id) ?? null : null}
                           />
                         </div>
                       </div>

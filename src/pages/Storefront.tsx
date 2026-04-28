@@ -18,6 +18,8 @@ import { StockBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
 import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
 import { AddToRfqButton } from "@/components/rfq/AddToRfqButton";
+import { SellerScoreboard } from "@/components/commodity/SellerScoreboard";
+import { useSellerKyc, useSellerTradeSignals } from "@/lib/tradeSignals";
 
 interface LiveProduct {
   id: string;
@@ -41,6 +43,7 @@ const Storefront = () => {
   const [previewMode, setPreviewMode] = useState(false);
   const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
   const [liveCompanyId, setLiveCompanyId] = useState<string | null>(null);
+  const [liveOwnerId, setLiveOwnerId] = useState<string | null>(null);
   const [liveProducts, setLiveProducts] = useState<LiveProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +53,7 @@ const Storefront = () => {
     setLoading(true);
     supabase
       .from("companies")
-      .select("id,slug,name,tagline,description,logo_url,city,state,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
+      .select("id,owner_id,slug,name,tagline,description,logo_url,city,state,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
       .eq("slug", slug)
       .maybeSingle()
       .then(async ({ data }) => {
@@ -58,6 +61,7 @@ const Storefront = () => {
         if (data) {
           setLiveMember(liveCompanyToEntry(data as unknown as LiveCompanyRow));
           setLiveCompanyId(data.id);
+          setLiveOwnerId((data as unknown as { owner_id: string }).owner_id ?? null);
           const { data: prods } = await supabase
             .from("products")
             .select("id,name,slug,category,origin,image_url,price_min,price_max,unit,stock_band,description")
@@ -75,6 +79,11 @@ const Storefront = () => {
   const member = liveMember ?? demoMember;
   const isOwner = !!ownCompany && ownCompany.slug === slug;
   const canManage = isOwner || hasRole("admin");
+
+  // Phase C — live trade signals + KYC checklist. Hooks no-op when ids are null
+  // (demo storefronts), so the scoreboard tile renders the placeholder instead.
+  const { signals, loading: signalsLoading } = useSellerTradeSignals(liveCompanyId);
+  const { checklist: kyc } = useSellerKyc(liveOwnerId);
 
   if (loading && !demoMember) {
     return (
@@ -166,6 +175,13 @@ const Storefront = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Phase C: scoreboard + KYC checklist tile */}
+      <section className="py-6 bg-muted/30 border-b border-border">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <SellerScoreboard signals={signals} kyc={kyc} loading={signalsLoading} />
         </div>
       </section>
 

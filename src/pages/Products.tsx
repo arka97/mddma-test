@@ -216,7 +216,6 @@ const Products = () => {
                             </div>
                             <SellerSignals
                               memberSince={seller.memberSince}
-                              tradesCompleted={0}
                               verified={seller.verificationStatus === "Verified"}
                             />
                           </Link>
