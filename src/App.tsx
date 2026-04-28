@@ -26,16 +26,8 @@ import Circulars from "./pages/Circulars";
 import Forms from "./pages/Forms";
 import Login from "./pages/Login";
 import Apply from "./pages/Apply";
-import SalesPitch from "./pages/SalesPitch";
-import SOW from "./pages/SOW";
-import BRD from "./pages/BRD";
-import PRD from "./pages/PRD";
-import FSD from "./pages/FSD";
-import SDD from "./pages/SDD";
-import TSD from "./pages/TSD";
-import MVPCanvas from "./pages/MVPCanvas";
-import Documents from "./pages/Documents";
-import ChangeLog from "./pages/ChangeLog";
+import DocumentsHub from "./pages/DocumentsHub";
+import DocViewer from "./pages/DocViewer";
 import NotFound from "./pages/NotFound";
 import ProfilePage from "./pages/account/ProfilePage";
 import CompanyPage from "./pages/account/CompanyPage";
@@ -83,17 +75,20 @@ const App = () => (
                 <Route path="/account/verify" element={<ProtectedRoute><VerificationCenter /></ProtectedRoute>} />
                 <Route path="/account/moderation" element={<ProtectedRoute requireRole="admin"><AdminModeration /></ProtectedRoute>} />
 
-                {/* Document vault */}
-                <Route path="/pitch" element={<PasswordGate><SalesPitch /></PasswordGate>} />
-                <Route path="/sow" element={<PasswordGate><SOW /></PasswordGate>} />
-                <Route path="/brd" element={<PasswordGate><BRD /></PasswordGate>} />
-                <Route path="/prd" element={<PasswordGate><PRD /></PasswordGate>} />
-                <Route path="/fsd" element={<PasswordGate><FSD /></PasswordGate>} />
-                <Route path="/sdd" element={<PasswordGate><SDD /></PasswordGate>} />
-                <Route path="/tsd" element={<PasswordGate><TSD /></PasswordGate>} />
-                <Route path="/mvp-canvas" element={<PasswordGate><MVPCanvas /></PasswordGate>} />
-                <Route path="/documents" element={<PasswordGate><Documents /></PasswordGate>} />
-                <Route path="/changelog" element={<PasswordGate><ChangeLog /></PasswordGate>} />
+                {/* Documentation hub (canonical markdown spec) */}
+                <Route path="/documents" element={<PasswordGate><DocumentsHub /></PasswordGate>} />
+                <Route path="/documents/:slug" element={<PasswordGate><DocViewer /></PasswordGate>} />
+
+                {/* Legacy doc routes → redirect to merged equivalents */}
+                <Route path="/pitch" element={<Navigate to="/documents/vision-and-pitch" replace />} />
+                <Route path="/mvp-canvas" element={<Navigate to="/documents/vision-and-pitch" replace />} />
+                <Route path="/brd" element={<Navigate to="/documents/business-and-scope" replace />} />
+                <Route path="/sow" element={<Navigate to="/documents/business-and-scope" replace />} />
+                <Route path="/prd" element={<Navigate to="/documents/product-and-ux" replace />} />
+                <Route path="/fsd" element={<Navigate to="/documents/functional-spec" replace />} />
+                <Route path="/sdd" element={<Navigate to="/documents/architecture-and-tech" replace />} />
+                <Route path="/tsd" element={<Navigate to="/documents/architecture-and-tech" replace />} />
+                <Route path="/changelog" element={<Navigate to="/documents/build-and-operations" replace />} />
 
                 <Route path="*" element={<NotFound />} />
               </Routes>
