@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Search, MapPin, Package, ShieldCheck, Star, Filter } from "lucide-react";
+import { Search, MapPin, ShieldCheck, Star, Loader2, BadgeCheck } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { AdBanner } from "@/components/home/AdBanner";
-import { sampleMembers, tradingAreas } from "@/data/sampleData";
+import { tradingAreas } from "@/data/sampleData";
 import { useLiveCompanies } from "@/hooks/useLiveCompanies";
-import { Loader2 } from "lucide-react";
+import { CommodityImage } from "@/components/commodity/CommodityImage";
+import { SellerSignals } from "@/components/commodity/SellerSignals";
 
 const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor"];
 
@@ -36,7 +36,6 @@ const Directory = () => {
     return matchesSearch && matchesArea && matchesType && matchesVerification;
   });
 
-  // Show sponsored members first
   const sorted = [...filteredMembers].sort((a, b) => {
     if (a.isSponsored && !b.isSponsored) return -1;
     if (!a.isSponsored && b.isSponsored) return 1;
@@ -47,19 +46,17 @@ const Directory = () => {
 
   return (
     <Layout>
-      {/* Header */}
       <section className="bg-primary py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
             Member Directory
           </h1>
           <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            Find verified dry fruits and dates merchants across Mumbai's major trading markets
+            Find KYC-verified dry fruits and dates merchants across Mumbai&apos;s major trading markets
           </p>
         </div>
       </section>
 
-      {/* Filters */}
       <section className="py-6 bg-muted/50 border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-3">
@@ -112,67 +109,96 @@ const Directory = () => {
         </div>
       </section>
 
-      {/* Members Grid */}
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
-            <div className="grid gap-4 sm:grid-cols-2">
-              {sorted.map((member) => (
-                <Link key={member.id} to={`/store/${member.slug}`}>
-                  <Card className="bg-card border-border hover:border-accent/50 card-hover h-full">
-                    <CardContent className="p-5">
-                      {/* Live / Sponsored label */}
-                      <div className="flex items-center gap-2 mb-2">
-                        {member.source === "live" && (
-                          <span className="text-[10px] uppercase tracking-wide text-accent font-semibold bg-accent/10 px-1.5 py-0.5 rounded">Live</span>
-                        )}
-                        {member.isSponsored && (
-                          <div className="flex items-center gap-1">
-                            <Star className="h-3 w-3 text-accent" />
-                            <span className="text-xs text-accent font-medium">Sponsored</span>
+            <div className="grid gap-5 sm:grid-cols-2">
+              {sorted.map((member) => {
+                const heroCommodity = member.commodities[0] ?? "Mixed Dry Fruits";
+                const hasGst = member.gstNumber && member.gstNumber.length >= 5;
+                const hasFssai = !!member.fssaiNumber;
+                return (
+                  <Link key={member.id} to={`/store/${member.slug}`} className="group">
+                    <Card className="bg-card border-border hover:border-accent/50 card-hover h-full overflow-hidden flex flex-col">
+                      {/* Hero photo of primary commodity */}
+                      <div className="relative">
+                        <CommodityImage commodity={heroCommodity} aspect="16/10" rounded={false} />
+                        <div className="absolute top-2 left-2 flex items-center gap-1.5">
+                          {member.source === "live" && (
+                            <span className="text-[9px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded bg-accent text-primary">
+                              Live
+                            </span>
+                          )}
+                          {member.isSponsored && (
+                            <span className="inline-flex items-center gap-0.5 text-[9px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded bg-background/95 text-accent backdrop-blur">
+                              <Star className="h-2.5 w-2.5" /> Sponsored
+                            </span>
+                          )}
+                        </div>
+                        {member.verificationStatus === "Verified" && (
+                          <div className="absolute top-2 right-2">
+                            <Badge className="bg-emerald-600 hover:bg-emerald-600 text-white border-emerald-700 text-[10px]">
+                              <ShieldCheck className="h-3 w-3 mr-0.5" /> Verified
+                            </Badge>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex items-start gap-3 mb-3">
-                        <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
-                          {member.logoPlaceholder}
+                      <div className="p-4 flex flex-col flex-1">
+                        {/* Logo + firm name */}
+                        <div className="flex items-start gap-3 mb-2">
+                          <div className="h-11 w-11 -mt-7 rounded-lg bg-primary border-2 border-card flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0 shadow">
+                            {member.logoPlaceholder}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-semibold text-foreground truncate">{member.firmName}</h3>
+                            <p className="text-xs text-muted-foreground truncate">{member.ownerName || member.memberType}</p>
+                          </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="font-semibold text-foreground truncate">{member.firmName}</h3>
-                          <p className="text-xs text-muted-foreground">{member.ownerName}</p>
+
+                        {/* KYC trust pills */}
+                        <div className="flex items-center gap-1 flex-wrap mb-2">
+                          <Badge variant="outline" className="text-[10px] h-5 gap-0.5">{member.memberType}</Badge>
+                          {hasGst && (
+                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-emerald-200 text-emerald-700 bg-emerald-50">
+                              <BadgeCheck className="h-2.5 w-2.5" /> GST
+                            </Badge>
+                          )}
+                          {hasFssai && (
+                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-emerald-200 text-emerald-700 bg-emerald-50">
+                              <BadgeCheck className="h-2.5 w-2.5" /> FSSAI
+                            </Badge>
+                          )}
+                        </div>
+
+                        {/* Location */}
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
+                          <MapPin className="h-3 w-3" /> {member.area}
+                        </div>
+
+                        {/* Commodities */}
+                        <div className="flex flex-wrap gap-1 mb-3">
+                          {member.commodities.slice(0, 3).map((c) => (
+                            <Badge key={c} variant="secondary" className="text-[10px] h-5">{c}</Badge>
+                          ))}
+                          {member.commodities.length > 3 && (
+                            <Badge variant="secondary" className="text-[10px] h-5">+{member.commodities.length - 3}</Badge>
+                          )}
+                        </div>
+
+                        {/* Trade signals — placeholder until Phase C */}
+                        <div className="mt-auto pt-2 border-t border-border">
+                          <SellerSignals
+                            memberSince={member.memberSince}
+                            tradesCompleted={0}
+                            verified={member.verificationStatus === "Verified"}
+                          />
                         </div>
                       </div>
-
-                      {/* Badges */}
-                      <div className="flex items-center gap-2 mb-3">
-                        {member.verificationStatus === "Verified" && (
-                          <Badge variant="secondary" className="text-xs px-1.5 py-0 h-5 gap-0.5">
-                            <ShieldCheck className="h-3 w-3" />
-                            {member.verificationLevel}
-                          </Badge>
-                        )}
-                        <Badge variant="outline" className="text-xs">{member.memberType}</Badge>
-                      </div>
-
-                      {/* Location */}
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
-                        <MapPin className="h-3 w-3" /> {member.area}
-                      </div>
-
-                      {/* Products */}
-                      <div className="flex flex-wrap gap-1">
-                        {member.commodities.slice(0, 3).map((c) => (
-                          <Badge key={c} variant="outline" className="text-xs">{c}</Badge>
-                        ))}
-                        {member.commodities.length > 3 && (
-                          <Badge variant="outline" className="text-xs">+{member.commodities.length - 3}</Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+                    </Card>
+                  </Link>
+                );
+              })}
 
               {sorted.length === 0 && (
                 <div className="text-center py-12 col-span-full">
@@ -181,7 +207,6 @@ const Directory = () => {
               )}
             </div>
 
-            {/* Sidebar ads */}
             <div className="hidden lg:block">
               <AdBanner placement="directory-sidebar" />
             </div>

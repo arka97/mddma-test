@@ -8,7 +8,7 @@ export type DirectoryEntry = Member & {
   source: "live" | "demo";
 };
 
-interface LiveCompanyRow {
+export interface LiveCompanyRow {
   id: string;
   slug: string;
   name: string;

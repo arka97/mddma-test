@@ -9,13 +9,15 @@ import { productListings } from "@/data/productListings";
 import { useRole } from "@/contexts/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { liveCompanyToEntry, type DirectoryEntry } from "@/lib/directoryAdapter";
+import { liveCompanyToEntry, type DirectoryEntry, type LiveCompanyRow } from "@/lib/directoryAdapter";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
   ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye, Loader2,
 } from "lucide-react";
-import { StockBadge, PriceRange, TrendBadge } from "@/components/MarketSignals";
+import { StockBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
+import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
+import { AddToRfqButton } from "@/components/rfq/AddToRfqButton";
 
 interface LiveProduct {
   id: string;
@@ -54,7 +56,7 @@ const Storefront = () => {
       .then(async ({ data }) => {
         if (!alive) return;
         if (data) {
-          setLiveMember(liveCompanyToEntry(data as any));
+          setLiveMember(liveCompanyToEntry(data as unknown as LiveCompanyRow));
           setLiveCompanyId(data.id);
           const { data: prods } = await supabase
             .from("products")
@@ -109,7 +111,7 @@ const Storefront = () => {
               <span className="font-medium text-foreground">
                 {isOwner ? "You're viewing your own storefront" : "Admin moderation view"}
               </span>
-              <span className="text-muted-foreground">— buyers see this layout, with prices masked.</span>
+              <span className="text-muted-foreground">— prices are gated to signed-in members.</span>
             </div>
             <div className="flex items-center gap-2">
               <Button size="sm" variant="outline" onClick={() => setPreviewMode(true)}>
@@ -255,18 +257,47 @@ const Storefront = () => {
                                 <Badge variant="outline" className="text-xs capitalize">{p.stock_band ?? "medium"}</Badge>
                               </td>
                               <td className="py-2.5 px-2 text-xs">
-                                {p.price_min && p.price_max
-                                  ? `₹${p.price_min}–${p.price_max} / ${p.unit ?? "kg"}`
-                                  : "On request"}
+                                <GuardedPublicPriceLine listing={{
+                                  id: p.id,
+                                  sellerId: liveCompanyId ?? "",
+                                  commodityId: p.id,
+                                  commodity: p.name,
+                                  variant: "",
+                                  origin: p.origin ?? "",
+                                  packaging: "",
+                                  moq: "",
+                                  priceMin: p.price_min,
+                                  priceMax: p.price_max,
+                                  marketAvgPrice: null,
+                                  priceUnit: `₹/${p.unit ?? "kg"}`,
+                                  stockBand: (p.stock_band as "high" | "medium" | "low" | "on_order" | null) ?? "medium",
+                                  trendDirection: "stable",
+                                  demandScore: "medium",
+                                  inquiryCount: 0,
+                                  location: "",
+                                  listingDate: new Date().toISOString(),
+                                  hidePrice: false,
+                                  isFastMoving: false,
+                                }} />
                               </td>
                               <td className="py-2.5 px-2">
-                                <Button
-                                  size="sm"
-                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                                  onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
-                                >
-                                  <Send className="h-3 w-3 mr-1" /> Request Price
-                                </Button>
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    size="sm"
+                                    className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                    onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
+                                  >
+                                    <Send className="h-3 w-3 mr-1" /> Request Price
+                                  </Button>
+                                  <AddToRfqButton
+                                    productName={p.name}
+                                    productId={p.id}
+                                    companyId={liveCompanyId ?? undefined}
+                                    sellerName={member.firmName}
+                                    sellerSlug={member.slug}
+                                    origin={p.origin ?? undefined}
+                                  />
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -292,15 +323,26 @@ const Storefront = () => {
                                 <div className="text-xs text-muted-foreground">{listing.variant} · {listing.origin}</div>
                               </td>
                               <td className="py-2.5 px-2"><StockBadge band={listing.stockBand} /></td>
-                              <td className="py-2.5 px-2"><PriceRange listing={listing} /></td>
+                              <td className="py-2.5 px-2"><GuardedPrice listing={listing} /></td>
                               <td className="py-2.5 px-2">
-                                <Button
-                                  size="sm"
-                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                                  onClick={() => setRfqProduct({ name: `${listing.commodity} — ${listing.variant}` })}
-                                >
-                                  <Send className="h-3 w-3 mr-1" /> Request Price
-                                </Button>
+                                <div className="flex items-center gap-1">
+                                  <Button
+                                    size="sm"
+                                    className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                    onClick={() => setRfqProduct({ name: `${listing.commodity} — ${listing.variant}` })}
+                                  >
+                                    <Send className="h-3 w-3 mr-1" /> Request Price
+                                  </Button>
+                                  <AddToRfqButton
+                                    productName={`${listing.commodity} — ${listing.variant}`}
+                                    productId={listing.id}
+                                    sellerName={member.firmName}
+                                    sellerSlug={member.slug}
+                                    origin={listing.origin}
+                                    moq={listing.moq}
+                                    variant={listing.variant}
+                                  />
+                                </div>
                               </td>
                             </tr>
                           ))}

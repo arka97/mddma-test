@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { RoleProvider } from "@/contexts/RoleContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { RfqCartProvider } from "@/contexts/RfqCartContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { DocAuthProvider, PasswordGate } from "@/components/PasswordGate";
 import Index from "./pages/Index";
@@ -51,6 +52,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <RoleProvider>
+            <RfqCartProvider>
             <DocAuthProvider>
               <Toaster />
               <Sonner />
@@ -97,6 +99,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </DocAuthProvider>
+            </RfqCartProvider>
           </RoleProvider>
         </AuthProvider>
       </BrowserRouter>

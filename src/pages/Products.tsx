@@ -19,6 +19,7 @@ import { ScarcityCue } from "@/components/behavioral/BehavioralCues";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
+import { AddToRfqButton } from "@/components/rfq/AddToRfqButton";
 
 const origins = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
 
@@ -219,13 +220,24 @@ const Products = () => {
                               verified={seller.verificationStatus === "Verified"}
                             />
                           </Link>
-                          <Button
-                            size="sm"
-                            className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold"
-                            onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
-                          >
-                            <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
-                          </Button>
+                          <div className="flex gap-1.5">
+                            <Button
+                              size="sm"
+                              className="flex-1 bg-accent hover:bg-accent/90 text-primary font-semibold"
+                              onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
+                            >
+                              <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
+                            </Button>
+                            <AddToRfqButton
+                              productName={`${listing.commodity} — ${listing.variant}`}
+                              productId={listing.id}
+                              sellerName={seller.firmName}
+                              sellerSlug={seller.slug}
+                              origin={listing.origin}
+                              moq={listing.moq}
+                              variant={listing.variant}
+                            />
+                          </div>
                         </div>
                       )}
                     </CardContent>
@@ -236,18 +248,6 @@ const Products = () => {
           )}
         </div>
       </section>
-
-      {/* Sticky mobile RFQ rail */}
-      {view === "marketplace" && (
-        <div className="fixed bottom-0 left-0 right-0 bg-primary/95 backdrop-blur border-t border-accent/30 p-3 z-40 lg:hidden">
-          <Button
-            className="w-full bg-accent hover:bg-accent/90 text-primary font-bold text-sm h-11"
-            onClick={() => setRfqProduct("General Inquiry")}
-          >
-            <Send className="h-4 w-4 mr-1.5" /> Request a Quote
-          </Button>
-        </div>
-      )}
 
       {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
     </Layout>

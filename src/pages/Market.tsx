@@ -2,11 +2,10 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useRole } from "@/contexts/RoleContext";
-import { TrendingUp, TrendingDown, Minus, BarChart3, Lock, Flame, AlertTriangle } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, BarChart3, Lock, Flame, AlertTriangle, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-// V2: Signal-based market intelligence — no complex charts
 const marketSignals = [
   { commodity: "California Almonds", priceRange: "₹820–880/kg", trend: "rising" as const, demand: "High", supply: "Stable", signal: "Strong demand pre-Diwali. California crop report positive.", inquiries: 38 },
   { commodity: "Iranian Pistachios", priceRange: "₹1,150–1,250/kg", trend: "rising" as const, demand: "High", supply: "Tightening", signal: "Iran export restrictions. Supply squeeze expected.", inquiries: 29 },
@@ -52,29 +51,7 @@ const SupplyBadge = ({ level }: { level: string }) => {
 
 const Market = () => {
   const { canAccess } = useRole();
-
-  if (!canAccess("market_intelligence")) {
-    return (
-      <Layout>
-        <section className="bg-primary py-12">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Market Intelligence</h1>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto">Price signals, supply-demand indicators and trade insights</p>
-          </div>
-        </section>
-        <section className="py-16">
-          <div className="container mx-auto px-4 text-center max-w-md">
-            <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-foreground mb-2">Paid Members Only</h2>
-            <p className="text-muted-foreground mb-6">Market Intelligence is available to Paid Members, Brokers and Admins.</p>
-            <Button className="bg-accent hover:bg-accent/90 text-primary" asChild>
-              <Link to="/membership">View Membership Plans</Link>
-            </Button>
-          </div>
-        </section>
-      </Layout>
-    );
-  }
+  const isPaid = canAccess("market_intelligence");
 
   return (
     <Layout>
@@ -88,9 +65,29 @@ const Market = () => {
       </section>
 
       <section className="py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* V2: Signal-based dashboard */}
-          <Card className="mb-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          {/* Inline subscribe banner for guests / free members */}
+          {!isPaid && (
+            <Card className="border-accent/40 bg-accent/5">
+              <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                <div className="flex items-start gap-3 flex-1 min-w-0">
+                  <Crown className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-semibold text-foreground">Unlock the full Market Intelligence feed</div>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      Paid members see committee analyst reasoning behind every price move, plus weekly insights and supply alerts.
+                    </p>
+                  </div>
+                </div>
+                <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold sm:flex-shrink-0">
+                  <Link to="/membership">View plans</Link>
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Signals table — full structure visible to everyone, reasoning gated */}
+          <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BarChart3 className="h-5 w-5 text-accent" /> Market Signals Dashboard
@@ -106,7 +103,10 @@ const Market = () => {
                       <th className="py-2 px-3 text-muted-foreground font-medium">Trend</th>
                       <th className="py-2 px-3 text-muted-foreground font-medium">Demand</th>
                       <th className="py-2 px-3 text-muted-foreground font-medium">Supply</th>
-                      <th className="py-2 px-3 text-muted-foreground font-medium hidden lg:table-cell">Signal</th>
+                      <th className="py-2 px-3 text-muted-foreground font-medium hidden lg:table-cell">
+                        Analyst signal
+                        {!isPaid && <Lock className="inline h-3 w-3 ml-1 text-accent" />}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -129,27 +129,57 @@ const Market = () => {
                         </td>
                         <td className="py-2.5 px-3"><DemandBadge level={item.demand} /></td>
                         <td className="py-2.5 px-3"><SupplyBadge level={item.supply} /></td>
-                        <td className="py-2.5 px-3 text-muted-foreground text-xs hidden lg:table-cell max-w-[300px]">{item.signal}</td>
+                        <td className="py-2.5 px-3 text-xs hidden lg:table-cell max-w-[300px]">
+                          {isPaid ? (
+                            <span className="text-muted-foreground">{item.signal}</span>
+                          ) : (
+                            <span className="select-none blur-sm text-muted-foreground" aria-hidden>
+                              {item.signal}
+                            </span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+              {!isPaid && (
+                <p className="text-[11px] text-muted-foreground mt-3 flex items-center gap-1">
+                  <Lock className="h-3 w-3 text-accent" />
+                  Direction (rising / stable / falling) is free for everyone. Analyst reasoning is paid-member only.
+                </p>
+              )}
             </CardContent>
           </Card>
 
-          {/* Insights */}
-          <h2 className="text-xl font-bold text-foreground mb-4">Market Insights</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {insights.map((insight) => (
-              <Card key={insight.title} className="bg-card border-border">
-                <CardContent className="p-5">
-                  <Badge variant="secondary" className="text-xs mb-2">{insight.category}</Badge>
-                  <h3 className="font-semibold text-foreground mb-1">{insight.title}</h3>
-                  <p className="text-sm text-muted-foreground">{insight.description}</p>
-                </CardContent>
-              </Card>
-            ))}
+          {/* Insights — gated for non-paid */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-foreground">Market Insights</h2>
+              {!isPaid && (
+                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                  <Lock className="h-3 w-3 text-accent" /> Paid-member feed
+                </span>
+              )}
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {insights.map((insight) => (
+                <Card key={insight.title} className="bg-card border-border relative overflow-hidden">
+                  <CardContent className="p-5">
+                    <Badge variant="secondary" className="text-xs mb-2">{insight.category}</Badge>
+                    <h3 className={`font-semibold text-foreground mb-1 ${isPaid ? "" : "blur-[2px] select-none"}`}>{insight.title}</h3>
+                    <p className={`text-sm text-muted-foreground ${isPaid ? "" : "blur-[3px] select-none"}`}>{insight.description}</p>
+                  </CardContent>
+                  {!isPaid && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-background/95 via-background/60 to-transparent">
+                      <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold mt-12">
+                        <Link to="/membership"><Lock className="h-3 w-3 mr-1" /> Unlock insights</Link>
+                      </Button>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
           </div>
         </div>
       </section>
