@@ -19,7 +19,6 @@ import { ScarcityCue } from "@/components/behavioral/BehavioralCues";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
-import { AddToRfqButton } from "@/components/rfq/AddToRfqButton";
 
 const origins = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
 
@@ -219,24 +218,13 @@ const Products = () => {
                               verified={seller.verificationStatus === "Verified"}
                             />
                           </Link>
-                          <div className="flex gap-1.5">
-                            <Button
-                              size="sm"
-                              className="flex-1 bg-accent hover:bg-accent/90 text-primary font-semibold"
-                              onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
-                            >
-                              <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
-                            </Button>
-                            <AddToRfqButton
-                              productName={`${listing.commodity} — ${listing.variant}`}
-                              productId={listing.id}
-                              sellerName={seller.firmName}
-                              sellerSlug={seller.slug}
-                              origin={listing.origin}
-                              moq={listing.moq}
-                              variant={listing.variant}
-                            />
-                          </div>
+                          <Button
+                            size="sm"
+                            className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold"
+                            onClick={() => setRfqProduct(`${listing.commodity} — ${listing.variant}`)}
+                          >
+                            <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
+                          </Button>
                         </div>
                       )}
                     </CardContent>

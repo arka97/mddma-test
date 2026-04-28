@@ -17,9 +17,9 @@ import {
 import { StockBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
 import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
-import { AddToRfqButton } from "@/components/rfq/AddToRfqButton";
 import { SellerScoreboard } from "@/components/commodity/SellerScoreboard";
 import { useSellerKyc, useSellerTradeSignals } from "@/lib/tradeSignals";
+import { useCart } from "@/contexts/CartContext";
 
 interface LiveProduct {
   id: string;
@@ -39,6 +39,7 @@ const Storefront = () => {
   const { slug } = useParams();
   const { canAccess } = useRole();
   const { company: ownCompany, hasRole } = useAuth();
+  const { addItem } = useCart();
   const [rfqProduct, setRfqProduct] = useState<{ name: string; productId?: string; companyId?: string } | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
@@ -297,7 +298,7 @@ const Storefront = () => {
                                 }} />
                               </td>
                               <td className="py-2.5 px-2">
-                                <div className="flex items-center gap-1">
+                                <div className="flex gap-1">
                                   <Button
                                     size="sm"
                                     className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
@@ -305,14 +306,24 @@ const Storefront = () => {
                                   >
                                     <Send className="h-3 w-3 mr-1" /> Request Price
                                   </Button>
-                                  <AddToRfqButton
-                                    productName={p.name}
-                                    productId={p.id}
-                                    companyId={liveCompanyId ?? undefined}
-                                    sellerName={member.firmName}
-                                    sellerSlug={member.slug}
-                                    origin={p.origin ?? undefined}
-                                  />
+                                  {liveCompanyId && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-xs"
+                                      onClick={() => addItem({
+                                        productId: p.id,
+                                        productName: p.name,
+                                        companyId: liveCompanyId,
+                                        companyName: member.firmName,
+                                        companySlug: slug,
+                                        imageUrl: p.image_url,
+                                        quantity: "",
+                                      })}
+                                    >
+                                      + Cart
+                                    </Button>
+                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -341,24 +352,13 @@ const Storefront = () => {
                               <td className="py-2.5 px-2"><StockBadge band={listing.stockBand} /></td>
                               <td className="py-2.5 px-2"><GuardedPrice listing={listing} /></td>
                               <td className="py-2.5 px-2">
-                                <div className="flex items-center gap-1">
-                                  <Button
-                                    size="sm"
-                                    className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                                    onClick={() => setRfqProduct({ name: `${listing.commodity} — ${listing.variant}` })}
-                                  >
-                                    <Send className="h-3 w-3 mr-1" /> Request Price
-                                  </Button>
-                                  <AddToRfqButton
-                                    productName={`${listing.commodity} — ${listing.variant}`}
-                                    productId={listing.id}
-                                    sellerName={member.firmName}
-                                    sellerSlug={member.slug}
-                                    origin={listing.origin}
-                                    moq={listing.moq}
-                                    variant={listing.variant}
-                                  />
-                                </div>
+                                <Button
+                                  size="sm"
+                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                  onClick={() => setRfqProduct({ name: `${listing.commodity} — ${listing.variant}` })}
+                                >
+                                  <Send className="h-3 w-3 mr-1" /> Request Price
+                                </Button>
                               </td>
                             </tr>
                           ))}

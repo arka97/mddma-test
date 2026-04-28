@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link, Navigate } from "react-router-dom";
 
+import { uploadFile } from "@/lib/storage";
+
 const AdminModeration = () => {
   const { hasRole, loading: authLoading, user } = useAuth();
   const { toast } = useToast();
@@ -23,20 +25,25 @@ const AdminModeration = () => {
   const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string }[]>([]);
   const [circularForm, setCircularForm] = useState({ title: "", body: "", category: "general" });
   const [savingCircular, setSavingCircular] = useState(false);
+  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null }[]>([]);
+  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", file: null as File | null });
+  const [savingAd, setSavingAd] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
       supabase.from("circulars").select("id,title,body,is_published,created_at").order("created_at", { ascending: false }),
+      supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date").order("created_at", { ascending: false }),
     ]);
     setCompanies((c ?? []) as any);
     setProducts(p ?? []);
     setCirculars((circ ?? []) as any);
+    setAds((adRows ?? []) as any);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
     setUsers((prof ?? []).map((u) => ({ ...u, roles: rolesByUser[u.id] ?? [] })));
@@ -77,6 +84,62 @@ const AdminModeration = () => {
     if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); else load();
   };
 
+  // Circulars
+  const saveCircular = async () => {
+    if (!user || !circularForm.title.trim() || !circularForm.body.trim()) return;
+    setSavingCircular(true);
+    const { error } = await supabase.from("circulars").insert({
+      title: circularForm.title,
+      body: circularForm.body,
+      category: circularForm.category,
+      created_by: user.id,
+      is_published: true,
+      published_at: new Date().toISOString(),
+    });
+    setSavingCircular(false);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+    else { toast({ title: "Circular published" }); setCircularForm({ title: "", body: "", category: "general" }); load(); }
+  };
+  const togglePublishCircular = async (id: string, val: boolean) => {
+    const { error } = await supabase.from("circulars").update({ is_published: val, published_at: val ? new Date().toISOString() : null }).eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const deleteCircular = async (id: string) => {
+    if (!confirm("Delete this circular?")) return;
+    const { error } = await supabase.from("circulars").delete().eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+
+  // Ads
+  const saveAd = async () => {
+    if (!user || !adForm.title.trim() || !adForm.file) {
+      toast({ title: "Title and image required", variant: "destructive" });
+      return;
+    }
+    setSavingAd(true);
+    const url = await uploadFile("ad-assets", user.id, adForm.file);
+    if (!url) { setSavingAd(false); toast({ title: "Image upload failed", variant: "destructive" }); return; }
+    const { error } = await supabase.from("advertisements").insert({
+      title: adForm.title,
+      image_url: url,
+      link_url: adForm.link_url || null,
+      placement: adForm.placement,
+      is_active: true,
+    });
+    setSavingAd(false);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", file: null }); load(); }
+  };
+  const toggleAdActive = async (id: string, val: boolean) => {
+    const { error } = await supabase.from("advertisements").update({ is_active: val }).eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const deleteAd = async (id: string) => {
+    if (!confirm("Delete this ad?")) return;
+    const { error } = await supabase.from("advertisements").delete().eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+
   return (
     <Layout>
       <section className="py-10">
@@ -85,10 +148,12 @@ const AdminModeration = () => {
 
           {loading ? <div className="py-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
             <Tabs defaultValue="companies">
-              <TabsList>
+              <TabsList className="flex-wrap h-auto">
                 <TabsTrigger value="companies"><Building2 className="h-3 w-3 mr-1" /> Companies ({companies.length})</TabsTrigger>
                 <TabsTrigger value="products"><Package className="h-3 w-3 mr-1" /> Products ({products.length})</TabsTrigger>
                 <TabsTrigger value="users"><UserCog className="h-3 w-3 mr-1" /> Users ({users.length})</TabsTrigger>
+                <TabsTrigger value="circulars"><Megaphone className="h-3 w-3 mr-1" /> Circulars ({circulars.length})</TabsTrigger>
+                <TabsTrigger value="ads"><Star className="h-3 w-3 mr-1" /> Ads ({ads.length})</TabsTrigger>
               </TabsList>
 
               <TabsContent value="companies" className="space-y-2 mt-4">
@@ -171,6 +236,70 @@ const AdminModeration = () => {
                           <Button key={r} size="sm" variant={u.roles.includes(r) ? "default" : "outline"} onClick={() => setRole(u.id, r, !u.roles.includes(r))}>{r}</Button>
                         ))}
                       </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="circulars" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader><CardTitle className="text-base">Compose New Circular</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-1.5"><Label>Title</Label><Input maxLength={200} value={circularForm.title} onChange={(e) => setCircularForm({ ...circularForm, title: e.target.value })} /></div>
+                    <div className="space-y-1.5"><Label>Body</Label><Textarea rows={4} maxLength={4000} value={circularForm.body} onChange={(e) => setCircularForm({ ...circularForm, body: e.target.value })} /></div>
+                    <div className="space-y-1.5"><Label>Category</Label><Input maxLength={50} value={circularForm.category} onChange={(e) => setCircularForm({ ...circularForm, category: e.target.value })} /></div>
+                    <Button onClick={saveCircular} disabled={savingCircular} className="bg-accent hover:bg-accent/90 text-primary">
+                      {savingCircular ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Publish</>}
+                    </Button>
+                  </CardContent>
+                </Card>
+                {circulars.map((c) => (
+                  <Card key={c.id}>
+                    <CardContent className="p-3 flex items-start gap-3">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium">{c.title}</p>
+                        <p className="text-xs text-muted-foreground line-clamp-2">{c.body}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{new Date(c.created_at).toLocaleDateString()}</p>
+                      </div>
+                      {c.is_published ? <Badge className="bg-accent text-primary">Live</Badge> : <Badge variant="outline">Draft</Badge>}
+                      <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>
+                      <Button size="sm" variant="outline" onClick={() => deleteCircular(c.id)}><Trash2 className="h-3 w-3" /></Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </TabsContent>
+
+              <TabsContent value="ads" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader><CardTitle className="text-base">Upload New Ad</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="space-y-1.5"><Label>Title</Label><Input maxLength={120} value={adForm.title} onChange={(e) => setAdForm({ ...adForm, title: e.target.value })} /></div>
+                    <div className="space-y-1.5"><Label>Click-through URL</Label><Input maxLength={500} placeholder="https://..." value={adForm.link_url} onChange={(e) => setAdForm({ ...adForm, link_url: e.target.value })} /></div>
+                    <div className="space-y-1.5">
+                      <Label>Placement</Label>
+                      <select className="w-full border rounded h-9 px-2 text-sm bg-background" value={adForm.placement} onChange={(e) => setAdForm({ ...adForm, placement: e.target.value })}>
+                        <option value="homepage-banner">Homepage Banner</option>
+                        <option value="directory-banner">Directory Banner</option>
+                        <option value="products-banner">Products Banner</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1.5"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setAdForm({ ...adForm, file: e.target.files?.[0] ?? null })} /></div>
+                    <Button onClick={saveAd} disabled={savingAd} className="bg-accent hover:bg-accent/90 text-primary">
+                      {savingAd ? <Loader2 className="h-3 w-3 animate-spin" /> : "Publish Ad"}
+                    </Button>
+                  </CardContent>
+                </Card>
+                {ads.map((a) => (
+                  <Card key={a.id}>
+                    <CardContent className="p-3 flex items-center gap-3">
+                      <img src={a.image_url} alt={a.title} className="h-12 w-20 object-cover rounded" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium truncate">{a.title}</p>
+                        <p className="text-xs text-muted-foreground">{a.placement} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                      </div>
+                      {a.is_active ? <Badge className="bg-accent text-primary">Active</Badge> : <Badge variant="outline">Paused</Badge>}
+                      <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>
+                      <Button size="sm" variant="outline" onClick={() => deleteAd(a.id)}><Trash2 className="h-3 w-3" /></Button>
                     </CardContent>
                   </Card>
                 ))}
