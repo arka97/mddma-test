@@ -68,7 +68,7 @@ const ChangeLog = () => {
       <div className="bg-primary text-primary-foreground py-12 print:py-6">
         <div className="max-w-5xl mx-auto px-6 space-y-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <Badge className="bg-accent text-primary font-semibold">v3.1.1 · April 2026</Badge>
+            <Badge className="bg-accent text-primary font-semibold">v3.1.2 · April 2026</Badge>
             <Badge variant="outline" className="border-primary-foreground/30 text-primary-foreground">
               Supersedes v3.0 docs
             </Badge>
@@ -88,8 +88,40 @@ const ChangeLog = () => {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 py-12 space-y-12">
+        {/* v3.1.2 Live Discovery Pass */}
+        <Section title="0. v3.1.2 — Live Discovery + Multi-Item RFQ + Forum" id="v312">
+          <Card className="border-accent/40 bg-accent/5">
+            <CardContent className="p-5 space-y-3">
+              <p className="text-sm text-foreground">
+                <strong>Goal:</strong> close the loop between member-created data and public discovery —
+                anything a user CRUDs now appears live across the site, with multi-seller RFQ flow,
+                live community forum, and admin CMS for circulars + ads.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-2 text-sm">
+                <Achievement done label="Directory, Storefront, Products, Homepage all read live from DB (KGVPL fix)" />
+                <Achievement done label="DirectoryAdapter merges live companies with sample catalogue" />
+                <Achievement done label="Apply page creates pending company; admin approval flow" />
+                <Achievement done label="Multi-item RFQ Cart with floating FAB and seller-grouped drawer" />
+                <Achievement done label="inquiry_products junction so one RFQ can carry N products" />
+                <Achievement done label="Live community forum with posts + comments (replaces Discourse stub)" />
+                <Achievement done label="Admin CMS: compose circulars, upload ads with placement targeting" />
+                <Achievement done label="WhatsApp-buyer button in seller RFQ inbox (wa.me)" />
+                <Achievement done label='"View My Storefront" shortcut in header for company owners' />
+                <Achievement done label="ad-assets storage bucket with admin-only write" />
+              </div>
+              <p className="text-xs text-muted-foreground pt-2 border-t border-border">
+                Live Discovery Matrix · <strong>Companies</strong>: live + sample merge ·
+                <strong> Products</strong>: live read on /products + storefront ·
+                <strong> Circulars</strong>: admin CRUD, public read of published only ·
+                <strong> Ads</strong>: admin CRUD, public read of active in-window only ·
+                <strong> Forum</strong>: any signed-in member can post + comment.
+              </p>
+            </CardContent>
+          </Card>
+        </Section>
+
         {/* v3.1.1 Recent Updates */}
-        <Section title="0. v3.1.1 Recent Updates (CRUD Ownership Pass)" id="v311">
+        <Section title="0.1 v3.1.1 (CRUD Ownership Pass)" id="v311">
           <Card className="border-accent/40 bg-accent/5">
             <CardContent className="p-5 space-y-3">
               <p className="text-sm text-foreground">
