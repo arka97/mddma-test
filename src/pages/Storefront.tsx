@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { StockBadge, PriceRange, TrendBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
+import { useCart } from "@/contexts/CartContext";
 
 interface LiveProduct {
   id: string;
@@ -35,6 +36,7 @@ const Storefront = () => {
   const { slug } = useParams();
   const { canAccess } = useRole();
   const { company: ownCompany, hasRole } = useAuth();
+  const { addItem } = useCart();
   const [rfqProduct, setRfqProduct] = useState<{ name: string; productId?: string; companyId?: string } | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
@@ -260,13 +262,33 @@ const Storefront = () => {
                                   : "On request"}
                               </td>
                               <td className="py-2.5 px-2">
-                                <Button
-                                  size="sm"
-                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                                  onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
-                                >
-                                  <Send className="h-3 w-3 mr-1" /> Request Price
-                                </Button>
+                                <div className="flex gap-1">
+                                  <Button
+                                    size="sm"
+                                    className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                    onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
+                                  >
+                                    <Send className="h-3 w-3 mr-1" /> Request Price
+                                  </Button>
+                                  {liveCompanyId && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-xs"
+                                      onClick={() => addItem({
+                                        productId: p.id,
+                                        productName: p.name,
+                                        companyId: liveCompanyId,
+                                        companyName: member.name,
+                                        companySlug: slug,
+                                        imageUrl: p.image_url,
+                                        quantity: "",
+                                      })}
+                                    >
+                                      + Cart
+                                    </Button>
+                                  )}
+                                </div>
                               </td>
                             </tr>
                           ))}
