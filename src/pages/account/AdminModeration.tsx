@@ -84,6 +84,62 @@ const AdminModeration = () => {
     if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); else load();
   };
 
+  // Circulars
+  const saveCircular = async () => {
+    if (!user || !circularForm.title.trim() || !circularForm.body.trim()) return;
+    setSavingCircular(true);
+    const { error } = await supabase.from("circulars").insert({
+      title: circularForm.title,
+      body: circularForm.body,
+      category: circularForm.category,
+      created_by: user.id,
+      is_published: true,
+      published_at: new Date().toISOString(),
+    });
+    setSavingCircular(false);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+    else { toast({ title: "Circular published" }); setCircularForm({ title: "", body: "", category: "general" }); load(); }
+  };
+  const togglePublishCircular = async (id: string, val: boolean) => {
+    const { error } = await supabase.from("circulars").update({ is_published: val, published_at: val ? new Date().toISOString() : null }).eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const deleteCircular = async (id: string) => {
+    if (!confirm("Delete this circular?")) return;
+    const { error } = await supabase.from("circulars").delete().eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+
+  // Ads
+  const saveAd = async () => {
+    if (!user || !adForm.title.trim() || !adForm.file) {
+      toast({ title: "Title and image required", variant: "destructive" });
+      return;
+    }
+    setSavingAd(true);
+    const url = await uploadFile("ad-assets", user.id, adForm.file);
+    if (!url) { setSavingAd(false); toast({ title: "Image upload failed", variant: "destructive" }); return; }
+    const { error } = await supabase.from("advertisements").insert({
+      title: adForm.title,
+      image_url: url,
+      link_url: adForm.link_url || null,
+      placement: adForm.placement,
+      is_active: true,
+    });
+    setSavingAd(false);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", file: null }); load(); }
+  };
+  const toggleAdActive = async (id: string, val: boolean) => {
+    const { error } = await supabase.from("advertisements").update({ is_active: val }).eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const deleteAd = async (id: string) => {
+    if (!confirm("Delete this ad?")) return;
+    const { error } = await supabase.from("advertisements").delete().eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+
   return (
     <Layout>
       <section className="py-10">
