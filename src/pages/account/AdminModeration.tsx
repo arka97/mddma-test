@@ -14,6 +14,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link, Navigate } from "react-router-dom";
 
+import { uploadFile } from "@/lib/storage";
+
 const AdminModeration = () => {
   const { hasRole, loading: authLoading, user } = useAuth();
   const { toast } = useToast();
@@ -23,20 +25,25 @@ const AdminModeration = () => {
   const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string }[]>([]);
   const [circularForm, setCircularForm] = useState({ title: "", body: "", category: "general" });
   const [savingCircular, setSavingCircular] = useState(false);
+  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null }[]>([]);
+  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", file: null as File | null });
+  const [savingAd, setSavingAd] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
       supabase.from("circulars").select("id,title,body,is_published,created_at").order("created_at", { ascending: false }),
+      supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date").order("created_at", { ascending: false }),
     ]);
     setCompanies((c ?? []) as any);
     setProducts(p ?? []);
     setCirculars((circ ?? []) as any);
+    setAds((adRows ?? []) as any);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
     setUsers((prof ?? []).map((u) => ({ ...u, roles: rolesByUser[u.id] ?? [] })));
