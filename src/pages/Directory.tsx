@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Search, MapPin, ShieldCheck, Star, Loader2, BadgeCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Search, MapPin, ShieldCheck, Star, Loader2, BadgeCheck, Handshake } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,14 +16,29 @@ import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
 import { useSellerTradeSignalsBatch } from "@/lib/tradeSignals";
 
-const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor"];
+const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor", "Broker"];
 
 const Directory = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialType = searchParams.get("type");
   const [searchTerm, setSearchTerm] = useState("");
   const [areaFilter, setAreaFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>(
+    initialType && memberTypes.map((t) => t.toLowerCase()).includes(initialType.toLowerCase())
+      ? memberTypes.find((t) => t.toLowerCase() === initialType.toLowerCase())!
+      : "all"
+  );
   const [verificationFilter, setVerificationFilter] = useState<string>("all");
   const { entries: allMembers, loading } = useLiveCompanies();
+
+  // Keep URL in sync with the type filter for shareable deep links.
+  useEffect(() => {
+    const next = new URLSearchParams(searchParams);
+    if (typeFilter === "all") next.delete("type");
+    else next.set("type", typeFilter.toLowerCase());
+    setSearchParams(next, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeFilter]);
 
   const filteredMembers = allMembers.filter((member) => {
     const s = searchTerm.toLowerCase();
