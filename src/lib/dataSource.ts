@@ -42,7 +42,7 @@ export function liveCompanyToEntry(c: CompanyRow): DirectoryEntry {
       `${c.city ?? ""}${c.city && c.state ? ", " : ""}${c.state ?? ""}`,
     commodities: cats.length ? cats : ["General"],
     originSpecialization: [],
-    memberType: "Wholesaler",
+    memberType: (c.categories ?? []).some((x) => x?.toLowerCase() === "broker") ? "Broker" : "Wholesaler",
     verificationStatus: c.is_verified ? "Verified" : "Not Verified",
     verificationLevel: c.is_verified ? "Business" : "Basic",
     membershipStatus: "Active",

@@ -16,7 +16,6 @@ const navigation = [
   { name: "Home", href: "/" },
   { name: "Directory", href: "/directory" },
   { name: "Products", href: "/products" },
-  { name: "Broker", href: "/broker" },
   { name: "Market", href: "/market" },
   { name: "Community", href: "/community" },
   { name: "Membership", href: "/membership" },
