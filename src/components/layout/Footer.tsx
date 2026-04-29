@@ -27,7 +27,7 @@ export function Footer() {
               {[
                 { to: "/directory", label: "Member Directory" },
                 { to: "/products", label: "Commodity Marketplace" },
-                { to: "/broker", label: "Broker Marketplace" },
+                { to: "/broker", label: "Broker Board" },
                 { to: "/market", label: "Market Intelligence" },
                 { to: "/dashboard", label: "Lead CRM" },
                 { to: "/community", label: "Trade Community" },
