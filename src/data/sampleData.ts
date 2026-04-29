@@ -11,7 +11,7 @@ export interface Member {
   fullAddress: string;
   commodities: string[];
   originSpecialization: string[];
-  memberType: "Importer" | "Wholesaler" | "Retailer" | "Processor";
+  memberType: "Importer" | "Wholesaler" | "Retailer" | "Processor" | "Broker";
   verificationStatus: "Verified" | "Not Verified";
   verificationLevel: "Basic" | "Business";
   membershipStatus: "Active" | "Pending Renewal" | "Expired";
