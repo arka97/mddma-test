@@ -1,33 +1,35 @@
-## Move Broker into Directory (nav-only consolidation)
+## Goal
 
-Brokers are already paid members with `is_broker=true` — conceptually they belong in the seller directory. This change folds the standalone Broker entry into Directory without removing the existing supply/demand board.
+Make the navigation menu hide when the user scrolls down and slide back in when they scroll up. The live market ticker stays pinned at the top at all times.
 
-### Changes
+## Behavior
 
-1. **Header (`src/components/layout/Header.tsx`)**
-   - Remove the top-level `{ name: "Broker", href: "/broker" }` nav item.
+- At top of page: ticker + menu both visible (current state).
+- Scrolling **down** past ~80px: menu slides up out of view; ticker stays pinned.
+- Scrolling **up** any amount: menu slides back in immediately under the ticker.
+- Mobile menu (hamburger dropdown): if open while scrolling, keep menu visible (don't hide mid-interaction).
 
-2. **Directory page (`src/pages/Directory.tsx`)**
-   - Add a new filter control "Member type → Broker" (or extend the existing `typeFilter` Select with a "Broker" option) that, when selected, narrows the list to entries where `memberType === "Broker"` (live: `is_broker=true`; demo: existing field).
-   - Add a small secondary link/button in the Directory header strip: **"View Broker Board →"** linking to `/broker`, so the supply/demand marketplace remains discoverable from inside Directory.
-   - Support a URL query param `?type=broker` so deep links auto-apply the broker filter.
+## Implementation
 
-3. **Data adapter (`src/lib/dataSource.ts`)**
-   - In `liveCompanyToEntry`, set `memberType: c.is_broker ? "Broker" : "Wholesaler"` so the new filter works against live rows.
+**File:** `src/components/layout/Layout.tsx`
+- Split the current single sticky wrapper into two stacked sticky layers:
+  - Outer sticky: `MarketTicker` only — `sticky top-0 z-50`, always visible.
+  - Inner sticky: `Header` — `sticky top-0 z-40`, with a transform that toggles between `translate-y-0` (visible) and `-translate-y-full` (hidden), plus a `transition-transform duration-300`.
 
-4. **Footer (`src/components/layout/Footer.tsx`)**
-   - Re-label the existing footer link from "Broker Marketplace" → "Broker Board" (still pointing to `/broker`). Keeps the page accessible without promoting it in the main nav.
+**File:** `src/components/layout/Header.tsx`
+- Add a small scroll listener (or extract into a `useScrollDirection` hook in `src/hooks/`) that tracks `window.scrollY` and last direction.
+- State: `hidden` boolean. Set `hidden=true` when scrolling down past 80px; `hidden=false` when scrolling up or near top.
+- Don't hide while `mobileMenuOpen` is true.
+- Apply `-translate-y-full` class conditionally on the `<header>` element.
 
-5. **No changes to**
-   - `/broker` route, `Broker.tsx` page, supply/demand listings, RBAC, or DB schema.
+## Technical notes
 
-### Out of scope
-- Deleting the Broker page or its data
-- Schema or RLS changes
-- Changes to the role simulator
+- Use `requestAnimationFrame` throttling inside the scroll handler to keep it cheap.
+- `top` offset for the header sticky: since the ticker is roughly 28px tall, header sits at `top-0` within its own sticky context — the ticker pushes it down naturally because both are in normal flow above `<main>`.
+- Tailwind classes only; no new dependencies. Uses existing semantic tokens.
 
-### Acceptance
-- Top header no longer shows "Broker"
-- Directory has a Broker filter + a visible link to the Broker Board
-- `/directory?type=broker` deep link works
-- `/broker` still loads as before
+## Out of scope
+
+- No change to ticker content or styling.
+- No change to TrustStrip placement (stays below header, scrolls away normally).
+- No change to footer or any page content.
