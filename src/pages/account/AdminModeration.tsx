@@ -19,10 +19,10 @@ import { Link, Navigate } from "react-router-dom";
 
 import { uploadFile } from "@/lib/storage";
 import {
-  TIER_LABEL,
   STATUS_LABEL,
   formatINR,
-  TIER_PRICE_INR,
+  tierLabel,
+  tierPriceInr,
   listMembershipsByStatus,
   createPaymentLinkForMembership,
   manuallyActivateMembership,
