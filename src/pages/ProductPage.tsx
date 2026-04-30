@@ -80,7 +80,7 @@ const ProductPage = () => {
                 <CardContent>
                   <div className="flex flex-wrap items-center gap-3">
                     <StockBadge band={(product.stock_band as "high" | "medium" | "low" | "on_order") ?? "medium"} />
-                    <TrendBadge direction={(product.trend_direction as "up" | "down" | "stable") ?? "stable"} />
+                    <TrendBadge direction={(["rising","stable","falling"].includes(product.trend_direction ?? "") ? product.trend_direction : "stable") as "rising" | "stable" | "falling"} />
                     <span className="text-sm text-muted-foreground">
                       {product.price_min && product.price_max
                         ? `Indicative: ₹${product.price_min}–${product.price_max}/${product.unit ?? "kg"}`
