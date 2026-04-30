@@ -217,7 +217,7 @@ const Dashboard = () => {
 
               {/* Pipeline */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                {(Object.entries(pipelineCounts) as [RfqStatus, number][]).map(([status, count]) => {
+                {(Object.entries(pipelineCounts) as [Exclude<RfqStatus, "viewed" | "closed">, number][]).map(([status, count]) => {
                   const cfg = statusConfig[status];
                   const Icon = cfg.icon;
                   return (
@@ -239,9 +239,9 @@ const Dashboard = () => {
               <div className="hidden md:flex items-center justify-center gap-2 mb-6 text-xs text-muted-foreground">
                 <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800">New</span>
                 <ArrowRight className="h-3 w-3" />
-                <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800">Contacted</span>
+                <span className="px-3 py-1 rounded-full bg-yellow-100 text-yellow-800">Responded</span>
                 <ArrowRight className="h-3 w-3" />
-                <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800">Negotiation</span>
+                <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-800">Negotiating</span>
                 <ArrowRight className="h-3 w-3" />
                 <span className="px-3 py-1 rounded-full bg-green-100 text-green-800">Converted</span>
               </div>
@@ -330,9 +330,11 @@ const Dashboard = () => {
                                     </SelectTrigger>
                                     <SelectContent>
                                       <SelectItem value="new">New</SelectItem>
-                                      <SelectItem value="contacted">Contacted</SelectItem>
-                                      <SelectItem value="negotiation">Negotiation</SelectItem>
+                                      <SelectItem value="viewed">Viewed</SelectItem>
+                                      <SelectItem value="responded">Responded</SelectItem>
+                                      <SelectItem value="negotiating">Negotiating</SelectItem>
                                       <SelectItem value="converted">Converted</SelectItem>
+                                      <SelectItem value="closed">Closed</SelectItem>
                                     </SelectContent>
                                   </Select>
                                 </td>
