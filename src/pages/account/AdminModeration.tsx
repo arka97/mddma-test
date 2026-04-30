@@ -261,7 +261,7 @@ const AdminModeration = () => {
   };
 
   const markMembershipActive = async (membershipId: string, tier: string) => {
-    const amountStr = prompt(`Manual activation. Enter the amount paid in INR (founding tier price suggested: ${TIER_PRICE_INR[tier as keyof typeof TIER_PRICE_INR] ?? "0"})`);
+    const amountStr = prompt(`Manual activation. Enter the amount paid in INR (founding tier price suggested: ${tierPriceInr(tier)})`);
     if (!amountStr) return;
     const amount = parseInt(amountStr, 10);
     if (!Number.isFinite(amount) || amount <= 0) {
