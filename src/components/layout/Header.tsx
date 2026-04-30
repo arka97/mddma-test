@@ -148,6 +148,16 @@ export function Header() {
 
         {mobileMenuOpen && (
           <div className="lg:hidden pb-4 border-t border-primary-foreground/20 mt-2 pt-4">
+            <form onSubmit={(e) => { submitSearch(e); setMobileMenuOpen(false); }} className="relative mb-3">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                value={searchQ}
+                onChange={(e) => setSearchQ(e.target.value)}
+                placeholder="Search commodities…"
+                aria-label="Search commodities"
+                className="h-9 w-full pl-8 text-sm bg-background"
+              />
+            </form>
             <div className="flex flex-col gap-1">
               {navigation.map((item) => (
                 <Link key={item.name} to={item.href} onClick={() => setMobileMenuOpen(false)} className={cn(
