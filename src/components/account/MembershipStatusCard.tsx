@@ -112,7 +112,7 @@ export function MembershipStatusCard() {
           {hasPaymentLink && (
             <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold">
               <a href={m.payment_link_url!} target="_blank" rel="noopener noreferrer">
-                Pay {formatINR(TIER_PRICE_INR[m.tier])} <ExternalLink className="ml-1 h-3.5 w-3.5" />
+                Pay {formatINR(tierPriceInr(m.tier))} <ExternalLink className="ml-1 h-3.5 w-3.5" />
               </a>
             </Button>
           )}
