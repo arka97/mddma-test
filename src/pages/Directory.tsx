@@ -226,12 +226,10 @@ const Directory = () => {
                 <div className="text-center py-12 col-span-full">
                   <p className="text-muted-foreground">No members found matching your criteria.</p>
                 </div>
-              )}
-            </div>
+          </div>
 
-            <div className="hidden lg:block">
-              <AdBanner placement="directory-sidebar" />
-            </div>
+          <div className="mt-8">
+            <AdBanner placement="directory-sidebar" />
           </div>
         </div>
       </section>
