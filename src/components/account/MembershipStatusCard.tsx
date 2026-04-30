@@ -7,12 +7,12 @@ import { ArrowRight, BadgeCheck, Crown, ExternalLink, Loader2, ShieldAlert, Shie
 import { useAuth } from "@/contexts/AuthContext";
 import {
   STATUS_LABEL,
-  TIER_LABEL,
-  TIER_PRICE_INR,
   daysUntilExpiry,
   formatINR,
   getLatestMembershipForUser,
   isMembershipActive,
+  tierLabel,
+  tierPriceInr,
   type Membership,
 } from "@/lib/membership";
 
