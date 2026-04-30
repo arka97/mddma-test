@@ -23,10 +23,13 @@ interface CreateLinkBody {
   expire_seconds?: number;
 }
 
+// v3.1: single Paid plan at ₹10,000/yr. Legacy values fall back to the same price
+// so older pending rows can still generate payment links.
 const TIER_PRICE_INR: Record<string, number> = {
-  broker: 9999,
-  trader: 14999,
-  importer: 29999,
+  paid: 10000,
+  broker: 10000,
+  trader: 10000,
+  importer: 10000,
 };
 
 Deno.serve(async (req) => {
