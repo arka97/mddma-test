@@ -1,14 +1,9 @@
 // ============================================================================
-// dataSource.ts — THE ONLY FILE ALLOWED TO READ FROM @/data/sampleData.
+// dataSource.ts — adapters from Supabase rows to UI entry shapes.
 // ============================================================================
-// Why this exists: prior to v3.1.2 the directory and storefront ignored live
-// Supabase rows in many places, which is why user-created companies (e.g.
-// KGVPL / Keshavam) sometimes did not appear. This module merges live rows
-// with the demo seed using a "live wins on slug conflict" rule so the UI is
-// always consistent regardless of which source a record came from.
-// ----------------------------------------------------------------------------
-import { Member, sampleMembers } from "@/data/sampleData";
-import { productListings, type ProductListing } from "@/data/productListings";
+// All directory and product data comes from Lovable Cloud. No dummy fallback.
+import type { Member } from "@/data/sampleData";
+import type { ProductListing } from "@/data/productListings";
 import type { CompanyRow } from "@/repositories/companies";
 import type { ProductRow } from "@/repositories/products";
 
@@ -60,12 +55,7 @@ export function liveCompanyToEntry(c: CompanyRow): DirectoryEntry {
 }
 
 export function mergeDirectory(live: CompanyRow[]): DirectoryEntry[] {
-  const liveEntries = live.map(liveCompanyToEntry);
-  const liveSlugs = new Set(liveEntries.map((e) => e.slug));
-  const demoEntries: DirectoryEntry[] = sampleMembers
-    .filter((m) => !liveSlugs.has(m.slug))
-    .map((m) => ({ ...m, source: "demo" as const }));
-  return [...liveEntries, ...demoEntries];
+  return live.map(liveCompanyToEntry);
 }
 
 // ---------------------------------------------------------------------------
@@ -104,21 +94,6 @@ export function liveProductToEntry(p: ProductRow): ProductEntry {
   };
 }
 
-export function mergeProducts(
-  live: ProductRow[],
-  opts: { companyId?: string; category?: string } = {}
-): ProductEntry[] {
-  const liveEntries = live.map(liveProductToEntry);
-  const liveIds = new Set(liveEntries.map((e) => e.id));
-  // Sample listings keyed by sellerId (member id), not company UUID, so they
-  // never collide with live rows. Apply the same filters before merging.
-  const demoFiltered = productListings.filter((d) => {
-    if (opts.companyId && d.sellerId !== opts.companyId) return false;
-    if (opts.category && d.commodity !== opts.category) return false;
-    return true;
-  });
-  const demoEntries: ProductEntry[] = demoFiltered
-    .filter((d) => !liveIds.has(d.id))
-    .map((d) => ({ ...d, source: "demo" as const }));
-  return [...liveEntries, ...demoEntries];
+export function mergeProducts(live: ProductRow[]): ProductEntry[] {
+  return live.map(liveProductToEntry);
 }
