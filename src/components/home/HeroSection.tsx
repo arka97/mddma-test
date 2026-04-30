@@ -123,18 +123,12 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="mt-14 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
-          {[
-            { value: "1930s", label: "Established" },
-            { value: "₹1,000 Cr", label: "Annual Trade" },
-            { value: "25+", label: "Commodity Categories" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center p-4">
-              <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">{stat.value}</div>
-              <div className="text-sm text-primary-foreground/70">{stat.label}</div>
-            </div>
-          ))}
+        {/* Brand line */}
+        <div className="mt-14 text-center max-w-3xl mx-auto">
+          <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">Established 1930s</div>
+          <div className="text-sm text-primary-foreground/70">
+            One of India&apos;s oldest dry fruits &amp; dates trade associations
+          </div>
         </div>
       </div>
     </section>
