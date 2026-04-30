@@ -2,25 +2,19 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { Search, ShieldCheck, BadgeCheck, ArrowRight } from "lucide-react";
 
 
 const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
-const ORIGINS = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
 
 export function HeroSection() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
-  const [origin, setOrigin] = useState("all");
 
   const submit = (e?: React.FormEvent) => {
     e?.preventDefault();
     const sp = new URLSearchParams();
     if (q.trim()) sp.set("q", q.trim());
-    if (origin !== "all") sp.set("origin", origin);
     sp.set("view", "marketplace");
     navigate(`/products?${sp.toString()}`);
   };
@@ -76,17 +70,6 @@ export function HeroSection() {
                 className="pl-10 h-11 border-0 focus-visible:ring-1 focus-visible:ring-accent"
               />
             </div>
-            <Select value={origin} onValueChange={setOrigin}>
-              <SelectTrigger className="h-11 sm:w-44 border-0 bg-muted/40">
-                <SelectValue placeholder="Any origin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Any origin</SelectItem>
-                {ORIGINS.map((o) => (
-                  <SelectItem key={o} value={o}>{o}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
             <Button
               type="submit"
               size="lg"

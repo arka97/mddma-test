@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store } from "lucide-react";
+import { Menu, X, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const navigation = [
   { name: "Home", href: "/" },
@@ -24,11 +24,15 @@ const navigation = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
   const lastY = useRef(0);
   const ticking = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
+
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
     const onScroll = () => {
@@ -43,13 +47,24 @@ export function Header() {
         } else if (y < lastY.current) {
           setHidden(false);
         }
+        // Show inline search once scrolled past hero area, or always on non-home routes
+        setShowSearch(!isHome || y > 200);
         lastY.current = y;
         ticking.current = false;
       });
     };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, isHome]);
+
+  const submitSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const sp = new URLSearchParams();
+    if (searchQ.trim()) sp.set("q", searchQ.trim());
+    sp.set("view", "marketplace");
+    navigate(`/products?${sp.toString()}`);
+  };
 
   const isActive = (href: string) => href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
@@ -100,6 +115,18 @@ export function Header() {
           </div>
 
           <div className="hidden lg:flex lg:items-center lg:gap-2">
+            {showSearch && (
+              <form onSubmit={submitSearch} className="relative animate-fade-in">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                <Input
+                  value={searchQ}
+                  onChange={(e) => setSearchQ(e.target.value)}
+                  placeholder="Search commodities…"
+                  aria-label="Search commodities"
+                  className="h-8 w-56 pl-8 text-xs bg-background"
+                />
+              </form>
+            )}
             {user ? <UserMenu /> : (
               <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
                 <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
@@ -121,6 +148,16 @@ export function Header() {
 
         {mobileMenuOpen && (
           <div className="lg:hidden pb-4 border-t border-primary-foreground/20 mt-2 pt-4">
+            <form onSubmit={(e) => { submitSearch(e); setMobileMenuOpen(false); }} className="relative mb-3">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+              <Input
+                value={searchQ}
+                onChange={(e) => setSearchQ(e.target.value)}
+                placeholder="Search commodities…"
+                aria-label="Search commodities"
+                className="h-9 w-full pl-8 text-sm bg-background"
+              />
+            </form>
             <div className="flex flex-col gap-1">
               {navigation.map((item) => (
                 <Link key={item.name} to={item.href} onClick={() => setMobileMenuOpen(false)} className={cn(
