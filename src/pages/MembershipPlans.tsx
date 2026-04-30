@@ -62,7 +62,6 @@ const MembershipPlans = () => {
                     </ul>
                     <div className="text-xs text-muted-foreground mb-3 space-y-1">
                       <p>Badge: {tier.badge}</p>
-                      <p>Lead Packs: {tier.leadPacks === -1 ? "Unlimited" : `${tier.leadPacks}/year`}</p>
                       <p>Sponsored Eligible: {tier.sponsoredEligible ? "Yes" : "No"}</p>
                     </div>
                     <Button
