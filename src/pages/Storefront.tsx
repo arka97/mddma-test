@@ -85,7 +85,7 @@ const Storefront = () => {
   const { signals, loading: signalsLoading } = useSellerTradeSignals(liveCompanyId);
   const { checklist: kyc } = useSellerKyc(liveOwnerId);
 
-  if (loading && !demoMember) {
+  if (loading) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
