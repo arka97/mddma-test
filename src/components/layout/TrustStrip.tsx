@@ -1,5 +1,4 @@
-import { BadgeCheck, ShieldCheck, Users } from "lucide-react";
-import { associationStats } from "@/data/sampleData";
+import { BadgeCheck, ShieldCheck } from "lucide-react";
 
 // Slim persistent strip under the header. Surfaces credibility on every
 // page in <40px without competing with the navy hero on landing.
@@ -11,11 +10,7 @@ export function TrustStrip() {
           <div className="flex items-center gap-4">
             <span className="inline-flex items-center gap-1">
               <ShieldCheck className="h-3.5 w-3.5 text-accent" />
-              Est. 1930s · {associationStats.yearsOfService} years
-            </span>
-            <span className="hidden md:inline-flex items-center gap-1">
-              <Users className="h-3.5 w-3.5 text-accent" />
-              {associationStats.memberCount}+ verified members
+              Established 1930s
             </span>
           </div>
           <span className="inline-flex items-center gap-1">

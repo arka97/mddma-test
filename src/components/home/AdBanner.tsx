@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { sampleAdvertisers } from "@/data/sampleData";
 import { ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
