@@ -66,23 +66,6 @@ export const demandColors: Record<DemandLevel, string> = {
 
 // Live product data is fetched via src/repositories/products.ts. No static fixtures.
 
-// Broker listings
-export interface BrokerListing {
-  id: string;
-  type: "supply" | "demand";
-  commodity: string;
-  variant: string;
-  quantity: string;
-  location: string;
-  brokerName: string;
-  brokerCompany: string;
-  contactWhatsapp: string;
-  postedDate: string;
-  status: "active" | "closed";
-}
-
-export const brokerListings: BrokerListing[] = [
-];
 
 // V2 Inquiry with RFQ fields
 export interface Inquiry {
