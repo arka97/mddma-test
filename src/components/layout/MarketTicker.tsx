@@ -1,111 +1,135 @@
 import { useEffect, useState, useRef } from "react";
-import { TrendingUp, TrendingDown, Minus, Flame, AlertTriangle, Users, Zap } from "lucide-react";
-import { productListings, sampleInquiries } from "@/data/productListings";
+import { TrendingUp, TrendingDown, Minus, Flame, AlertTriangle, Users } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface TickerItem {
   id: string;
   icon: React.ReactNode;
   text: string;
-  type: "trend" | "demand" | "activity" | "supply" | "alert";
+  type: "trend" | "demand" | "activity" | "supply";
 }
 
-function generateTickerItems(): TickerItem[] {
+interface ProductLite {
+  id: string;
+  name: string;
+  origin: string | null;
+  category: string | null;
+  price_min: number | null;
+  price_max: number | null;
+  trend_direction: string | null;
+  demand_score: number | null;
+  stock_band: string | null;
+}
+
+async function fetchTickerItems(): Promise<TickerItem[]> {
   const items: TickerItem[] = [];
 
-  // Price trends from product listings
-  productListings
-    .filter((p) => p.trendDirection !== "stable")
+  const { data: products } = await supabase
+    .from("products")
+    .select("id,name,origin,category,price_min,price_max,trend_direction,demand_score,stock_band")
+    .eq("is_hidden", false)
+    .limit(40);
+
+  const list = (products ?? []) as ProductLite[];
+
+  list
+    .filter((p) => p.trend_direction === "rising" || p.trend_direction === "falling")
     .slice(0, 3)
     .forEach((p) => {
-      const icon =
-        p.trendDirection === "rising" ? (
-          <TrendingUp className="h-3.5 w-3.5 text-red-400" />
-        ) : (
-          <TrendingDown className="h-3.5 w-3.5 text-green-400" />
-        );
+      const rising = p.trend_direction === "rising";
       const range =
-        p.priceMin && p.priceMax
-          ? ` (₹${p.priceMin.toLocaleString()}–₹${p.priceMax.toLocaleString()})`
+        p.price_min && p.price_max
+          ? ` (₹${Number(p.price_min).toLocaleString()}–₹${Number(p.price_max).toLocaleString()})`
           : "";
       items.push({
         id: `trend-${p.id}`,
-        icon,
-        text: `${p.variant} ${p.trendDirection === "rising" ? "↑" : "↓"} ${p.trendDirection === "rising" ? "Rising" : "Falling"}${range}`,
+        icon: rising ? (
+          <TrendingUp className="h-3.5 w-3.5 text-red-400" />
+        ) : (
+          <TrendingDown className="h-3.5 w-3.5 text-green-400" />
+        ),
+        text: `${p.name} ${rising ? "↑ Rising" : "↓ Falling"}${range}`,
         type: "trend",
       });
     });
 
-  // Stable trends
-  productListings
-    .filter((p) => p.trendDirection === "stable")
+  list
+    .filter((p) => p.trend_direction === "stable")
     .slice(0, 2)
     .forEach((p) => {
       items.push({
         id: `stable-${p.id}`,
         icon: <Minus className="h-3.5 w-3.5 text-yellow-400" />,
-        text: `${p.commodity} ${p.variant} → Stable`,
+        text: `${p.name} → Stable`,
         type: "trend",
       });
     });
 
-  // Demand signals
-  productListings
-    .filter((p) => p.demandScore === "high")
+  list
+    .filter((p) => (p.demand_score ?? 0) >= 70)
     .slice(0, 2)
     .forEach((p) => {
       items.push({
         id: `demand-${p.id}`,
         icon: <Flame className="h-3.5 w-3.5 text-orange-400" />,
-        text: `High demand for ${p.variant}`,
+        text: `High demand for ${p.name}`,
         type: "demand",
       });
     });
 
-  // Activity signals
-  const totalRfqs = sampleInquiries.length;
-  items.push({
-    id: "activity-rfq",
-    icon: <Users className="h-3.5 w-3.5 text-blue-400" />,
-    text: `${totalRfqs + Math.floor(Math.random() * 5)} RFQs sent in last hour`,
-    type: "activity",
-  });
-
-  // Supply signals (low stock)
-  productListings
-    .filter((p) => p.stockBand === "low")
+  list
+    .filter((p) => p.stock_band === "low")
     .slice(0, 2)
     .forEach((p) => {
       items.push({
         id: `supply-${p.id}`,
         icon: <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />,
-        text: `Limited stock: ${p.origin} ${p.commodity}`,
+        text: `Limited stock: ${p.origin ? p.origin + " " : ""}${p.name}`,
         type: "supply",
       });
     });
 
-  // Breaking alert
-  items.push({
-    id: "alert-breaking",
-    icon: <Zap className="h-3.5 w-3.5 text-yellow-300" />,
-    text: "⚠️ Almond prices expected to rise — California crop report update",
-    type: "alert",
-  });
+  // Live RFQ count in last hour
+  const sinceIso = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count } = await supabase
+    .from("rfqs")
+    .select("id", { count: "exact", head: true })
+    .gte("created_at", sinceIso);
+
+  if ((count ?? 0) > 0) {
+    items.push({
+      id: "activity-rfq",
+      icon: <Users className="h-3.5 w-3.5 text-blue-400" />,
+      text: `${count} RFQs sent in the last hour`,
+      type: "activity",
+    });
+  }
 
   return items.slice(0, 10);
 }
 
 export function MarketTicker() {
-  const [items, setItems] = useState<TickerItem[]>(generateTickerItems);
+  const [items, setItems] = useState<TickerItem[]>([]);
   const [isPaused, setIsPaused] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Refresh data every 60s
   useEffect(() => {
+    let alive = true;
+    fetchTickerItems().then((next) => {
+      if (alive) setItems(next);
+    });
     const interval = setInterval(() => {
-      setItems(generateTickerItems());
+      fetchTickerItems().then((next) => {
+        if (alive) setItems(next);
+      });
     }, 60000);
-    return () => clearInterval(interval);
+    return () => {
+      alive = false;
+      clearInterval(interval);
+    };
   }, []);
+
+  if (items.length < 3) return null;
 
   return (
     <div
@@ -113,7 +137,6 @@ export function MarketTicker() {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Label */}
       <div className="flex items-center">
         <div className="flex-shrink-0 bg-accent text-primary px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest z-10 flex items-center gap-1">
           <span className="relative flex h-2 w-2">
@@ -123,7 +146,6 @@ export function MarketTicker() {
           Live Market
         </div>
 
-        {/* Scrolling content */}
         <div className="overflow-hidden flex-1" ref={scrollRef}>
           <div
             className={`flex whitespace-nowrap ${isPaused ? "[animation-play-state:paused]" : ""}`}
@@ -131,22 +153,13 @@ export function MarketTicker() {
               animation: "ticker-scroll 40s linear infinite",
             }}
           >
-            {/* Duplicate items for seamless loop */}
             {[...items, ...items].map((item, i) => (
               <div
                 key={`${item.id}-${i}`}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs"
               >
                 {item.icon}
-                <span
-                  className={
-                    item.type === "alert"
-                      ? "text-yellow-300 font-semibold"
-                      : "text-background/90"
-                  }
-                >
-                  {item.text}
-                </span>
+                <span className="text-background/90">{item.text}</span>
                 <span className="text-background/20 ml-3">│</span>
               </div>
             ))}
