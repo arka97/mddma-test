@@ -76,7 +76,7 @@ export function HeroSection() {
           {/* Trust line under command bar */}
           <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-xs sm:text-sm text-primary-foreground/80">
             <BadgeCheck className="h-4 w-4 text-accent" />
-            {["Verified Sellers", "Direct Quotes", "GST", "PAN", "FSSAI"].map((item, i, arr) => (
+            {["Verified Sellers", "Direct Quotes"].map((item, i, arr) => (
               <span key={item} className="inline-flex items-center gap-2.5">
                 <span className="font-medium tracking-wide uppercase text-[11px] sm:text-xs text-primary-foreground/85">
                   {item}
