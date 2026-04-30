@@ -83,7 +83,7 @@ export function Header() {
   );
 
   return (
-    <header className="bg-primary shadow-lg">
+    <header className={cn("bg-primary shadow-lg transition-transform duration-300", hidden && "-translate-y-full")}>
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
