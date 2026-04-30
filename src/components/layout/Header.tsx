@@ -116,14 +116,14 @@ export function Header() {
 
           <div className="hidden lg:flex lg:items-center lg:gap-2">
             {showSearch && (
-              <form onSubmit={submitSearch} className="relative animate-fade-in">
+              <form onSubmit={submitSearch} className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
                 <Input
                   value={searchQ}
                   onChange={(e) => setSearchQ(e.target.value)}
-                  placeholder="Search commodities…"
-                  aria-label="Search commodities"
-                  className="h-8 w-56 pl-8 text-xs bg-background"
+                  placeholder="Find Sellers…"
+                  aria-label="Find sellers"
+                  className="h-8 w-40 pl-8 py-0 text-xs bg-background"
                 />
               </form>
             )}
@@ -153,8 +153,8 @@ export function Header() {
               <Input
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="Search commodities…"
-                aria-label="Search commodities"
+                placeholder="Find Sellers…"
+                aria-label="Find sellers"
                 className="h-9 w-full pl-8 text-sm bg-background"
               />
             </form>
