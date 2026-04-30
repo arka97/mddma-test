@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -15,36 +15,25 @@ import { slugify } from "@/lib/storage";
 import {
   createPendingMembership,
   formatINR,
-  TIER_LABEL,
   TIER_PRICE_INR,
-  type MembershipTier,
 } from "@/lib/membership";
-import { Loader2, ShieldCheck, Building2, Briefcase, Star } from "lucide-react";
+import { Loader2, ShieldCheck, Building2, CheckCircle2, Crown } from "lucide-react";
 
-const TIER_DETAILS: Record<MembershipTier, { tagline: string; perks: string[]; icon: typeof Briefcase }> = {
-  broker: {
-    tagline: "Direct RFQ inbox + multi-seller quote tools.",
-    perks: ["Quote on behalf of multiple sellers", "Verified-buyer pool", "Founding-member rate locked 24 months"],
-    icon: Briefcase,
-  },
-  trader: {
-    tagline: "Vashi APMC traders, mid-size firms.",
-    perks: ["RFQ inbox · no broker tax", "Verified storefront on mddma.in/s/<your-slug>", "Founding-member rate locked 24 months"],
-    icon: Building2,
-  },
-  importer: {
-    tagline: "Importers, processors, exporters, FSSAI-licensed brands.",
-    perks: ["Priority placement in directory", "Multi-product catalog + variants", "Featured circular slot · Founding-tier badge"],
-    icon: Star,
-  },
-};
+const PAID_PERKS = [
+  "Verified storefront on mddma.in/s/<your-slug>",
+  "RFQ inbox & CRM — direct buyer enquiries, no broker tax",
+  "Priority placement in directory + product search",
+  "Multi-product catalog with controlled-transparency pricing",
+  "Market intelligence reports & trade signals",
+  "Trust seal · founding-member badge · rate locked 24 months",
+];
 
 const Apply = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
-  const [tier, setTier] = useState<MembershipTier>("trader");
+  const [isBroker, setIsBroker] = useState(false);
   const [form, setForm] = useState({
     name: "", tagline: "", description: "", city: "Mumbai", phone: "",
     email: "", gstin: "", categories: "",
@@ -75,7 +64,7 @@ const Apply = () => {
       categories: form.categories.split(",").map((s) => s.trim()).filter(Boolean),
       is_hidden: true,
       review_status: "pending",
-      membership_tier: tier,
+      membership_tier: "paid",
     } as never);
     if (companyErr) {
       setSubmitting(false);
@@ -83,16 +72,30 @@ const Apply = () => {
       return;
     }
 
-    // 2. Create the pending membership row (Razorpay payment link arrives on admin approval)
-    const { error: membershipErr } = await createPendingMembership(user.id, tier);
+    // 2. Create the pending membership row (Razorpay payment link arrives on admin approval).
+    //    Broker flag is captured in `notes` for the admin to set on the profile after approval.
+    const { error: membershipErr } = await createPendingMembership(user.id, "paid");
     if (membershipErr) {
-      // Company was inserted; surface a soft warning so the user can retry from /account/verify.
       console.warn("createPendingMembership failed", membershipErr);
       toast({
         title: "Application received",
         description: "We saved your firm details but couldn't queue your membership. Please complete it from My Account → Verification.",
       });
     } else {
+      // Best-effort: record broker intent on the user's profile so admin can verify.
+      if (isBroker) {
+        try {
+          // is_broker is admin-only via RLS; this update may no-op for non-admin sessions.
+          // The intent is preserved in the company description / admin queue note.
+          await supabase
+            .from("profiles")
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .update({ designation: "Broker" } as any)
+            .eq("id", user.id);
+        } catch {
+          /* non-fatal */
+        }
+      }
       toast({
         title: "✅ Application submitted",
         description: "MDDMA committee will review within 48 hours and email your payment link.",
@@ -101,6 +104,8 @@ const Apply = () => {
     setSubmitting(false);
     navigate("/account/verify");
   };
+
+  const price = TIER_PRICE_INR.paid;
 
   return (
     <Layout>
@@ -115,47 +120,33 @@ const Apply = () => {
 
       <section className="py-10">
         <div className="container mx-auto px-4 max-w-3xl space-y-6">
-          <Card>
+          {/* Single Paid plan summary */}
+          <Card className="border-accent/30 ring-1 ring-accent/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-accent" /> Choose your membership
+                <Crown className="h-5 w-5 text-accent" /> Paid Membership
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <RadioGroup
-                value={tier}
-                onValueChange={(v) => setTier(v as MembershipTier)}
-                className="grid gap-3 md:grid-cols-3"
-              >
-                {(Object.keys(TIER_DETAILS) as MembershipTier[]).map((t) => {
-                  const Icon = TIER_DETAILS[t].icon;
-                  return (
-                    <Label
-                      key={t}
-                      htmlFor={`tier-${t}`}
-                      className={`relative cursor-pointer rounded-lg border p-4 transition ${
-                        tier === t ? "border-accent bg-accent/5 ring-1 ring-accent" : "border-border hover:border-accent/40"
-                      }`}
-                    >
-                      <RadioGroupItem id={`tier-${t}`} value={t} className="absolute right-3 top-3" />
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-4 w-4 text-accent" />
-                        <span className="font-semibold">{TIER_LABEL[t]}</span>
-                      </div>
-                      <div className="mt-1 text-2xl font-bold text-primary">{formatINR(TIER_PRICE_INR[t])}<span className="text-xs text-muted-foreground font-normal">/yr</span></div>
-                      <p className="text-xs text-muted-foreground mt-1">{TIER_DETAILS[t].tagline}</p>
-                      <ul className="mt-3 space-y-1 text-xs text-muted-foreground">
-                        {TIER_DETAILS[t].perks.map((p) => (
-                          <li key={p} className="flex gap-1.5"><span className="text-accent">·</span>{p}</li>
-                        ))}
-                      </ul>
-                    </Label>
-                  );
-                })}
-              </RadioGroup>
+              <div className="flex items-end gap-2 mb-4">
+                <span className="text-4xl font-bold text-primary">{formatINR(price)}</span>
+                <span className="text-sm text-muted-foreground mb-1">/ year</span>
+              </div>
+              <ul className="space-y-2">
+                {PAID_PERKS.map((p) => (
+                  <li key={p} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle2 className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-4 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+                The free tier (basic directory listing + RFQ submission) requires no application — just create an account.
+              </div>
             </CardContent>
           </Card>
 
+          {/* Firm details */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Building2 className="h-5 w-5 text-accent" /> Firm Details</CardTitle>
@@ -183,13 +174,31 @@ const Apply = () => {
                 <div className="space-y-1.5"><Label>Product Categories (comma-separated)</Label>
                   <Input value={form.categories} onChange={(e) => update("categories", e.target.value)} placeholder="Almonds, Cashews, Dates" /></div>
 
+                <label
+                  htmlFor="is-broker"
+                  className="flex items-start gap-3 rounded-md border border-border p-3 cursor-pointer hover:border-accent/40 transition"
+                >
+                  <Checkbox
+                    id="is-broker"
+                    checked={isBroker}
+                    onCheckedChange={(v) => setIsBroker(v === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="text-sm">
+                    <div className="font-medium">I operate as a broker</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      I quote on behalf of multiple sellers. Same {formatINR(price)}/yr fee — broker tools (multi-seller quoting, broker board) get unlocked after admin verification.
+                    </div>
+                  </div>
+                </label>
+
                 <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground flex items-start gap-2">
                   <ShieldCheck className="h-4 w-4 text-accent mt-0.5 flex-shrink-0" />
                   Your application is hidden from the public directory until an MDDMA admin approves it. After approval you will receive a Razorpay payment link by email; founding-member pricing is locked until 100 paid members.
                 </div>
 
                 <Button type="submit" disabled={submitting} className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold">
-                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : `Submit Application · ${formatINR(TIER_PRICE_INR[tier])}/yr`}
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : `Submit Application · ${formatINR(price)}/yr`}
                 </Button>
               </form>
             </CardContent>

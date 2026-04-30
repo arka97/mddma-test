@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type MembershipTier = "broker" | "trader" | "importer";
+// v3.1: single Paid plan. Legacy values (broker/trader/importer) may still
+// exist in older DB rows — read paths fall back to the Paid label/price.
+export type MembershipTier = "paid";
 export type MembershipStatus = "pending" | "active" | "expired" | "cancelled";
 
 export interface Membership {
@@ -21,16 +23,22 @@ export interface Membership {
 }
 
 export const TIER_LABEL: Record<MembershipTier, string> = {
-  broker: "Broker",
-  trader: "Trader / Wholesaler",
-  importer: "Importer · Processor · Brand",
+  paid: "Paid Membership",
 };
 
 export const TIER_PRICE_INR: Record<MembershipTier, number> = {
-  broker: 9999,
-  trader: 14999,
-  importer: 29999,
+  paid: 10000,
 };
+
+// Safe accessors that gracefully handle legacy DB values
+// (broker/trader/importer) by collapsing them to the single Paid plan.
+export function tierLabel(tier: string | null | undefined): string {
+  return TIER_LABEL[tier as MembershipTier] ?? "Paid Membership";
+}
+
+export function tierPriceInr(tier: string | null | undefined): number {
+  return TIER_PRICE_INR[tier as MembershipTier] ?? 10000;
+}
 
 export const STATUS_LABEL: Record<MembershipStatus, string> = {
   pending: "Pending review",

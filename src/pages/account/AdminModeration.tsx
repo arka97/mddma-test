@@ -19,10 +19,10 @@ import { Link, Navigate } from "react-router-dom";
 
 import { uploadFile } from "@/lib/storage";
 import {
-  TIER_LABEL,
   STATUS_LABEL,
   formatINR,
-  TIER_PRICE_INR,
+  tierLabel,
+  tierPriceInr,
   listMembershipsByStatus,
   createPaymentLinkForMembership,
   manuallyActivateMembership,
@@ -261,7 +261,7 @@ const AdminModeration = () => {
   };
 
   const markMembershipActive = async (membershipId: string, tier: string) => {
-    const amountStr = prompt(`Manual activation. Enter the amount paid in INR (founding tier price suggested: ${TIER_PRICE_INR[tier as keyof typeof TIER_PRICE_INR] ?? "0"})`);
+    const amountStr = prompt(`Manual activation. Enter the amount paid in INR (founding tier price suggested: ${tierPriceInr(tier)})`);
     if (!amountStr) return;
     const amount = parseInt(amountStr, 10);
     if (!Number.isFinite(amount) || amount <= 0) {
@@ -358,7 +358,7 @@ const AdminModeration = () => {
                   <p className="text-sm text-muted-foreground text-center py-6">No applications yet.</p>
                 )}
                 {memberships.map((m) => {
-                  const tierPrice = TIER_PRICE_INR[m.tier];
+                  const tierPrice = tierPriceInr(m.tier);
                   const hasLink = !!m.payment_link_url;
                   const isPending = m.status === "pending";
                   const isActive = m.status === "active";
@@ -369,7 +369,7 @@ const AdminModeration = () => {
                           <div className="min-w-0 flex-1">
                             <p className="font-medium truncate">{m.profile?.full_name ?? "Unnamed applicant"}</p>
                             <p className="text-xs text-muted-foreground">
-                              {TIER_LABEL[m.tier]} · {formatINR(tierPrice)}/yr ·{" "}
+                              {tierLabel(m.tier)} · {formatINR(tierPrice)}/yr ·{" "}
                               <span className="font-mono">{m.id.slice(0, 8)}</span>
                             </p>
                             <p className="text-[11px] text-muted-foreground">

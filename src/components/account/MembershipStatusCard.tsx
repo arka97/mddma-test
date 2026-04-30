@@ -7,12 +7,12 @@ import { ArrowRight, BadgeCheck, Crown, ExternalLink, Loader2, ShieldAlert, Shie
 import { useAuth } from "@/contexts/AuthContext";
 import {
   STATUS_LABEL,
-  TIER_LABEL,
-  TIER_PRICE_INR,
   daysUntilExpiry,
   formatINR,
   getLatestMembershipForUser,
   isMembershipActive,
+  tierLabel,
+  tierPriceInr,
   type Membership,
 } from "@/lib/membership";
 
@@ -95,12 +95,12 @@ export function MembershipStatusCard() {
           <Icon className="h-5 w-5 text-accent mt-0.5 flex-shrink-0" />
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="font-semibold">{TIER_LABEL[m.tier]}</span>
+              <span className="font-semibold">{tierLabel(m.tier)}</span>
               <Badge variant="outline" className={statusTone(m.status)}>{STATUS_LABEL[m.status]}</Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
               {m.status === "pending" && !hasPaymentLink && "Application under committee review. You'll get a payment link here once approved."}
-              {m.status === "pending" && hasPaymentLink && `Approved — pay ${formatINR(TIER_PRICE_INR[m.tier])} to activate your founding-member spot.`}
+              {m.status === "pending" && hasPaymentLink && `Approved — pay ${formatINR(tierPriceInr(m.tier))} to activate your founding-member spot.`}
               {m.status === "active" && days !== null && `Renews in ${days} day${days === 1 ? "" : "s"}.`}
               {m.status === "active" && days === null && "Active · founding-member rate locked."}
               {(m.status === "expired" || m.status === "cancelled") && "Renew to restore directory + RFQ access."}
@@ -112,7 +112,7 @@ export function MembershipStatusCard() {
           {hasPaymentLink && (
             <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold">
               <a href={m.payment_link_url!} target="_blank" rel="noopener noreferrer">
-                Pay {formatINR(TIER_PRICE_INR[m.tier])} <ExternalLink className="ml-1 h-3.5 w-3.5" />
+                Pay {formatINR(tierPriceInr(m.tier))} <ExternalLink className="ml-1 h-3.5 w-3.5" />
               </a>
             </Button>
           )}

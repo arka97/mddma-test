@@ -9,16 +9,12 @@ import {
 } from "@/lib/membership";
 
 describe("membership helpers", () => {
-  it("locks the founding-member pricing for the three tiers", () => {
-    expect(TIER_PRICE_INR.broker).toBe(9999);
-    expect(TIER_PRICE_INR.trader).toBe(14999);
-    expect(TIER_PRICE_INR.importer).toBe(29999);
+  it("locks the v3.1 Paid plan price at ₹10,000/yr", () => {
+    expect(TIER_PRICE_INR.paid).toBe(10000);
   });
 
-  it("labels every tier and status (no missing entries)", () => {
-    for (const t of ["broker", "trader", "importer"] as const) {
-      expect(TIER_LABEL[t]).toBeTruthy();
-    }
+  it("labels the Paid tier and every status (no missing entries)", () => {
+    expect(TIER_LABEL.paid).toBeTruthy();
     for (const s of ["pending", "active", "expired", "cancelled"] as const) {
       expect(STATUS_LABEL[s]).toBeTruthy();
     }
