@@ -369,7 +369,7 @@ const AdminModeration = () => {
                           <div className="min-w-0 flex-1">
                             <p className="font-medium truncate">{m.profile?.full_name ?? "Unnamed applicant"}</p>
                             <p className="text-xs text-muted-foreground">
-                              {TIER_LABEL[m.tier]} · {formatINR(tierPrice)}/yr ·{" "}
+                              {tierLabel(m.tier)} · {formatINR(tierPrice)}/yr ·{" "}
                               <span className="font-mono">{m.id.slice(0, 8)}</span>
                             </p>
                             <p className="text-[11px] text-muted-foreground">
