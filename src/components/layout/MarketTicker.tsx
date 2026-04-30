@@ -109,7 +109,7 @@ export function MarketTicker() {
 
   return (
     <div
-      className="bg-foreground text-background overflow-hidden relative sticky top-0 z-50"
+      className="bg-foreground text-background overflow-hidden relative"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
