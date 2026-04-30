@@ -17,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import {
   DOC_HELP,
   DOC_LABEL,
-  IFSC_RE,
   type KycDocType,
   type KycSubmission,
   getSignedKycUrl,
@@ -29,15 +28,11 @@ import {
   validateDocNumber,
 } from "@/lib/kyc";
 
-const DOC_ORDER: KycDocType[] = ["gst", "pan", "fssai", "bank"];
+const DOC_ORDER: KycDocType[] = ["gst", "pan", "fssai"];
 
 interface RowState {
   file: File | null;
   docNumber: string;
-  // bank-only fields
-  bankHolder: string;
-  bankIfsc: string;
-  bankLast4: string;
   saving: boolean;
   err: string | null;
 }
@@ -45,9 +40,6 @@ interface RowState {
 const blankRow = (): RowState => ({
   file: null,
   docNumber: "",
-  bankHolder: "",
-  bankIfsc: "",
-  bankLast4: "",
   saving: false,
   err: null,
 });
@@ -61,13 +53,11 @@ export function KYCDocsSection() {
     gst: blankRow(),
     pan: blankRow(),
     fssai: blankRow(),
-    bank: blankRow(),
   });
   const inputRefs = useRef<Record<KycDocType, HTMLInputElement | null>>({
     gst: null,
     pan: null,
     fssai: null,
-    bank: null,
   });
 
   const reload = async () => {
