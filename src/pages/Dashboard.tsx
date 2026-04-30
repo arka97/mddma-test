@@ -108,6 +108,19 @@ const Dashboard = () => {
     return () => { alive = false; };
   }, [access, company?.id, toast]);
 
+  const pipelineCounts = useMemo(() => ({
+    new: rfqs.filter((r) => r.status === "new").length,
+    responded: rfqs.filter((r) => r.status === "responded" || r.status === "viewed").length,
+    negotiating: rfqs.filter((r) => r.status === "negotiating").length,
+    converted: rfqs.filter((r) => r.status === "converted" || r.status === "closed").length,
+  }), [rfqs]);
+
+  const priorityCounts = useMemo(() => {
+    const counts = { hot: 0, warm: 0, cold: 0 } as Record<RfqPriority, number>;
+    for (const r of rfqs) counts[priorityFromScore(r.priority_score)]++;
+    return counts;
+  }, [rfqs]);
+
   if (!access) {
     return (
       <Layout>
@@ -142,19 +155,6 @@ const Dashboard = () => {
     }
     toast({ title: "Status Updated", description: `Inquiry moved to ${statusConfig[newStatus].label}` });
   };
-
-  const pipelineCounts = useMemo(() => ({
-    new: rfqs.filter((r) => r.status === "new").length,
-    responded: rfqs.filter((r) => r.status === "responded" || r.status === "viewed").length,
-    negotiating: rfqs.filter((r) => r.status === "negotiating").length,
-    converted: rfqs.filter((r) => r.status === "converted" || r.status === "closed").length,
-  }), [rfqs]);
-
-  const priorityCounts = useMemo(() => {
-    const counts = { hot: 0, warm: 0, cold: 0 } as Record<RfqPriority, number>;
-    for (const r of rfqs) counts[priorityFromScore(r.priority_score)]++;
-    return counts;
-  }, [rfqs]);
 
   const filteredRfqs = priorityFilter === "all"
     ? rfqs
