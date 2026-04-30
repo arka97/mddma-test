@@ -358,7 +358,7 @@ const AdminModeration = () => {
                   <p className="text-sm text-muted-foreground text-center py-6">No applications yet.</p>
                 )}
                 {memberships.map((m) => {
-                  const tierPrice = TIER_PRICE_INR[m.tier];
+                  const tierPrice = tierPriceInr(m.tier);
                   const hasLink = !!m.payment_link_url;
                   const isPending = m.status === "pending";
                   const isActive = m.status === "active";
