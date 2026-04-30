@@ -1,40 +1,39 @@
-## Header search bar tweaks
+## Hero section trust line cleanup
 
-UI-only changes to `src/components/layout/Header.tsx`.
+UI-only changes to `src/components/home/HeroSection.tsx`.
 
 ### Changes
 
-1. **Placeholder text** — change "Search commodities…" to "Find Sellers…" (desktop + mobile inputs).
-2. **Height** — match the adjacent Login button (`h-8`). Add `py-0` to the Input to override its default `py-2` so rendered height is identical to the button.
-3. **Width** — reduce desktop search from `w-56` (224px) to `w-40` (160px) so the nav links (Home, Directory, Products, Market, Community, Membership) sit visually centered between the logo and the right-side controls.
-4. **No load animation** — remove the `animate-fade-in` class from the desktop search `<form>` so it appears instantly without any fade/slide transition when scrolling triggers it.
+1. **Remove the paragraph above the search bar** (lines 53-56) — "KYC-verified sellers · direct quotes."
+2. **Replace the line below the search bar** (lines 82-85) — currently "All sellers are KYC-verified by MDDMA admin · GST · PAN · FSSAI · Bank". Replace with a polished single trust line:
+   - **"Verified Sellers · Direct Quotes · GST · PAN · FSSAI"**
+   - Drop the "Bank" item (matches the recent KYC removal of bank proof).
+   - Use middot separators with subtle styling, BadgeCheck icon kept, dot-separated items in a slightly larger, refined treatment.
+3. **Tighten spacing** to compensate for the removed paragraph: reduce `mb-8` on the (now removed) paragraph's slot by giving the heading `mb-8` directly, so the search bar sits at a comfortable distance below the headline. Keep the trust line `mt-4` below the search bar (slightly more breathing room than current `mt-3`).
+4. **Beautify the trust line**: items rendered as inline pills/dots — small uppercase tracking, accent-colored dots between items, BadgeCheck in accent. Stays on one row on desktop, wraps cleanly on mobile.
 
-### Technical detail
+### Result (text only)
 
-In `Header.tsx`, the desktop search block:
+Before:
+```
+[Heritage badge]
+India's Digital Trade Hub
+for Dry Fruits, Dates & Commodities
 
-```tsx
-<form ... className="relative animate-fade-in">
-  ...
-  <Input
-    placeholder="Search commodities…"
-    className="h-8 w-56 pl-8 text-xs bg-background"
-  />
-</form>
+KYC-verified sellers · direct quotes.
+
+[ Search input ............................. Find Sellers ]
+✓ All sellers are KYC-verified by MDDMA admin · GST · PAN · FSSAI · Bank
 ```
 
-becomes:
-
-```tsx
-<form ... className="relative">
-  ...
-  <Input
-    placeholder="Find Sellers…"
-    className="h-8 w-40 pl-8 py-0 text-xs bg-background"
-  />
-</form>
+After:
 ```
+[Heritage badge]
+India's Digital Trade Hub
+for Dry Fruits, Dates & Commodities
 
-Mobile menu Input placeholder also updated to "Find Sellers…".
+[ Search input ............................. Find Sellers ]
+✓ Verified Sellers · Direct Quotes · GST · PAN · FSSAI
+```
 
 No business logic, routes, or other files affected.

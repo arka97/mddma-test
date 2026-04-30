@@ -43,17 +43,12 @@ export function HeroSection() {
             </span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight mb-8">
             India&apos;s Digital <span className="text-accent">Trade Hub</span>
             <span className="block text-2xl sm:text-3xl md:text-4xl mt-2 text-primary-foreground/90 font-semibold">
               for Dry Fruits, Dates &amp; Commodities
             </span>
           </h1>
-
-          <p className="text-base sm:text-lg text-primary-foreground/75 max-w-2xl mx-auto mb-8">
-            <span className="font-semibold text-accent">KYC-verified sellers</span>
-            {" · "}direct quotes.
-          </p>
 
           {/* Command bar */}
           <form
@@ -79,9 +74,16 @@ export function HeroSection() {
           </form>
 
           {/* Trust line under command bar */}
-          <div className="mt-3 inline-flex items-center gap-1.5 text-xs text-primary-foreground/70">
-            <BadgeCheck className="h-3.5 w-3.5 text-accent" />
-            All sellers are KYC-verified by MDDMA admin · GST · PAN · FSSAI · Bank
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-xs sm:text-sm text-primary-foreground/80">
+            <BadgeCheck className="h-4 w-4 text-accent" />
+            {["Verified Sellers", "Direct Quotes", "GST", "PAN", "FSSAI"].map((item, i, arr) => (
+              <span key={item} className="inline-flex items-center gap-2.5">
+                <span className="font-medium tracking-wide uppercase text-[11px] sm:text-xs text-primary-foreground/85">
+                  {item}
+                </span>
+                {i < arr.length - 1 && <span className="text-accent/70">•</span>}
+              </span>
+            ))}
           </div>
 
           {/* Quick category chips */}
