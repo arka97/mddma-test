@@ -1,25 +1,40 @@
-## Goal
-Drop the Bank Account Proof option from the KYC/verification flow. Keep GST, PAN and FSSAI as the supported documents.
+## Header search bar tweaks
 
-## Changes
+UI-only changes to `src/components/layout/Header.tsx`.
 
-### Frontend (presentation only)
-- `src/lib/kyc.ts`
-  - Remove `"bank"` from the `KycDocType` union.
-  - Remove `bank` entries from `DOC_LABEL`, `DOC_HELP`, and from the `latestByDocType` initializer.
-  - Keep `bank_account_last4 / bank_ifsc / bank_holder_name` fields on the `KycSubmission` interface and `SubmitKycInput` (DB columns still exist, harmless and forward-compatible) — but they will no longer be written by the UI.
-- `src/components/account/KYCDocsSection.tsx`
-  - Remove `"bank"` from `DOC_ORDER`.
-  - Remove bank-only state (`bankHolder`, `bankIfsc`, `bankLast4`) from `RowState`, `BLANK`, and the bank validation/submit branch.
-  - Remove the bank-specific input block in the render (lines ~203–217).
-- `src/lib/__tests__/kyc.test.ts`
-  - Drop `"bank"` from the iterated doc types and the corresponding `result.bank` assertion.
-- `src/pages/account/AdminModeration.tsx`
-  - Remove the inline display of `bank_account_last4` / `bank_ifsc` (lines ~462–463). Existing rows without bank info render unchanged.
+### Changes
 
-### Database
-- No migration. The `bank_*` columns and any historical rows with `doc_type='bank'` stay in place (read-only legacy). This avoids destructive changes and keeps admin history intact.
+1. **Placeholder text** — change "Search commodities…" to "Find Sellers…" (desktop + mobile inputs).
+2. **Height** — match the adjacent Login button (`h-8`). Add `py-0` to the Input to override its default `py-2` so rendered height is identical to the button.
+3. **Width** — reduce desktop search from `w-56` (224px) to `w-40` (160px) so the nav links (Home, Directory, Products, Market, Community, Membership) sit visually centered between the logo and the right-side controls.
+4. **No load animation** — remove the `animate-fade-in` class from the desktop search `<form>` so it appears instantly without any fade/slide transition when scrolling triggers it.
 
-## Out of scope
-- Verification tier ladder (Email → Company → GST) is unchanged; bank was never part of tier promotion.
-- No changes to `promote-verification` edge function.
+### Technical detail
+
+In `Header.tsx`, the desktop search block:
+
+```tsx
+<form ... className="relative animate-fade-in">
+  ...
+  <Input
+    placeholder="Search commodities…"
+    className="h-8 w-56 pl-8 text-xs bg-background"
+  />
+</form>
+```
+
+becomes:
+
+```tsx
+<form ... className="relative">
+  ...
+  <Input
+    placeholder="Find Sellers…"
+    className="h-8 w-40 pl-8 py-0 text-xs bg-background"
+  />
+</form>
+```
+
+Mobile menu Input placeholder also updated to "Find Sellers…".
+
+No business logic, routes, or other files affected.
