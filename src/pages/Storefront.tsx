@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { productListings } from "@/data/productListings";
+
 import { useRole } from "@/contexts/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -106,7 +106,7 @@ const Storefront = () => {
     );
   }
 
-  const sellerListings = liveMember ? [] : productListings.filter((pl) => pl.sellerId === member.id);
+  const sellerListings: import("@/data/productListings").ProductListing[] = [];
   const yearsInBusiness = new Date().getFullYear() - member.memberSince;
 
   return (
