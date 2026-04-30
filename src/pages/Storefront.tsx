@@ -106,7 +106,7 @@ const Storefront = () => {
     );
   }
 
-  const sellerListings: never[] = [];
+  const sellerListings: import("@/data/productListings").ProductListing[] = [];
   const yearsInBusiness = new Date().getFullYear() - member.memberSince;
 
   return (
