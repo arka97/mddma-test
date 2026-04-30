@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type KycDocType = "gst" | "pan" | "fssai" | "bank";
+export type KycDocType = "gst" | "pan" | "fssai";
 export type KycDocStatus = "pending" | "approved" | "rejected";
 
 export interface KycSubmission {
