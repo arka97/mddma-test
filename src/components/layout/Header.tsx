@@ -59,7 +59,7 @@ export function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-40 bg-primary shadow-lg">
+    <header className="bg-primary shadow-lg">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
