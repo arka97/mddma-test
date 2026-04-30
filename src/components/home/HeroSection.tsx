@@ -52,8 +52,7 @@ export function HeroSection() {
 
           <p className="text-base sm:text-lg text-primary-foreground/75 max-w-2xl mx-auto mb-8">
             <span className="font-semibold text-accent">KYC-verified sellers</span>
-            {" · "}direct quotes
-            {" · "}no broker gatekeeping.
+            {" · "}direct quotes.
           </p>
 
           {/* Command bar */}
