@@ -153,8 +153,8 @@ export function Header() {
               <Input
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="Search commodities…"
-                aria-label="Search commodities"
+                placeholder="Find Sellers…"
+                aria-label="Find sellers"
                 className="h-9 w-full pl-8 text-sm bg-background"
               />
             </form>
