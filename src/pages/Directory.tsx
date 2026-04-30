@@ -226,6 +226,7 @@ const Directory = () => {
                 <div className="text-center py-12 col-span-full">
                   <p className="text-muted-foreground">No members found matching your criteria.</p>
                 </div>
+              )}
           </div>
 
           <div className="mt-8">
