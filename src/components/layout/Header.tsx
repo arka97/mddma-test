@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,9 +23,33 @@ const navigation = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+  const ticking = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (mobileMenuOpen || y < 80) {
+          setHidden(false);
+        } else if (y > lastY.current) {
+          setHidden(true);
+        } else if (y < lastY.current) {
+          setHidden(false);
+        }
+        lastY.current = y;
+        ticking.current = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [mobileMenuOpen]);
 
   const isActive = (href: string) => href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
@@ -59,7 +83,7 @@ export function Header() {
   );
 
   return (
-    <header className="bg-primary shadow-lg">
+    <header className={cn("bg-primary shadow-lg transition-transform duration-300", hidden && "-translate-y-full")}>
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">

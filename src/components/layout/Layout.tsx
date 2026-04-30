@@ -13,6 +13,8 @@ export function Layout({ children }: LayoutProps) {
     <div className="flex min-h-screen flex-col">
       <div className="sticky top-0 z-50">
         <MarketTicker />
+      </div>
+      <div className="sticky top-[28px] z-40">
         <Header />
       </div>
       <TrustStrip />
