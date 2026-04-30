@@ -28,7 +28,7 @@ interface SellerScoreboardProps {
   loading?: boolean;
 }
 
-const DOC_ORDER: KycDocType[] = ["gst", "pan", "fssai", "bank"];
+const DOC_ORDER: KycDocType[] = ["gst", "pan", "fssai"];
 
 function StatCell({
   label,
