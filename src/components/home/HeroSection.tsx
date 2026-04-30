@@ -70,17 +70,6 @@ export function HeroSection() {
                 className="pl-10 h-11 border-0 focus-visible:ring-1 focus-visible:ring-accent"
               />
             </div>
-            <Select value={origin} onValueChange={setOrigin}>
-              <SelectTrigger className="h-11 sm:w-44 border-0 bg-muted/40">
-                <SelectValue placeholder="Any origin" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Any origin</SelectItem>
-                {ORIGINS.map((o) => (
-                  <SelectItem key={o} value={o}>{o}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
             <Button
               type="submit"
               size="lg"
