@@ -65,7 +65,7 @@ export function HeroSection() {
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Find Verified Sellers..."
+                placeholder="What commodity? e.g. Mamra almonds, W320 cashews"
                 className="pl-10 h-11 border-0 focus-visible:ring-1 focus-visible:ring-accent"
               />
             </div>
