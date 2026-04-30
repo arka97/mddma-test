@@ -4,7 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { sampleMembers } from "@/data/sampleData";
+
 import { productListings } from "@/data/productListings";
 import { useRole } from "@/contexts/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -76,8 +76,7 @@ const Storefront = () => {
     return () => { alive = false; };
   }, [slug]);
 
-  const demoMember = sampleMembers.find((m) => m.slug === slug);
-  const member = liveMember ?? demoMember;
+  const member = liveMember;
   const isOwner = !!ownCompany && ownCompany.slug === slug;
   const canManage = isOwner || hasRole("admin");
 
