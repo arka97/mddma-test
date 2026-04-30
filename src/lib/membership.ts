@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type MembershipTier = "broker" | "trader" | "importer";
+// v3.1: single Paid plan. Legacy values (broker/trader/importer) may still
+// exist in older DB rows — read paths fall back to the Paid label/price.
+export type MembershipTier = "paid";
 export type MembershipStatus = "pending" | "active" | "expired" | "cancelled";
 
 export interface Membership {
