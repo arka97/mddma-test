@@ -80,6 +80,10 @@ const Directory = () => {
         </div>
       </section>
 
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <AdBanner placement="directory-sidebar" />
+      </div>
+
       <section className="py-6 bg-muted/50 border-b border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-3">
@@ -227,10 +231,6 @@ const Directory = () => {
                   <p className="text-muted-foreground">No members found matching your criteria.</p>
                 </div>
               )}
-          </div>
-
-          <div className="mt-8">
-            <AdBanner placement="directory-sidebar" />
           </div>
         </div>
       </section>
