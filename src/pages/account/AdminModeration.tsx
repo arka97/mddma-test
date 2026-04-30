@@ -179,6 +179,62 @@ const AdminModeration = () => {
     if (error) toast({ title: "Failed", variant: "destructive" }); else load();
   };
 
+  // Categories
+  const startEditCat = (c?: ProductCategoryRow) => {
+    if (c) setCatForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", image_url: c.image_url ?? "", sort_order: c.sort_order, is_active: c.is_active, is_featured: c.is_featured });
+    else setCatForm(emptyCatForm);
+  };
+  const handleCatImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploadingCatImg(true);
+    const url = await uploadFile("product-images", user.id, file);
+    setUploadingCatImg(false);
+    if (url) setCatForm((f) => ({ ...f, image_url: url }));
+    else toast({ title: "Upload failed", variant: "destructive" });
+  };
+  const saveCategory = async () => {
+    const name = catForm.name.trim();
+    if (!name) { toast({ title: "Name required", variant: "destructive" }); return; }
+    const slug = (catForm.slug.trim() || slugify(name));
+    setSavingCat(true);
+    try {
+      const payload = {
+        name,
+        slug,
+        description: catForm.description.trim() || null,
+        image_url: catForm.image_url || null,
+        sort_order: Number.isFinite(catForm.sort_order) ? catForm.sort_order : 0,
+        is_active: catForm.is_active,
+        is_featured: catForm.is_featured,
+      };
+      if (catForm.id) await updateCategory(catForm.id, payload);
+      else await createCategory(payload);
+      toast({ title: catForm.id ? "Category updated" : "Category created" });
+      setCatForm(emptyCatForm);
+      load();
+    } catch (err) {
+      toast({ title: "Save failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    } finally {
+      setSavingCat(false);
+    }
+  };
+  const removeCategory = async (c: ProductCategoryRow) => {
+    const used = await countProductsForCategory(c.name);
+    const msg = used > 0
+      ? `Delete "${c.name}"? ${used} product${used === 1 ? "" : "s"} use this category — they will keep the text label but lose the curated entry.`
+      : `Delete "${c.name}"?`;
+    if (!confirm(msg)) return;
+    try {
+      await deleteCategory(c.id);
+      toast({ title: "Category deleted" });
+      if (catForm.id === c.id) setCatForm(emptyCatForm);
+      load();
+    } catch (err) {
+      toast({ title: "Delete failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    }
+  };
+
   // ---------- Memberships ----------
   const generatePaymentLink = async (membershipId: string) => {
     setBusyMembership(membershipId);
