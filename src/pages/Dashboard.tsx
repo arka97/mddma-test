@@ -145,9 +145,9 @@ const Dashboard = () => {
 
   const pipelineCounts = useMemo(() => ({
     new: rfqs.filter((r) => r.status === "new").length,
-    contacted: rfqs.filter((r) => r.status === "contacted").length,
-    negotiation: rfqs.filter((r) => r.status === "negotiation").length,
-    converted: rfqs.filter((r) => r.status === "converted").length,
+    responded: rfqs.filter((r) => r.status === "responded" || r.status === "viewed").length,
+    negotiating: rfqs.filter((r) => r.status === "negotiating").length,
+    converted: rfqs.filter((r) => r.status === "converted" || r.status === "closed").length,
   }), [rfqs]);
 
   const priorityCounts = useMemo(() => {
