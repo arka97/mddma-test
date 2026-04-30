@@ -10,7 +10,6 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { AdBanner } from "@/components/home/AdBanner";
-import { tradingAreas } from "@/data/sampleData";
 import { useLiveCompanies } from "@/hooks/useLiveCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
@@ -67,6 +66,11 @@ const Directory = () => {
   const liveIds = sorted.filter((m) => m.source === "live").map((m) => m.id);
   const { map: signalsMap } = useSellerTradeSignalsBatch(liveIds);
 
+  // Build the area filter from live company data so it always matches reality.
+  const liveAreas = Array.from(
+    new Set(allMembers.map((m) => (m.area ?? "").trim()).filter(Boolean))
+  ).sort();
+
   return (
     <Layout>
       <section className="bg-primary py-12">
@@ -102,8 +106,8 @@ const Directory = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Areas</SelectItem>
-                {tradingAreas.map((a) => (
-                  <SelectItem key={a.name} value={a.name}>{a.name}</SelectItem>
+                {liveAreas.map((a) => (
+                  <SelectItem key={a} value={a}>{a}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

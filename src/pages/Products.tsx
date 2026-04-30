@@ -10,7 +10,6 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { AdBanner } from "@/components/home/AdBanner";
-import { productCategories } from "@/data/sampleData";
 import { StockBadge, TrendBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
@@ -28,6 +27,14 @@ const Products = () => {
   const [rfqProduct, setRfqProduct] = useState<string | null>(null);
 
   const { data: listings, isLoading } = useProducts();
+
+  // Derive filter options from live listings so they always match the data.
+  const liveCategories = Array.from(
+    new Set(listings.map((l) => (l.variant ?? "").trim()).filter(Boolean))
+  ).sort();
+  const liveOrigins = Array.from(
+    new Set(listings.map((l) => (l.origin ?? "").trim()).filter(Boolean))
+  ).sort();
 
   const filtered = listings.filter((pl) => {
     const s = searchTerm.toLowerCase();
@@ -75,8 +82,8 @@ const Products = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {productCategories.map((c) => (
-                  <SelectItem key={c.slug} value={c.name}>{c.name}</SelectItem>
+                {liveCategories.map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -86,7 +93,7 @@ const Products = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Origins</SelectItem>
-                {origins.map((o) => (
+                {(liveOrigins.length ? liveOrigins : origins).map((o) => (
                   <SelectItem key={o} value={o}>{o}</SelectItem>
                 ))}
               </SelectContent>
