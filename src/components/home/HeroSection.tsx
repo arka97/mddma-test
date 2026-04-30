@@ -6,7 +6,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Search, ShieldCheck, BadgeCheck, ArrowRight } from "lucide-react";
-import { associationStats } from "@/data/sampleData";
+
 
 const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
 const ORIGINS = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
