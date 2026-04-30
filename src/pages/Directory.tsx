@@ -77,20 +77,6 @@ const Directory = () => {
           <p className="text-primary-foreground/80 max-w-2xl mx-auto">
             Find KYC-verified dry fruits and dates merchants across Mumbai&apos;s major trading markets
           </p>
-          <div className="mt-5 flex items-center justify-center gap-3 flex-wrap">
-            <Button
-              size="sm"
-              variant={typeFilter === "Broker" ? "default" : "secondary"}
-              className={typeFilter === "Broker" ? "bg-accent text-primary hover:bg-accent/90" : ""}
-              onClick={() => setTypeFilter(typeFilter === "Broker" ? "all" : "Broker")}
-            >
-              <Handshake className="h-3.5 w-3.5 mr-1.5" />
-              {typeFilter === "Broker" ? "Showing Brokers — Clear" : "Show Brokers Only"}
-            </Button>
-            <Button size="sm" variant="outline" asChild className="bg-transparent border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground">
-              <Link to="/broker">View Broker Board →</Link>
-            </Button>
-          </div>
         </div>
       </section>
 
