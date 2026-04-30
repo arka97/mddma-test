@@ -1,8 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { committeeMembers, presidentMessage } from "@/data/sampleData";
-import { Quote, Calendar, Award, Target, Users, BookOpen } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, Award, Target, Users, BookOpen } from "lucide-react";
 
 const milestones = [
   { year: "1930s", title: "Foundation", description: "MDDMA established to represent Mumbai's dry fruits & dates trade community." },
@@ -83,45 +81,10 @@ const About = () => {
           <h2 className="text-2xl font-bold text-primary mb-8 flex items-center gap-2">
             <Users className="h-6 w-6 text-accent" /> Our Committee
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {committeeMembers.map((member) => (
-              <Card key={member.id} className="bg-card border-border">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
-                    {member.name.split(" ").map((n) => n[0]).join("").slice(0, 2)}
-                  </div>
-                  <div>
-                    <div className="font-semibold text-foreground text-sm">{member.name}</div>
-                    <div className="text-xs text-accent font-medium">{member.designation}</div>
-                    <div className="text-xs text-muted-foreground">{member.firmName}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* President's Message */}
-      <section className="py-16 bg-muted/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-          <h2 className="text-2xl font-bold text-primary mb-8 flex items-center gap-2">
-            <Quote className="h-6 w-6 text-accent" /> President's Message
-          </h2>
-          <Card className="bg-card border-border">
-            <CardContent className="p-6">
-              <blockquote className="text-muted-foreground leading-relaxed whitespace-pre-line text-sm">
-                {presidentMessage.message}
-              </blockquote>
-              <div className="mt-6 flex items-center gap-3">
-                <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
-                  RS
-                </div>
-                <div>
-                  <div className="font-semibold text-foreground">{presidentMessage.name}</div>
-                  <div className="text-xs text-muted-foreground">{presidentMessage.designation}</div>
-                </div>
-              </div>
+          <Card className="bg-card border-border border-dashed">
+            <CardContent className="p-8 text-center text-muted-foreground text-sm">
+              <BookOpen className="h-6 w-6 mx-auto mb-2 text-accent" />
+              Committee leadership details will be published shortly.
             </CardContent>
           </Card>
         </div>

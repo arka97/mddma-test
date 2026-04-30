@@ -6,7 +6,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Search, ShieldCheck, BadgeCheck, ArrowRight } from "lucide-react";
-import { associationStats } from "@/data/sampleData";
+
 
 const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
 const ORIGINS = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
@@ -45,7 +45,7 @@ export function HeroSection() {
             <span className="text-accent font-semibold text-sm">Established 1930s</span>
             <span className="text-primary-foreground/60">•</span>
             <span className="text-primary-foreground/80 text-sm">
-              {associationStats.yearsOfService} Years of Service
+              Mumbai&apos;s Trade Authority
             </span>
           </div>
 
@@ -57,7 +57,7 @@ export function HeroSection() {
           </h1>
 
           <p className="text-base sm:text-lg text-primary-foreground/75 max-w-2xl mx-auto mb-8">
-            <span className="font-semibold text-accent">{associationStats.memberCount}+ KYC-verified sellers</span>
+            <span className="font-semibold text-accent">KYC-verified sellers</span>
             {" · "}direct quotes
             {" · "}no broker gatekeeping.
           </p>
@@ -124,12 +124,11 @@ export function HeroSection() {
         </div>
 
         {/* Stats */}
-        <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+        <div className="mt-14 grid grid-cols-2 md:grid-cols-3 gap-6 max-w-3xl mx-auto">
           {[
-            { value: `${associationStats.yearsOfService}`, label: "Years Legacy" },
-            { value: `${associationStats.memberCount}+`, label: "Verified Members" },
+            { value: "1930s", label: "Established" },
             { value: "₹1,000 Cr", label: "Annual Trade" },
-            { value: `${associationStats.commodityTypes}+`, label: "Commodity Categories" },
+            { value: "25+", label: "Commodity Categories" },
           ].map((stat) => (
             <div key={stat.label} className="text-center p-4">
               <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">{stat.value}</div>

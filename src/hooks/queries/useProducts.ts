@@ -19,7 +19,7 @@ export function useProducts(opts: { companyId?: string; category?: string } = {}
       setError(null);
       try {
         const live = await listProducts(stableOpts);
-        if (active) setData(mergeProducts(live, stableOpts));
+        if (active) setData(mergeProducts(live));
       } catch (err) {
         if (active) setError(err instanceof Error ? err : new Error("Failed to load products"));
       } finally {

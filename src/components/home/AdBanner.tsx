@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { sampleAdvertisers } from "@/data/sampleData";
 import { ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -29,11 +28,7 @@ export function AdBanner({ placement }: AdBannerProps) {
     return () => { alive = false; };
   }, [placement]);
 
-  const demoAds = sampleAdvertisers.filter(
-    (a) => a.isActive && a.placement === placement
-  );
-
-  if (liveAds.length === 0 && demoAds.length === 0) return null;
+  if (liveAds.length === 0) return null;
 
   return (
     <div className="space-y-3">
@@ -50,26 +45,6 @@ export function AdBanner({ placement }: AdBannerProps) {
           )}
           <div className="p-3 flex items-center justify-between gap-3">
             <p className="text-sm font-medium text-foreground">{ad.title}</p>
-            <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-          </div>
-        </a>
-      ))}
-
-      {liveAds.length === 0 && demoAds.map((ad) => (
-        <a
-          key={ad.id}
-          href={ad.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block rounded-lg border border-border bg-accent/5 hover:bg-accent/10 transition-colors p-4"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-foreground">{ad.bannerText}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Sponsored by {ad.companyName}
-              </p>
-            </div>
             <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
           </div>
         </a>
