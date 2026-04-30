@@ -27,7 +27,6 @@ const EMPTY_KYC: KycChecklist = {
   gst: "missing",
   pan: "missing",
   fssai: "missing",
-  bank: "missing",
 };
 
 // Minimum trade history before we show real numbers vs. "Establishing trade history".
