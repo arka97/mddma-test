@@ -22,7 +22,7 @@ const baseSignals: TradeSignals = {
   updated_at: new Date().toISOString(),
 };
 
-const emptyKyc: KycChecklist = { gst: "missing", pan: "missing", fssai: "missing", bank: "missing" };
+const emptyKyc: KycChecklist = { gst: "missing", pan: "missing", fssai: "missing" };
 
 describe("trade-signals helpers", () => {
   it("isEstablishingHistory: null/undefined are still establishing", () => {
