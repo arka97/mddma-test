@@ -115,6 +115,18 @@ export function Header() {
           </div>
 
           <div className="hidden lg:flex lg:items-center lg:gap-2">
+            {showSearch && (
+              <form onSubmit={submitSearch} className="relative animate-fade-in">
+                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+                <Input
+                  value={searchQ}
+                  onChange={(e) => setSearchQ(e.target.value)}
+                  placeholder="Search commodities…"
+                  aria-label="Search commodities"
+                  className="h-8 w-56 pl-8 text-xs bg-background"
+                />
+              </form>
+            )}
             {user ? <UserMenu /> : (
               <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
                 <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
