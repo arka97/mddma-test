@@ -25,7 +25,6 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { role, setRole } = useRole();
   const { user, profile, company, hasRole, signOut } = useAuth();
 
   const isActive = (href: string) => href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
