@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { uploadFile, slugify } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { VariantManager } from "@/components/products/VariantManager";
+import { useProductCategories } from "@/hooks/queries/useProductCategories";
 
 interface Product {
   id: string;
@@ -50,6 +51,7 @@ const ProductsPage = () => {
   const [variantsFor, setVariantsFor] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const { data: categories } = useProductCategories({ activeOnly: true });
 
   const load = async () => {
     if (!company) return;
@@ -205,7 +207,35 @@ const ProductsPage = () => {
               <div className="grid sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5"><Label>Product name *</Label><Input required maxLength={120} value={editing.name ?? ""} onChange={(e) => setEditing({ ...editing, name: e.target.value, slug: editing.slug || slugify(e.target.value) })} /></div>
                 <div className="space-y-1.5"><Label>Slug</Label><Input value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} /></div>
-                <div className="space-y-1.5"><Label>Category</Label><Input value={editing.category ?? ""} onChange={(e) => setEditing({ ...editing, category: e.target.value })} placeholder="Nuts, Dates, Dried Fruits" /></div>
+                <div className="space-y-1.5">
+                  <Label>Category</Label>
+                  {(() => {
+                    const current = (editing.category ?? "").trim();
+                    const matchesActive = current && categories.some((c) => c.name === current);
+                    return (
+                      <>
+                        <Select value={current || "__none"} onValueChange={(v) => setEditing({ ...editing, category: v === "__none" ? "" : v })}>
+                          <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="__none">— None —</SelectItem>
+                            {categories.map((c) => (
+                              <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                            ))}
+                            {current && !matchesActive && (
+                              <SelectItem value={current}>{current} (legacy)</SelectItem>
+                            )}
+                          </SelectContent>
+                        </Select>
+                        {current && !matchesActive && (
+                          <p className="text-[11px] text-muted-foreground">This category is no longer active. Pick a new one.</p>
+                        )}
+                        {categories.length === 0 && (
+                          <p className="text-[11px] text-muted-foreground">No categories yet — ask an admin to create one.</p>
+                        )}
+                      </>
+                    );
+                  })()}
+                </div>
                 <div className="space-y-1.5"><Label>Origin</Label><Input value={editing.origin ?? ""} onChange={(e) => setEditing({ ...editing, origin: e.target.value })} placeholder="Afghanistan, USA, Iran" /></div>
                 <div className="space-y-1.5"><Label>Min price (₹)</Label><Input type="number" step="0.01" value={editing.price_min ?? ""} onChange={(e) => setEditing({ ...editing, price_min: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                 <div className="space-y-1.5"><Label>Max price (₹)</Label><Input type="number" step="0.01" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
