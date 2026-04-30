@@ -64,7 +64,7 @@ const AdminModeration = () => {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, mem, kycRows] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, mem, kycRows, cats] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
@@ -73,6 +73,7 @@ const AdminModeration = () => {
       supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date").order("created_at", { ascending: false }),
       listMembershipsByStatus("all"),
       listAllKycSubmissions("all"),
+      listCategories().catch(() => [] as ProductCategoryRow[]),
     ]);
     setCompanies((c ?? []) as typeof companies);
     setProducts(p ?? []);
@@ -80,6 +81,7 @@ const AdminModeration = () => {
     setAds((adRows ?? []) as typeof ads);
     setMemberships(mem);
     setKyc(kycRows);
+    setCategories(cats);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
     setUsers((prof ?? []).map((u) => ({ ...u, roles: rolesByUser[u.id] ?? [] })));
