@@ -17,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import {
   DOC_HELP,
   DOC_LABEL,
-  IFSC_RE,
   type KycDocType,
   type KycSubmission,
   getSignedKycUrl,
@@ -29,15 +28,11 @@ import {
   validateDocNumber,
 } from "@/lib/kyc";
 
-const DOC_ORDER: KycDocType[] = ["gst", "pan", "fssai", "bank"];
+const DOC_ORDER: KycDocType[] = ["gst", "pan", "fssai"];
 
 interface RowState {
   file: File | null;
   docNumber: string;
-  // bank-only fields
-  bankHolder: string;
-  bankIfsc: string;
-  bankLast4: string;
   saving: boolean;
   err: string | null;
 }
@@ -45,9 +40,6 @@ interface RowState {
 const blankRow = (): RowState => ({
   file: null,
   docNumber: "",
-  bankHolder: "",
-  bankIfsc: "",
-  bankLast4: "",
   saving: false,
   err: null,
 });
@@ -61,13 +53,11 @@ export function KYCDocsSection() {
     gst: blankRow(),
     pan: blankRow(),
     fssai: blankRow(),
-    bank: blankRow(),
   });
   const inputRefs = useRef<Record<KycDocType, HTMLInputElement | null>>({
     gst: null,
     pan: null,
     fssai: null,
-    bank: null,
   });
 
   const reload = async () => {
@@ -98,14 +88,8 @@ export function KYCDocsSection() {
       updateRow(doc, { err: "Choose a file" });
       return;
     }
-    if (doc === "bank") {
-      if (r.bankHolder.trim().length < 2) return updateRow(doc, { err: "Account holder name required" });
-      if (!IFSC_RE.test(r.bankIfsc.trim().toUpperCase())) return updateRow(doc, { err: "Invalid IFSC, e.g. HDFC0001234" });
-      if (!/^[0-9]{4}$/.test(r.bankLast4.trim())) return updateRow(doc, { err: "Enter last 4 digits of account" });
-    } else {
-      const docErr = validateDocNumber(doc, r.docNumber);
-      if (docErr) return updateRow(doc, { err: docErr });
-    }
+    const docErr = validateDocNumber(doc, r.docNumber);
+    if (docErr) return updateRow(doc, { err: docErr });
 
     updateRow(doc, { saving: true });
     const upload = await uploadKycFile(user.id, doc, r.file);
@@ -117,10 +101,7 @@ export function KYCDocsSection() {
     const insert = await insertKycSubmission({
       userId: user.id,
       docType: doc,
-      docNumber: doc === "bank" ? null : r.docNumber.trim().toUpperCase(),
-      bankAccountLast4: doc === "bank" ? r.bankLast4.trim() : null,
-      bankIfsc: doc === "bank" ? r.bankIfsc.trim().toUpperCase() : null,
-      bankHolderName: doc === "bank" ? r.bankHolder.trim() : null,
+      docNumber: r.docNumber.trim().toUpperCase(),
       filePath: upload.path,
     });
     if (insert.error) {
@@ -150,7 +131,7 @@ export function KYCDocsSection() {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-accent" /> KYC Documents</span>
-          <span className="text-sm font-normal text-muted-foreground">{approvedCount}/4 approved</span>
+          <span className="text-sm font-normal text-muted-foreground">{approvedCount}/{DOC_ORDER.length} approved</span>
         </CardTitle>
         <CardDescription>
           Upload firm KYC. Each document is reviewed by MDDMA admin within 24h. Files are stored privately and only visible to you and admin reviewers.
@@ -200,35 +181,18 @@ export function KYCDocsSection() {
 
               {!locked && (
                 <div className="space-y-3">
-                  {doc === "bank" ? (
-                    <div className="grid sm:grid-cols-3 gap-2">
-                      <div className="space-y-1">
-                        <Label htmlFor={`${doc}-holder`} className="text-xs">Account Holder</Label>
-                        <Input id={`${doc}-holder`} value={r.bankHolder} onChange={(e) => updateRow(doc, { bankHolder: e.target.value })} placeholder="As per cheque" />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor={`${doc}-ifsc`} className="text-xs">IFSC</Label>
-                        <Input id={`${doc}-ifsc`} maxLength={11} value={r.bankIfsc} onChange={(e) => updateRow(doc, { bankIfsc: e.target.value.toUpperCase() })} placeholder="HDFC0001234" />
-                      </div>
-                      <div className="space-y-1">
-                        <Label htmlFor={`${doc}-last4`} className="text-xs">Last 4 of A/C</Label>
-                        <Input id={`${doc}-last4`} maxLength={4} value={r.bankLast4} onChange={(e) => updateRow(doc, { bankLast4: e.target.value.replace(/[^0-9]/g, "") })} placeholder="1234" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-1">
-                      <Label htmlFor={`${doc}-num`} className="text-xs">
-                        {doc === "gst" ? "GSTIN" : doc === "pan" ? "PAN Number" : "FSSAI License Number"}
-                      </Label>
-                      <Input
-                        id={`${doc}-num`}
-                        value={r.docNumber}
-                        onChange={(e) => updateRow(doc, { docNumber: e.target.value.toUpperCase() })}
-                        maxLength={doc === "fssai" ? 14 : doc === "pan" ? 10 : 15}
-                        placeholder={doc === "gst" ? "27AAAPL1234C1Z5" : doc === "pan" ? "AAAPL1234C" : "10012345678901"}
-                      />
-                    </div>
-                  )}
+                  <div className="space-y-1">
+                    <Label htmlFor={`${doc}-num`} className="text-xs">
+                      {doc === "gst" ? "GSTIN" : doc === "pan" ? "PAN Number" : "FSSAI License Number"}
+                    </Label>
+                    <Input
+                      id={`${doc}-num`}
+                      value={r.docNumber}
+                      onChange={(e) => updateRow(doc, { docNumber: e.target.value.toUpperCase() })}
+                      maxLength={doc === "fssai" ? 14 : doc === "pan" ? 10 : 15}
+                      placeholder={doc === "gst" ? "27AAAPL1234C1Z5" : doc === "pan" ? "AAAPL1234C" : "10012345678901"}
+                    />
+                  </div>
 
                   <div className="grid sm:grid-cols-[1fr_auto] gap-2">
                     <Input

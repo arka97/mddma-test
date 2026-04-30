@@ -22,7 +22,7 @@ const baseSignals: TradeSignals = {
   updated_at: new Date().toISOString(),
 };
 
-const emptyKyc: KycChecklist = { gst: "missing", pan: "missing", fssai: "missing", bank: "missing" };
+const emptyKyc: KycChecklist = { gst: "missing", pan: "missing", fssai: "missing" };
 
 describe("trade-signals helpers", () => {
   it("isEstablishingHistory: null/undefined are still establishing", () => {
@@ -65,16 +65,16 @@ describe("trade-signals helpers", () => {
   it("approvedKycCount: counts only approved entries", () => {
     expect(approvedKycCount(emptyKyc)).toBe(0);
     expect(
-      approvedKycCount({ gst: "approved", pan: "pending", fssai: "missing", bank: "approved" }),
-    ).toBe(2);
+      approvedKycCount({ gst: "approved", pan: "pending", fssai: "missing" }),
+    ).toBe(1);
     expect(
-      approvedKycCount({ gst: "approved", pan: "approved", fssai: "approved", bank: "approved" }),
-    ).toBe(4);
+      approvedKycCount({ gst: "approved", pan: "approved", fssai: "approved" }),
+    ).toBe(3);
   });
 
   it("approvedKycCount: rejected does not count as approved", () => {
     expect(
-      approvedKycCount({ gst: "rejected", pan: "rejected", fssai: "rejected", bank: "approved" }),
+      approvedKycCount({ gst: "rejected", pan: "rejected", fssai: "approved" }),
     ).toBe(1);
   });
 });

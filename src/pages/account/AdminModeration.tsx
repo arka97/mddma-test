@@ -459,8 +459,6 @@ const AdminModeration = () => {
                             <p className="text-xs text-muted-foreground">
                               {DOC_LABEL[k.doc_type]}
                               {k.doc_number ? ` · ${k.doc_number}` : ""}
-                              {k.bank_account_last4 ? ` · A/C •••${k.bank_account_last4}` : ""}
-                              {k.bank_ifsc ? ` · ${k.bank_ifsc}` : ""}
                             </p>
                             <p className="text-[11px] text-muted-foreground">
                               Submitted {new Date(k.submitted_at).toLocaleDateString("en-IN")}

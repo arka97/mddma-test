@@ -31,7 +31,7 @@ const row = (overrides: Partial<KycSubmission>): KycSubmission => ({
 
 describe("kyc helpers", () => {
   it("labels each KYC doc type", () => {
-    for (const k of ["gst", "pan", "fssai", "bank"] as const) {
+    for (const k of ["gst", "pan", "fssai"] as const) {
       expect(DOC_LABEL[k]).toBeTruthy();
     }
   });
@@ -68,7 +68,6 @@ describe("kyc helpers", () => {
     expect(result.gst?.id).toBe("g2");
     expect(result.pan?.id).toBe("p1");
     expect(result.fssai).toBeNull();
-    expect(result.bank).toBeNull();
   });
 
   it("statusTone returns sane defaults for all states", () => {

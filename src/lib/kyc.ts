@@ -1,6 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 
-export type KycDocType = "gst" | "pan" | "fssai" | "bank";
+export type KycDocType = "gst" | "pan" | "fssai";
 export type KycDocStatus = "pending" | "approved" | "rejected";
 
 export interface KycSubmission {
@@ -24,14 +24,12 @@ export const DOC_LABEL: Record<KycDocType, string> = {
   gst: "GST Certificate",
   pan: "PAN Card",
   fssai: "FSSAI License",
-  bank: "Bank Account Proof",
 };
 
 export const DOC_HELP: Record<KycDocType, string> = {
   gst: "Upload your GST registration certificate. Enter your 15-character GSTIN.",
   pan: "Upload firm PAN (or proprietor PAN). Enter the 10-character PAN number.",
   fssai: "Upload your FSSAI / FoSCoS license. Enter the 14-digit license number.",
-  bank: "Upload a cancelled cheque or bank passbook. Enter holder name, IFSC, and last 4 digits.",
 };
 
 export const ALLOWED_MIME = [
@@ -144,7 +142,6 @@ export function latestByDocType(rows: KycSubmission[]): Record<KycDocType, KycSu
     gst: null,
     pan: null,
     fssai: null,
-    bank: null,
   };
   for (const r of rows) {
     if (!out[r.doc_type]) out[r.doc_type] = r;
