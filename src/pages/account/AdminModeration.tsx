@@ -652,6 +652,93 @@ const AdminModeration = () => {
                   </Card>
                 ))}
               </TabsContent>
+
+              <TabsContent value="categories" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader><CardTitle className="text-base">{catForm.id ? "Edit Category" : "Add Category"}</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>Name *</Label>
+                        <Input maxLength={80} value={catForm.name} onChange={(e) => setCatForm({ ...catForm, name: e.target.value, slug: catForm.id ? catForm.slug : slugify(e.target.value) })} placeholder="e.g. Dried Fruits" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Slug</Label>
+                        <Input maxLength={80} value={catForm.slug} onChange={(e) => setCatForm({ ...catForm, slug: slugify(e.target.value) })} placeholder="auto-generated" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Description</Label>
+                      <Textarea rows={2} maxLength={300} value={catForm.description} onChange={(e) => setCatForm({ ...catForm, description: e.target.value })} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Image</Label>
+                      <div className="flex items-center gap-3">
+                        <div className="h-16 w-16 rounded border bg-muted overflow-hidden flex-shrink-0">
+                          {catForm.image_url && <img src={catForm.image_url} alt="" className="h-full w-full object-cover" />}
+                        </div>
+                        <label className="cursor-pointer">
+                          <input type="file" accept="image/*" className="hidden" onChange={handleCatImage} disabled={uploadingCatImg} />
+                          <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
+                            {uploadingCatImg ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload
+                          </span>
+                        </label>
+                        {catForm.image_url && (
+                          <Button type="button" size="sm" variant="ghost" onClick={() => setCatForm({ ...catForm, image_url: "" })}>Clear</Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>Sort order</Label>
+                        <Input type="number" value={catForm.sort_order} onChange={(e) => setCatForm({ ...catForm, sort_order: parseInt(e.target.value, 10) || 0 })} />
+                      </div>
+                      <div className="flex items-end gap-2">
+                        <Switch checked={catForm.is_active} onCheckedChange={(v) => setCatForm({ ...catForm, is_active: v })} id="cat-active" />
+                        <Label htmlFor="cat-active" className="cursor-pointer">Active</Label>
+                      </div>
+                      <div className="flex items-end gap-2">
+                        <Switch checked={catForm.is_featured} onCheckedChange={(v) => setCatForm({ ...catForm, is_featured: v })} id="cat-featured" />
+                        <Label htmlFor="cat-featured" className="cursor-pointer">Featured on homepage</Label>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={saveCategory} disabled={savingCat} className="bg-accent hover:bg-accent/90 text-primary">
+                        {savingCat ? <Loader2 className="h-3 w-3 animate-spin" /> : (catForm.id ? <><Pencil className="h-3 w-3 mr-1" /> Update</> : <><Plus className="h-3 w-3 mr-1" /> Create</>)}
+                      </Button>
+                      {catForm.id && <Button variant="outline" onClick={() => setCatForm(emptyCatForm)}>Cancel</Button>}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {categories.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-6">No categories yet. Add the first one above.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {categories.map((c) => (
+                      <Card key={c.id} className={!c.is_active ? "opacity-60" : ""}>
+                        <CardContent className="p-3 flex items-center gap-3 flex-wrap">
+                          <div className="h-12 w-12 rounded bg-muted overflow-hidden flex-shrink-0">
+                            {c.image_url && <img src={c.image_url} alt="" className="h-full w-full object-cover" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{c.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {c.is_featured && <Badge className="bg-accent text-primary">Featured</Badge>}
+                            {!c.is_active && <Badge variant="outline">Inactive</Badge>}
+                          </div>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" onClick={() => startEditCat(c)}><Pencil className="h-3 w-3" /></Button>
+                            <Button size="sm" variant="outline" onClick={() => removeCategory(c)}><Trash2 className="h-3 w-3" /></Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
             </Tabs>
           )}
         </div>
