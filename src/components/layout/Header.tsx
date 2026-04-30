@@ -23,9 +23,33 @@ const navigation = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastY = useRef(0);
+  const ticking = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (mobileMenuOpen || y < 80) {
+          setHidden(false);
+        } else if (y > lastY.current) {
+          setHidden(true);
+        } else if (y < lastY.current) {
+          setHidden(false);
+        }
+        lastY.current = y;
+        ticking.current = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [mobileMenuOpen]);
 
   const isActive = (href: string) => href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
