@@ -142,7 +142,6 @@ export function latestByDocType(rows: KycSubmission[]): Record<KycDocType, KycSu
     gst: null,
     pan: null,
     fssai: null,
-    bank: null,
   };
   for (const r of rows) {
     if (!out[r.doc_type]) out[r.doc_type] = r;
