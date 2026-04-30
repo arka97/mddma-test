@@ -5,7 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { listCategories, createCategory, updateCategory, deleteCategory, countProductsForCategory, type ProductCategoryRow } from "@/repositories/productCategories";
+import { slugify } from "@/lib/storage";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,11 +55,16 @@ const AdminModeration = () => {
   const [busyMembership, setBusyMembership] = useState<string | null>(null);
   const [kyc, setKyc] = useState<KycSubmissionWithProfile[]>([]);
   const [busyKyc, setBusyKyc] = useState<string | null>(null);
+  const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
+  const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false };
+  const [catForm, setCatForm] = useState<typeof emptyCatForm>(emptyCatForm);
+  const [savingCat, setSavingCat] = useState(false);
+  const [uploadingCatImg, setUploadingCatImg] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, mem, kycRows] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, mem, kycRows, cats] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
@@ -65,6 +73,7 @@ const AdminModeration = () => {
       supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date").order("created_at", { ascending: false }),
       listMembershipsByStatus("all"),
       listAllKycSubmissions("all"),
+      listCategories().catch(() => [] as ProductCategoryRow[]),
     ]);
     setCompanies((c ?? []) as typeof companies);
     setProducts(p ?? []);
@@ -72,6 +81,7 @@ const AdminModeration = () => {
     setAds((adRows ?? []) as typeof ads);
     setMemberships(mem);
     setKyc(kycRows);
+    setCategories(cats);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
     setUsers((prof ?? []).map((u) => ({ ...u, roles: rolesByUser[u.id] ?? [] })));
@@ -167,6 +177,62 @@ const AdminModeration = () => {
     if (!confirm("Delete this ad?")) return;
     const { error } = await supabase.from("advertisements").delete().eq("id", id);
     if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+
+  // Categories
+  const startEditCat = (c?: ProductCategoryRow) => {
+    if (c) setCatForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", image_url: c.image_url ?? "", sort_order: c.sort_order, is_active: c.is_active, is_featured: c.is_featured });
+    else setCatForm(emptyCatForm);
+  };
+  const handleCatImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploadingCatImg(true);
+    const url = await uploadFile("product-images", user.id, file);
+    setUploadingCatImg(false);
+    if (url) setCatForm((f) => ({ ...f, image_url: url }));
+    else toast({ title: "Upload failed", variant: "destructive" });
+  };
+  const saveCategory = async () => {
+    const name = catForm.name.trim();
+    if (!name) { toast({ title: "Name required", variant: "destructive" }); return; }
+    const slug = (catForm.slug.trim() || slugify(name));
+    setSavingCat(true);
+    try {
+      const payload = {
+        name,
+        slug,
+        description: catForm.description.trim() || null,
+        image_url: catForm.image_url || null,
+        sort_order: Number.isFinite(catForm.sort_order) ? catForm.sort_order : 0,
+        is_active: catForm.is_active,
+        is_featured: catForm.is_featured,
+      };
+      if (catForm.id) await updateCategory(catForm.id, payload);
+      else await createCategory(payload);
+      toast({ title: catForm.id ? "Category updated" : "Category created" });
+      setCatForm(emptyCatForm);
+      load();
+    } catch (err) {
+      toast({ title: "Save failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    } finally {
+      setSavingCat(false);
+    }
+  };
+  const removeCategory = async (c: ProductCategoryRow) => {
+    const used = await countProductsForCategory(c.name);
+    const msg = used > 0
+      ? `Delete "${c.name}"? ${used} product${used === 1 ? "" : "s"} use this category — they will keep the text label but lose the curated entry.`
+      : `Delete "${c.name}"?`;
+    if (!confirm(msg)) return;
+    try {
+      await deleteCategory(c.id);
+      toast({ title: "Category deleted" });
+      if (catForm.id === c.id) setCatForm(emptyCatForm);
+      load();
+    } catch (err) {
+      toast({ title: "Delete failed", description: err instanceof Error ? err.message : String(err), variant: "destructive" });
+    }
   };
 
   // ---------- Memberships ----------
@@ -284,6 +350,7 @@ const AdminModeration = () => {
                 <TabsTrigger value="users"><UserCog className="h-3 w-3 mr-1" /> Users ({users.length})</TabsTrigger>
                 <TabsTrigger value="circulars"><Megaphone className="h-3 w-3 mr-1" /> Circulars ({circulars.length})</TabsTrigger>
                 <TabsTrigger value="ads"><Star className="h-3 w-3 mr-1" /> Ads ({ads.length})</TabsTrigger>
+                <TabsTrigger value="categories"><Layers className="h-3 w-3 mr-1" /> Categories ({categories.length})</TabsTrigger>
               </TabsList>
 
               <TabsContent value="memberships" className="space-y-2 mt-4">
@@ -584,6 +651,93 @@ const AdminModeration = () => {
                     </CardContent>
                   </Card>
                 ))}
+              </TabsContent>
+
+              <TabsContent value="categories" className="space-y-4 mt-4">
+                <Card>
+                  <CardHeader><CardTitle className="text-base">{catForm.id ? "Edit Category" : "Add Category"}</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid sm:grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>Name *</Label>
+                        <Input maxLength={80} value={catForm.name} onChange={(e) => setCatForm({ ...catForm, name: e.target.value, slug: catForm.id ? catForm.slug : slugify(e.target.value) })} placeholder="e.g. Dried Fruits" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <Label>Slug</Label>
+                        <Input maxLength={80} value={catForm.slug} onChange={(e) => setCatForm({ ...catForm, slug: slugify(e.target.value) })} placeholder="auto-generated" />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Description</Label>
+                      <Textarea rows={2} maxLength={300} value={catForm.description} onChange={(e) => setCatForm({ ...catForm, description: e.target.value })} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Image</Label>
+                      <div className="flex items-center gap-3">
+                        <div className="h-16 w-16 rounded border bg-muted overflow-hidden flex-shrink-0">
+                          {catForm.image_url && <img src={catForm.image_url} alt="" className="h-full w-full object-cover" />}
+                        </div>
+                        <label className="cursor-pointer">
+                          <input type="file" accept="image/*" className="hidden" onChange={handleCatImage} disabled={uploadingCatImg} />
+                          <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
+                            {uploadingCatImg ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload
+                          </span>
+                        </label>
+                        {catForm.image_url && (
+                          <Button type="button" size="sm" variant="ghost" onClick={() => setCatForm({ ...catForm, image_url: "" })}>Clear</Button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-3 gap-3">
+                      <div className="space-y-1.5">
+                        <Label>Sort order</Label>
+                        <Input type="number" value={catForm.sort_order} onChange={(e) => setCatForm({ ...catForm, sort_order: parseInt(e.target.value, 10) || 0 })} />
+                      </div>
+                      <div className="flex items-end gap-2">
+                        <Switch checked={catForm.is_active} onCheckedChange={(v) => setCatForm({ ...catForm, is_active: v })} id="cat-active" />
+                        <Label htmlFor="cat-active" className="cursor-pointer">Active</Label>
+                      </div>
+                      <div className="flex items-end gap-2">
+                        <Switch checked={catForm.is_featured} onCheckedChange={(v) => setCatForm({ ...catForm, is_featured: v })} id="cat-featured" />
+                        <Label htmlFor="cat-featured" className="cursor-pointer">Featured on homepage</Label>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button onClick={saveCategory} disabled={savingCat} className="bg-accent hover:bg-accent/90 text-primary">
+                        {savingCat ? <Loader2 className="h-3 w-3 animate-spin" /> : (catForm.id ? <><Pencil className="h-3 w-3 mr-1" /> Update</> : <><Plus className="h-3 w-3 mr-1" /> Create</>)}
+                      </Button>
+                      {catForm.id && <Button variant="outline" onClick={() => setCatForm(emptyCatForm)}>Cancel</Button>}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {categories.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-6">No categories yet. Add the first one above.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {categories.map((c) => (
+                      <Card key={c.id} className={!c.is_active ? "opacity-60" : ""}>
+                        <CardContent className="p-3 flex items-center gap-3 flex-wrap">
+                          <div className="h-12 w-12 rounded bg-muted overflow-hidden flex-shrink-0">
+                            {c.image_url && <img src={c.image_url} alt="" className="h-full w-full object-cover" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{c.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}</p>
+                          </div>
+                          <div className="flex flex-wrap gap-1">
+                            {c.is_featured && <Badge className="bg-accent text-primary">Featured</Badge>}
+                            {!c.is_active && <Badge variant="outline">Inactive</Badge>}
+                          </div>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" onClick={() => startEditCat(c)}><Pencil className="h-3 w-3" /></Button>
+                            <Button size="sm" variant="outline" onClick={() => removeCategory(c)}><Trash2 className="h-3 w-3" /></Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           )}

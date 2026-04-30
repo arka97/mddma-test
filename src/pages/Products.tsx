@@ -15,6 +15,7 @@ import { RFQModal } from "@/components/RFQModal";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import { useProducts } from "@/hooks/queries/useProducts";
+import { useProductCategories } from "@/hooks/queries/useProductCategories";
 
 const origins = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
 
@@ -27,11 +28,14 @@ const Products = () => {
   const [rfqProduct, setRfqProduct] = useState<string | null>(null);
 
   const { data: listings, isLoading } = useProducts();
+  const { data: curatedCats } = useProductCategories({ activeOnly: true });
 
-  // Derive filter options from live listings so they always match the data.
-  const liveCategories = Array.from(
-    new Set(listings.map((l) => (l.variant ?? "").trim()).filter(Boolean))
-  ).sort();
+  // Curated categories from admin take priority; fall back to derived names if empty.
+  const liveCategories = curatedCats.length
+    ? curatedCats.map((c) => c.name)
+    : Array.from(
+        new Set(listings.map((l) => (l.variant ?? "").trim()).filter(Boolean))
+      ).sort();
   const liveOrigins = Array.from(
     new Set(listings.map((l) => (l.origin ?? "").trim()).filter(Boolean))
   ).sort();
