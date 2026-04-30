@@ -134,8 +134,7 @@ const Directory = () => {
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
-            <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2">
               {sorted.map((member) => {
                 const heroCommodity = member.commodities[0] ?? "Mixed Dry Fruits";
                 const hasGst = member.gstNumber && member.gstNumber.length >= 5;
