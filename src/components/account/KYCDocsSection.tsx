@@ -88,14 +88,8 @@ export function KYCDocsSection() {
       updateRow(doc, { err: "Choose a file" });
       return;
     }
-    if (doc === "bank") {
-      if (r.bankHolder.trim().length < 2) return updateRow(doc, { err: "Account holder name required" });
-      if (!IFSC_RE.test(r.bankIfsc.trim().toUpperCase())) return updateRow(doc, { err: "Invalid IFSC, e.g. HDFC0001234" });
-      if (!/^[0-9]{4}$/.test(r.bankLast4.trim())) return updateRow(doc, { err: "Enter last 4 digits of account" });
-    } else {
-      const docErr = validateDocNumber(doc, r.docNumber);
-      if (docErr) return updateRow(doc, { err: docErr });
-    }
+    const docErr = validateDocNumber(doc, r.docNumber);
+    if (docErr) return updateRow(doc, { err: docErr });
 
     updateRow(doc, { saving: true });
     const upload = await uploadKycFile(user.id, doc, r.file);
@@ -107,10 +101,7 @@ export function KYCDocsSection() {
     const insert = await insertKycSubmission({
       userId: user.id,
       docType: doc,
-      docNumber: doc === "bank" ? null : r.docNumber.trim().toUpperCase(),
-      bankAccountLast4: doc === "bank" ? r.bankLast4.trim() : null,
-      bankIfsc: doc === "bank" ? r.bankIfsc.trim().toUpperCase() : null,
-      bankHolderName: doc === "bank" ? r.bankHolder.trim() : null,
+      docNumber: r.docNumber.trim().toUpperCase(),
       filePath: upload.path,
     });
     if (insert.error) {
