@@ -54,12 +54,6 @@ export interface Circular {
   isPublic: boolean;
 }
 
-// ===== CIRCULARS (fallback content if CMS empty) =====
-export const sampleCirculars: Circular[] = [
-  { id: "C001", title: "GST Rate Revision for Dry Fruits — Effective April 2025", category: "Government", date: "2025-02-15", summary: "Important notification regarding revised GST rates for dry fruit categories.", isPublic: true },
-  { id: "C002", title: "Import Duty Changes on Almonds and Walnuts", category: "Trade", date: "2025-01-20", summary: "Government of India has revised import duties.", isPublic: true },
-];
-
 // ===== MEMBERSHIP TIERS (pricing config) =====
 export const membershipTiers: MembershipTier[] = [
   {
