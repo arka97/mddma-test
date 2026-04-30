@@ -40,7 +40,6 @@ export interface MembershipTier {
   period: string;
   features: string[];
   badge: string;
-  leadPacks: number;
   sponsoredEligible: boolean;
   highlighted: boolean;
 }
@@ -66,7 +65,7 @@ export const membershipTiers: MembershipTier[] = [
       "View public circulars & news",
       "Submit RFQs as a buyer",
     ],
-    badge: "Free", leadPacks: 0, sponsoredEligible: false, highlighted: false,
+    badge: "Free", sponsoredEligible: false, highlighted: false,
   },
   {
     name: "Paid",
@@ -80,6 +79,6 @@ export const membershipTiers: MembershipTier[] = [
       "Market intelligence reports",
       "Trust seal & verification badge",
     ],
-    badge: "Paid Member", leadPacks: 0, sponsoredEligible: true, highlighted: true,
+    badge: "Paid Member", sponsoredEligible: true, highlighted: true,
   },
 ];

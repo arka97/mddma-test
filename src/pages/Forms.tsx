@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ShieldCheck, Megaphone, Database, Mail } from "lucide-react";
+import { ShieldCheck, Megaphone, Mail } from "lucide-react";
 
 const Forms = () => {
   const { toast } = useToast();
@@ -37,10 +37,9 @@ const Forms = () => {
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl">
           <Tabs defaultValue="verification" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="verification" className="text-xs sm:text-sm">Verification</TabsTrigger>
               <TabsTrigger value="advertise" className="text-xs sm:text-sm">Advertise</TabsTrigger>
-              <TabsTrigger value="leads" className="text-xs sm:text-sm">Lead Packs</TabsTrigger>
               <TabsTrigger value="contact" className="text-xs sm:text-sm">Contact</TabsTrigger>
             </TabsList>
 
@@ -122,44 +121,6 @@ const Forms = () => {
                       <Label>Budget & Duration</Label><Textarea placeholder="Tell us about your budget and preferred duration" rows={3} />
                     </div>
                     <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-primary">Submit Enquiry</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Lead Packs */}
-            <TabsContent value="leads">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Database className="h-5 w-5 text-accent" /> Request Lead Pack Access
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit("Lead Pack Request")} className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2"><Label>Full Name</Label><Input required placeholder="Name" /></div>
-                      <div className="space-y-2"><Label>Company</Label><Input required placeholder="Company" /></div>
-                    </div>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2"><Label>Email</Label><Input type="email" required placeholder="email" /></div>
-                      <div className="space-y-2"><Label>Phone</Label><Input type="tel" required placeholder="phone" /></div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Interested Lead Packs</Label>
-                      <Textarea placeholder="Which expo databases are you interested in?" rows={3} />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Are you an MDDMA member?</Label>
-                      <Select>
-                        <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="yes">Yes — Active Member</SelectItem>
-                          <SelectItem value="no">No — Non-member</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-primary">Submit Request</Button>
                   </form>
                 </CardContent>
               </Card>
