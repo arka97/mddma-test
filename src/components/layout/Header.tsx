@@ -77,18 +77,6 @@ export function Header() {
           </div>
 
           <div className="hidden lg:flex lg:items-center lg:gap-2">
-            {!user && (
-              <div className="flex items-center gap-1.5 bg-primary-foreground/10 rounded-md px-2 py-1">
-                <span className="text-[10px] text-primary-foreground/60 uppercase tracking-wider">Demo:</span>
-                <Select value={role} onValueChange={(v) => setRole(v as UserRole)}>
-                  <SelectTrigger className="h-6 w-28 text-xs border-0 bg-transparent text-primary-foreground p-0 pl-1 focus:ring-0"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {(Object.entries(roleLabels) as [UserRole, string][]).map(([k, l]) => <SelectItem key={k} value={k} className="text-xs">{l}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
             {user ? <UserMenu /> : (
               <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
                 <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
