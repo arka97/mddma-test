@@ -24,11 +24,15 @@ const navigation = [
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQ, setSearchQ] = useState("");
   const lastY = useRef(0);
   const ticking = useRef(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
+
+  const isHome = location.pathname === "/";
 
   useEffect(() => {
     const onScroll = () => {
@@ -43,13 +47,24 @@ export function Header() {
         } else if (y < lastY.current) {
           setHidden(false);
         }
+        // Show inline search once scrolled past hero area, or always on non-home routes
+        setShowSearch(!isHome || y > 200);
         lastY.current = y;
         ticking.current = false;
       });
     };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, isHome]);
+
+  const submitSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const sp = new URLSearchParams();
+    if (searchQ.trim()) sp.set("q", searchQ.trim());
+    sp.set("view", "marketplace");
+    navigate(`/products?${sp.toString()}`);
+  };
 
   const isActive = (href: string) => href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
