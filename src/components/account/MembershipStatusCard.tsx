@@ -100,7 +100,7 @@ export function MembershipStatusCard() {
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
               {m.status === "pending" && !hasPaymentLink && "Application under committee review. You'll get a payment link here once approved."}
-              {m.status === "pending" && hasPaymentLink && `Approved — pay ${formatINR(TIER_PRICE_INR[m.tier])} to activate your founding-member spot.`}
+              {m.status === "pending" && hasPaymentLink && `Approved — pay ${formatINR(tierPriceInr(m.tier))} to activate your founding-member spot.`}
               {m.status === "active" && days !== null && `Renews in ${days} day${days === 1 ? "" : "s"}.`}
               {m.status === "active" && days === null && "Active · founding-member rate locked."}
               {(m.status === "expired" || m.status === "cancelled") && "Renew to restore directory + RFQ access."}
