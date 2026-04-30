@@ -14,7 +14,7 @@ import { Inbox, Phone, Handshake, CheckCircle, Lock, ArrowRight, Bell, Loader2 }
 import { Link } from "react-router-dom";
 import { MembershipStatusCard } from "@/components/account/MembershipStatusCard";
 
-type RfqStatus = "new" | "contacted" | "negotiation" | "converted";
+type RfqStatus = "new" | "viewed" | "responded" | "negotiating" | "converted" | "closed";
 type RfqPriority = "hot" | "warm" | "cold";
 
 interface RfqRow {
@@ -38,9 +38,11 @@ interface RfqRow {
 
 const statusConfig: Record<RfqStatus, { label: string; color: string; icon: typeof Inbox }> = {
   new: { label: "New", color: "bg-blue-100 text-blue-800 border-blue-200", icon: Inbox },
-  contacted: { label: "Contacted", color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: Phone },
-  negotiation: { label: "Negotiation", color: "bg-purple-100 text-purple-800 border-purple-200", icon: Handshake },
+  viewed: { label: "Viewed", color: "bg-slate-100 text-slate-800 border-slate-200", icon: Phone },
+  responded: { label: "Responded", color: "bg-yellow-100 text-yellow-800 border-yellow-200", icon: Phone },
+  negotiating: { label: "Negotiating", color: "bg-purple-100 text-purple-800 border-purple-200", icon: Handshake },
   converted: { label: "Converted", color: "bg-green-100 text-green-800 border-green-200", icon: CheckCircle },
+  closed: { label: "Closed", color: "bg-gray-100 text-gray-800 border-gray-200", icon: CheckCircle },
 };
 
 const priorityConfig: Record<RfqPriority, { label: string; color: string; icon: string }> = {
