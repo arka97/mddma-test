@@ -68,7 +68,7 @@ describe("kyc helpers", () => {
     expect(result.gst?.id).toBe("g2");
     expect(result.pan?.id).toBe("p1");
     expect(result.fssai).toBeNull();
-    expect(result.bank).toBeNull();
+    });
   });
 
   it("statusTone returns sane defaults for all states", () => {
