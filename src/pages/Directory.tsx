@@ -232,10 +232,6 @@ const Directory = () => {
                 </div>
               )}
           </div>
-
-          <div className="mt-8">
-            <AdBanner placement="directory-sidebar" />
-          </div>
         </div>
       </section>
     </Layout>
