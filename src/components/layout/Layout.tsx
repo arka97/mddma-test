@@ -11,8 +11,10 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   return (
     <div className="flex min-h-screen flex-col">
-      <MarketTicker />
-      <Header />
+      <div className="sticky top-0 z-50">
+        <MarketTicker />
+        <Header />
+      </div>
       <TrustStrip />
       <main className="flex-1">{children}</main>
       <Footer />
