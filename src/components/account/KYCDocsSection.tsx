@@ -131,7 +131,7 @@ export function KYCDocsSection() {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-accent" /> KYC Documents</span>
-          <span className="text-sm font-normal text-muted-foreground">{approvedCount}/4 approved</span>
+          <span className="text-sm font-normal text-muted-foreground">{approvedCount}/{DOC_ORDER.length} approved</span>
         </CardTitle>
         <CardDescription>
           Upload firm KYC. Each document is reviewed by MDDMA admin within 24h. Files are stored privately and only visible to you and admin reviewers.
