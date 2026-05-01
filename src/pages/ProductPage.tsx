@@ -8,6 +8,7 @@ import { ArrowLeft, Package, Send, Loader2 } from "lucide-react";
 import { StockBadge, TrendBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
+import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { useProductBySlug } from "@/hooks/queries/useProducts";
 
 const ProductPage = () => {
