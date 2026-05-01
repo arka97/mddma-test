@@ -19,7 +19,7 @@ const TIER_ORDER: VerificationTier[] = ["unverified", "email", "company", "gst"]
 const TIER_INDEX = (t: VerificationTier) => TIER_ORDER.indexOf(t);
 
 const VerificationCenter = () => {
-  const { user, profile, refresh } = useAuth();
+  const { user, profile, refresh, roles } = useAuth();
   const { toast } = useToast();
   const [saving, setSaving] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
