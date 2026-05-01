@@ -44,7 +44,6 @@ const Storefront = () => {
   const [previewMode, setPreviewMode] = useState(false);
   const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
   const [liveCompanyId, setLiveCompanyId] = useState<string | null>(null);
-  const [liveOwnerId, setLiveOwnerId] = useState<string | null>(null);
   const [liveProducts, setLiveProducts] = useState<LiveProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
