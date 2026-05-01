@@ -207,6 +207,7 @@ const AdminModeration = () => {
         sort_order: Number.isFinite(catForm.sort_order) ? catForm.sort_order : 0,
         is_active: catForm.is_active,
         is_featured: catForm.is_featured,
+        aliases: catForm.aliases.split(",").map((s) => s.trim()).filter(Boolean),
       };
       if (catForm.id) await updateCategory(catForm.id, payload);
       else await createCategory(payload);
