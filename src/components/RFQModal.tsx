@@ -33,7 +33,7 @@ const STEPS = ["Quantity & Packaging", "Delivery Details", "Message & Submit"];
 export function RFQModal({ productName, productId, companyId, onClose }: RFQModalProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user, profile, company: myCompany } = useAuth();
+  const { user, profile, company: myCompany, roles } = useAuth();
   const draftKey = `mddma:rfq:draft:${productId ?? productName}`;
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
