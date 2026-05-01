@@ -671,6 +671,11 @@ const AdminModeration = () => {
                       <Textarea rows={2} maxLength={300} value={catForm.description} onChange={(e) => setCatForm({ ...catForm, description: e.target.value })} />
                     </div>
                     <div className="space-y-1.5">
+                      <Label>Aliases (colloquial names, comma-separated)</Label>
+                      <Input maxLength={200} value={catForm.aliases} onChange={(e) => setCatForm({ ...catForm, aliases: e.target.value })} placeholder="e.g. Kaju, Cashew Nuts" />
+                      <p className="text-[11px] text-muted-foreground">Buyers can search by these names — they won&apos;t appear on the public label.</p>
+                    </div>
+                    <div className="space-y-1.5">
                       <Label>Image</Label>
                       <div className="flex items-center gap-3">
                         <div className="h-16 w-16 rounded border bg-muted overflow-hidden flex-shrink-0">
