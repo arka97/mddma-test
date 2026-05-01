@@ -251,13 +251,16 @@ const ProductsPage = () => {
                       opts.unshift({ value: current, label: `${current} (legacy)` });
                     }
                     return (
-                      <SearchableSelect
-                        value={current}
-                        onChange={(v) => setEditing({ ...editing, origin: v })}
-                        options={opts}
-                        placeholder="Select origin country"
-                        searchPlaceholder="Search country…"
-                      />
+                      <>
+                        <SearchableSelect
+                          value={current}
+                          onChange={(v) => setEditing({ ...editing, origin: v })}
+                          options={opts}
+                          placeholder="Select origin country"
+                          searchPlaceholder="Search country…"
+                        />
+                        <p className="text-[11px] text-muted-foreground">60 countries — type to filter</p>
+                      </>
                     );
                   })()}
                 </div>
