@@ -1,57 +1,64 @@
 ## Goal
-When a seller uploads a cover image, additional gallery images, or a video, that media must actually appear:
-- on the **Marketplace product card** (`/products`)
-- on the **Recent Listings cards** on the homepage
-- on the **Storefront catalog** rows
-- on the **Product detail** page
+Ensure that once a member upgrades to **Paid**, they are no longer counted/treated as a Free member anywhere — while keeping all Free benefits (which Paid already inherits via `rolePermissions`).
 
-The card should **auto-rotate** through all uploaded media (carousel), and a video should play inline on the detail page.
+## Current behavior (verified)
+- On signup, `handle_new_user()` inserts a `free_member` row in `user_roles`.
+- On payment success (`activate_membership` RPC, called by Razorpay webhook + admin manual activate), a `paid_member` row is **added** but the `free_member` row is **never removed**.
+- Result: a paid user holds **both** roles in the DB. `RoleContext` resolves to `paid_member` (correct), and `paid_member` permissions are already a superset of `free_member` (correct). But:
+  - Admin Moderation shows the user as both Free + Paid.
+  - Any future analytics / RLS / filter that checks `role = 'free_member'` will mis-classify them.
+  - On downgrade/expiry, there is no clean way to "fall back" to free because the role row is mixed up.
 
-## Why it's broken today
-- `liveProductToEntry` in `src/lib/dataSource.ts` drops `image_url`, `gallery`, and `video_url` — so the UI never sees them.
-- `Products.tsx`, `RecentListingsSection.tsx`, and `ProductPage.tsx` render `<CommodityImage commodity={name} />`, which always shows a stock photo keyed off the product name. Seller media is never read.
-- `Storefront.tsx` already has `image_url` in scope but only uses it inside the cart payload.
+## Plan
 
-## Changes
+### 1. Database — make Paid replace Free atomically
+Migration that:
+- Updates `public.activate_membership(uuid, jsonb)` so that, in addition to inserting `paid_member`, it deletes any `free_member` row for the same `profile_id`. Wrap in the existing function body (still SECURITY DEFINER, service_role only).
+- Adds a companion function `public.downgrade_to_free(uuid)` (SECURITY DEFINER, admin/service_role only) that removes `paid_member` + `broker` and re-inserts `free_member`. Used by:
+  - admin "cancel membership" flow
+  - a future expiry sweep (out of scope to schedule, just expose the helper)
+- Backfill: one-time `DELETE FROM user_roles WHERE role = 'free_member' AND user_id IN (SELECT user_id FROM user_roles WHERE role = 'paid_member')` so existing dual-role users are cleaned up immediately.
+- Audit `rolePermissions.paid_member` to confirm it includes every `free_member` permission (it does today: `browse_directory, view_commodities, view_products, storefront, product_listings, crm_dashboard, community` are all present).
 
-### 1. Surface media in the data layer
-- Extend `ProductListing` (`src/data/productListings.ts`) with optional `imageUrl`, `gallery`, `videoUrl`.
-- Update `liveProductToEntry` (`src/lib/dataSource.ts`) to copy these fields from the DB row.
-- Update the `LiveProduct` type in `Storefront.tsx` to include `gallery` and `video_url` and select them in the query.
-- Update `ProductPage.tsx` to read `product.gallery` and `product.video_url` (already returned by `getProductBySlug`).
+### 2. App code — guarantee Paid ⊇ Free everywhere
+- `src/contexts/RoleContext.tsx`: add a unit-style assertion in code (a const + comment) that paid permissions are a strict superset of free permissions, so future edits can't regress. No behavior change.
+- `src/lib/membership.ts`: add `downgradeMembershipToFree(userId)` wrapper around the new RPC, used by `cancelMembership` so that when an admin cancels a paid membership the role row also reverts.
+- `src/pages/account/AdminModeration.tsx`:
+  - In the role-toggle UI, when an admin grants `paid_member` or `broker`, automatically remove `free_member` (and vice versa: granting `free_member` removes paid/broker). Keeps the DB consistent with the new invariant.
+  - Adjust the row label so a user with `paid_member` is shown only as "Paid Member" (don't also render the "Free Member" chip).
 
-### 2. New component: `ProductMediaCarousel`
-Path: `src/components/commodity/ProductMediaCarousel.tsx`
+### 3. Search-and-replace audit
+Grep the repo for any place that filters or counts on `role = 'free_member'` or `hasRole("free_member")`. Today there are none in app code beyond display — confirmed. If any are added later, the migration's invariant (a user has *either* free *or* paid, never both) makes them correct by construction.
 
-Behavior:
-- Builds a media list: `[image_url, ...gallery, video_url]`, filtering nulls.
-- If the list is empty → falls back to existing `<CommodityImage commodity={name} />` (so legacy listings still look fine).
-- If the list has one item → render that item, no controls.
-- If multiple → auto-advance every ~3.5 s (pause on hover/focus, respect `prefers-reduced-motion`).
-- Small dot indicators along the bottom; left/right chevrons appear on hover for desktop.
-- Renders a `<video muted loop playsInline>` with a play overlay icon for video slides; on the card it auto-plays muted, on the detail page it shows native controls.
-- Same aspect API as `CommodityImage` (`16/10`, `1/1`, etc.) so it slots into existing layouts without CSS changes.
-- Uses semantic tokens (`bg-card`, `text-foreground`, `border-border`) — no hardcoded colors.
+### Out of scope
+- No changes to `/apply`, Razorpay webhook payload, or pricing.
+- No automatic expiry cron — just the helper function so it's available when scheduled later.
 
-### 3. Wire the carousel into existing surfaces
-- **`src/pages/Products.tsx`**: replace the `<CommodityImage>` inside each card with `<ProductMediaCarousel images={[image, ...gallery]} videoUrl={...} commodity={...} aspect="16/10" />`. Keep the origin badge overlay.
-- **`src/components/home/RecentListingsSection.tsx`**: same swap. Add `image_url, gallery, video_url` to its select.
-- **`src/pages/ProductPage.tsx`**: add a media block above the "Product Overview" card using the same carousel at `aspect="16/10"`, with native video controls enabled.
-- **`src/pages/Storefront.tsx`** *(light touch)*: add a small thumbnail column to the catalog table using the carousel at `aspect="1/1"` and a fixed `w-16` so the table layout is unchanged otherwise.
+## Files affected
+- `supabase/migrations/<new>__paid_replaces_free.sql` (new)
+- `src/lib/membership.ts`
+- `src/pages/account/AdminModeration.tsx`
+- `src/contexts/RoleContext.tsx` (comment + invariant only)
+- `mem://features/user-roles` (note the new invariant)
 
-### 4. Out of scope
-- Lightbox / fullscreen viewer.
-- Drag-to-reorder gallery (already deferred).
-- Video transcoding / poster generation — we'll use the first frame the browser produces and a play icon overlay.
-- Changes to the seller upload form (already shipped previously).
-
-## Files to edit / add
-- `src/components/commodity/ProductMediaCarousel.tsx` *(new)*
-- `src/data/productListings.ts`
-- `src/lib/dataSource.ts`
-- `src/pages/Products.tsx`
-- `src/pages/ProductPage.tsx`
-- `src/pages/Storefront.tsx`
-- `src/components/home/RecentListingsSection.tsx`
-
-No DB or RLS changes — `gallery` and `video_url` already exist and are publicly readable via the existing products SELECT policy.
+## Technical detail
+Updated `activate_membership` body adds, just before `RETURN`:
+```sql
+DELETE FROM public.user_roles
+ WHERE user_id = v_row.profile_id
+   AND role    = 'free_member';
+```
+New function:
+```sql
+CREATE OR REPLACE FUNCTION public.downgrade_to_free(_user_id uuid)
+RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
+BEGIN
+  DELETE FROM public.user_roles
+   WHERE user_id = _user_id AND role IN ('paid_member','broker');
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (_user_id, 'free_member')
+  ON CONFLICT DO NOTHING;
+END $$;
+REVOKE ALL ON FUNCTION public.downgrade_to_free(uuid) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.downgrade_to_free(uuid) TO service_role;
+```
