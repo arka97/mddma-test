@@ -30,7 +30,7 @@ const statusTone = (status: Membership["status"]) => {
 };
 
 export function MembershipStatusCard() {
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
   const [m, setM] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(true);
 
