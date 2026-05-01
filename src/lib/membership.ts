@@ -62,6 +62,12 @@ export function isMembershipActive(m: Pick<Membership, "status" | "expires_at"> 
   return new Date(m.expires_at).getTime() > Date.now();
 }
 
+// Founder admins (e.g. admin@mddma.org) bypass paid membership + verification.
+// Treat them as if they hold an active paid membership and full GST verification.
+export function isFounderAdmin(roles: string[] | null | undefined): boolean {
+  return Array.isArray(roles) && roles.includes("admin");
+}
+
 export function daysUntilExpiry(expiresAt: string | null): number | null {
   if (!expiresAt) return null;
   const ms = new Date(expiresAt).getTime() - Date.now();
