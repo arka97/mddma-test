@@ -81,7 +81,7 @@ const Storefront = () => {
   // Phase C — live trade signals + KYC checklist. Hooks no-op when ids are null
   // (demo storefronts), so the scoreboard tile renders the placeholder instead.
   const { signals, loading: signalsLoading } = useSellerTradeSignals(liveCompanyId);
-  const { checklist: kyc } = useSellerKyc(liveOwnerId);
+  
 
   if (loading) {
     return (
