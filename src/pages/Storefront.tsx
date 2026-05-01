@@ -176,13 +176,6 @@ const Storefront = () => {
         </div>
       </section>
 
-      {/* Phase C: scoreboard + KYC checklist tile */}
-      <section className="py-6 bg-muted/30 border-b border-border">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <SellerScoreboard signals={signals} kyc={kyc} loading={signalsLoading} />
-        </div>
-      </section>
-
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-3">
