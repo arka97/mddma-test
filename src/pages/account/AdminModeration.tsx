@@ -56,7 +56,7 @@ const AdminModeration = () => {
   const [kyc, setKyc] = useState<KycSubmissionWithProfile[]>([]);
   const [busyKyc, setBusyKyc] = useState<string | null>(null);
   const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
-  const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false };
+  const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false, aliases: "" };
   const [catForm, setCatForm] = useState<typeof emptyCatForm>(emptyCatForm);
   const [savingCat, setSavingCat] = useState(false);
   const [uploadingCatImg, setUploadingCatImg] = useState(false);
@@ -181,7 +181,7 @@ const AdminModeration = () => {
 
   // Categories
   const startEditCat = (c?: ProductCategoryRow) => {
-    if (c) setCatForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", image_url: c.image_url ?? "", sort_order: c.sort_order, is_active: c.is_active, is_featured: c.is_featured });
+    if (c) setCatForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", image_url: c.image_url ?? "", sort_order: c.sort_order, is_active: c.is_active, is_featured: c.is_featured, aliases: (c.aliases ?? []).join(", ") });
     else setCatForm(emptyCatForm);
   };
   const handleCatImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +207,7 @@ const AdminModeration = () => {
         sort_order: Number.isFinite(catForm.sort_order) ? catForm.sort_order : 0,
         is_active: catForm.is_active,
         is_featured: catForm.is_featured,
+        aliases: catForm.aliases.split(",").map((s) => s.trim()).filter(Boolean),
       };
       if (catForm.id) await updateCategory(catForm.id, payload);
       else await createCategory(payload);
@@ -670,6 +671,11 @@ const AdminModeration = () => {
                       <Textarea rows={2} maxLength={300} value={catForm.description} onChange={(e) => setCatForm({ ...catForm, description: e.target.value })} />
                     </div>
                     <div className="space-y-1.5">
+                      <Label>Aliases (colloquial names, comma-separated)</Label>
+                      <Input maxLength={200} value={catForm.aliases} onChange={(e) => setCatForm({ ...catForm, aliases: e.target.value })} placeholder="e.g. Kaju, Cashew Nuts" />
+                      <p className="text-[11px] text-muted-foreground">Buyers can search by these names — they won&apos;t appear on the public label.</p>
+                    </div>
+                    <div className="space-y-1.5">
                       <Label>Image</Label>
                       <div className="flex items-center gap-3">
                         <div className="h-16 w-16 rounded border bg-muted overflow-hidden flex-shrink-0">
@@ -721,7 +727,7 @@ const AdminModeration = () => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">{c.name}</p>
-                            <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}</p>
+                            <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}{c.aliases?.length ? ` · aka ${c.aliases.join(", ")}` : ""}</p>
                           </div>
                           <div className="flex flex-wrap gap-1">
                             {c.is_featured && <Badge className="bg-accent text-primary">Featured</Badge>}
