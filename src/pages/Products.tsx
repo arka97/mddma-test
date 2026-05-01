@@ -40,11 +40,25 @@ const Products = () => {
     new Set(listings.map((l) => (l.origin ?? "").trim()).filter(Boolean))
   ).sort();
 
+  // Map any colloquial alias (lowercased) → canonical category name.
+  // Lets buyers type "kaju" or "anjeer" and find Cashews / Figs.
+  const aliasToCategory = new Map<string, string>();
+  for (const c of curatedCats) {
+    aliasToCategory.set(c.name.toLowerCase(), c.name);
+    for (const a of c.aliases ?? []) {
+      const key = a.trim().toLowerCase();
+      if (key) aliasToCategory.set(key, c.name);
+    }
+  }
+
   const filtered = listings.filter((pl) => {
-    const s = searchTerm.toLowerCase();
+    const s = searchTerm.toLowerCase().trim();
+    const aliasHit = s ? aliasToCategory.get(s) : null;
     const matchSearch =
+      !s ||
       pl.commodity.toLowerCase().includes(s) ||
-      (pl.variant ?? "").toLowerCase().includes(s);
+      (pl.variant ?? "").toLowerCase().includes(s) ||
+      (aliasHit ? pl.variant === aliasHit : false);
     const matchCategory = categoryFilter === "all" || pl.variant === categoryFilter;
     const matchOrigin = originFilter === "all" || pl.origin === originFilter;
     const matchStock = stockFilter === "all" || pl.stockBand === stockFilter;
