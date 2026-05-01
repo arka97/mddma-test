@@ -88,7 +88,7 @@ const Products = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search commodity, variant, origin..."
+                placeholder="Search by commodity or local name (e.g. Kaju, Anjeer)…"
                 className="pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
