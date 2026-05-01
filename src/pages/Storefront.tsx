@@ -28,6 +28,8 @@ interface LiveProduct {
   category: string | null;
   origin: string | null;
   image_url: string | null;
+  gallery: string[] | null;
+  video_url: string | null;
   price_min: number | null;
   price_max: number | null;
   unit: string | null;
@@ -63,7 +65,7 @@ const Storefront = () => {
           setLiveCompanyId(data.id);
           const { data: prods } = await supabase
             .from("products")
-            .select("id,name,slug,category,origin,image_url,price_min,price_max,unit,stock_band,description")
+            .select("id,name,slug,category,origin,image_url,gallery,video_url,price_min,price_max,unit,stock_band,description")
             .eq("company_id", data.id)
             .eq("is_hidden", false)
             .order("is_featured", { ascending: false });
