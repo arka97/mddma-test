@@ -246,20 +246,78 @@ const ProductsPage = () => {
           <DialogHeader><DialogTitle>{editing?.id ? "Edit product" : "Add product"}</DialogTitle></DialogHeader>
           {editing && (
             <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <Label>Image</Label>
-                <div className="mt-2 flex items-center gap-3">
-                  <div className="h-20 w-20 rounded border bg-muted overflow-hidden">
-                    {editing.image_url ? <img src={editing.image_url} alt="" className="h-full w-full object-cover" /> : null}
+              <div className="space-y-3 rounded-md border p-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-semibold">Media</Label>
+                  <span className="text-xs text-muted-foreground">Up to 4 images and 1 video</span>
+                </div>
+
+                {/* Cover image */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Cover image</Label>
+                  <div className="mt-1 flex items-center gap-3">
+                    <div className="h-20 w-20 rounded border bg-muted overflow-hidden flex items-center justify-center">
+                      {editing.image_url ? <img src={editing.image_url} alt="" className="h-full w-full object-cover" /> : <Package className="h-6 w-6 text-muted-foreground" />}
+                    </div>
+                    <label className="cursor-pointer">
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImage} disabled={uploading} />
+                      <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
+                        {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} {editing.image_url ? "Replace" : "Upload"}
+                      </span>
+                    </label>
+                    {editing.image_url && (
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setEditing({ ...editing, image_url: "" })}><Trash2 className="h-4 w-4" /></Button>
+                    )}
                   </div>
-                  <label className="cursor-pointer">
-                    <input type="file" accept="image/*" className="hidden" onChange={handleImage} disabled={uploading} />
-                    <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
-                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload
-                    </span>
-                  </label>
+                </div>
+
+                {/* Gallery */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Additional images ({(editing.gallery ?? []).length}/{MAX_GALLERY})</Label>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    {(editing.gallery ?? []).map((url) => (
+                      <div key={url} className="relative h-20 w-20 rounded border overflow-hidden group">
+                        <img src={url} alt="" className="h-full w-full object-cover" />
+                        <button type="button" onClick={() => removeGalleryImage(url)} className="absolute top-1 right-1 bg-background/90 border rounded p-1 opacity-0 group-hover:opacity-100 transition" aria-label="Remove image">
+                          <Trash2 className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {(editing.gallery ?? []).length < MAX_GALLERY && (
+                      <label className="cursor-pointer h-20 w-20 rounded border border-dashed flex items-center justify-center hover:bg-muted">
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={handleGalleryAdd} disabled={uploading} />
+                        {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                      </label>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-1">JPG/PNG, up to {MAX_IMAGE_MB}MB each.</p>
+                </div>
+
+                {/* Video */}
+                <div>
+                  <Label className="text-xs text-muted-foreground">Product video (optional)</Label>
+                  <div className="mt-1 flex items-start gap-3">
+                    {editing.video_url ? (
+                      <video src={editing.video_url} controls className="h-28 w-44 rounded border bg-black object-cover" />
+                    ) : (
+                      <div className="h-28 w-44 rounded border border-dashed bg-muted flex items-center justify-center text-xs text-muted-foreground">No video</div>
+                    )}
+                    <div className="flex flex-col gap-2">
+                      <label className="cursor-pointer">
+                        <input type="file" accept="video/*" className="hidden" onChange={handleVideo} disabled={uploading} />
+                        <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
+                          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} {editing.video_url ? "Replace video" : "Upload video"}
+                        </span>
+                      </label>
+                      {editing.video_url && (
+                        <Button type="button" size="sm" variant="ghost" onClick={() => setEditing({ ...editing, video_url: "" })}><Trash2 className="h-4 w-4 mr-1" /> Remove</Button>
+                      )}
+                      <p className="text-[11px] text-muted-foreground">MP4/WebM, up to {MAX_VIDEO_MB}MB.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <div className="grid sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5"><Label>Product name *</Label><Input required maxLength={120} value={editing.name ?? ""} onChange={(e) => setEditing({ ...editing, name: e.target.value, slug: editing.slug || slugify(e.target.value) })} /></div>
                 <div className="space-y-1.5"><Label>Slug</Label><Input value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} /></div>
