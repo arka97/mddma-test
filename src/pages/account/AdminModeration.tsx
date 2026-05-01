@@ -181,7 +181,7 @@ const AdminModeration = () => {
 
   // Categories
   const startEditCat = (c?: ProductCategoryRow) => {
-    if (c) setCatForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", image_url: c.image_url ?? "", sort_order: c.sort_order, is_active: c.is_active, is_featured: c.is_featured });
+    if (c) setCatForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", image_url: c.image_url ?? "", sort_order: c.sort_order, is_active: c.is_active, is_featured: c.is_featured, aliases: (c.aliases ?? []).join(", ") });
     else setCatForm(emptyCatForm);
   };
   const handleCatImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
