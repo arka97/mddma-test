@@ -17,8 +17,8 @@ import {
 import { StockBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
 import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
-import { SellerScoreboard } from "@/components/commodity/SellerScoreboard";
-import { useSellerKyc, useSellerTradeSignals } from "@/lib/tradeSignals";
+import { TradeSignalsCard } from "@/components/commodity/SellerScoreboard";
+import { useSellerTradeSignals } from "@/lib/tradeSignals";
 import { useCart } from "@/contexts/CartContext";
 
 interface LiveProduct {
