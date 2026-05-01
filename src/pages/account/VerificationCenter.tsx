@@ -11,12 +11,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BuyerTrustBadge, reputationLabel, VerificationTier } from "@/components/trust/BuyerTrustBadge";
 import { KYCDocsSection } from "@/components/account/KYCDocsSection";
+import { Badge } from "@/components/ui/badge";
+import { Crown } from "lucide-react";
+import { isFounderAdmin } from "@/lib/membership";
 
 const TIER_ORDER: VerificationTier[] = ["unverified", "email", "company", "gst"];
 const TIER_INDEX = (t: VerificationTier) => TIER_ORDER.indexOf(t);
 
 const VerificationCenter = () => {
-  const { user, profile, refresh } = useAuth();
+  const { user, profile, refresh, roles } = useAuth();
   const { toast } = useToast();
   const [saving, setSaving] = useState<string | null>(null);
   const [companyName, setCompanyName] = useState("");
@@ -84,6 +87,42 @@ const VerificationCenter = () => {
   };
 
   if (!user) return null;
+
+  // Founder admin bypass — show "lifetime access" state instead of verification steps.
+  if (isFounderAdmin(roles)) {
+    return (
+      <Layout>
+        <section className="py-10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
+            <h1 className="text-3xl font-bold mb-2">Verification Center</h1>
+            <p className="text-muted-foreground text-sm mb-6">Founder access — no verification required.</p>
+            <Card className="border-accent/30 bg-accent/10">
+              <CardContent className="p-6 flex items-start gap-4">
+                <Crown className="h-8 w-8 text-accent mt-0.5" />
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h2 className="text-xl font-semibold">Founder · Lifetime access</h2>
+                    <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">Admin</Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    As a platform founder you bypass paid membership and all verification tiers.
+                    Email, Company, and GST checks are treated as complete. You have full CRUD access
+                    across the platform via your admin role.
+                  </p>
+                  <ul className="text-sm text-muted-foreground mt-3 space-y-1">
+                    <li>• Email verification — bypassed</li>
+                    <li>• Company verification — bypassed</li>
+                    <li>• GST verification — bypassed</li>
+                    <li>• Paid membership — not required</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+      </Layout>
+    );
+  }
 
   const Step = ({ done, current, icon: Icon, title, desc, children }: any) => (
     <div className={`rounded-lg border p-5 transition ${current ? "border-primary/40 bg-primary/5" : done ? "border-border bg-muted/30" : "border-border"}`}>

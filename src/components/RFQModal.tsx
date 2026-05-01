@@ -33,7 +33,7 @@ const STEPS = ["Quantity & Packaging", "Delivery Details", "Message & Submit"];
 export function RFQModal({ productName, productId, companyId, onClose }: RFQModalProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { user, profile, company: myCompany } = useAuth();
+  const { user, profile, company: myCompany, roles } = useAuth();
   const draftKey = `mddma:rfq:draft:${productId ?? productName}`;
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -99,21 +99,23 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
       return;
     }
 
-    // Tier-based daily quota check
-    const since = new Date(); since.setHours(0, 0, 0, 0);
-    const { count } = await supabase
-      .from("rfqs")
-      .select("id", { count: "exact", head: true })
-      .eq("buyer_id", user.id)
-      .gte("created_at", since.toISOString());
-    if ((count ?? 0) >= dailyLimit) {
-      toast({
-        title: `Daily RFQ limit reached (${dailyLimit})`,
-        description: "Verify your account to unlock more RFQs.",
-        variant: "destructive",
-      });
-      navigate("/account/verify");
-      return;
+    // Tier-based daily quota check (admins bypass)
+    if (!roles.includes("admin")) {
+      const since = new Date(); since.setHours(0, 0, 0, 0);
+      const { count } = await supabase
+        .from("rfqs")
+        .select("id", { count: "exact", head: true })
+        .eq("buyer_id", user.id)
+        .gte("created_at", since.toISOString());
+      if ((count ?? 0) >= dailyLimit) {
+        toast({
+          title: `Daily RFQ limit reached (${dailyLimit})`,
+          description: "Verify your account to unlock more RFQs.",
+          variant: "destructive",
+        });
+        navigate("/account/verify");
+        return;
+      }
     }
 
     setSubmitting(true);

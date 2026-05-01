@@ -1,22 +1,37 @@
-## Goal
-On the public storefront (`/store/:slug`):
-1. Remove the "KYC verified" tile entirely.
-2. Move the "Trade signals" tile from its current full-width position (under the navy hero) to the **bottom-right of the main content area** — rendered inline as a sidebar card alongside other right-column content.
+# Founder admin access for admin@mddma.org
 
-## Changes
+The account `admin@mddma.org` doesn't exist yet. Existing RLS already gives the `admin` role full CRUD on every table, and `ProtectedRoute requireRole="admin"` unlocks the admin UI. We just need to make sure this email is **always** treated as a founder admin — no membership fee, no verification gate, no paywalled features.
 
-### 1. `src/pages/Storefront.tsx`
-- Delete the section block (lines ~181–186) that currently renders `<SellerScoreboard signals kyc loading />` between the navy hero and the main content grid.
-- Remove the `useSellerKyc` hook call and unused `kyc` variable.
-- In the existing `lg:grid-cols-3` layout, add the trade-signals card to the **right sidebar column at the bottom** (after the existing contact / sponsor cards in the right column). It will naturally sit at the bottom-right of the main content area on desktop.
-- On mobile (single column), it stacks at the end of the page content.
+## What will change
 
-### 2. `src/components/commodity/SellerScoreboard.tsx`
-- Extract the existing "Trade signals" Card into a new exported component `TradeSignalsCard` (preserves loading skeleton, establishing-history placeholder, and 2x2 stat grid).
-- Keep `SellerScoreboard` as a thin wrapper composing `TradeSignalsCard` + KYC card so any other callers continue to work.
-- `Storefront.tsx` imports and renders `TradeSignalsCard` directly.
+### 1. Auto-promote on signup (DB migration)
+Update the existing `handle_new_user()` trigger so that when a user signs up with email `admin@mddma.org`, they are inserted into `public.user_roles` with role `admin` instead of the default `free_member`. All other emails behave exactly as today.
 
-## Out of scope
-- Other pages using `SellerScoreboard` (none currently besides Storefront).
-- Any change to KYC backend logic, hooks, or admin moderation views.
-- No floating/fixed positioning — card is part of the normal document flow.
+Also include a one-time backfill: if that email already exists in `auth.users` at migration time, insert the admin role row. (No-op today, safe forward guard.)
+
+### 2. Treat admin as auto-paid + fully verified (frontend, no schema change)
+- `RoleContext` already returns `"admin"` first when `hasRole("admin")` is true, so admin already short-circuits the membership check. Confirm and add a comment.
+- `lib/membership.ts` / membership gating: add a small helper `isFounderAdmin(roles)` and ensure any "requires paid membership" / "requires verification" UI checks (RFQ create, hidden price reveal, advanced CRM, market intelligence, broker board, premium gates) treat admin as if they were paid + GST-verified.
+  - Membership status card on `/account/verify` and `/membership` will show a **"Founder — lifetime access"** badge instead of "Apply for paid membership".
+  - Verification Center will show all three tiers (email / company / GST) as ✅ for admins, regardless of `verification_tier` value on the profile row.
+- No exact-price unmasking changes — the platform-wide "no exact prices" rule still applies; admin only gets full **edit** access, not a different display rule.
+
+### 3. No code changes needed for CRUD
+RLS policies on companies, products, product_variants, rfqs, rfq_responses, inquiry_products, posts, comments, circulars, advertisements, product_categories, profiles, user_roles already grant full CRUD via `has_role(auth.uid(), 'admin')`. Verified — nothing to touch.
+
+## After this ships
+
+1. Go to `/login` → sign up with `admin@mddma.org` + any password you choose.
+2. Account is created and **immediately** has the `admin` role.
+3. Header role pill shows "Admin", `/account/moderation` opens, every gated page works, no payment prompt, no "verify your GST" banners.
+
+## Files touched
+
+- New SQL migration (updates `handle_new_user` + tiny backfill).
+- `src/contexts/RoleContext.tsx` — clarifying comment only (logic already correct).
+- `src/lib/membership.ts` — add `isFounderAdmin(roles)` helper + treat admin as active paid in `isMembershipActive`-aware consumers.
+- `src/pages/account/VerificationCenter.tsx` — show "Founder access" state for admins.
+- `src/pages/account/MembershipStatusCard.tsx` (or component used on `/membership` and `/account/verify`) — show "Founder — lifetime access" for admins instead of plan CTA.
+- Any component currently gating with `canAccess("rfq_mode")` etc. is already permissioned for admin via `rolePermissions.admin` — no change.
+
+No changes to RLS policies, no changes to pricing, no changes to other users' flows.

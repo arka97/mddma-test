@@ -10,6 +10,7 @@ import {
   daysUntilExpiry,
   formatINR,
   getLatestMembershipForUser,
+  isFounderAdmin,
   isMembershipActive,
   tierLabel,
   tierPriceInr,
@@ -29,7 +30,7 @@ const statusTone = (status: Membership["status"]) => {
 };
 
 export function MembershipStatusCard() {
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
   const [m, setM] = useState<Membership | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -51,6 +52,27 @@ export function MembershipStatusCard() {
   }, [user]);
 
   if (!user) return null;
+
+  // Founder admin bypass — no membership or verification required.
+  if (isFounderAdmin(roles)) {
+    return (
+      <Card className="border-accent/30 bg-accent/10">
+        <CardContent className="p-4 flex items-center gap-3">
+          <Crown className="h-5 w-5 text-accent" />
+          <div className="min-w-0">
+            <div className="font-semibold flex items-center gap-2">
+              Founder · Lifetime access
+              <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">Admin</Badge>
+            </div>
+            <div className="text-xs text-muted-foreground mt-0.5">
+              All paid features unlocked. No fees, no verification required.
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   if (loading) {
     return (
       <Card className="border-accent/20 bg-accent/5">
