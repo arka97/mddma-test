@@ -727,7 +727,7 @@ const AdminModeration = () => {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">{c.name}</p>
-                            <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}</p>
+                            <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}{c.aliases?.length ? ` · aka ${c.aliases.join(", ")}` : ""}</p>
                           </div>
                           <div className="flex flex-wrap gap-1">
                             {c.is_featured && <Badge className="bg-accent text-primary">Featured</Badge>}
