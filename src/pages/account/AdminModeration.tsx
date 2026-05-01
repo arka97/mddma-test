@@ -56,7 +56,7 @@ const AdminModeration = () => {
   const [kyc, setKyc] = useState<KycSubmissionWithProfile[]>([]);
   const [busyKyc, setBusyKyc] = useState<string | null>(null);
   const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
-  const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false };
+  const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false, aliases: "" };
   const [catForm, setCatForm] = useState<typeof emptyCatForm>(emptyCatForm);
   const [savingCat, setSavingCat] = useState(false);
   const [uploadingCatImg, setUploadingCatImg] = useState(false);
