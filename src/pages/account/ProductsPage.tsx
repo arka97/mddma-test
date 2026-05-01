@@ -91,11 +91,56 @@ const ProductsPage = () => {
 
   const handleImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file || !editing) return;
+    if (!file.type.startsWith("image/")) { toast({ title: "Please choose an image file", variant: "destructive" }); return; }
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) { toast({ title: `Image must be ≤ ${MAX_IMAGE_MB}MB`, variant: "destructive" }); return; }
     setUploading(true);
     const url = await uploadFile("product-images", user.id, file);
     setUploading(false);
     if (url) setEditing({ ...editing, image_url: url });
+    else toast({ title: "Upload failed", variant: "destructive" });
+  };
+
+  const handleGalleryAdd = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = "";
+    if (!files.length || !editing) return;
+    const current = editing.gallery ?? [];
+    const remaining = MAX_GALLERY - current.length;
+    if (remaining <= 0) { toast({ title: `Up to ${MAX_GALLERY} extra images`, variant: "destructive" }); return; }
+    const accepted = files.slice(0, remaining).filter((f) => {
+      if (!f.type.startsWith("image/")) { toast({ title: `${f.name}: not an image`, variant: "destructive" }); return false; }
+      if (f.size > MAX_IMAGE_MB * 1024 * 1024) { toast({ title: `${f.name}: > ${MAX_IMAGE_MB}MB`, variant: "destructive" }); return false; }
+      return true;
+    });
+    if (!accepted.length) return;
+    setUploading(true);
+    const urls: string[] = [];
+    for (const f of accepted) {
+      const url = await uploadFile("product-images", user.id, f);
+      if (url) urls.push(url);
+    }
+    setUploading(false);
+    if (urls.length) setEditing({ ...editing, gallery: [...current, ...urls] });
+    if (urls.length < accepted.length) toast({ title: "Some uploads failed", variant: "destructive" });
+  };
+
+  const removeGalleryImage = (url: string) => {
+    if (!editing) return;
+    setEditing({ ...editing, gallery: (editing.gallery ?? []).filter((u) => u !== url) });
+  };
+
+  const handleVideo = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file || !editing) return;
+    if (!file.type.startsWith("video/")) { toast({ title: "Please choose a video file", variant: "destructive" }); return; }
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) { toast({ title: `Video must be ≤ ${MAX_VIDEO_MB}MB`, variant: "destructive" }); return; }
+    setUploading(true);
+    const url = await uploadFile("product-images", user.id, file);
+    setUploading(false);
+    if (url) setEditing({ ...editing, video_url: url });
     else toast({ title: "Upload failed", variant: "destructive" });
   };
 
@@ -113,6 +158,8 @@ const ProductsPage = () => {
       origin: editing.origin?.trim() || null,
       description: editing.description?.trim() || null,
       image_url: editing.image_url || null,
+      gallery: editing.gallery ?? [],
+      video_url: editing.video_url || null,
       price_min: editing.price_min ?? null,
       price_max: editing.price_max ?? null,
       market_avg_price: editing.market_avg_price ?? null,
