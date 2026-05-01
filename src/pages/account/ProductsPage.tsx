@@ -28,6 +28,8 @@ interface Product {
   origin: string | null;
   description: string | null;
   image_url: string | null;
+  gallery: string[] | null;
+  video_url: string | null;
   price_min: number | null;
   price_max: number | null;
   market_avg_price: number | null;
@@ -37,8 +39,13 @@ interface Product {
   is_hidden: boolean;
 }
 
+const MAX_IMAGE_MB = 5;
+const MAX_VIDEO_MB = 50;
+const MAX_GALLERY = 3; // + 1 cover = 4 total
+
 const emptyProduct: Partial<Product> = {
   name: "", slug: "", category: "", origin: "", description: "", image_url: "",
+  gallery: [], video_url: "",
   price_min: null, price_max: null, market_avg_price: null, unit: "kg",
   stock_band: "medium", trend_direction: "stable", is_hidden: false,
 };
