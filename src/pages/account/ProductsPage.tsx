@@ -17,6 +17,8 @@ import { uploadFile, slugify } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { VariantManager } from "@/components/products/VariantManager";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
 
 interface Product {
   id: string;
