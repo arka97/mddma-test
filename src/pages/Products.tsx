@@ -14,7 +14,7 @@ import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
 import { AdBanner } from "@/components/home/AdBanner";
 import { StockBadge, TrendBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
-import { CommodityImage } from "@/components/commodity/CommodityImage";
+import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import { useProducts } from "@/hooks/queries/useProducts";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
@@ -159,14 +159,16 @@ const Products = () => {
               {filtered.map((listing) => (
                 <Card key={listing.id} className="bg-card border-border hover:border-accent/50 card-hover h-full overflow-hidden flex flex-col">
                   <div className="relative">
-                    <CommodityImage
+                    <ProductMediaCarousel
                       commodity={listing.commodity}
                       alt={`${listing.commodity} ${listing.variant}`}
+                      images={[listing.imageUrl, ...(listing.gallery ?? [])]}
+                      videoUrl={listing.videoUrl}
                       aspect="16/10"
                       rounded={false}
                     />
                     {listing.origin && (
-                      <div className="absolute top-2 left-2">
+                      <div className="absolute top-2 left-2 z-10">
                         <Badge variant="outline" className="bg-background/95 backdrop-blur text-[10px]">
                           {listing.origin}
                         </Badge>
