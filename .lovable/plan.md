@@ -1,45 +1,35 @@
 ## Goal
-Make Origin and Category dropdowns on `/products` searchable, and apply the same to the seller product form. Also introduce the 60-country canonical origin list from the previous message.
+
+The seller "Add product" form already wires both Category and Origin to the new `SearchableSelect`, but in your browser the Category popover doesn't filter as you type and the Origin popover appears empty. Both symptoms point at the same root cause: how `SearchableSelect` is currently wired into `cmdk` and how it behaves inside a Radix `Dialog`. This plan fixes the component so both fields are reliably searchable inside the Add/Edit Product dialog.
+
+## Root cause
+
+`src/components/ui/SearchableSelect.tsx` today does two fragile things:
+
+1. It sets `<CommandItem value={haystack}>` where `haystack` is `"label + aliases"` lower‑cased. `cmdk` requires each item's `value` to be **unique** and uses it as the item's identity. For Origin, all 60 items only contain their label, so values are unique — but for Category, when an item has no aliases the value collapses to just the label and the parent `<Command filter={...}>` callback receives that string. The custom filter then runs against the typed query, but `cmdk` *also* runs its own internal scorer on the same `value`, which can suppress matches when our haystack contains punctuation like `’` (Côte d'Ivoire) or spaces.
+2. Inside a Radix `Dialog`, the `Popover` is portalled to `document.body` but the Dialog's focus trap can swallow the first keystroke into `CommandInput`, which is why typing "feels" like it does nothing.
+
+For Origin specifically, the dropdown does open but the country list scrolls below the visible Dialog viewport on a 1086×674 preview, so it looks "empty" when it actually rendered off-screen.
 
 ## Changes
 
-### 1. `src/lib/originCountries.ts` (new)
-Exports `ORIGIN_COUNTRIES: string[]` — the 60 countries you listed, alphabetically sorted. Single source of truth for buyer filters and seller forms.
+### 1. `src/components/ui/SearchableSelect.tsx` — make the searchable select robust
 
-### 2. `src/components/ui/SearchableSelect.tsx` (new)
-Reusable wrapper around shadcn `Popover` + `Command` (already in the project). Behaviour:
-- Trigger styled like the current `<Select>` (same height, border, chevron, semantic tokens).
-- Popover opens with a search input on top and a scrollable, keyboard-navigable list.
-- Case-insensitive substring filter as the user types.
-- Optional "All …" entry at the top for filter use cases.
-- Optional per-item `aliases` so typing "kaju" still surfaces "Cashews" in the Category picker.
-- Empty state: *"No matches."*
-- Keyboard: ↑/↓ navigate, Enter select, Esc close.
-- Popover width matches trigger width; mobile-friendly.
+- Give each `CommandItem` a stable, unique `value` (the option's `value` prop, lower‑cased) and move the search haystack into the `keywords` prop that `cmdk` natively indexes. Drop the custom `filter` on `<Command>` and rely on `cmdk`'s built-in scorer, which handles diacritics and punctuation (Côte d'Ivoire, etc.) correctly.
+- Cap the popover content height and make it scrollable (`max-h-72 overflow-y-auto` on `CommandList`) so all 60 origins are reachable inside the Dialog on small viewports.
+- Add `modal={false}` to the `Popover` and `onOpenAutoFocus={(e) => e.preventDefault()}` on `PopoverContent`, then explicitly focus the `CommandInput` on open. This bypasses the Dialog focus-trap race so the very first keystroke filters the list.
+- Match the trigger's height/padding to the surrounding `<Input>` and `<Select>` controls so it visually lines up with the other form fields.
 
-### 3. `src/pages/Products.tsx`
-- Replace **Category** `<Select>` with `<SearchableSelect>` fed by `curatedCats` (each item carries its `aliases`).
-- Replace **Origin** `<Select>` with `<SearchableSelect>` fed by `liveOrigins` if non-empty, else `ORIGIN_COUNTRIES`.
-- Keep **Stock Level** as a plain `<Select>` (only 4 fixed options).
-- Top free-text search bar and the alias→category auto-filter logic stay unchanged.
+### 2. `src/pages/account/ProductsPage.tsx` — small wiring tweaks only
 
-### 4. `src/pages/account/ProductsPage.tsx`
-- Swap Category and Origin inputs to the same `<SearchableSelect>`, sourcing categories from `useProductCategories()` and origins from `ORIGIN_COUNTRIES`. Same controlled vocabulary for sellers and buyers.
+- Pass option `value` as the canonical name (already correct) and let aliases flow into `keywords`.
+- For Origin, keep the legacy fallback that prepends the existing DB value tagged `(legacy)` when it isn't in the canonical 60-country list.
+- Add a tiny helper line under the Origin label: "60 countries — type to filter" so it's obvious the field is searchable.
 
-## Out of scope
-- No DB schema change. `products.origin` and `products.category` remain free-text. Legacy values ("USA", old categories) keep rendering unchanged.
-- No normalization of existing rows.
-- No country aliases (unlike categories).
+No DB changes, no changes to other pages, no changes to the buyer-side filters on `/products` (those already work).
 
-## Acceptance
-1. `/products` → Category dropdown is searchable; typing "kaj" highlights Cashews.
-2. `/products` → Origin dropdown is searchable; typing "viet" highlights Vietnam; full 60-country list shows when no live origins exist.
-3. Stock Level dropdown unchanged.
-4. Seller Add Product form uses the same searchable dropdowns for Category and Origin.
-5. Keyboard navigation works (↑/↓/Enter/Esc).
+## Verification
 
-## Files
-- new `src/lib/originCountries.ts`
-- new `src/components/ui/SearchableSelect.tsx`
-- edit `src/pages/Products.tsx`
-- edit `src/pages/account/ProductsPage.tsx`
+1. Open `/account/products` → Add product. Click **Category**: type "kaju" → "Cashews" surfaces; type "spice" → both spice categories surface.
+2. Click **Origin**: full 60‑country list is visible and scrollable inside the dialog; type "uni" → United Arab Emirates and United States surface; type "côte" or "cote" → Côte d'Ivoire surfaces.
+3. Save a product with a searched Category + Origin; reload the list and confirm the values persisted.
