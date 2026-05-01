@@ -96,28 +96,34 @@ const Products = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full sm:w-44">
-                <SelectValue placeholder="All Categories" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                {liveCategories.map((c) => (
-                  <SelectItem key={c} value={c}>{c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={originFilter} onValueChange={setOriginFilter}>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue placeholder="All Origins" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Origins</SelectItem>
-                {(liveOrigins.length ? liveOrigins : origins).map((o) => (
-                  <SelectItem key={o} value={o}>{o}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              className="w-full sm:w-44"
+              value={categoryFilter}
+              onChange={setCategoryFilter}
+              allOption={{ value: "all", label: "All Categories" }}
+              placeholder="All Categories"
+              searchPlaceholder="Search category or local name…"
+              options={
+                curatedCats.length
+                  ? curatedCats.map((c) => ({
+                      value: c.name,
+                      label: c.name,
+                      aliases: c.aliases ?? [],
+                    }))
+                  : liveCategories.map((c) => ({ value: c, label: c }))
+              }
+            />
+            <SearchableSelect
+              className="w-full sm:w-40"
+              value={originFilter}
+              onChange={setOriginFilter}
+              allOption={{ value: "all", label: "All Origins" }}
+              placeholder="All Origins"
+              searchPlaceholder="Search country…"
+              options={(liveOrigins.length ? liveOrigins : ORIGIN_COUNTRIES).map(
+                (o) => ({ value: o, label: o }),
+              )}
+            />
             <Select value={stockFilter} onValueChange={setStockFilter}>
               <SelectTrigger className="w-full sm:w-40">
                 <SelectValue placeholder="Stock Level" />
