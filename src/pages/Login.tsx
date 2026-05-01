@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 const passwordSchema = z.string().min(8, "Min 8 characters").max(72);
@@ -57,7 +58,8 @@ const Login = () => {
     setIsLoading(false);
 
     if (error) {
-      toast({ title: "Sign-in failed", description: error.message, variant: "destructive" });
+      console.error("[auth] sign-in", error);
+      toast({ title: "Sign-in failed", description: friendlyErrorMessage(error, "Invalid email or password."), variant: "destructive" });
     } else {
       toast({ title: "Welcome back!" });
       navigate(from, { replace: true });
@@ -87,7 +89,8 @@ const Login = () => {
     setIsLoading(false);
 
     if (error) {
-      toast({ title: "Sign-up failed", description: error.message, variant: "destructive" });
+      console.error("[auth] sign-up", error);
+      toast({ title: "Sign-up failed", description: friendlyErrorMessage(error, "We couldn't create your account. Please try again."), variant: "destructive" });
     } else {
       toast({ title: "Account created", description: "You're now signed in." });
       navigate("/account/profile", { replace: true });
