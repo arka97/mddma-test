@@ -22,6 +22,18 @@ const rolePermissions: Record<UserRole, string[]> = {
   admin: ["browse_directory", "view_commodities", "view_products", "storefront", "product_listings", "crm_dashboard", "community", "rfq_mode", "hide_price", "priority_listing", "advanced_crm", "market_intelligence", "broker_marketplace", "member_approvals", "product_moderation", "circular_announcements", "admin_panel"],
 };
 
+// Invariant: paid_member must be a strict superset of free_member permissions.
+// A paid member is no longer a free member in the DB (a trigger removes the
+// free_member row on upgrade), so they rely on this superset for all the
+// browse/storefront/community benefits they had as a free user.
+if (import.meta.env.DEV) {
+  const missing = rolePermissions.free_member.filter((p) => !rolePermissions.paid_member.includes(p));
+  if (missing.length) {
+    // eslint-disable-next-line no-console
+    console.error("[RoleContext] paid_member is missing free_member permissions:", missing);
+  }
+}
+
 const RoleContext = createContext<RoleContextType | undefined>(undefined);
 
 export function RoleProvider({ children }: { children: ReactNode }) {
