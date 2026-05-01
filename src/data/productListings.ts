@@ -30,6 +30,10 @@ export interface ProductListing {
   listingDate: string;
   hidePrice: boolean; // paid members can hide completely
   isFastMoving: boolean;
+  // Seller-uploaded media (optional; live listings only)
+  imageUrl?: string | null;
+  gallery?: string[] | null;
+  videoUrl?: string | null;
 }
 
 export const stockBandLabels: Record<StockBand, string> = {

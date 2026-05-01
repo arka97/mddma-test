@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, MapPin, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { CommodityImage } from "@/components/commodity/CommodityImage";
+import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface LiveListing {
@@ -19,6 +19,9 @@ interface LiveListing {
   trend_direction: string | null;
   inquiry_count: number;
   created_at: string;
+  image_url: string | null;
+  gallery: string[] | null;
+  video_url: string | null;
   companies: { name: string; slug: string } | null;
 }
 
@@ -30,7 +33,7 @@ export function RecentListingsSection() {
     let alive = true;
     supabase
       .from("products")
-      .select("id,name,slug,category,origin,price_min,price_max,unit,stock_band,trend_direction,inquiry_count,created_at,companies(name,slug)")
+      .select("id,name,slug,category,origin,price_min,price_max,unit,stock_band,trend_direction,inquiry_count,created_at,image_url,gallery,video_url,companies(name,slug)")
       .eq("is_hidden", false)
       .order("created_at", { ascending: false })
       .limit(6)
@@ -66,7 +69,13 @@ export function RecentListingsSection() {
               return (
                 <Link key={p.id} to={sellerSlug ? `/store/${sellerSlug}` : "/products"} className="group">
                   <Card className="bg-card border-border hover:border-accent/50 card-hover h-full overflow-hidden">
-                    <CommodityImage commodity={p.name} aspect="16/10" rounded={false} />
+                    <ProductMediaCarousel
+                      commodity={p.name}
+                      images={[p.image_url, ...(p.gallery ?? [])]}
+                      videoUrl={p.video_url}
+                      aspect="16/10"
+                      rounded={false}
+                    />
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">

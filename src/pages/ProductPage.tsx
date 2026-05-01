@@ -8,6 +8,7 @@ import { ArrowLeft, Package, Send, Loader2 } from "lucide-react";
 import { StockBadge, TrendBadge } from "@/components/MarketSignals";
 import { RFQModal } from "@/components/RFQModal";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
+import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { useProductBySlug } from "@/hooks/queries/useProducts";
 
 const ProductPage = () => {
@@ -66,6 +67,17 @@ const ProductPage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
+              <Card className="bg-card border-border overflow-hidden">
+                <ProductMediaCarousel
+                  commodity={product.name}
+                  images={[product.image_url, ...(product.gallery ?? [])]}
+                  videoUrl={product.video_url}
+                  aspect="16/10"
+                  rounded={false}
+                  videoControls
+                />
+              </Card>
+
               {product.description && (
                 <Card className="bg-card border-border">
                   <CardHeader><CardTitle>Product Overview</CardTitle></CardHeader>

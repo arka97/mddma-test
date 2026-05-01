@@ -90,6 +90,9 @@ export function liveProductToEntry(p: ProductRow): ProductEntry {
     listingDate: p.created_at,
     hidePrice: p.price_min == null && p.price_max == null,
     isFastMoving: p.is_featured,
+    imageUrl: p.image_url,
+    gallery: p.gallery,
+    videoUrl: (p as ProductRow & { video_url?: string | null }).video_url ?? null,
     source: "live",
   };
 }

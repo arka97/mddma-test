@@ -20,6 +20,7 @@ import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/Gua
 import { TradeSignalsCard } from "@/components/commodity/SellerScoreboard";
 import { useSellerTradeSignals } from "@/lib/tradeSignals";
 import { useCart } from "@/contexts/CartContext";
+import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 
 interface LiveProduct {
   id: string;
@@ -28,6 +29,8 @@ interface LiveProduct {
   category: string | null;
   origin: string | null;
   image_url: string | null;
+  gallery: string[] | null;
+  video_url: string | null;
   price_min: number | null;
   price_max: number | null;
   unit: string | null;
@@ -63,7 +66,7 @@ const Storefront = () => {
           setLiveCompanyId(data.id);
           const { data: prods } = await supabase
             .from("products")
-            .select("id,name,slug,category,origin,image_url,price_min,price_max,unit,stock_band,description")
+            .select("id,name,slug,category,origin,image_url,gallery,video_url,price_min,price_max,unit,stock_band,description")
             .eq("company_id", data.id)
             .eq("is_hidden", false)
             .order("is_featured", { ascending: false });
@@ -247,6 +250,7 @@ const Storefront = () => {
                       <table className="w-full text-sm">
                         <thead>
                           <tr className="border-b border-border text-left">
+                            <th className="py-2 px-2 text-muted-foreground font-medium w-20">Media</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
@@ -256,6 +260,17 @@ const Storefront = () => {
                         <tbody>
                           {liveProducts.map((p) => (
                             <tr key={p.id} className="border-b border-border/50">
+                              <td className="py-2.5 px-2">
+                                <div className="w-16">
+                                  <ProductMediaCarousel
+                                    commodity={p.name}
+                                    images={[p.image_url, ...(p.gallery ?? [])]}
+                                    videoUrl={p.video_url}
+                                    aspect="1/1"
+                                    rounded
+                                  />
+                                </div>
+                              </td>
                               <td className="py-2.5 px-2">
                                 <div className="font-medium text-foreground">{p.name}</div>
                                 <div className="text-xs text-muted-foreground">{p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}</div>
