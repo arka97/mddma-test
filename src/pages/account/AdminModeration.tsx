@@ -117,10 +117,20 @@ const AdminModeration = () => {
     else { toast({ title: "Product deleted" }); load(); }
   };
   const setRole = async (uid: string, role: "admin" | "broker" | "paid_member" | "free_member", add: boolean) => {
-    const { error } = add
-      ? await supabase.from("user_roles").insert({ user_id: uid, role })
-      : await supabase.from("user_roles").delete().eq("user_id", uid).eq("role", role);
-    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); else load();
+    if (add) {
+      const { error } = await supabase.from("user_roles").insert({ user_id: uid, role });
+      if (error) { toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); return; }
+      // Invariant: a member is either Free or Paid, never both. The DB trigger
+      // already removes free_member when paid_member/broker is granted; mirror
+      // the inverse here so granting Free clears any upgraded roles.
+      if (role === "free_member") {
+        await supabase.from("user_roles").delete().eq("user_id", uid).in("role", ["paid_member", "broker"]);
+      }
+    } else {
+      const { error } = await supabase.from("user_roles").delete().eq("user_id", uid).eq("role", role);
+      if (error) { toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); return; }
+    }
+    load();
   };
 
   // Circulars
@@ -575,7 +585,10 @@ const AdminModeration = () => {
                       </div>
                       <div className="flex-1"><p className="font-medium">{u.full_name ?? "Unnamed"}</p>
                         <div className="flex gap-1 mt-1">
-                          {u.roles.map((r) => <Badge key={r} variant="secondary" className="text-xs">{r}</Badge>)}
+                          {(u.roles.includes("paid_member") || u.roles.includes("broker")
+                            ? u.roles.filter((r) => r !== "free_member")
+                            : u.roles
+                          ).map((r) => <Badge key={r} variant="secondary" className="text-xs">{r}</Badge>)}
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1">

@@ -181,9 +181,21 @@ export async function manuallyActivateMembership(
 export async function cancelMembership(
   membershipId: string,
 ): Promise<{ error: Error | null }> {
+  // Read profile_id first so we can revert the role row after cancelling.
+  const { data: row } = await db
+    .from("memberships")
+    .select("profile_id")
+    .eq("id", membershipId)
+    .maybeSingle();
   const { error } = await db
     .from("memberships")
     .update({ status: "cancelled" })
     .eq("id", membershipId);
+  if (!error && row?.profile_id) {
+    // Best-effort: revoke paid_member/broker and restore free_member.
+    // Failure here doesn't roll back the cancellation — the trigger keeps
+    // things consistent on the next upgrade.
+    await db.rpc("downgrade_to_free", { _user_id: row.profile_id });
+  }
   return { error };
 }

@@ -760,6 +760,7 @@ export type Database = {
       }
     }
     Functions: {
+      downgrade_to_free: { Args: { _user_id: string }; Returns: undefined }
       get_buyer_reputation_tier: { Args: { _score: number }; Returns: string }
       has_role: {
         Args: {
