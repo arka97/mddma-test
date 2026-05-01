@@ -17,6 +17,8 @@ import { uploadFile, slugify } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
 import { VariantManager } from "@/components/products/VariantManager";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
 
 interface Product {
   id: string;
@@ -212,20 +214,23 @@ const ProductsPage = () => {
                   {(() => {
                     const current = (editing.category ?? "").trim();
                     const matchesActive = current && categories.some((c) => c.name === current);
+                    const opts = categories.map((c) => ({
+                      value: c.name,
+                      label: c.name,
+                      aliases: c.aliases ?? [],
+                    }));
+                    if (current && !matchesActive) {
+                      opts.push({ value: current, label: `${current} (legacy)`, aliases: [] });
+                    }
                     return (
                       <>
-                        <Select value={current || "__none"} onValueChange={(v) => setEditing({ ...editing, category: v === "__none" ? "" : v })}>
-                          <SelectTrigger><SelectValue placeholder="Select a category" /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="__none">— None —</SelectItem>
-                            {categories.map((c) => (
-                              <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                            ))}
-                            {current && !matchesActive && (
-                              <SelectItem value={current}>{current} (legacy)</SelectItem>
-                            )}
-                          </SelectContent>
-                        </Select>
+                        <SearchableSelect
+                          value={current}
+                          onChange={(v) => setEditing({ ...editing, category: v })}
+                          options={opts}
+                          placeholder="Select a category"
+                          searchPlaceholder="Search category or local name…"
+                        />
                         {current && !matchesActive && (
                           <p className="text-[11px] text-muted-foreground">This category is no longer active. Pick a new one.</p>
                         )}
@@ -236,7 +241,26 @@ const ProductsPage = () => {
                     );
                   })()}
                 </div>
-                <div className="space-y-1.5"><Label>Origin</Label><Input value={editing.origin ?? ""} onChange={(e) => setEditing({ ...editing, origin: e.target.value })} placeholder="Afghanistan, USA, Iran" /></div>
+                <div className="space-y-1.5">
+                  <Label>Origin</Label>
+                  {(() => {
+                    const current = (editing.origin ?? "").trim();
+                    const inList = ORIGIN_COUNTRIES.includes(current);
+                    const opts = ORIGIN_COUNTRIES.map((o) => ({ value: o, label: o }));
+                    if (current && !inList) {
+                      opts.unshift({ value: current, label: `${current} (legacy)` });
+                    }
+                    return (
+                      <SearchableSelect
+                        value={current}
+                        onChange={(v) => setEditing({ ...editing, origin: v })}
+                        options={opts}
+                        placeholder="Select origin country"
+                        searchPlaceholder="Search country…"
+                      />
+                    );
+                  })()}
+                </div>
                 <div className="space-y-1.5"><Label>Min price (₹)</Label><Input type="number" step="0.01" value={editing.price_min ?? ""} onChange={(e) => setEditing({ ...editing, price_min: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                 <div className="space-y-1.5"><Label>Max price (₹)</Label><Input type="number" step="0.01" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                 <div className="space-y-1.5"><Label>Market avg (₹)</Label><Input type="number" step="0.01" value={editing.market_avg_price ?? ""} onChange={(e) => setEditing({ ...editing, market_avg_price: e.target.value ? parseFloat(e.target.value) : null })} /></div>
