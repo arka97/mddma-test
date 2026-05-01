@@ -585,7 +585,10 @@ const AdminModeration = () => {
                       </div>
                       <div className="flex-1"><p className="font-medium">{u.full_name ?? "Unnamed"}</p>
                         <div className="flex gap-1 mt-1">
-                          {u.roles.map((r) => <Badge key={r} variant="secondary" className="text-xs">{r}</Badge>)}
+                          {(u.roles.includes("paid_member") || u.roles.includes("broker")
+                            ? u.roles.filter((r) => r !== "free_member")
+                            : u.roles
+                          ).map((r) => <Badge key={r} variant="secondary" className="text-xs">{r}</Badge>)}
                         </div>
                       </div>
                       <div className="flex flex-wrap gap-1">
