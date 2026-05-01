@@ -61,7 +61,6 @@ const Storefront = () => {
         if (data) {
           setLiveMember(liveCompanyToEntry(data as unknown as LiveCompanyRow));
           setLiveCompanyId(data.id);
-          setLiveOwnerId((data as unknown as { owner_id: string }).owner_id ?? null);
           const { data: prods } = await supabase
             .from("products")
             .select("id,name,slug,category,origin,image_url,price_min,price_max,unit,stock_band,description")
