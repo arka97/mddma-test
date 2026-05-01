@@ -401,6 +401,8 @@ const Storefront = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              <TradeSignalsCard signals={signals} loading={signalsLoading} />
             </div>
           </div>
         </div>
