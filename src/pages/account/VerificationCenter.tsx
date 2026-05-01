@@ -11,6 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { BuyerTrustBadge, reputationLabel, VerificationTier } from "@/components/trust/BuyerTrustBadge";
 import { KYCDocsSection } from "@/components/account/KYCDocsSection";
+import { Badge } from "@/components/ui/badge";
+import { Crown } from "lucide-react";
+import { isFounderAdmin } from "@/lib/membership";
 
 const TIER_ORDER: VerificationTier[] = ["unverified", "email", "company", "gst"];
 const TIER_INDEX = (t: VerificationTier) => TIER_ORDER.indexOf(t);
