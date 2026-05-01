@@ -446,6 +446,7 @@ export type Database = {
           trend_direction: Database["public"]["Enums"]["trend_direction"] | null
           unit: string | null
           updated_at: string
+          video_url: string | null
           view_count: number
         }
         Insert: {
@@ -474,6 +475,7 @@ export type Database = {
             | null
           unit?: string | null
           updated_at?: string
+          video_url?: string | null
           view_count?: number
         }
         Update: {
@@ -502,6 +504,7 @@ export type Database = {
             | null
           unit?: string | null
           updated_at?: string
+          video_url?: string | null
           view_count?: number
         }
         Relationships: [
