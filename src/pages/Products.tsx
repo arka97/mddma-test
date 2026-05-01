@@ -19,7 +19,7 @@ import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import { useProducts } from "@/hooks/queries/useProducts";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 
-const origins = ["USA", "Iran", "Afghanistan", "India", "Vietnam", "Chile", "Turkey", "Saudi Arabia", "Jordan", "Australia", "Kashmir"];
+
 
 const Products = () => {
   const [params] = useSearchParams();
