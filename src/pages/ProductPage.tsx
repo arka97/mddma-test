@@ -67,6 +67,17 @@ const ProductPage = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
+              <Card className="bg-card border-border overflow-hidden">
+                <ProductMediaCarousel
+                  commodity={product.name}
+                  images={[product.image_url, ...(product.gallery ?? [])]}
+                  videoUrl={product.video_url}
+                  aspect="16/10"
+                  rounded={false}
+                  videoControls
+                />
+              </Card>
+
               {product.description && (
                 <Card className="bg-card border-border">
                   <CardHeader><CardTitle>Product Overview</CardTitle></CardHeader>
