@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus, Pencil, Trash2, Save, X, Layers } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -25,14 +24,13 @@ export interface Variant {
   price_min: number | null;
   price_max: number | null;
   price_unit: string | null;
-  stock_band: "high" | "medium" | "low" | "on_order" | null;
   lead_time_days: number | null;
   is_active: boolean;
 }
 
 const blank = (product_id: string): Partial<Variant> => ({
   product_id, sku: "", name: "", grade: "", packaging: "", moq: null, moq_unit: "kg",
-  price_min: null, price_max: null, price_unit: "kg", stock_band: "medium",
+  price_min: null, price_max: null, price_unit: "kg",
   lead_time_days: null, is_active: true,
 });
 
@@ -74,7 +72,6 @@ export function VariantManager({ productId, productName }: { productId: string; 
       price_min: editing.price_min ?? null,
       price_max: editing.price_max ?? null,
       price_unit: editing.price_unit ?? "kg",
-      stock_band: (editing.stock_band ?? "medium") as Variant["stock_band"],
       lead_time_days: editing.lead_time_days ?? null,
       is_active: editing.is_active ?? true,
     };
@@ -143,7 +140,6 @@ export function VariantManager({ productId, productName }: { productId: string; 
                     {(v.price_min || v.price_max) && (
                       <div className="text-xs mt-1">
                         ₹{v.price_min ?? "?"} – ₹{v.price_max ?? "?"} / {v.price_unit}
-                        <Badge variant="secondary" className="ml-2 text-[10px]">{v.stock_band}</Badge>
                       </div>
                     )}
                   </div>
@@ -177,18 +173,6 @@ export function VariantManager({ productId, productName }: { productId: string; 
                   <div><Label>Max price (₹)</Label><Input type="number" step="0.01" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                   <div><Label>Price unit</Label><Input maxLength={20} value={editing.price_unit ?? "kg"} onChange={(e) => setEditing({ ...editing, price_unit: e.target.value })} /></div>
                   <div><Label>Lead time (days)</Label><Input type="number" value={editing.lead_time_days ?? ""} onChange={(e) => setEditing({ ...editing, lead_time_days: e.target.value ? parseInt(e.target.value) : null })} /></div>
-                  <div>
-                    <Label>Stock band</Label>
-                    <Select value={editing.stock_band ?? "medium"} onValueChange={(v) => setEditing({ ...editing, stock_band: v as Variant["stock_band"] })}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="on_order">On order</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
                 <div className="flex justify-end gap-2 pt-1">
                   <Button variant="outline" size="sm" onClick={() => setEditing(null)}>Cancel</Button>
