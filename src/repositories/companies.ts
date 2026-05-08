@@ -84,3 +84,13 @@ export async function getCompanyContactBySlug(slug: string) {
   return data as { slug: string; email: string | null; phone: string | null; gstin: string | null } | null;
 }
 
+export async function getCompanyByOwner(ownerId: string) {
+  const { data, error } = await supabase
+    .from("companies")
+    .select(COMPANY_FULL_COLUMNS)
+    .eq("owner_id", ownerId)
+    .maybeSingle();
+  if (error) throw new Error(friendlyErrorMessage(error));
+  return (data ?? null) as CompanyRow | null;
+}
+
