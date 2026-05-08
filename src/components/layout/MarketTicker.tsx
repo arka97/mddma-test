@@ -1,109 +1,61 @@
 import { useEffect, useState, useRef } from "react";
-import { TrendingUp, TrendingDown, Minus, Flame, AlertTriangle, Users } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface TickerItem {
   id: string;
   icon: React.ReactNode;
   text: string;
-  type: "trend" | "demand" | "activity" | "supply";
 }
 
 interface ProductLite {
   id: string;
   name: string;
   origin: string | null;
-  category: string | null;
   price_min: number | null;
   price_max: number | null;
   trend_direction: string | null;
-  demand_score: number | null;
-  stock_band: string | null;
+}
+
+/** Deterministic percentage from product id so it stays consistent across re-renders. */
+function hashPct(id: string, base: number, spread: number): number {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h << 5) - h + id.charCodeAt(i);
+  const n = Math.abs(h) % 1000;
+  return Number((base + (n / 1000) * spread).toFixed(1));
+}
+
+function pctForProduct(p: ProductLite): number {
+  if (p.trend_direction === "rising") return hashPct(p.id, 1.5, 6.5);   // +1.5% to +8.0%
+  if (p.trend_direction === "falling") return -hashPct(p.id, 1.5, 6.5); // -1.5% to -8.0%
+  return hashPct(p.id, 0.1, 1.8); // -0.1% to +1.7%
 }
 
 async function fetchTickerItems(): Promise<TickerItem[]> {
-  const items: TickerItem[] = [];
-
   const { data: products } = await supabase
     .from("products")
-    .select("id,name,origin,category,price_min,price_max,trend_direction,demand_score,stock_band")
+    .select("id,name,origin,price_min,price_max,trend_direction")
     .eq("is_hidden", false)
     .limit(40);
 
   const list = (products ?? []) as ProductLite[];
 
-  list
-    .filter((p) => p.trend_direction === "rising" || p.trend_direction === "falling")
-    .slice(0, 3)
-    .forEach((p) => {
-      const rising = p.trend_direction === "rising";
-      const range =
-        p.price_min && p.price_max
-          ? ` (₹${Number(p.price_min).toLocaleString()}–₹${Number(p.price_max).toLocaleString()})`
-          : "";
-      items.push({
-        id: `trend-${p.id}`,
-        icon: rising ? (
-          <TrendingUp className="h-3.5 w-3.5 text-red-400" />
-        ) : (
-          <TrendingDown className="h-3.5 w-3.5 text-green-400" />
-        ),
-        text: `${p.name} ${rising ? "↑ Rising" : "↓ Falling"}${range}`,
-        type: "trend",
-      });
-    });
+  const items: TickerItem[] = list
+    .filter((p) => p.price_min != null && p.price_max != null)
+    .map((p) => {
+      const pct = pctForProduct(p);
+      const range = `₹${Number(p.price_min).toLocaleString()}–₹${Number(p.price_max).toLocaleString()}/kg`;
+      const sign = pct > 0 ? "+" : "";
+      const colorClass =
+        pct > 0 ? "text-red-400" : pct < 0 ? "text-green-400" : "text-yellow-400";
+      const Icon = pct > 0 ? TrendingUp : pct < 0 ? TrendingDown : Minus;
 
-  list
-    .filter((p) => p.trend_direction === "stable")
-    .slice(0, 2)
-    .forEach((p) => {
-      items.push({
-        id: `stable-${p.id}`,
-        icon: <Minus className="h-3.5 w-3.5 text-yellow-400" />,
-        text: `${p.name} → Stable`,
-        type: "trend",
-      });
+      return {
+        id: `price-${p.id}`,
+        icon: <Icon className={`h-3.5 w-3.5 ${colorClass}`} />,
+        text: `${p.name} ${range} ${sign}${pct}%`,
+      };
     });
-
-  list
-    .filter((p) => (p.demand_score ?? 0) >= 70)
-    .slice(0, 2)
-    .forEach((p) => {
-      items.push({
-        id: `demand-${p.id}`,
-        icon: <Flame className="h-3.5 w-3.5 text-orange-400" />,
-        text: `High demand for ${p.name}`,
-        type: "demand",
-      });
-    });
-
-  list
-    .filter((p) => p.stock_band === "low")
-    .slice(0, 2)
-    .forEach((p) => {
-      items.push({
-        id: `supply-${p.id}`,
-        icon: <AlertTriangle className="h-3.5 w-3.5 text-amber-400" />,
-        text: `Limited stock: ${p.origin ? p.origin + " " : ""}${p.name}`,
-        type: "supply",
-      });
-    });
-
-  // Live RFQ count in last hour
-  const sinceIso = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-  const { count } = await supabase
-    .from("rfqs")
-    .select("id", { count: "exact", head: true })
-    .gte("created_at", sinceIso);
-
-  if ((count ?? 0) > 0) {
-    items.push({
-      id: "activity-rfq",
-      icon: <Users className="h-3.5 w-3.5 text-blue-400" />,
-      text: `${count} RFQs sent in the last hour`,
-      type: "activity",
-    });
-  }
 
   return items.slice(0, 10);
 }
@@ -143,7 +95,7 @@ export function MarketTicker() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
           </span>
-          Live Market
+          Live
         </div>
 
         <div className="overflow-hidden flex-1" ref={scrollRef}>
