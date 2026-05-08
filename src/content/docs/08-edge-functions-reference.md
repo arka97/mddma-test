@@ -20,7 +20,7 @@ All four have `verify_jwt = false` (the default in this project) and validate th
 **Endpoint** `POST /functions/v1/verify-doc-password`
 **Body** `{ "password": string }` (1–200 chars)
 **Response** `{ "ok": true | false }`
-**Secret** `DOCS_PASSWORD` — current value set in Supabase secrets (also the in-memory cache value `271195`).
+**Secret** `DOCS_PASSWORD` — value set in Supabase secrets (never documented in source).
 
 Constant-time comparison protects against timing oracles. Returns 400 for malformed input, 500 if the secret is unset. The frontend `PasswordGate` component caches a successful result in `sessionStorage` and gates `/documents/*` accordingly.
 
