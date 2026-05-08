@@ -746,9 +746,7 @@ export type Database = {
           cover_url: string | null
           created_at: string | null
           description: string | null
-          email: string | null
           established_year: number | null
-          gstin: string | null
           id: string | null
           is_hidden: boolean | null
           is_verified: boolean | null
@@ -756,7 +754,6 @@ export type Database = {
           membership_tier: string | null
           name: string | null
           owner_id: string | null
-          phone: string | null
           review_status: Database["public"]["Enums"]["review_status"] | null
           slug: string | null
           social_links: Json | null
@@ -774,9 +771,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string | null
           description?: string | null
-          email?: never
           established_year?: number | null
-          gstin?: never
           id?: string | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
@@ -784,7 +779,6 @@ export type Database = {
           membership_tier?: string | null
           name?: string | null
           owner_id?: string | null
-          phone?: never
           review_status?: Database["public"]["Enums"]["review_status"] | null
           slug?: string | null
           social_links?: Json | null
@@ -802,9 +796,7 @@ export type Database = {
           cover_url?: string | null
           created_at?: string | null
           description?: string | null
-          email?: never
           established_year?: number | null
-          gstin?: never
           id?: string | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
@@ -812,7 +804,6 @@ export type Database = {
           membership_tier?: string | null
           name?: string | null
           owner_id?: string | null
-          phone?: never
           review_status?: Database["public"]["Enums"]["review_status"] | null
           slug?: string | null
           social_links?: Json | null
