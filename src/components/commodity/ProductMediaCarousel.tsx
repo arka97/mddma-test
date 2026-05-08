@@ -40,10 +40,10 @@ export function ProductMediaCarousel({
   alt,
 }: ProductMediaCarouselProps) {
   const slides: Slide[] = [
+    ...(videoUrl ? [{ type: "video" as const, src: videoUrl }] : []),
     ...(images ?? [])
       .filter((s): s is string => Boolean(s && s.trim()))
       .map<Slide>((src) => ({ type: "image", src })),
-    ...(videoUrl ? [{ type: "video" as const, src: videoUrl }] : []),
   ];
 
   const [index, setIndex] = useState(0);
