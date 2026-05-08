@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
-import { StockBadge, TrendBadge } from "@/components/MarketSignals";
 import type { ProductEntry } from "@/lib/dataSource";
 
 interface Props {
@@ -54,16 +53,12 @@ export function RecentListings({ listings, limit = 8, onRequestQuote }: Props) {
                 )}
               </div>
               <CardContent className="p-4 flex flex-col flex-1">
-                <div className="flex items-start justify-between gap-2 mb-1">
+                <div className="flex items-start justify-between gap-2 mb-3">
                   <div className="min-w-0">
                     <h3 className="font-semibold text-foreground truncate">{listing.commodity}</h3>
                     <p className="text-xs text-muted-foreground truncate">{listing.variant}</p>
                   </div>
                   <GuardedPrice listing={listing} />
-                </div>
-                <div className="flex items-center gap-1.5 flex-wrap mb-3">
-                  <StockBadge band={listing.stockBand} />
-                  <TrendBadge direction={listing.trendDirection} />
                 </div>
                 <div className="mt-auto pt-3 border-t border-border">
                   <Button
