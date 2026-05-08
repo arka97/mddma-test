@@ -32,10 +32,7 @@ interface Product {
   video_url: string | null;
   price_min: number | null;
   price_max: number | null;
-  market_avg_price: number | null;
   unit: string | null;
-  stock_band: string | null;
-  trend_direction: string | null;
   is_hidden: boolean;
 }
 
@@ -46,8 +43,8 @@ const MAX_GALLERY = 3; // + 1 cover = 4 total
 const emptyProduct: Partial<Product> = {
   name: "", slug: "", category: "", origin: "", description: "", image_url: "",
   gallery: [], video_url: "",
-  price_min: null, price_max: null, market_avg_price: null, unit: "kg",
-  stock_band: "available", trend_direction: "stable", is_hidden: false,
+  price_min: null, price_max: null, unit: "kg",
+  is_hidden: false,
 };
 
 async function ensureUniqueSlug(companyId: string, base: string, currentId?: string): Promise<string> {
@@ -193,9 +190,7 @@ const ProductsPage = () => {
       video_url: editing.video_url || null,
       price_min: priceMin,
       price_max: priceMax,
-      market_avg_price: editing.market_avg_price ?? null,
       unit,
-      stock_band: ((editing.stock_band ?? "available") as "available" | "out_of_stock"),
       is_hidden: !!editing.is_hidden,
     };
 
@@ -253,11 +248,6 @@ const ProductsPage = () => {
                       </div>
                       {p.origin && <p className="text-xs text-muted-foreground">Origin: {p.origin}</p>}
                       {(p.price_min && p.price_max) ? <p className="text-sm font-medium">₹{p.price_min} – ₹{p.price_max} / {p.unit}</p> : null}
-                      <div className="flex flex-wrap gap-1 text-xs">
-                        <Badge variant={p.stock_band === "out_of_stock" ? "outline" : "secondary"}>
-                          {p.stock_band === "out_of_stock" ? "Out of stock" : "Available"}
-                        </Badge>
-                      </div>
                       <div className="flex gap-2 pt-2">
                         <Button size="sm" variant="outline" className="flex-1" onClick={() => startEdit(p)}><Pencil className="h-3 w-3 mr-1" /> Edit</Button>
                         <Button size="sm" variant="outline" onClick={() => setVariantsFor(p)} title="Manage variants"><Layers className="h-3 w-3" /></Button>
@@ -405,18 +395,7 @@ const ProductsPage = () => {
                 </div>
                 <div className="space-y-1.5"><Label>Min price (₹) *</Label><Input required type="number" step="0.01" min="0" value={editing.price_min ?? ""} onChange={(e) => setEditing({ ...editing, price_min: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                 <div className="space-y-1.5"><Label>Max price (₹) *</Label><Input required type="number" step="0.01" min="0" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
-                <div className="space-y-1.5"><Label>Market avg (₹)</Label><Input type="number" step="0.01" value={editing.market_avg_price ?? ""} onChange={(e) => setEditing({ ...editing, market_avg_price: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                 <div className="space-y-1.5"><Label>Unit *</Label><Input required value={editing.unit ?? "kg"} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} /></div>
-                <div className="space-y-1.5">
-                  <Label>Stock</Label>
-                  <Select value={editing.stock_band === "out_of_stock" ? "out_of_stock" : "available"} onValueChange={(v) => setEditing({ ...editing, stock_band: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="available">Available</SelectItem>
-                      <SelectItem value="out_of_stock">Out of stock</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
               <div className="space-y-1.5"><Label>Description</Label><Textarea rows={4} maxLength={1500} value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} /></div>
               <div className="flex justify-end gap-2 pt-2">

@@ -368,7 +368,6 @@ export type Database = {
           product_id: string
           sku: string | null
           sort_order: number
-          stock_band: Database["public"]["Enums"]["stock_band"] | null
           updated_at: string
         }
         Insert: {
@@ -388,7 +387,6 @@ export type Database = {
           product_id: string
           sku?: string | null
           sort_order?: number
-          stock_band?: Database["public"]["Enums"]["stock_band"] | null
           updated_at?: string
         }
         Update: {
@@ -408,7 +406,6 @@ export type Database = {
           product_id?: string
           sku?: string | null
           sort_order?: number
-          stock_band?: Database["public"]["Enums"]["stock_band"] | null
           updated_at?: string
         }
         Relationships: [
@@ -427,7 +424,6 @@ export type Database = {
           certifications: string[] | null
           company_id: string
           created_at: string
-          demand_score: number | null
           description: string | null
           gallery: string[] | null
           id: string
@@ -435,15 +431,12 @@ export type Database = {
           inquiry_count: number
           is_featured: boolean
           is_hidden: boolean
-          market_avg_price: number | null
           name: string
           origin: string | null
           packaging_options: string[] | null
           price_max: number | null
           price_min: number | null
           slug: string
-          stock_band: Database["public"]["Enums"]["stock_band"] | null
-          trend_direction: Database["public"]["Enums"]["trend_direction"] | null
           unit: string | null
           updated_at: string
           video_url: string | null
@@ -454,7 +447,6 @@ export type Database = {
           certifications?: string[] | null
           company_id: string
           created_at?: string
-          demand_score?: number | null
           description?: string | null
           gallery?: string[] | null
           id?: string
@@ -462,17 +454,12 @@ export type Database = {
           inquiry_count?: number
           is_featured?: boolean
           is_hidden?: boolean
-          market_avg_price?: number | null
           name: string
           origin?: string | null
           packaging_options?: string[] | null
           price_max?: number | null
           price_min?: number | null
           slug: string
-          stock_band?: Database["public"]["Enums"]["stock_band"] | null
-          trend_direction?:
-            | Database["public"]["Enums"]["trend_direction"]
-            | null
           unit?: string | null
           updated_at?: string
           video_url?: string | null
@@ -483,7 +470,6 @@ export type Database = {
           certifications?: string[] | null
           company_id?: string
           created_at?: string
-          demand_score?: number | null
           description?: string | null
           gallery?: string[] | null
           id?: string
@@ -491,17 +477,12 @@ export type Database = {
           inquiry_count?: number
           is_featured?: boolean
           is_hidden?: boolean
-          market_avg_price?: number | null
           name?: string
           origin?: string | null
           packaging_options?: string[] | null
           price_max?: number | null
           price_min?: number | null
           slug?: string
-          stock_band?: Database["public"]["Enums"]["stock_band"] | null
-          trend_direction?:
-            | Database["public"]["Enums"]["trend_direction"]
-            | null
           unit?: string | null
           updated_at?: string
           video_url?: string | null
@@ -872,14 +853,6 @@ export type Database = {
         | "negotiating"
         | "converted"
         | "closed"
-      stock_band:
-        | "high"
-        | "medium"
-        | "low"
-        | "on_order"
-        | "available"
-        | "out_of_stock"
-      trend_direction: "rising" | "stable" | "falling"
       verification_tier: "unverified" | "email" | "company" | "gst"
     }
     CompositeTypes: {
@@ -1018,15 +991,6 @@ export const Constants = {
         "converted",
         "closed",
       ],
-      stock_band: [
-        "high",
-        "medium",
-        "low",
-        "on_order",
-        "available",
-        "out_of_stock",
-      ],
-      trend_direction: ["rising", "stable", "falling"],
       verification_tier: ["unverified", "email", "company", "gst"],
     },
   },

@@ -14,7 +14,7 @@ import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
   ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye, Loader2,
 } from "lucide-react";
-import { StockBadge } from "@/components/MarketSignals";
+
 import { RFQModal } from "@/components/RFQModal";
 import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
 import { TradeSignalsCard } from "@/components/commodity/SellerScoreboard";
@@ -34,7 +34,6 @@ interface LiveProduct {
   price_min: number | null;
   price_max: number | null;
   unit: string | null;
-  stock_band: string | null;
   description: string | null;
 }
 
@@ -80,7 +79,7 @@ const Storefront = () => {
           setLiveCompanyId(data.id);
           const { data: prods } = await supabase
             .from("products")
-            .select("id,name,slug,category,origin,image_url,gallery,video_url,price_min,price_max,unit,stock_band,description")
+            .select("id,name,slug,category,origin,image_url,gallery,video_url,price_min,price_max,unit,description")
             .eq("company_id", data.id)
             .eq("is_hidden", false)
             .order("is_featured", { ascending: false });
@@ -266,7 +265,6 @@ const Storefront = () => {
                           <tr className="border-b border-border text-left">
                             <th className="py-2 px-2 text-muted-foreground font-medium w-20">Media</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
                             <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
                           </tr>
@@ -289,9 +287,6 @@ const Storefront = () => {
                                 <div className="font-medium text-foreground">{p.name}</div>
                                 <div className="text-xs text-muted-foreground">{p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}</div>
                               </td>
-                              <td className="py-2.5 px-2">
-                                <Badge variant="outline" className="text-xs capitalize">{p.stock_band ?? "medium"}</Badge>
-                              </td>
                               <td className="py-2.5 px-2 text-xs">
                                 <GuardedPublicPriceLine listing={{
                                   id: p.id,
@@ -304,16 +299,9 @@ const Storefront = () => {
                                   moq: "",
                                   priceMin: p.price_min,
                                   priceMax: p.price_max,
-                                  marketAvgPrice: null,
                                   priceUnit: `₹/${p.unit ?? "kg"}`,
-                                  stockBand: (p.stock_band as "high" | "medium" | "low" | "on_order" | null) ?? "medium",
-                                  trendDirection: "stable",
-                                  demandScore: "medium",
-                                  inquiryCount: 0,
                                   location: "",
                                   listingDate: new Date().toISOString(),
-                                  hidePrice: false,
-                                  isFastMoving: false,
                                 }} />
                               </td>
                               <td className="py-2.5 px-2">
@@ -344,40 +332,6 @@ const Storefront = () => {
                                     </Button>
                                   )}
                                 </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : sellerListings.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-border text-left">
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Stock</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sellerListings.map((listing) => (
-                            <tr key={listing.id} className="border-b border-border/50">
-                              <td className="py-2.5 px-2">
-                                <div className="font-medium text-foreground">{listing.commodity}</div>
-                                <div className="text-xs text-muted-foreground">{listing.variant} · {listing.origin}</div>
-                              </td>
-                              <td className="py-2.5 px-2"><StockBadge band={listing.stockBand} /></td>
-                              <td className="py-2.5 px-2"><GuardedPrice listing={listing} /></td>
-                              <td className="py-2.5 px-2">
-                                <Button
-                                  size="sm"
-                                  className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
-                                  onClick={() => setRfqProduct({ name: `${listing.commodity} — ${listing.variant}` })}
-                                >
-                                  <Send className="h-3 w-3 mr-1" /> Request Price
-                                </Button>
                               </td>
                             </tr>
                           ))}

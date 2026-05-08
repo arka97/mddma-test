@@ -12,7 +12,7 @@ import {
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
 import { AdBanner } from "@/components/home/AdBanner";
-import { StockBadge, TrendBadge } from "@/components/MarketSignals";
+
 import { RFQModal } from "@/components/RFQModal";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
@@ -27,7 +27,6 @@ const Products = () => {
 
   const [searchTerm, setSearchTerm] = useState(params.get("q") ?? "");
   const [originFilter, setOriginFilter] = useState<string>(params.get("origin") ?? "all");
-  const [stockFilter, setStockFilter] = useState<string>("all");
   const [rfqProduct, setRfqProduct] = useState<string | null>(null);
 
   const { data: listings, isLoading } = useProducts();
@@ -77,15 +76,13 @@ const Products = () => {
     const matchSearch =
       !s || pl.commodity.toLowerCase().includes(s) || (pl.variant ?? "").toLowerCase().includes(s);
     const matchOrigin = originFilter === "all" || pl.origin === originFilter;
-    const matchStock = stockFilter === "all" || pl.stockBand === stockFilter;
-    return matchSearch && matchOrigin && matchStock;
+    return matchSearch && matchOrigin;
   });
 
   const clearCategory = () => {
     setParams({});
     setSearchTerm("");
     setOriginFilter("all");
-    setStockFilter("all");
   };
 
   return (
@@ -151,18 +148,6 @@ const Products = () => {
                 label: o,
               }))}
             />
-            <Select value={stockFilter} onValueChange={setStockFilter}>
-              <SelectTrigger className="w-full sm:w-44">
-                <SelectValue placeholder="Stock Level" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Stock Levels</SelectItem>
-                <SelectItem value="high">High Availability</SelectItem>
-                <SelectItem value="medium">Medium Stock</SelectItem>
-                <SelectItem value="low">Limited Stock</SelectItem>
-                <SelectItem value="on_order">On Order</SelectItem>
-              </SelectContent>
-            </Select>
             <Button variant="outline" onClick={clearCategory} className="sm:w-auto">
               <ChevronLeft className="h-4 w-4 mr-1" /> All Categories
             </Button>
@@ -219,7 +204,7 @@ const Products = () => {
                   </div>
 
                   <CardContent className="p-4 flex flex-col flex-1">
-                    <div className="flex items-start justify-between gap-2 mb-1">
+                    <div className="flex items-start justify-between gap-2 mb-3">
                       <div className="min-w-0">
                         <h3 className="font-semibold text-foreground truncate">
                           {listing.commodity}
@@ -227,11 +212,6 @@ const Products = () => {
                         <p className="text-xs text-muted-foreground truncate">{listing.variant}</p>
                       </div>
                       <GuardedPrice listing={listing} />
-                    </div>
-
-                    <div className="flex items-center gap-1.5 flex-wrap mb-3">
-                      <StockBadge band={listing.stockBand} />
-                      <TrendBadge direction={listing.trendDirection} />
                     </div>
 
                     <div className="mt-auto pt-3 border-t border-border space-y-2">

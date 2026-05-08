@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
 
 const PRODUCT_COLUMNS =
-  "id,company_id,name,slug,category,origin,description,image_url,gallery,video_url,price_min,price_max,market_avg_price,unit,stock_band,trend_direction,demand_score,packaging_options,certifications,is_hidden,is_featured,view_count,inquiry_count,created_at,updated_at" as const;
+  "id,company_id,name,slug,category,origin,description,image_url,gallery,video_url,price_min,price_max,unit,packaging_options,certifications,is_hidden,is_featured,view_count,inquiry_count,created_at,updated_at" as const;
 
 export interface ProductRow {
   id: string;
@@ -18,11 +18,7 @@ export interface ProductRow {
   video_url: string | null;
   price_min: number | null;
   price_max: number | null;
-  market_avg_price: number | null;
   unit: string | null;
-  stock_band: string | null;
-  trend_direction: string | null;
-  demand_score: number | null;
   packaging_options: string[] | null;
   certifications: string[] | null;
   is_hidden: boolean;
