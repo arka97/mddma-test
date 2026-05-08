@@ -350,10 +350,9 @@ const ProductsPage = () => {
               </div>
 
               <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5"><Label>Product name *</Label><Input required maxLength={120} value={editing.name ?? ""} onChange={(e) => setEditing({ ...editing, name: e.target.value, slug: editing.slug || slugify(e.target.value) })} /></div>
-                <div className="space-y-1.5"><Label>Slug</Label><Input value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} /></div>
+                <div className="space-y-1.5 sm:col-span-2"><Label>Product name *</Label><Input required maxLength={120} value={editing.name ?? ""} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></div>
                 <div className="space-y-1.5">
-                  <Label>Category</Label>
+                  <Label>Category *</Label>
                   {(() => {
                     const current = (editing.category ?? "").trim();
                     const matchesActive = current && categories.some((c) => c.name === current);
@@ -385,7 +384,7 @@ const ProductsPage = () => {
                   })()}
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Origin</Label>
+                  <Label>Origin *</Label>
                   {(() => {
                     const current = (editing.origin ?? "").trim();
                     const inList = ORIGIN_COUNTRIES.includes(current);
@@ -394,43 +393,27 @@ const ProductsPage = () => {
                       opts.unshift({ value: current, label: `${current} (legacy)` });
                     }
                     return (
-                      <>
-                        <SearchableSelect
-                          value={current}
-                          onChange={(v) => setEditing({ ...editing, origin: v })}
-                          options={opts}
-                          placeholder="Select origin country"
-                          searchPlaceholder="Search country…"
-                        />
-                        <p className="text-[11px] text-muted-foreground">60 countries — type to filter</p>
-                      </>
+                      <SearchableSelect
+                        value={current}
+                        onChange={(v) => setEditing({ ...editing, origin: v })}
+                        options={opts}
+                        placeholder="Select origin country"
+                        searchPlaceholder="Search country…"
+                      />
                     );
                   })()}
                 </div>
-                <div className="space-y-1.5"><Label>Min price (₹)</Label><Input type="number" step="0.01" value={editing.price_min ?? ""} onChange={(e) => setEditing({ ...editing, price_min: e.target.value ? parseFloat(e.target.value) : null })} /></div>
-                <div className="space-y-1.5"><Label>Max price (₹)</Label><Input type="number" step="0.01" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
+                <div className="space-y-1.5"><Label>Min price (₹) *</Label><Input required type="number" step="0.01" min="0" value={editing.price_min ?? ""} onChange={(e) => setEditing({ ...editing, price_min: e.target.value ? parseFloat(e.target.value) : null })} /></div>
+                <div className="space-y-1.5"><Label>Max price (₹) *</Label><Input required type="number" step="0.01" min="0" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                 <div className="space-y-1.5"><Label>Market avg (₹)</Label><Input type="number" step="0.01" value={editing.market_avg_price ?? ""} onChange={(e) => setEditing({ ...editing, market_avg_price: e.target.value ? parseFloat(e.target.value) : null })} /></div>
-                <div className="space-y-1.5"><Label>Unit</Label><Input value={editing.unit ?? "kg"} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} /></div>
+                <div className="space-y-1.5"><Label>Unit *</Label><Input required value={editing.unit ?? "kg"} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} /></div>
                 <div className="space-y-1.5">
-                  <Label>Stock band</Label>
-                  <Select value={editing.stock_band ?? "medium"} onValueChange={(v) => setEditing({ ...editing, stock_band: v })}>
+                  <Label>Stock</Label>
+                  <Select value={editing.stock_band === "out_of_stock" ? "out_of_stock" : "available"} onValueChange={(v) => setEditing({ ...editing, stock_band: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="on_order">On Order</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Trend</Label>
-                  <Select value={editing.trend_direction ?? "stable"} onValueChange={(v) => setEditing({ ...editing, trend_direction: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="rising">Rising</SelectItem>
-                      <SelectItem value="stable">Stable</SelectItem>
-                      <SelectItem value="falling">Falling</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="out_of_stock">Out of stock</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
