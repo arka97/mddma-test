@@ -64,13 +64,8 @@ export function DocPage({ meta, source }: { meta: DocMeta; source: string }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* progress bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 bg-muted z-50 print:hidden">
-        <div className="h-full bg-accent transition-all" style={{ width: `${progress}%` }} />
-      </div>
-
       {/* top bar */}
-      <div className="sticky top-0 z-40 bg-primary/95 backdrop-blur border-b border-primary-foreground/10 print:hidden">
+      <div className="sticky top-0 z-40 bg-primary border-b border-primary-foreground/10 print:hidden">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <Link to="/documents" className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground text-sm">
             <ArrowLeft className="h-4 w-4" /> All documents
