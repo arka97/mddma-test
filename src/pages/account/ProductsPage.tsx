@@ -254,8 +254,9 @@ const ProductsPage = () => {
                       {p.origin && <p className="text-xs text-muted-foreground">Origin: {p.origin}</p>}
                       {(p.price_min && p.price_max) ? <p className="text-sm font-medium">₹{p.price_min} – ₹{p.price_max} / {p.unit}</p> : null}
                       <div className="flex flex-wrap gap-1 text-xs">
-                        <Badge variant="secondary">{p.stock_band}</Badge>
-                        <Badge variant="secondary">{p.trend_direction}</Badge>
+                        <Badge variant={p.stock_band === "out_of_stock" ? "outline" : "secondary"}>
+                          {p.stock_band === "out_of_stock" ? "Out of stock" : "Available"}
+                        </Badge>
                       </div>
                       <div className="flex gap-2 pt-2">
                         <Button size="sm" variant="outline" className="flex-1" onClick={() => startEdit(p)}><Pencil className="h-3 w-3 mr-1" /> Edit</Button>
