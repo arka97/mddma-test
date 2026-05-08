@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
+import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
@@ -128,6 +129,7 @@ export function Header() {
                 />
               </form>
             )}
+            <InstallAppButton iconOnly size="sm" className="h-8 w-8 p-0" />
             {user ? <UserMenu /> : (
               <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
                 <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
@@ -136,6 +138,7 @@ export function Header() {
           </div>
 
           <div className="lg:hidden flex items-center gap-2">
+            <InstallAppButton iconOnly size="sm" className="h-8 w-8 p-0" />
             {user ? <UserMenu /> : (
               <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
                 <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>

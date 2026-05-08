@@ -26,6 +26,7 @@ import Circulars from "./pages/Circulars";
 import Forms from "./pages/Forms";
 import Login from "./pages/Login";
 import Apply from "./pages/Apply";
+import Install from "./pages/Install";
 import DocumentsHub from "./pages/DocumentsHub";
 import DocViewer from "./pages/DocViewer";
 import NotFound from "./pages/NotFound";
@@ -65,6 +66,7 @@ const App = () => (
                 <Route path="/contact" element={<Forms />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/apply" element={<Apply />} />
+                <Route path="/install" element={<Install />} />
                 <Route path="/admin" element={<Navigate to="/account/moderation" replace />} />
 
                 {/* Authenticated user space */}

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Mail, Clock, Lock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, Lock, Download } from "lucide-react";
 
 export function Footer() {
   return (
@@ -71,9 +71,14 @@ export function Footer() {
                 <div className="text-xs mt-1">Closed Sundays & Market Holidays</div>
               </div>
             </div>
-            <Link to="/documents" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-colors text-sm font-medium mt-2">
-              <Lock className="h-4 w-4" /> Documents
-            </Link>
+            <div className="flex flex-wrap gap-2 mt-2">
+              <Link to="/documents" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-colors text-sm font-medium">
+                <Lock className="h-4 w-4" /> Documents
+              </Link>
+              <Link to="/install" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-accent/10 border border-accent/20 text-accent hover:bg-accent/20 transition-colors text-sm font-medium">
+                <Download className="h-4 w-4" /> Install App
+              </Link>
+            </div>
           </div>
         </div>
       </div>
