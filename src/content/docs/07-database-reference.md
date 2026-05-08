@@ -293,7 +293,7 @@ Planned columns: `id`, `profile_id`, `tier` (text, default `'paid'`), `status` (
 | `remove_free_when_upgraded()` | trigger | AFTER INSERT on `user_roles`. Enforces ROLE-001: deletes `free_member` row when a user gains `paid_member` or `broker`. |
 | `downgrade_to_free(_user_id uuid)` | void | RPC. Removes `paid_member`/`broker` rows and re-inserts `free_member`. Used by `cancelMembership`. |
 | `get_buyer_reputation_tier(_score int)` | text | Pure mapping: ≥80 trusted, ≥50 established, ≥20 emerging, else new. |
-| `activate_membership(_membership_id uuid, _payload jsonb)` | uuid | SECURITY DEFINER. Flips a pending membership to active, applies the founding-lock window, grants `paid_member` (and `broker` if flagged), seeds `expires_at`. |
+| `activate_membership(_membership_id uuid, _payload jsonb)` *(planned)* | uuid | SECURITY DEFINER. Flips a pending membership to active, applies the founding-lock window, grants `paid_member` (and `broker` if flagged), seeds `expires_at`. **Not yet created** — ships with the `memberships` migration. |
 
 ## Storage buckets
 
