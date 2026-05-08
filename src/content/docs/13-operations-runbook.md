@@ -140,7 +140,7 @@ UPDATE companies SET review_status = 'approved', rejection_reason = null WHERE s
 ### 9 · Change the docs password
 
 1. Update the `DOCS_PASSWORD` secret in Lovable Cloud.
-2. Update the documented value in `mem://core` (currently `271195`).
+2. Share the new value out-of-band with anyone who needs access. Never write the value into source-controlled files or memory documents.
 3. Tell anyone who needs access. Old sessions cached in `sessionStorage` continue to work until the user closes the tab — that is intentional.
 
 ### 10 · Publish a circular

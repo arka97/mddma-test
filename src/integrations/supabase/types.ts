@@ -515,6 +515,13 @@ export type Database = {
             referencedRelation: "companies"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -691,6 +698,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "rfqs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "rfqs_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
@@ -722,6 +736,84 @@ export type Database = {
       }
     }
     Views: {
+      companies_public: {
+        Row: {
+          address: string | null
+          categories: string[] | null
+          certifications: string[] | null
+          city: string | null
+          country: string | null
+          cover_url: string | null
+          created_at: string | null
+          description: string | null
+          established_year: number | null
+          id: string | null
+          is_hidden: boolean | null
+          is_verified: boolean | null
+          logo_url: string | null
+          membership_tier: string | null
+          name: string | null
+          owner_id: string | null
+          review_status: Database["public"]["Enums"]["review_status"] | null
+          slug: string | null
+          social_links: Json | null
+          state: string | null
+          tagline: string | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          categories?: string[] | null
+          certifications?: string[] | null
+          city?: string | null
+          country?: string | null
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          established_year?: number | null
+          id?: string | null
+          is_hidden?: boolean | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          membership_tier?: string | null
+          name?: string | null
+          owner_id?: string | null
+          review_status?: Database["public"]["Enums"]["review_status"] | null
+          slug?: string | null
+          social_links?: Json | null
+          state?: string | null
+          tagline?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          categories?: string[] | null
+          certifications?: string[] | null
+          city?: string | null
+          country?: string | null
+          cover_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          established_year?: number | null
+          id?: string | null
+          is_hidden?: boolean | null
+          is_verified?: boolean | null
+          logo_url?: string | null
+          membership_tier?: string | null
+          name?: string | null
+          owner_id?: string | null
+          review_status?: Database["public"]["Enums"]["review_status"] | null
+          slug?: string | null
+          social_links?: Json | null
+          state?: string | null
+          tagline?: string | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       public_profiles: {
         Row: {
           avatar_url: string | null

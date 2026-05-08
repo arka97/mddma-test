@@ -55,14 +55,28 @@ const Storefront = () => {
     let alive = true;
     setLoading(true);
     supabase
-      .from("companies")
-      .select("id,owner_id,slug,name,tagline,description,logo_url,city,state,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
+      .from("companies_public")
+      .select("id,owner_id,slug,name,tagline,description,logo_url,city,state,address,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
       .eq("slug", slug)
       .maybeSingle()
       .then(async ({ data }) => {
         if (!alive) return;
         if (data) {
-          setLiveMember(liveCompanyToEntry(data as unknown as LiveCompanyRow));
+          // Contact info (email/phone/gstin) is only available to authenticated members.
+          let contact: { email: string | null; phone: string | null; gstin: string | null } = {
+            email: null, phone: null, gstin: null,
+          };
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            const { data: contactRow } = await supabase
+              .from("companies")
+              .select("email,phone,gstin")
+              .eq("slug", slug)
+              .maybeSingle();
+            if (contactRow) contact = contactRow as typeof contact;
+          }
+          const merged = { ...data, ...contact } as unknown as LiveCompanyRow;
+          setLiveMember(liveCompanyToEntry(merged));
           setLiveCompanyId(data.id);
           const { data: prods } = await supabase
             .from("products")
