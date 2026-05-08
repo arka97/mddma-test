@@ -25,15 +25,16 @@ Stored via the Lovable secrets manager; never committed to the repo.
 
 | Secret | Used by |
 |---|---|
-| `DOC_PASSWORD` | `verify-doc-password` |
+| `DOCS_PASSWORD` | `verify-doc-password` |
 | `RAZORPAY_KEY_ID` | `razorpay-create-payment-link`, `razorpay-webhook` |
 | `RAZORPAY_KEY_SECRET` | `razorpay-create-payment-link`, `razorpay-webhook` |
 | `RAZORPAY_WEBHOOK_SECRET` | `razorpay-webhook` |
+| `APP_URL` | `razorpay-create-payment-link` (callback redirect) |
 | `BIL_API_URL` (optional) | Frontend signal layer (build-time) |
 
 ## Seeding demo data
 
-The directory and product list always render in a "looks full" state by merging live database rows with curated sample data from `src/data/sampleData.ts` and `src/data/productListings.ts`. Live rows win on slug conflict, so an admin can replace any sample entry by inserting a real company with the same slug.
+Directory, storefront, and product listings render **only live database rows** (see `src/lib/dataSource.ts`). The sample arrays in `src/data/sampleData.ts` and `src/data/productListings.ts` remain in the repo as type fixtures for tests and for offline previews — they are not merged into production reads.
 
 To seed the database with realistic content for a pilot:
 
