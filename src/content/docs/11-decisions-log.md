@@ -90,11 +90,11 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 **Locked** February 2026.
 **Enforced in** `profiles.buyer_reputation_score`, `get_buyer_reputation_tier(score)`, `BuyerTrustBadge`, `priority_score` field on `rfqs`. Sellers are not publicly rated.
 
-### DATA-001 — Live + sample merge
-**Decision** Discovery surfaces (Directory, Storefronts, Products) merge live DB rows with curated sample data. **Live wins on slug conflict.**
-**Why** A new association launches with an empty DB. Sample rows make the demo "look full" without lying — admins replace any sample by inserting a live company with the same slug.
-**Locked** April 2026.
-**Enforced in** `lib/dataSource.ts` — `mergeDirectory(live, sample)` and `mergeProducts(live, sample)` are the only functions that produce render lists. Pages never read `sampleData.ts` directly.
+### DATA-001 — Live-only reads
+**Decision** Discovery surfaces (Directory, Storefronts, Products) read **only live database rows**. Sample arrays in `src/data/*` remain in the repo as type fixtures and offline-test material; they are not merged into production reads.
+**Why** Earlier the demo merged sample rows with live DB rows so the platform "looked full". Once the DB had real members, the merge became a source of confusion (which row is which?) and a leak risk (test data on production). Cleaner to ship empty and seed real data.
+**Locked** May 2026 (revised from earlier merge model — the older claim still appears in some narratives and should be read with this entry as the authoritative one).
+**Enforced in** `lib/dataSource.ts` — `mergeDirectory(live)` and `mergeProducts(live)` only project DB rows. Pages never read `sampleData.ts` directly in production paths.
 
 ### ROLE-001 — Paid and Free are mutually exclusive
 **Decision** A user with `paid_member` (or `broker`) cannot simultaneously hold `free_member`. Cancelling a paid membership restores `free_member`.
