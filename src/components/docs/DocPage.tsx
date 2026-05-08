@@ -50,19 +50,7 @@ function downloadMd(filename: string, content: string) {
 }
 
 export function DocPage({ meta, source }: { meta: DocMeta; source: string }) {
-  const [progress, setProgress] = useState(0);
   const headings = useMemo(() => extractHeadings(source), [source]);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      setProgress(max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [source]);
 
   // mark as read
   useEffect(() => {
