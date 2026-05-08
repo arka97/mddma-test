@@ -88,17 +88,13 @@ const ProductPage = () => {
               )}
 
               <Card className="bg-card border-border">
-                <CardHeader><CardTitle>Market Signals</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Pricing</CardTitle></CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <StockBadge band={(product.stock_band as "high" | "medium" | "low" | "on_order") ?? "medium"} />
-                    <TrendBadge direction={(["rising","stable","falling"].includes(product.trend_direction ?? "") ? product.trend_direction : "stable") as "rising" | "stable" | "falling"} />
-                    <span className="text-sm text-muted-foreground">
-                      {product.price_min && product.price_max
-                        ? `Indicative: ₹${product.price_min}–${product.price_max}/${product.unit ?? "kg"}`
-                        : "Price on request"}
-                    </span>
-                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {product.price_min && product.price_max
+                      ? `Indicative: ₹${product.price_min}–${product.price_max}/${product.unit ?? "kg"}`
+                      : "Price on request"}
+                  </span>
                 </CardContent>
               </Card>
 
