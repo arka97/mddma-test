@@ -4,6 +4,14 @@ import product from "./03-product-and-ux.md?raw";
 import functional from "./04-functional-spec.md?raw";
 import architecture from "./05-architecture-and-tech.md?raw";
 import ops from "./06-build-and-operations.md?raw";
+import dbref from "./07-database-reference.md?raw";
+import edgeref from "./08-edge-functions-reference.md?raw";
+import frontend from "./09-frontend-architecture.md?raw";
+import componentDesign from "./10-component-and-design.md?raw";
+import decisions from "./11-decisions-log.md?raw";
+import money from "./12-money-and-membership.md?raw";
+import runbook from "./13-operations-runbook.md?raw";
+import roadmap from "./14-roadmap-and-glossary.md?raw";
 
 export interface DocMeta {
   number: string;
@@ -12,6 +20,7 @@ export interface DocMeta {
   summary: string;
   readTime: string;
   diagramCount: number;
+  internal?: boolean;
 }
 
 export const DOCS: DocMeta[] = [
@@ -63,6 +72,78 @@ export const DOCS: DocMeta[] = [
     readTime: "6 min",
     diagramCount: 2,
   },
+  {
+    number: "07",
+    slug: "database-reference",
+    title: "Database Reference",
+    summary: "Every table, column, RLS policy, function, trigger, enum, and storage bucket.",
+    readTime: "12 min",
+    diagramCount: 1,
+    internal: true,
+  },
+  {
+    number: "08",
+    slug: "edge-functions-reference",
+    title: "Edge Functions Reference",
+    summary: "Each edge function: inputs, outputs, secrets, JWT, failure modes, debugging.",
+    readTime: "8 min",
+    diagramCount: 1,
+    internal: true,
+  },
+  {
+    number: "09",
+    slug: "frontend-architecture",
+    title: "Frontend Architecture",
+    summary: "Routes, contexts, hooks→repos→Supabase chain, dataSource merge, role simulator.",
+    readTime: "9 min",
+    diagramCount: 1,
+    internal: true,
+  },
+  {
+    number: "10",
+    slug: "component-and-design",
+    title: "Components & Design System",
+    summary: "Component inventory plus full HSL token reference, utilities, animations, breakpoints.",
+    readTime: "10 min",
+    diagramCount: 0,
+    internal: true,
+  },
+  {
+    number: "11",
+    slug: "decisions-log",
+    title: "Decisions Log",
+    summary: "Every locked product, technical, UX, and governance decision with permanent ID.",
+    readTime: "9 min",
+    diagramCount: 0,
+    internal: true,
+  },
+  {
+    number: "12",
+    slug: "money-and-membership",
+    title: "Money & Membership",
+    summary: "Pricing, end-to-end Razorpay flow, KYC ladder, the membership state machine.",
+    readTime: "8 min",
+    diagramCount: 2,
+    internal: true,
+  },
+  {
+    number: "13",
+    slug: "operations-runbook",
+    title: "Operations Runbook",
+    summary: "Recipes for seeding, secrets, role grants, debugging, common psql queries.",
+    readTime: "9 min",
+    diagramCount: 0,
+    internal: true,
+  },
+  {
+    number: "14",
+    slug: "roadmap-and-glossary",
+    title: "Roadmap & Glossary",
+    summary: "Six-month roadmap, BIL Phase 2 contract, rejected ideas, full glossary and acronyms.",
+    readTime: "7 min",
+    diagramCount: 1,
+    internal: true,
+  },
 ];
 
 export const SOURCES: Record<string, string> = {
@@ -72,6 +153,14 @@ export const SOURCES: Record<string, string> = {
   "functional-spec": functional,
   "architecture-and-tech": architecture,
   "build-and-operations": ops,
+  "database-reference": dbref,
+  "edge-functions-reference": edgeref,
+  "frontend-architecture": frontend,
+  "component-and-design": componentDesign,
+  "decisions-log": decisions,
+  "money-and-membership": money,
+  "operations-runbook": runbook,
+  "roadmap-and-glossary": roadmap,
 };
 
 export function getDoc(slug: string): { meta: DocMeta; source: string } | null {
