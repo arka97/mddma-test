@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,19 +50,7 @@ function downloadMd(filename: string, content: string) {
 }
 
 export function DocPage({ meta, source }: { meta: DocMeta; source: string }) {
-  const [progress, setProgress] = useState(0);
   const headings = useMemo(() => extractHeadings(source), [source]);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const max = h.scrollHeight - h.clientHeight;
-      setProgress(max > 0 ? Math.min(100, (h.scrollTop / max) * 100) : 0);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [source]);
 
   // mark as read
   useEffect(() => {
@@ -76,13 +64,8 @@ export function DocPage({ meta, source }: { meta: DocMeta; source: string }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* progress bar */}
-      <div className="fixed top-0 left-0 right-0 h-1 bg-muted z-50 print:hidden">
-        <div className="h-full bg-accent transition-all" style={{ width: `${progress}%` }} />
-      </div>
-
       {/* top bar */}
-      <div className="sticky top-0 z-40 bg-primary/95 backdrop-blur border-b border-primary-foreground/10 print:hidden">
+      <div className="sticky top-0 z-40 bg-primary border-b border-primary-foreground/10 print:hidden">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
           <Link to="/documents" className="flex items-center gap-2 text-primary-foreground/80 hover:text-primary-foreground text-sm">
             <ArrowLeft className="h-4 w-4" /> All documents
