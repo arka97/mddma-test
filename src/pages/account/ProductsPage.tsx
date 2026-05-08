@@ -163,25 +163,39 @@ const ProductsPage = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editing) return;
-    setSaving(true);
 
-    const slug = editing.slug?.trim() || slugify(editing.name ?? "");
+    const name = editing.name?.trim() ?? "";
+    const category = editing.category?.trim() ?? "";
+    const origin = editing.origin?.trim() ?? "";
+    const unit = (editing.unit ?? "").trim();
+    const priceMin = editing.price_min;
+    const priceMax = editing.price_max;
+
+    if (!name) { toast({ title: "Product name is required", variant: "destructive" }); return; }
+    if (!category) { toast({ title: "Category is required", variant: "destructive" }); return; }
+    if (!origin) { toast({ title: "Origin is required", variant: "destructive" }); return; }
+    if (priceMin == null || Number.isNaN(priceMin)) { toast({ title: "Min price is required", variant: "destructive" }); return; }
+    if (priceMax == null || Number.isNaN(priceMax)) { toast({ title: "Max price is required", variant: "destructive" }); return; }
+    if (priceMax < priceMin) { toast({ title: "Max price must be ≥ min price", variant: "destructive" }); return; }
+    if (!unit) { toast({ title: "Unit is required", variant: "destructive" }); return; }
+
+    setSaving(true);
+    const slug = await ensureUniqueSlug(company.id, slugify(name), editing.id);
     const payload = {
       company_id: company.id,
-      name: editing.name?.trim() ?? "",
+      name,
       slug,
-      category: editing.category?.trim() || null,
-      origin: editing.origin?.trim() || null,
+      category,
+      origin,
       description: editing.description?.trim() || null,
       image_url: editing.image_url || null,
       gallery: editing.gallery ?? [],
       video_url: editing.video_url || null,
-      price_min: editing.price_min ?? null,
-      price_max: editing.price_max ?? null,
+      price_min: priceMin,
+      price_max: priceMax,
       market_avg_price: editing.market_avg_price ?? null,
-      unit: editing.unit ?? "kg",
-      stock_band: (editing.stock_band ?? "medium") as "high" | "medium" | "low" | "on_order",
-      trend_direction: (editing.trend_direction ?? "stable") as "rising" | "stable" | "falling",
+      unit,
+      stock_band: ((editing.stock_band ?? "available") as "available" | "out_of_stock"),
       is_hidden: !!editing.is_hidden,
     };
 
