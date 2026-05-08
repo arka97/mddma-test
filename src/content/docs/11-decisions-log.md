@@ -12,11 +12,12 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 | TECH-001 | Behavioral Intelligence Layer is an external API, not edge functions | Locked |
 | TECH-002 | `BrowserRouter` only — no `_redirects`, no `vercel.json` | Locked |
 | TECH-003 | No WhatsApp Business API; `wa.me` deeplinks only | Locked |
+| TECH-004 | `memberships` table + `activate_membership` RPC are deferred | Open |
 | UX-001 | Controlled transparency: ranges + bands only | Locked |
 | UX-002 | RFQ requires authentication | Locked |
 | UX-003 | Multi-item RFQ cart with FAB + drawer | Locked |
 | GOV-001 | Buyer reputation, not seller reputation | Locked |
-| DATA-001 | Live + sample merge, live wins on slug conflict | Locked |
+| DATA-001 | Live-only reads; sample data is a test fixture, not a fallback | Locked |
 | ROLE-001 | `paid_member` and `free_member` mutually exclusive at the DB | Locked |
 
 ---
