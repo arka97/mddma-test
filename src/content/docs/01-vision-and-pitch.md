@@ -2,6 +2,10 @@
 
 > **Thesis.** MDDMA does not expose the dry-fruits and dates market — it **structures and controls** it. The platform is a Behavioral Trade Operating System for the Mumbai Dry Fruits & Dates Merchants Association: a verified directory, a controlled-transparency catalogue, and a structured negotiation engine designed to keep pricing power inside the association.
 
+> **Where this doc sits.** This is doc **01 of 14** — the start of the canonical reading order. Public spec runs **01 → 06**; owner-only deep reference runs **07 → 14**. Read in order on first pass; later, jump by topic. Authoritative invariants live in **11 · Decisions Log** — when narratives in earlier docs conflict with a decision entry, the decision entry wins.
+
+> **Last verified** May 2026 against the live database, the deployed edge functions, and `src/App.tsx`.
+
 ## The problem
 
 Mumbai's dry-fruits and dates trade runs on phone calls, WhatsApp screenshots, and broker memory. Three things are broken:
