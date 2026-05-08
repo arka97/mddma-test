@@ -1,12 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { TrendingUp, TrendingDown, Minus, Flame, AlertTriangle, Users } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 interface TickerItem {
   id: string;
   icon: React.ReactNode;
   text: string;
-  type: "trend" | "demand" | "activity" | "supply";
 }
 
 interface ProductLite {
