@@ -47,8 +47,24 @@ const emptyProduct: Partial<Product> = {
   name: "", slug: "", category: "", origin: "", description: "", image_url: "",
   gallery: [], video_url: "",
   price_min: null, price_max: null, market_avg_price: null, unit: "kg",
-  stock_band: "medium", trend_direction: "stable", is_hidden: false,
+  stock_band: "available", trend_direction: "stable", is_hidden: false,
 };
+
+async function ensureUniqueSlug(companyId: string, base: string, currentId?: string): Promise<string> {
+  const root = base || "product";
+  let candidate = root;
+  let n = 2;
+  // Try a handful of suffixes; bail with timestamp fallback to avoid infinite loops.
+  for (let i = 0; i < 50; i++) {
+    let q = supabase.from("products").select("id").eq("company_id", companyId).eq("slug", candidate).limit(1);
+    const { data, error } = await q;
+    if (error) return candidate;
+    const conflict = (data ?? []).find((r) => r.id !== currentId);
+    if (!conflict) return candidate;
+    candidate = `${root}-${n++}`;
+  }
+  return `${root}-${Date.now()}`;
+}
 
 const ProductsPage = () => {
   const { user, company } = useAuth();
