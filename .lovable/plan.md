@@ -1,44 +1,64 @@
-## Product form cleanup
+## Goal
+Remove **Market Average price**, **Stock band**, and **Trend** completely from the platform — UI, code, and database. Connect MarketTicker to live data only (no sample fallback, no trend_direction).
 
-Scope: edit-product dialog at `/account/products` only (no changes to filters, listings, or the variant form unless noted).
+## 1. Product Form (`src/pages/account/ProductsPage.tsx`)
+- Remove the **Stock** dropdown (Available / Out of stock).
+- Remove any **Market Average** and **Trend** fields/state.
+- Stop sending `stock_band`, `trend_direction`, `market_avg_price` on insert/update.
 
-### Changes
+## 2. Product Cards & Listings (UI)
+Strip StockBadge, TrendBadge, and "Market Avg" line from:
+- `src/components/products/RecentListings.tsx`
+- `src/components/home/RecentListingsSection.tsx`
+- `src/pages/Products.tsx`
+- `src/pages/Storefront.tsx`
+- `src/pages/ProductPage.tsx` — remove the entire "Market Signals" card; keep "Indicative price" line.
+- `src/components/MarketSignals.tsx` — delete `StockBadge`, `TrendBadge`, the `MarketSignals` composite, "Market Avg" line in `PriceRange`. Keep `DemandIndicator` only if still referenced; otherwise delete the file.
+- `src/components/behavioral/BehavioralCues.tsx` — `ScarcityCue` and `PriceAnchorCue` lose their `stockBand`/`trendDirection`/`marketAvgPrice` branches. Remove the cues entirely if they become empty; update call sites.
+- `src/components/commodity/GuardedPrice.tsx` — drop any market-avg display.
+- `src/components/products/VariantManager.tsx` — drop `stock_band` field from variant form.
 
-**1. Auto-generated unique slug**
-- Remove the editable Slug field from the dialog.
-- Slug is derived from `name` via `slugify()` on save, and uniqueness is enforced by querying `products.slug` for the same `company_id` and appending `-2`, `-3`, … if a collision exists (skipping the row being edited).
+## 3. MarketTicker — live-only, no trend
+Update `src/components/layout/MarketTicker.tsx`:
+- Remove `trend_direction` from select and from `ProductLite`.
+- Remove `pctForProduct` / trend-based sign logic.
+- Render each item as `<Name> · <Origin> · ₹min–₹max/<unit>` with a neutral indicator (or computed deterministic delta from `id` alone if a percent is still desired — confirm in implementation; default = drop the percent).
+- Add `unit` to the select so the suffix is correct (no hardcoded `/kg`).
+- No sample fallback: if the live query returns < 1 item, render nothing (current behavior already does this).
 
-**2. Required fields**
-- `category`, `origin`, `price_min`, `price_max`, `unit` become mandatory.
-- Enforced client-side: HTML `required` on inputs, plus a check in `handleSave` that shows a toast if any are missing/empty (since `SearchableSelect` is not a native input, it needs the explicit check). `price_max ≥ price_min` is also validated.
+## 4. Sample data cleanup
+- `src/data/productListings.ts`: remove `marketAvgPrice`, `stockBand`, `trendDirection`, `demandScore`, related label/color maps, and the `StockBand`/`TrendDirection`/`DemandLevel` types if unused.
+- `src/lib/dataSource.ts`: drop the same fields from `ProductEntry` and any sample merger logic.
+- Remove now-unused imports across the codebase.
 
-**3. Replace Stock band + Trend with simple Stock dropdown**
-- Remove the **Stock band** (high/medium/low/on_order) and **Trend** (rising/stable/falling) selects from the form.
-- Add a single **Stock** dropdown with two options: **Available**, **Out of stock**.
-- Card preview also drops the stock-band / trend badges and instead shows an "Available" / "Out of stock" badge.
+## 5. Database migration
+Drop columns and enums:
+- `ALTER TABLE public.products DROP COLUMN stock_band, DROP COLUMN trend_direction, DROP COLUMN market_avg_price, DROP COLUMN demand_score;`
+- `ALTER TABLE public.product_variants DROP COLUMN stock_band;`
+- `DROP TYPE IF EXISTS public.stock_band;`
+- `DROP TYPE IF EXISTS public.trend_direction;`
 
-**4. Origin field cleanup**
-- Remove the helper line "60 countries — type to filter" below the Origin dropdown.
-- Origin remains a searchable select over `ORIGIN_COUNTRIES`.
+After migration, `src/integrations/supabase/types.ts` will regenerate; update `src/repositories/products.ts` `PRODUCT_COLUMNS` and `ProductRow` to drop the fields.
 
-### Technical details
+## 6. Docs
+Light edits to remove stale references in:
+- `src/content/docs/07-database-reference.md`
+- `src/content/docs/11-decisions-log.md`
+- `src/content/docs/14-roadmap-and-glossary.md`
 
-- **DB migration** (`stock_band` enum currently has `high|medium|low|on_order`; `trend_direction` has `rising|stable|falling`):
-  - Add two new values to `stock_band` enum: `available`, `out_of_stock`.
-  - Backfill `products.stock_band`: existing `high`/`medium` → `available`; `low`/`on_order` → `out_of_stock`. Same backfill for `product_variants.stock_band`.
-  - Change column default on both tables to `'available'`.
-  - `trend_direction` column is left in place (other surfaces still read it) but the product form stops writing/reading it; new rows keep the existing default `'stable'`. (Removing the column would require touching `MarketSignals`, `productListings.ts` types, listing cards, and is out of scope of "product form" — flag this and ask if you want a deeper cleanup.)
+## Files Touched
+- migration file (new)
+- `src/repositories/products.ts`
+- `src/pages/account/ProductsPage.tsx`
+- `src/pages/Products.tsx`, `src/pages/ProductPage.tsx`, `src/pages/Storefront.tsx`
+- `src/components/products/RecentListings.tsx`, `VariantManager.tsx`
+- `src/components/home/RecentListingsSection.tsx`
+- `src/components/layout/MarketTicker.tsx`
+- `src/components/MarketSignals.tsx` (likely deleted)
+- `src/components/behavioral/BehavioralCues.tsx`
+- `src/components/commodity/GuardedPrice.tsx`
+- `src/data/productListings.ts`, `src/lib/dataSource.ts`
+- 3 doc files
 
-- **Slug uniqueness helper** lives in `ProductsPage.tsx` (small inline async function); no new file needed.
-
-- Files touched:
-  - `src/pages/account/ProductsPage.tsx` — form fields, save logic, card preview badges.
-  - One new migration file under `supabase/migrations/`.
-
-### Out of scope
-
-- Public product listing cards / `MarketSignals` component (still render trend + old stock bands for legacy data — they will simply show "Available" / "Out of stock" once data is backfilled, but the broader stock-band UI cleanup is not included).
-- Variant form's stock band field (separate flow).
-- Filters on `/products`.
-
-Confirm and I'll implement.
+## Memory update
+Update Core memory: remove "stock bands (High/Med/Low), demand trends" — Controlled Transparency now = price ranges only.
