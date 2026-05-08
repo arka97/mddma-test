@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ShieldCheck, BadgeCheck, ArrowRight } from "lucide-react";
+import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 
 
 const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
@@ -104,6 +105,11 @@ export function HeroSection() {
             >
               Browse all sellers <ArrowRight className="h-3 w-3 ml-1" />
             </Link>
+          </div>
+
+          {/* PWA install CTA */}
+          <div className="mt-8 flex justify-center">
+            <InstallAppButton size="lg" className="h-11 px-5" label="Install MDDMA App" />
           </div>
         </div>
 
