@@ -4,8 +4,8 @@ import JSZip from "jszip";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Download, FileText, CheckCircle2, Circle, Package } from "lucide-react";
-import { DOCS, SOURCES } from "@/content/docs/_meta";
+import { ArrowRight, Download, FileText, CheckCircle2, Circle, Package, Lock } from "lucide-react";
+import { DOCS, SOURCES, type DocMeta } from "@/content/docs/_meta";
 
 const READ_KEY = "mddma:doc-read";
 
