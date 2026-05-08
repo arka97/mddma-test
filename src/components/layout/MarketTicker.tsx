@@ -81,7 +81,7 @@ export function MarketTicker() {
     };
   }, []);
 
-  if (items.length < 3) return null;
+  if (items.length < 1) return null;
 
   return (
     <div
