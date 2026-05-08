@@ -1,49 +1,73 @@
-## Add "Install App" button (PWA install prompt)
+## Goal
 
-The project already has a valid `manifest.json` and proper iOS/Android meta tags in `index.html`, so the site is technically installable. We just need to surface an in-app install button instead of relying on the browser menu.
+Rework `/products` so users see **product categories first** (Almond, Pista, Cashew, …). Clicking a category drills into its **listings** (Almond Variety 1, Pista Jumbo, …). Filters apply within the category, not across the whole catalog. Below the category grid, show a **Recent Listings** strip across all categories.
 
-No service worker will be added (per project's PWA policy — manifest-only install is enough and avoids preview-iframe caching issues).
+## New flow
 
-### What gets built
+```text
+/products                       → Category grid + Recent listings
+/products?cat=Almond            → Listings within Almond
+/products?cat=Pista&origin=Iran → Filtered listings within Pista
+```
 
-1. **`useInstallPrompt` hook** (`src/hooks/useInstallPrompt.ts`)
-   - Listens for `beforeinstallprompt` (Android/Chromium) and stashes the event.
-   - Detects iOS Safari (no `beforeinstallprompt`) → exposes a flag to show manual "Add to Home Screen" instructions.
-   - Detects already-installed state via `display-mode: standalone` / `navigator.standalone` and hides itself.
-   - Exposes `{ canInstall, isIOS, isInstalled, promptInstall() }`.
+Single route, two visual modes driven by the `cat` query param. Back button works naturally.
 
-2. **`InstallAppButton` component** (`src/components/pwa/InstallAppButton.tsx`)
-   - Gold/accent button with a download icon, label "Install App".
-   - On Android/Chromium: calls `promptInstall()` directly.
-   - On iOS: opens a small dialog/sheet with step-by-step "Tap Share → Add to Home Screen" instructions and a screenshot-style illustration (CSS only).
-   - On desktop browsers without prompt support: hidden by default (optional `showAlways` prop to force-render with iOS-style instructions).
-   - Renders nothing when `isInstalled`.
+## Layout
 
-3. **Surfacing the button**
-   - **Header (`src/components/layout/Header.tsx`)**: small icon-only variant in the top bar on mobile widths only (next to the user/login button), so it's reachable without scrolling.
-   - **HeroSection (`src/components/home/HeroSection.tsx`)**: full-size "Install App" CTA below the existing hero buttons, visible on all viewports (only renders if installable / iOS).
-   - **Footer**: a quiet text link "Install MDDMA app" as a fallback discovery point.
+### Mode A — Browse (no `cat` selected)
 
-4. **Dedicated `/install` route** (`src/pages/Install.tsx`, registered in `src/App.tsx`)
-   - Landing page explaining benefits (works offline-ish, app icon, fullscreen) and platform-specific install steps for Android, iOS, and desktop.
-   - Big primary install button at the top.
-   - Useful for sharing a single link via WhatsApp/email to members.
+1. **Hero header**: "Browse Categories"
+2. **Search bar**: searches categories (name + aliases like "Kaju" → Cashew). Submitting a free-text search that matches nothing in categories falls through to listing search by switching to Mode B with `q=`.
+3. **Category grid** from `product_categories` (active only, sorted by `sort_order`):
+   - Image (`image_url` with fallback)
+   - Name + short description
+   - Live count of listings in that category
+   - Featured categories pinned on top via `is_featured`
+   - Click → navigate to `?cat=<name>`
+4. **Ad banner** (existing `category-banner` placement) between sections
+5. **Recent Listings section** below the grid:
+   - Heading: "Recent Listings" + small "View all" hint
+   - Latest 8–12 products across all categories (existing card design)
+   - Sorted by `created_at desc`, `is_featured` first (already the default in `listProducts`)
+   - Each card: same RFQ button, GuardedPrice, StockBadge, etc.
+   - On mobile: horizontal scroll; on desktop: 3–4 col grid
 
-### Technical notes
+### Mode B — Category detail (`?cat=<name>`)
 
-- No new dependencies. Pure browser APIs.
-- `beforeinstallprompt` is non-standard typed; we declare a minimal `BeforeInstallPromptEvent` interface in the hook.
-- Design uses existing semantic tokens (`bg-accent text-primary` for the button, matching the current Login button styling) — no hardcoded colors.
-- The button is hidden when the app is already installed, and on browsers (e.g. Firefox desktop) where install isn't supported and the user isn't on iOS.
-- We will NOT add `vite-plugin-pwa` or a service worker, per project guidelines. Installability is achieved via the existing manifest only; offline support is out of scope.
+- Breadcrumb: `Categories / Almond` + "Back to categories" button
+- Category header strip: image thumb + name + description + listing count
+- Filters reduced to within-category:
+  - Search (matches listing name / variant)
+  - Origin (only origins present in this category's listings)
+  - Stock level
+- Listings grid (existing card design, untouched)
+- Empty state: "No listings yet in <category>"
 
-### Files to add
-- `src/hooks/useInstallPrompt.ts`
-- `src/components/pwa/InstallAppButton.tsx`
-- `src/pages/Install.tsx`
+## Implementation notes (technical)
 
-### Files to edit
-- `src/App.tsx` — add `/install` route
-- `src/components/layout/Header.tsx` — mount compact install button
-- `src/components/home/HeroSection.tsx` — mount hero install CTA
-- `src/components/layout/Footer.tsx` — add quiet install link
+- **Single page** `src/pages/Products.tsx` — branch on `searchParams.get("cat")`.
+- New components:
+  - `src/components/products/CategoryGrid.tsx` — Mode A grid with counts.
+  - `src/components/products/RecentListings.tsx` — recent products strip; takes `limit` prop.
+- Reuse `useProductCategories({ activeOnly: true })` for Mode A.
+- Reuse `useProducts({ category })` for Mode B (already supports server-side filtering).
+- Recent listings: call `useProducts()` (no filter) and slice to N most recent. No new query needed.
+- Listing counts per category: add `countProductsByCategory()` in `src/repositories/products.ts` returning `Record<string, number>`. One grouped count query.
+- Alias-aware category search in Mode A: filter `curatedCats` by name + `aliases` array.
+- URL state: clicking a category card sets `?cat=<name>`; "Back to categories" clears all query params.
+- Keep RFQ modal, ad banner, cart FAB integrations exactly as-is.
+- No DB changes. No backend changes. No changes to product detail pages, Storefront, Home, Header, Footer.
+
+## Files to edit / add
+
+- Edit: `src/pages/Products.tsx` (split into two render modes; mount `RecentListings` in Mode A)
+- Add: `src/components/products/CategoryGrid.tsx`
+- Add: `src/components/products/RecentListings.tsx`
+- Edit: `src/repositories/products.ts` (add `countProductsByCategory`)
+
+## Out of scope
+
+- No DB schema changes
+- No changes to homepage "Featured Categories" or "Recent Listings" sections
+- No changes to category admin CMS
+- Docs / memory updates not required for this UI rework
