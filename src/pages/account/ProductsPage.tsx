@@ -47,8 +47,24 @@ const emptyProduct: Partial<Product> = {
   name: "", slug: "", category: "", origin: "", description: "", image_url: "",
   gallery: [], video_url: "",
   price_min: null, price_max: null, market_avg_price: null, unit: "kg",
-  stock_band: "medium", trend_direction: "stable", is_hidden: false,
+  stock_band: "available", trend_direction: "stable", is_hidden: false,
 };
+
+async function ensureUniqueSlug(companyId: string, base: string, currentId?: string): Promise<string> {
+  const root = base || "product";
+  let candidate = root;
+  let n = 2;
+  // Try a handful of suffixes; bail with timestamp fallback to avoid infinite loops.
+  for (let i = 0; i < 50; i++) {
+    let q = supabase.from("products").select("id").eq("company_id", companyId).eq("slug", candidate).limit(1);
+    const { data, error } = await q;
+    if (error) return candidate;
+    const conflict = (data ?? []).find((r) => r.id !== currentId);
+    if (!conflict) return candidate;
+    candidate = `${root}-${n++}`;
+  }
+  return `${root}-${Date.now()}`;
+}
 
 const ProductsPage = () => {
   const { user, company } = useAuth();
@@ -147,25 +163,39 @@ const ProductsPage = () => {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editing) return;
-    setSaving(true);
 
-    const slug = editing.slug?.trim() || slugify(editing.name ?? "");
+    const name = editing.name?.trim() ?? "";
+    const category = editing.category?.trim() ?? "";
+    const origin = editing.origin?.trim() ?? "";
+    const unit = (editing.unit ?? "").trim();
+    const priceMin = editing.price_min;
+    const priceMax = editing.price_max;
+
+    if (!name) { toast({ title: "Product name is required", variant: "destructive" }); return; }
+    if (!category) { toast({ title: "Category is required", variant: "destructive" }); return; }
+    if (!origin) { toast({ title: "Origin is required", variant: "destructive" }); return; }
+    if (priceMin == null || Number.isNaN(priceMin)) { toast({ title: "Min price is required", variant: "destructive" }); return; }
+    if (priceMax == null || Number.isNaN(priceMax)) { toast({ title: "Max price is required", variant: "destructive" }); return; }
+    if (priceMax < priceMin) { toast({ title: "Max price must be ≥ min price", variant: "destructive" }); return; }
+    if (!unit) { toast({ title: "Unit is required", variant: "destructive" }); return; }
+
+    setSaving(true);
+    const slug = await ensureUniqueSlug(company.id, slugify(name), editing.id);
     const payload = {
       company_id: company.id,
-      name: editing.name?.trim() ?? "",
+      name,
       slug,
-      category: editing.category?.trim() || null,
-      origin: editing.origin?.trim() || null,
+      category,
+      origin,
       description: editing.description?.trim() || null,
       image_url: editing.image_url || null,
       gallery: editing.gallery ?? [],
       video_url: editing.video_url || null,
-      price_min: editing.price_min ?? null,
-      price_max: editing.price_max ?? null,
+      price_min: priceMin,
+      price_max: priceMax,
       market_avg_price: editing.market_avg_price ?? null,
-      unit: editing.unit ?? "kg",
-      stock_band: (editing.stock_band ?? "medium") as "high" | "medium" | "low" | "on_order",
-      trend_direction: (editing.trend_direction ?? "stable") as "rising" | "stable" | "falling",
+      unit,
+      stock_band: ((editing.stock_band ?? "available") as "available" | "out_of_stock"),
       is_hidden: !!editing.is_hidden,
     };
 
@@ -224,8 +254,9 @@ const ProductsPage = () => {
                       {p.origin && <p className="text-xs text-muted-foreground">Origin: {p.origin}</p>}
                       {(p.price_min && p.price_max) ? <p className="text-sm font-medium">₹{p.price_min} – ₹{p.price_max} / {p.unit}</p> : null}
                       <div className="flex flex-wrap gap-1 text-xs">
-                        <Badge variant="secondary">{p.stock_band}</Badge>
-                        <Badge variant="secondary">{p.trend_direction}</Badge>
+                        <Badge variant={p.stock_band === "out_of_stock" ? "outline" : "secondary"}>
+                          {p.stock_band === "out_of_stock" ? "Out of stock" : "Available"}
+                        </Badge>
                       </div>
                       <div className="flex gap-2 pt-2">
                         <Button size="sm" variant="outline" className="flex-1" onClick={() => startEdit(p)}><Pencil className="h-3 w-3 mr-1" /> Edit</Button>
@@ -319,10 +350,9 @@ const ProductsPage = () => {
               </div>
 
               <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1.5"><Label>Product name *</Label><Input required maxLength={120} value={editing.name ?? ""} onChange={(e) => setEditing({ ...editing, name: e.target.value, slug: editing.slug || slugify(e.target.value) })} /></div>
-                <div className="space-y-1.5"><Label>Slug</Label><Input value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: slugify(e.target.value) })} /></div>
+                <div className="space-y-1.5 sm:col-span-2"><Label>Product name *</Label><Input required maxLength={120} value={editing.name ?? ""} onChange={(e) => setEditing({ ...editing, name: e.target.value })} /></div>
                 <div className="space-y-1.5">
-                  <Label>Category</Label>
+                  <Label>Category *</Label>
                   {(() => {
                     const current = (editing.category ?? "").trim();
                     const matchesActive = current && categories.some((c) => c.name === current);
@@ -354,7 +384,7 @@ const ProductsPage = () => {
                   })()}
                 </div>
                 <div className="space-y-1.5">
-                  <Label>Origin</Label>
+                  <Label>Origin *</Label>
                   {(() => {
                     const current = (editing.origin ?? "").trim();
                     const inList = ORIGIN_COUNTRIES.includes(current);
@@ -363,43 +393,27 @@ const ProductsPage = () => {
                       opts.unshift({ value: current, label: `${current} (legacy)` });
                     }
                     return (
-                      <>
-                        <SearchableSelect
-                          value={current}
-                          onChange={(v) => setEditing({ ...editing, origin: v })}
-                          options={opts}
-                          placeholder="Select origin country"
-                          searchPlaceholder="Search country…"
-                        />
-                        <p className="text-[11px] text-muted-foreground">60 countries — type to filter</p>
-                      </>
+                      <SearchableSelect
+                        value={current}
+                        onChange={(v) => setEditing({ ...editing, origin: v })}
+                        options={opts}
+                        placeholder="Select origin country"
+                        searchPlaceholder="Search country…"
+                      />
                     );
                   })()}
                 </div>
-                <div className="space-y-1.5"><Label>Min price (₹)</Label><Input type="number" step="0.01" value={editing.price_min ?? ""} onChange={(e) => setEditing({ ...editing, price_min: e.target.value ? parseFloat(e.target.value) : null })} /></div>
-                <div className="space-y-1.5"><Label>Max price (₹)</Label><Input type="number" step="0.01" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
+                <div className="space-y-1.5"><Label>Min price (₹) *</Label><Input required type="number" step="0.01" min="0" value={editing.price_min ?? ""} onChange={(e) => setEditing({ ...editing, price_min: e.target.value ? parseFloat(e.target.value) : null })} /></div>
+                <div className="space-y-1.5"><Label>Max price (₹) *</Label><Input required type="number" step="0.01" min="0" value={editing.price_max ?? ""} onChange={(e) => setEditing({ ...editing, price_max: e.target.value ? parseFloat(e.target.value) : null })} /></div>
                 <div className="space-y-1.5"><Label>Market avg (₹)</Label><Input type="number" step="0.01" value={editing.market_avg_price ?? ""} onChange={(e) => setEditing({ ...editing, market_avg_price: e.target.value ? parseFloat(e.target.value) : null })} /></div>
-                <div className="space-y-1.5"><Label>Unit</Label><Input value={editing.unit ?? "kg"} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} /></div>
+                <div className="space-y-1.5"><Label>Unit *</Label><Input required value={editing.unit ?? "kg"} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} /></div>
                 <div className="space-y-1.5">
-                  <Label>Stock band</Label>
-                  <Select value={editing.stock_band ?? "medium"} onValueChange={(v) => setEditing({ ...editing, stock_band: v })}>
+                  <Label>Stock</Label>
+                  <Select value={editing.stock_band === "out_of_stock" ? "out_of_stock" : "available"} onValueChange={(v) => setEditing({ ...editing, stock_band: v })}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="on_order">On Order</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label>Trend</Label>
-                  <Select value={editing.trend_direction ?? "stable"} onValueChange={(v) => setEditing({ ...editing, trend_direction: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="rising">Rising</SelectItem>
-                      <SelectItem value="stable">Stable</SelectItem>
-                      <SelectItem value="falling">Falling</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="out_of_stock">Out of stock</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

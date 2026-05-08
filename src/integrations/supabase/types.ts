@@ -872,7 +872,13 @@ export type Database = {
         | "negotiating"
         | "converted"
         | "closed"
-      stock_band: "high" | "medium" | "low" | "on_order"
+      stock_band:
+        | "high"
+        | "medium"
+        | "low"
+        | "on_order"
+        | "available"
+        | "out_of_stock"
       trend_direction: "rising" | "stable" | "falling"
       verification_tier: "unverified" | "email" | "company" | "gst"
     }
@@ -1012,7 +1018,14 @@ export const Constants = {
         "converted",
         "closed",
       ],
-      stock_band: ["high", "medium", "low", "on_order"],
+      stock_band: [
+        "high",
+        "medium",
+        "low",
+        "on_order",
+        "available",
+        "out_of_stock",
+      ],
       trend_direction: ["rising", "stable", "falling"],
       verification_tier: ["unverified", "email", "company", "gst"],
     },
