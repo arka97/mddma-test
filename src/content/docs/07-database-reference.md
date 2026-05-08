@@ -273,10 +273,13 @@ Admin CMS — placement-driven ads.
 
 **RLS** — public reads active ads where `start_date <= today AND (end_date IS NULL OR end_date >= today)`; only admin mutates.
 
-### `memberships` (referenced by edge functions)
-Pending → active → expired/cancelled lifecycle. Created when a user submits `/apply`; activated by Razorpay webhook or by admin override (`activate_membership` RPC).
+### `memberships` *(planned — not yet migrated)*
 
-Key columns: `id`, `profile_id`, `tier` (text, default `'paid'`), `status` (text), `starts_at`, `expires_at`, `founding_lock_until`, `price_paid_inr`, `razorpay_payment_id`, `razorpay_order_id`, `payment_link_url`, `notes`, timestamps.
+> ⚠️ **Implementation status:** This table is referenced by `razorpay-create-payment-link` and `razorpay-webhook` and by the planned RPCs below, but **the migration has not been applied yet**. Until it is, the Razorpay flow is wired end-to-end in code but will fail on the first DB lookup. Tracked under TECH-004 in the decisions log; ship the migration before flipping payments live.
+
+Intended lifecycle: pending → active → expired/cancelled. Created when a user submits `/apply`; activated by Razorpay webhook or by admin override (`activate_membership` RPC, also planned).
+
+Planned columns: `id`, `profile_id`, `tier` (text, default `'paid'`), `status` (text), `starts_at`, `expires_at`, `founding_lock_until`, `price_paid_inr`, `razorpay_payment_id`, `razorpay_order_id`, `payment_link_url`, `notes`, timestamps.
 
 ## Functions
 
