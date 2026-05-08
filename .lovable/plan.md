@@ -1,73 +1,72 @@
-## Goal
+# Fix: "Install App" button does nothing on iOS / Android
 
-Rework `/products` so users see **product categories first** (Almond, Pista, Cashew, …). Clicking a category drills into its **listings** (Almond Variety 1, Pista Jumbo, …). Filters apply within the category, not across the whole catalog. Below the category grid, show a **Recent Listings** strip across all categories.
+## Root cause
 
-## New flow
+The button is wired to two paths in `useInstallPrompt`:
 
-```text
-/products                       → Category grid + Recent listings
-/products?cat=Almond            → Listings within Almond
-/products?cat=Pista&origin=Iran → Filtered listings within Pista
-```
+1. **Native prompt** (`canInstall`) — only fires on Android/desktop Chromium **after** the browser fires `beforeinstallprompt`. Chrome Android requires a registered service worker with a fetch handler to fire that event. We intentionally have no service worker (per Lovable PWA guidance), so `beforeinstallprompt` never fires → `canInstall` stays `false`.
+2. **iOS help dialog** (`showIOSHelp`) — supposed to render on iPhone/iPad Safari.
 
-Single route, two visual modes driven by the `cat` query param. Back button works naturally.
+Today the hero button only renders when `isAvailable = canInstall || showIOSHelp`. Net effect:
 
-## Layout
+- **Android Chrome**: `isAvailable` is `false` → the button on the homepage hero is hidden, or appears briefly and then hides. If a user does click it (e.g. on `/install`), nothing else happens because there is no `deferred` event and no fallback route on Android.
+- **iOS Safari**: should open the iOS instructions dialog, but the same logic path that gates Android also misfires when other browsers (Chrome iOS, in‑app browsers like WhatsApp/Instagram) report as iOS but don't expose Add‑to‑Home‑Screen.
+- **In‑app browsers** (Instagram, LinkedIn, Gmail webview) on either OS: install is impossible; today we silently do nothing.
 
-### Mode A — Browse (no `cat` selected)
+## Plan (frontend only, no service worker)
 
-1. **Hero header**: "Browse Categories"
-2. **Search bar**: searches categories (name + aliases like "Kaju" → Cashew). Submitting a free-text search that matches nothing in categories falls through to listing search by switching to Mode B with `q=`.
-3. **Category grid** from `product_categories` (active only, sorted by `sort_order`):
-   - Image (`image_url` with fallback)
-   - Name + short description
-   - Live count of listings in that category
-   - Featured categories pinned on top via `is_featured`
-   - Click → navigate to `?cat=<name>`
-4. **Ad banner** (existing `category-banner` placement) between sections
-5. **Recent Listings section** below the grid:
-   - Heading: "Recent Listings" + small "View all" hint
-   - Latest 8–12 products across all categories (existing card design)
-   - Sorted by `created_at desc`, `is_featured` first (already the default in `listProducts`)
-   - Each card: same RFQ button, GuardedPrice, StockBadge, etc.
-   - On mobile: horizontal scroll; on desktop: 3–4 col grid
+### 1. Always show a useful response on click
 
-### Mode B — Category detail (`?cat=<name>`)
+Update `src/components/pwa/InstallAppButton.tsx` so clicking the button **always** does one of:
 
-- Breadcrumb: `Categories / Almond` + "Back to categories" button
-- Category header strip: image thumb + name + description + listing count
-- Filters reduced to within-category:
-  - Search (matches listing name / variant)
-  - Origin (only origins present in this category's listings)
-  - Stock level
-- Listings grid (existing card design, untouched)
-- Empty state: "No listings yet in <category>"
+- Trigger the native install prompt (Android/desktop Chromium when available).
+- Open the help dialog with the right OS‑specific steps (iOS Safari, Android Chrome, desktop Chromium, in‑app browser).
+- Show a clear "Open in Safari/Chrome to install" message inside the dialog when we detect an in‑app webview.
 
-## Implementation notes (technical)
+Concretely:
 
-- **Single page** `src/pages/Products.tsx` — branch on `searchParams.get("cat")`.
-- New components:
-  - `src/components/products/CategoryGrid.tsx` — Mode A grid with counts.
-  - `src/components/products/RecentListings.tsx` — recent products strip; takes `limit` prop.
-- Reuse `useProductCategories({ activeOnly: true })` for Mode A.
-- Reuse `useProducts({ category })` for Mode B (already supports server-side filtering).
-- Recent listings: call `useProducts()` (no filter) and slice to N most recent. No new query needed.
-- Listing counts per category: add `countProductsByCategory()` in `src/repositories/products.ts` returning `Record<string, number>`. One grouped count query.
-- Alias-aware category search in Mode A: filter `curatedCats` by name + `aliases` array.
-- URL state: clicking a category card sets `?cat=<name>`; "Back to categories" clears all query params.
-- Keep RFQ modal, ad banner, cart FAB integrations exactly as-is.
-- No DB changes. No backend changes. No changes to product detail pages, Storefront, Home, Header, Footer.
+- Remove the `if (!isAvailable && !showAlways) return null` early‑return so the button renders on all mobile/desktop contexts (it will still hide when `isInstalled` is true).
+- Keep the existing native prompt path; on failure or unavailability, always open the dialog instead of doing nothing.
 
-## Files to edit / add
+### 2. Expand the help dialog content
 
-- Edit: `src/pages/Products.tsx` (split into two render modes; mount `RecentListings` in Mode A)
-- Add: `src/components/products/CategoryGrid.tsx`
-- Add: `src/components/products/RecentListings.tsx`
-- Edit: `src/repositories/products.ts` (add `countProductsByCategory`)
+In the same component:
+
+- Add a third branch for **in‑app browsers** (detect `FBAN|FBAV|Instagram|Line|WhatsApp|wv` in UA): instruct the user to tap the menu (⋯) and choose "Open in Safari" (iOS) or "Open in Chrome" (Android), then retry install.
+- Tighten the **iOS** branch: detect Chrome iOS (`CriOS`) and Firefox iOS (`FxiOS`) and tell the user that Add‑to‑Home‑Screen on iOS only works in Safari — include a "Copy link" action.
+- Keep current Android Chrome and desktop Chromium guidance.
+
+### 3. Harden detection in `src/hooks/useInstallPrompt.ts`
+
+- Add `isInAppBrowser` flag based on UA sniff.
+- Expose `canInstall`, `isIOS`, `isInAppBrowser`, `isInstalled`, `promptInstall` — drop the now‑unused `isAvailable`/`showIOSHelp` gating since the button always renders.
+- Keep listening for `beforeinstallprompt` and `appinstalled` exactly as today.
+
+### 4. Manifest sanity check
+
+`public/manifest.json` already has `display: standalone`, icons, name, start_url. No changes needed; do **not** add a service worker (Lovable guidance forbids it without explicit need, and the user only wants installability, not offline).
+
+### 5. Visibility on the hero
+
+Pass `showAlways` to the hero `<InstallAppButton>` in `src/components/home/HeroSection.tsx` so it never disappears on Android — clicking always opens the dialog with manual install steps.
+
+## Files to edit
+
+- `src/hooks/useInstallPrompt.ts` — add in‑app browser detection, simplify exposed flags.
+- `src/components/pwa/InstallAppButton.tsx` — always render (unless installed), always respond to click, add in‑app browser dialog branch, refine iOS branch for non‑Safari iOS browsers.
+- `src/components/home/HeroSection.tsx` — pass `showAlways` to the hero install button.
 
 ## Out of scope
 
-- No DB schema changes
-- No changes to homepage "Featured Categories" or "Recent Listings" sections
-- No changes to category admin CMS
-- Docs / memory updates not required for this UI rework
+- No service worker, no `vite-plugin-pwa`, no offline caching.
+- No changes to `manifest.json`, routing, or other pages.
+- No backend changes.
+
+## How to verify
+
+- **iPhone Safari**: tap Install App → iOS dialog with Share → Add to Home Screen steps.
+- **iPhone Chrome / in‑app webview**: tap Install App → dialog instructs to open in Safari.
+- **Android Chrome**: tap Install App → either native prompt (if Chrome offers it) or dialog with menu → Install app steps.
+- **Android in‑app webview** (Instagram/LinkedIn): tap Install App → dialog instructs to open in Chrome.
+- **Desktop Chrome/Edge**: tap Install App → native prompt or dialog with address‑bar install icon steps.
+- **Already installed (standalone)**: button is hidden.
