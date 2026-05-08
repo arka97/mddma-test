@@ -11,6 +11,8 @@ Every edge function in the project, in detail. All four live under `supabase/fun
 
 All four have `verify_jwt = false` (the default in this project) and validate the JWT or signature **in code**.
 
+> ⚠️ **Implementation status (May 2026):** `verify-doc-password` and `promote-verification` are live and fully functional. The two Razorpay functions are deployed and code-complete, but they read/write a `memberships` table whose migration has not yet been applied — so the payment flow will fail on first DB lookup until that migration ships. Treat them as "wired but dormant".
+
 ---
 
 ## `verify-doc-password`

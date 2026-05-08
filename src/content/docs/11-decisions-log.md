@@ -12,11 +12,12 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 | TECH-001 | Behavioral Intelligence Layer is an external API, not edge functions | Locked |
 | TECH-002 | `BrowserRouter` only — no `_redirects`, no `vercel.json` | Locked |
 | TECH-003 | No WhatsApp Business API; `wa.me` deeplinks only | Locked |
+| TECH-004 | `memberships` table + `activate_membership` RPC are deferred | Open |
 | UX-001 | Controlled transparency: ranges + bands only | Locked |
 | UX-002 | RFQ requires authentication | Locked |
 | UX-003 | Multi-item RFQ cart with FAB + drawer | Locked |
 | GOV-001 | Buyer reputation, not seller reputation | Locked |
-| DATA-001 | Live + sample merge, live wins on slug conflict | Locked |
+| DATA-001 | Live-only reads; sample data is a test fixture, not a fallback | Locked |
 | ROLE-001 | `paid_member` and `free_member` mutually exclusive at the DB | Locked |
 
 ---
@@ -59,6 +60,12 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 **Locked** February 2026.
 **Enforced in** Phone reveal renders an `<a href="https://wa.me/91...">`; no WA SDK in dependencies.
 
+### TECH-004 — `memberships` table is deferred
+**Decision** The Razorpay-backed payment flow is fully implemented in code (`/apply` UI, `razorpay-create-payment-link`, `razorpay-webhook`, `activate_membership` calls) but the `memberships` table and the `activate_membership`/`create_pending_membership` RPCs are intentionally **not yet migrated** to production.
+**Why** Payments aren't switched on for the pilot. Roles are granted manually via `user_roles` insert and `downgrade_to_free`. Shipping the schema before payments go live would create dead rows and a maintenance burden.
+**Status** Open — to be locked once Razorpay is approved and the migration is applied.
+**Enforced in** No migration in `supabase/migrations/` for `memberships`. Edge functions remain deployed but dormant. Docs 07/08/12 carry an explicit "Implementation status" callout.
+
 ### UX-001 — Controlled transparency
 **Decision** No exact prices, no exact stock counts, no exact search numbers ever rendered.
 - Prices: ranges only (`₹X–₹Y/unit`).
@@ -89,11 +96,11 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 **Locked** February 2026.
 **Enforced in** `profiles.buyer_reputation_score`, `get_buyer_reputation_tier(score)`, `BuyerTrustBadge`, `priority_score` field on `rfqs`. Sellers are not publicly rated.
 
-### DATA-001 — Live + sample merge
-**Decision** Discovery surfaces (Directory, Storefronts, Products) merge live DB rows with curated sample data. **Live wins on slug conflict.**
-**Why** A new association launches with an empty DB. Sample rows make the demo "look full" without lying — admins replace any sample by inserting a live company with the same slug.
-**Locked** April 2026.
-**Enforced in** `lib/dataSource.ts` — `mergeDirectory(live, sample)` and `mergeProducts(live, sample)` are the only functions that produce render lists. Pages never read `sampleData.ts` directly.
+### DATA-001 — Live-only reads
+**Decision** Discovery surfaces (Directory, Storefronts, Products) read **only live database rows**. Sample arrays in `src/data/*` remain in the repo as type fixtures and offline-test material; they are not merged into production reads.
+**Why** Earlier the demo merged sample rows with live DB rows so the platform "looked full". Once the DB had real members, the merge became a source of confusion (which row is which?) and a leak risk (test data on production). Cleaner to ship empty and seed real data.
+**Locked** May 2026 (revised from earlier merge model — the older claim still appears in some narratives and should be read with this entry as the authoritative one).
+**Enforced in** `lib/dataSource.ts` — `mergeDirectory(live)` and `mergeProducts(live)` only project DB rows. Pages never read `sampleData.ts` directly in production paths.
 
 ### ROLE-001 — Paid and Free are mutually exclusive
 **Decision** A user with `paid_member` (or `broker`) cannot simultaneously hold `free_member`. Cancelling a paid membership restores `free_member`.

@@ -14,6 +14,8 @@ Pricing, the Razorpay flow end-to-end, KYC tiers, and the membership state machi
 
 There is **no** Silver/Gold/Platinum (BIZ-002), and **no** separate broker price (BIZ-003).
 
+> ⚠️ **Implementation status (May 2026):** Tiers, role grants, the `downgrade_to_free` RPC, and the ROLE-001 trigger are all live in the database. The `memberships` table and the `activate_membership` RPC referenced below are **planned but not yet migrated** — the Razorpay edge functions are deployed and waiting for that schema. Until the migration ships, treat the payment flow as a contract spec, not a runnable path. Manual admin role grants (via `user_roles` insert) work today.
+
 ## End-to-end Razorpay flow
 
 ```mermaid
