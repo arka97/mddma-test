@@ -1,13 +1,9 @@
 // Surgical Behavioral UX layer (v3.1)
-// Top ~10 B2B-impact psychological principles, reusable cues
-// Principles applied: Anchoring, Scarcity, Loss Aversion, Social Proof,
-// Recency, Authority/Trust, Reciprocity nudge, Commitment/Consistency,
-// Zeigarnik (resume drafts), Fitts/Hick handled in parent layouts.
+// Reusable cues: recency, social proof, reciprocity.
 
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Flame, Clock, Users, AlertTriangle, TrendingUp, Eye, Sparkles } from "lucide-react";
-import type { ProductListing } from "@/data/productListings";
+import { Clock, Users, Eye, Sparkles } from "lucide-react";
 
 // Stable pseudo-random per id so "live viewers" doesn't jitter on rerender
 function hashedInt(seed: string, max: number, salt = 0) {
@@ -55,48 +51,6 @@ export function LiveViewersCue({ id, base = 0 }: { id: string; base?: number }) 
       </TooltipContent>
     </Tooltip>
   );
-}
-
-/** Anchor framing — show price relative to market average. Loss aversion + anchoring. */
-export function PriceAnchorCue({ listing }: { listing: ProductListing }) {
-  if (listing.hidePrice || listing.priceMin === null || !listing.marketAvgPrice) return null;
-  const mid = (listing.priceMin + (listing.priceMax ?? listing.priceMin)) / 2;
-  const diffPct = Math.round(((mid - listing.marketAvgPrice) / listing.marketAvgPrice) * 100);
-  if (Math.abs(diffPct) < 2) {
-    return <span className="text-[10px] text-muted-foreground">At market avg</span>;
-  }
-  const below = diffPct < 0;
-  return (
-    <span className={`text-[10px] font-medium ${below ? "text-emerald-600" : "text-orange-600"}`}>
-      {below ? "↓" : "↑"} {Math.abs(diffPct)}% vs. market avg
-    </span>
-  );
-}
-
-/** Composite scarcity + demand cue — loss aversion. */
-export function ScarcityCue({ listing }: { listing: ProductListing }) {
-  if (listing.stockBand === "low") {
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-red-600">
-        <AlertTriangle className="h-3 w-3" /> Limited stock — request now
-      </span>
-    );
-  }
-  if (listing.demandScore === "high") {
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-orange-600">
-        <Flame className="h-3 w-3" /> High demand this week
-      </span>
-    );
-  }
-  if (listing.trendDirection === "rising") {
-    return (
-      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-orange-600">
-        <TrendingUp className="h-3 w-3" /> Prices trending up
-      </span>
-    );
-  }
-  return null;
 }
 
 /** Inquiry social proof — "12 buyers requested this week" */
