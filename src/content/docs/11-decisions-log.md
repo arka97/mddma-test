@@ -60,6 +60,12 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 **Locked** February 2026.
 **Enforced in** Phone reveal renders an `<a href="https://wa.me/91...">`; no WA SDK in dependencies.
 
+### TECH-004 — `memberships` table is deferred
+**Decision** The Razorpay-backed payment flow is fully implemented in code (`/apply` UI, `razorpay-create-payment-link`, `razorpay-webhook`, `activate_membership` calls) but the `memberships` table and the `activate_membership`/`create_pending_membership` RPCs are intentionally **not yet migrated** to production.
+**Why** Payments aren't switched on for the pilot. Roles are granted manually via `user_roles` insert and `downgrade_to_free`. Shipping the schema before payments go live would create dead rows and a maintenance burden.
+**Status** Open — to be locked once Razorpay is approved and the migration is applied.
+**Enforced in** No migration in `supabase/migrations/` for `memberships`. Edge functions remain deployed but dormant. Docs 07/08/12 carry an explicit "Implementation status" callout.
+
 ### UX-001 — Controlled transparency
 **Decision** No exact prices, no exact stock counts, no exact search numbers ever rendered.
 - Prices: ranges only (`₹X–₹Y/unit`).
