@@ -76,7 +76,7 @@ export function Header() {
   const UserMenu = () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full hover:bg-primary-foreground/10 p-1">
+        <button className="flex items-center gap-2 rounded-full hover:bg-muted p-1">
           <Avatar className="h-7 w-7"><AvatarImage src={profile?.avatar_url ?? undefined} /><AvatarFallback className="text-xs">{initials}</AvatarFallback></Avatar>
         </button>
       </DropdownMenuTrigger>
@@ -100,11 +100,11 @@ export function Header() {
   );
 
   return (
-    <header className={cn("bg-primary shadow-lg transition-transform duration-300", hidden && "-translate-y-full")}>
+    <header className={cn("bg-card border-b border-border shadow-sm transition-transform duration-300", hidden && "-translate-y-full")}>
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
-            <div className="rounded-md bg-primary-foreground/95 p-1">
+            <div className="p-1">
               <Logo variant="mark" className="h-8 w-8" />
             </div>
           </Link>
@@ -113,7 +113,7 @@ export function Header() {
             {navigation.map((item) => (
               <Link key={item.name} to={item.href} className={cn(
                 "px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors",
-                isActive(item.href) ? "bg-accent text-primary burgundy-underline" : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                isActive(item.href) ? "bg-accent text-primary burgundy-underline" : "text-navy/75 hover:text-navy hover:bg-muted"
               )}>{item.name}</Link>
             ))}
           </div>
@@ -146,14 +146,14 @@ export function Header() {
                 <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
               </Button>
             )}
-            <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-primary-foreground p-2">
+            <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-navy p-2">
               {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
 
         {mobileMenuOpen && (
-          <div className="lg:hidden pb-4 border-t border-primary-foreground/20 mt-2 pt-4">
+          <div className="lg:hidden pb-4 border-t border-border mt-2 pt-4">
             <form onSubmit={(e) => { submitSearch(e); setMobileMenuOpen(false); }} className="relative mb-3">
               <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
               <Input
@@ -168,7 +168,7 @@ export function Header() {
               {navigation.map((item) => (
                 <Link key={item.name} to={item.href} onClick={() => setMobileMenuOpen(false)} className={cn(
                   "px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                  isActive(item.href) ? "bg-accent text-primary" : "text-primary-foreground/80"
+                  isActive(item.href) ? "bg-accent text-primary" : "text-navy/75 hover:bg-muted"
                 )}>{item.name}</Link>
               ))}
             </div>
