@@ -114,7 +114,7 @@ const Login = () => {
           <div className="max-w-md mx-auto">
             <Card className="bg-card border-border">
               <CardHeader className="text-center">
-                <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">M</div>
+                <Logo variant="mark" className="mx-auto mb-3 h-16 w-16" />
                 <CardTitle className="text-2xl">MDDMA Member Portal</CardTitle>
                 <CardDescription>Sign in or create your account</CardDescription>
               </CardHeader>
