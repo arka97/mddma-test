@@ -9,12 +9,8 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {/* About */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-primary font-bold text-sm">M</div>
-              <div>
-                <div className="font-bold text-sm">MDDMA</div>
-                <div className="text-[10px] text-primary-foreground/60">Digital Trade Hub</div>
-              </div>
+            <div className="mb-4 inline-block rounded-lg bg-primary-foreground/95 p-3">
+              <Logo variant="stacked" className="h-24 w-auto" />
             </div>
             <p className="text-sm text-primary-foreground/80 leading-relaxed">
               India's digital trade hub for dry fruits & commodities — connecting verified traders, importers, and buyers since the 1930s.
