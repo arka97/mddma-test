@@ -33,7 +33,7 @@ export function SponsorsSection() {
   if (ads.length === 0) return null;
 
   return (
-    <section className="py-12 bg-muted/30 border-t border-border">
+    <section className="py-12 bg-muted border-t border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <p className="text-center text-xs text-muted-foreground uppercase tracking-wider mb-6">
           Our Partners & Sponsors
