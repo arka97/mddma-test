@@ -25,9 +25,12 @@
     --secondary: 215 35% 90%;
     --secondary-foreground: 215 55% 23%;
 
-    /* Warm muted backgrounds matching the ivory canvas */
-    --muted: 45 30% 93%;
+    /* Warmer ivory for muted blocks (gold-tinted) */
+    --muted: 38 35% 91%;
     --muted-foreground: 215 20% 45%;
+
+    /* Cool navy-tinted surface for zebra rhythm */
+    --surface-tint: 215 30% 94%;
 
     /* Antique Gold — Heritage & Prestige */
     --accent: 38 55% 54%;
@@ -37,8 +40,8 @@
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 25% 88%;
-    --input: 215 25% 88%;
+    --border: 38 25% 82%;
+    --input: 38 25% 82%;
     --ring: 38 55% 54%;
 
     --radius: 0.5rem;
