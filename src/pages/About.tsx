@@ -235,7 +235,7 @@ const About = () => {
             {milestones.map((m, i) => (
               <div key={m.year} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center text-primary font-bold text-xs flex-shrink-0 ring-4 ring-accent/20">
+                  <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-xs flex-shrink-0 ring-4 ring-accent/20">
                     {m.year}
                   </div>
                   {i < milestones.length - 1 && <div className="w-0.5 flex-1 bg-border mt-2" />}

@@ -155,7 +155,7 @@ const Directory = () => {
                         <CommodityImage commodity={heroCommodity} aspect="16/10" rounded={false} />
                         <div className="absolute top-2 left-2 flex items-center gap-1.5">
                           {member.source === "live" && (
-                            <span className="text-[9px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded bg-accent text-primary">
+                            <span className="text-[9px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded bg-accent text-accent-foreground">
                               Live
                             </span>
                           )}

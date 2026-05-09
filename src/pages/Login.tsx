@@ -150,7 +150,7 @@ const Login = () => {
                           </button>
                         </div>
                       </div>
-                      <Button type="submit" variant="premium" className="w-full" disabled={isLoading}>
+                      <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><LogIn className="mr-2 h-4 w-4" /> Sign In</>}
                       </Button>
                     </form>
@@ -170,7 +170,7 @@ const Login = () => {
                         <Label htmlFor="su-password">Password (min 8 chars)</Label>
                         <Input id="su-password" name="password" type="password" placeholder="••••••••" required />
                       </div>
-                      <Button type="submit" variant="premium" className="w-full" disabled={isLoading}>
+                      <Button type="submit" className="w-full" disabled={isLoading}>
                         {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Create Account"}
                       </Button>
                     </form>

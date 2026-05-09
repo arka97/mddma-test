@@ -201,7 +201,7 @@ const Apply = () => {
                   Your application is hidden from the public directory until an MDDMA admin approves it. After approval you will receive a Razorpay payment link by email; founding-member pricing is locked until 100 paid members.
                 </div>
 
-                <Button type="submit" disabled={submitting} variant="premium" className="w-full font-semibold">
+                <Button type="submit" disabled={submitting} className="w-full font-semibold">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : `Submit Application · ${formatINR(price)}/yr`}
                 </Button>
               </form>

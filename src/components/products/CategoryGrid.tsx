@@ -73,7 +73,7 @@ export function CategoryGrid({ listings }: Props) {
                 <Link key={cat.id} to={`/products?cat=${encodeURIComponent(cat.name)}`}>
                   <Card className="bg-card border-border hover:border-accent/60 card-hover h-full overflow-hidden relative">
                     {cat.is_featured && (
-                      <span className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 text-[10px] font-medium bg-accent text-primary px-1.5 py-0.5 rounded">
+                      <span className="absolute top-2 right-2 z-10 inline-flex items-center gap-1 text-[10px] font-medium bg-accent text-accent-foreground px-1.5 py-0.5 rounded">
                         <Star className="h-2.5 w-2.5" /> Featured
                       </span>
                     )}

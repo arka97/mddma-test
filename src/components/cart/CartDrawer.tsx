@@ -107,7 +107,7 @@ export function CartDrawer() {
                   ))}
                 </div>
                 <Button
-                  className="w-full bg-accent hover:bg-accent/90 text-primary"
+                  className="w-full text-accent-foreground"
                   size="sm"
                   disabled={submitting === companyId}
                   onClick={() => sendForCompany(companyId, group.items)}

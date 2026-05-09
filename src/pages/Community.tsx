@@ -105,7 +105,7 @@ const Community = () => {
             {user ? (
               <div className="mt-4 space-y-2">
                 <Textarea rows={3} maxLength={1500} placeholder="Add a comment..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
-                <Button onClick={submitComment} className="bg-accent hover:bg-accent/90 text-primary"><Send className="h-3 w-3 mr-1" /> Comment</Button>
+                <Button onClick={submitComment} variant="accent"><Send className="h-3 w-3 mr-1" /> Comment</Button>
               </div>
             ) : (
               <p className="text-sm text-muted-foreground mt-4"><Link to="/login" className="text-accent hover:underline">Sign in</Link> to comment.</p>
@@ -180,7 +180,7 @@ const Community = () => {
                         </select>
                       </div>
                       <div className="space-y-1.5"><Label>Message</Label><Textarea rows={4} maxLength={2000} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} /></div>
-                      <Button onClick={submitPost} disabled={submitting} className="w-full bg-accent hover:bg-accent/90 text-primary">
+                      <Button onClick={submitPost} disabled={submitting} className="w-full text-accent-foreground">
                         {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Post</>}
                       </Button>
                     </>

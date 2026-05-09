@@ -122,7 +122,7 @@ const ProductPage = () => {
                     Get a competitive quote from the verified seller
                   </p>
                   <Button
-                    className="w-full bg-accent hover:bg-accent/90 text-primary font-bold text-base h-12"
+                    className="w-full text-accent-foreground font-bold text-base h-12"
                     onClick={() => setRfqProduct(product.name)}
                   >
                     <Send className="mr-2 h-5 w-5" /> Request Best Price
@@ -148,7 +148,7 @@ const ProductPage = () => {
 
       <div className="fixed bottom-0 left-0 right-0 bg-primary/95 backdrop-blur border-t border-accent/30 p-3 z-40 lg:hidden">
         <Button
-          className="w-full bg-accent hover:bg-accent/90 text-primary font-bold text-sm h-11"
+          className="w-full text-accent-foreground font-bold text-sm h-11"
           onClick={() => setRfqProduct(product.name)}
         >
           <Send className="h-4 w-4 mr-1.5" /> Request Quote — {product.name}

@@ -167,7 +167,7 @@ const Storefront = () => {
             <ArrowLeft className="mr-1 h-4 w-4" /> Back to Directory
           </Link>
           <div className="flex items-start gap-4">
-            <div className="h-16 w-16 rounded-xl bg-accent flex items-center justify-center text-primary font-bold text-xl flex-shrink-0">
+            <div className="h-16 w-16 rounded-xl bg-accent flex items-center justify-center text-accent-foreground font-bold text-xl flex-shrink-0">
               {member.logoPlaceholder}
             </div>
             <div>
@@ -309,7 +309,7 @@ const Storefront = () => {
                                 <div className="flex gap-1">
                                   <Button
                                     size="sm"
-                                    className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                    className="text-accent-foreground text-xs"
                                     onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
                                   >
                                     <Send className="h-3 w-3 mr-1" /> Request Price

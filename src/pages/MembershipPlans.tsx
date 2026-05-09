@@ -38,7 +38,7 @@ const MembershipPlans = () => {
                 >
                   {tier.highlighted && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-accent text-primary font-semibold">Most Popular</Badge>
+                      <Badge className="bg-accent text-accent-foreground font-semibold">Most Popular</Badge>
                     </div>
                   )}
                   <CardHeader className="text-center pb-4">
@@ -66,7 +66,7 @@ const MembershipPlans = () => {
                     </div>
                     <Button
                       className="w-full"
-                      variant={tier.highlighted ? "premium" : "outline-navy"}
+                      variant={tier.highlighted ? "default" : "outline"}
                       asChild
                     >
                       <Link to="/apply">Apply Now</Link>

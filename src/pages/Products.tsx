@@ -219,7 +219,7 @@ const Products = () => {
                     <div className="mt-auto pt-3 border-t border-border space-y-2">
                       <Button
                         size="sm"
-                        className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold"
+                        className="w-full text-accent-foreground"
                         onClick={() =>
                           setRfqProduct(`${listing.commodity} — ${listing.variant}`)
                         }

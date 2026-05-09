@@ -85,7 +85,7 @@ export function DocPage({ meta, source }: { meta: DocMeta; source: string }) {
         <article>
           <header className="mb-8 space-y-3 not-prose">
             <div className="flex items-center gap-2 flex-wrap">
-              <Badge className="bg-accent text-primary font-semibold">{meta.number}</Badge>
+              <Badge className="bg-accent text-accent-foreground font-semibold">{meta.number}</Badge>
               <Badge variant="outline" className="text-xs">{meta.readTime}</Badge>
               {meta.diagramCount > 0 && (
                 <Badge variant="outline" className="text-xs">{meta.diagramCount} diagrams</Badge>

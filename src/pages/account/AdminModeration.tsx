@@ -405,7 +405,7 @@ const AdminModeration = () => {
                             <Button
                               size="sm"
                               variant="default"
-                              className="bg-accent hover:bg-accent/90 text-primary"
+                              variant="accent"
                               disabled={busyMembership === m.id}
                               onClick={() => generatePaymentLink(m.id)}
                             >
@@ -525,7 +525,7 @@ const AdminModeration = () => {
                         <p className="text-xs text-muted-foreground truncate">/{c.slug} · {c.city ?? "—"}</p>
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {c.is_verified && <Badge className="bg-accent text-primary">Verified</Badge>}
+                        {c.is_verified && <Badge className="bg-accent text-accent-foreground">Verified</Badge>}
                         {c.is_hidden && <Badge variant="outline">Hidden</Badge>}
                       </div>
                       <div className="flex gap-1">
@@ -553,7 +553,7 @@ const AdminModeration = () => {
                           </p>
                         </div>
                         <div className="flex flex-wrap gap-1">
-                          {p.is_featured && <Badge className="bg-accent text-primary">Featured</Badge>}
+                          {p.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
                           {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
                         </div>
                         <div className="flex gap-1">
@@ -608,7 +608,7 @@ const AdminModeration = () => {
                     <div className="space-y-1.5"><Label>Title</Label><Input maxLength={200} value={circularForm.title} onChange={(e) => setCircularForm({ ...circularForm, title: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Body</Label><Textarea rows={4} maxLength={4000} value={circularForm.body} onChange={(e) => setCircularForm({ ...circularForm, body: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Category</Label><Input maxLength={50} value={circularForm.category} onChange={(e) => setCircularForm({ ...circularForm, category: e.target.value })} /></div>
-                    <Button onClick={saveCircular} disabled={savingCircular} className="bg-accent hover:bg-accent/90 text-primary">
+                    <Button onClick={saveCircular} disabled={savingCircular} variant="accent">
                       {savingCircular ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Publish</>}
                     </Button>
                   </CardContent>
@@ -621,7 +621,7 @@ const AdminModeration = () => {
                         <p className="text-xs text-muted-foreground line-clamp-2">{c.body}</p>
                         <p className="text-xs text-muted-foreground mt-1">{new Date(c.created_at).toLocaleDateString()}</p>
                       </div>
-                      {c.is_published ? <Badge className="bg-accent text-primary">Live</Badge> : <Badge variant="outline">Draft</Badge>}
+                      {c.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
                       <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>
                       <Button size="sm" variant="outline" onClick={() => deleteCircular(c.id)}><Trash2 className="h-3 w-3" /></Button>
                     </CardContent>
@@ -644,7 +644,7 @@ const AdminModeration = () => {
                       </select>
                     </div>
                     <div className="space-y-1.5"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setAdForm({ ...adForm, file: e.target.files?.[0] ?? null })} /></div>
-                    <Button onClick={saveAd} disabled={savingAd} className="bg-accent hover:bg-accent/90 text-primary">
+                    <Button onClick={saveAd} disabled={savingAd} variant="accent">
                       {savingAd ? <Loader2 className="h-3 w-3 animate-spin" /> : "Publish Ad"}
                     </Button>
                   </CardContent>
@@ -657,7 +657,7 @@ const AdminModeration = () => {
                         <p className="font-medium truncate">{a.title}</p>
                         <p className="text-xs text-muted-foreground">{a.placement} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
                       </div>
-                      {a.is_active ? <Badge className="bg-accent text-primary">Active</Badge> : <Badge variant="outline">Paused</Badge>}
+                      {a.is_active ? <Badge className="bg-accent text-accent-foreground">Active</Badge> : <Badge variant="outline">Paused</Badge>}
                       <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>
                       <Button size="sm" variant="outline" onClick={() => deleteAd(a.id)}><Trash2 className="h-3 w-3" /></Button>
                     </CardContent>
@@ -720,7 +720,7 @@ const AdminModeration = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button onClick={saveCategory} disabled={savingCat} className="bg-accent hover:bg-accent/90 text-primary">
+                      <Button onClick={saveCategory} disabled={savingCat} variant="accent">
                         {savingCat ? <Loader2 className="h-3 w-3 animate-spin" /> : (catForm.id ? <><Pencil className="h-3 w-3 mr-1" /> Update</> : <><Plus className="h-3 w-3 mr-1" /> Create</>)}
                       </Button>
                       {catForm.id && <Button variant="outline" onClick={() => setCatForm(emptyCatForm)}>Cancel</Button>}
@@ -743,7 +743,7 @@ const AdminModeration = () => {
                             <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}{c.aliases?.length ? ` · aka ${c.aliases.join(", ")}` : ""}</p>
                           </div>
                           <div className="flex flex-wrap gap-1">
-                            {c.is_featured && <Badge className="bg-accent text-primary">Featured</Badge>}
+                            {c.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
                             {!c.is_active && <Badge variant="outline">Inactive</Badge>}
                           </div>
                           <div className="flex gap-1">

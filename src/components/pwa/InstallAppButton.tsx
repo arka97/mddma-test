@@ -69,7 +69,7 @@ export function InstallAppButton({
         onClick={handleClick}
         size={size}
         className={cn(
-          "bg-accent text-primary hover:bg-accent/90 font-semibold",
+          "bg-accent text-accent-foreground hover:bg-accent/90 font-semibold",
           className,
         )}
         aria-label={label}
@@ -203,7 +203,7 @@ export function InstallAppButton({
 
 function Step({ n }: { n: number }) {
   return (
-    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent text-primary text-xs font-bold">
+    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs font-bold">
       {n}
     </span>
   );
