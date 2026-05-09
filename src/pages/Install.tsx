@@ -1,5 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
+import { Logo } from "@/components/brand/Logo";
 import { Smartphone, Wifi, Zap, Home, Share, Plus, Download } from "lucide-react";
 
 const benefits = [
