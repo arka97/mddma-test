@@ -29,8 +29,10 @@ const Products = () => {
   const [originFilter, setOriginFilter] = useState<string>(params.get("origin") ?? "all");
   const [rfqProduct, setRfqProduct] = useState<string | null>(null);
 
-  const { data: listings, isLoading } = useProducts();
-  const { data: cats } = useProductCategories({ activeOnly: true });
+  const { data: listingsData, isLoading } = useProducts();
+  const { data: catsData } = useProductCategories({ activeOnly: true });
+  const listings = listingsData ?? [];
+  const cats = catsData ?? [];
 
   const activeCatRow = cats.find((c) => c.name === activeCat) ?? null;
 

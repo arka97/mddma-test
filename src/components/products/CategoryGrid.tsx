@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function CategoryGrid({ listings }: Props) {
-  const { data: cats, isLoading } = useProductCategories({ activeOnly: true });
+  const { data: cats = [], isLoading } = useProductCategories({ activeOnly: true });
   const [search, setSearch] = useState("");
 
   const counts = useMemo(() => {
