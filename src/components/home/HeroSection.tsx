@@ -41,8 +41,8 @@ export function HeroSection() {
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-navy leading-tight mb-8">
-            India&apos;s Digital <span className="text-accent">Trade Hub</span>
-            <span className="block text-2xl sm:text-3xl md:text-4xl mt-2 text-navy/85 font-semibold">
+            India&apos;s Digital Trade Hub
+            <span className="block text-2xl sm:text-3xl md:text-4xl mt-2 text-gold font-semibold">
               for Dry Fruits, Dates &amp; Commodities
             </span>
           </h1>
