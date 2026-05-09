@@ -52,7 +52,7 @@ export function MarketTicker() {
 
   return (
     <div
-      className="bg-foreground text-background overflow-hidden relative"
+      className="bg-muted text-navy border-b border-border overflow-hidden relative"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -75,8 +75,8 @@ export function MarketTicker() {
                 key={`${item.id}-${i}`}
                 className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs"
               >
-                <span className="text-background/90">{item.text}</span>
-                <span className="text-background/20 ml-3">│</span>
+                <span className="text-navy/85">{item.text}</span>
+                <span className="text-navy/20 ml-3">│</span>
               </div>
             ))}
           </div>

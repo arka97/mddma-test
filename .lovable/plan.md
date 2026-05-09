@@ -1,109 +1,92 @@
+## Goal
 
-# Plan — Royal Heritage Design System v2
+Lighten the platform globally. Keep the Royal Heritage palette (Navy / Burgundy / Gold / Ivory) but flip the dark structural surfaces (hero, header, ticker, footer) to light ivory/white. Navy stays for buttons, headings, links, borders, and small accents — not as full-section background.
 
-Goal: take the enhanced doc you drafted and make it the actual source of truth — tokens, Tailwind config, utilities, button variants, and the markdown reference all aligned with the May 2026 logo (Navy `#1B2F5E`, Burgundy `#7B1F2E`, Antique Gold `#C9A84C`, Ivory `#F8F4ED`).
+## Approach
 
-Today the app is **navy + gold on near-white**. The logo is **navy + burgundy + gold on ivory**. Burgundy doesn't exist as a token, the canvas is too cool, and `--destructive` is a generic red instead of brand burgundy. This plan fixes all of that without touching business logic.
-
----
-
-## 1. Token retune — `src/index.css`
-
-Light mode (`:root`):
-
-- `--background` → `45 40% 96%` (ivory canvas, was cool off-white)
-- `--foreground` → `215 55% 23%` (navy text, slight shift)
-- `--primary` → `215 55% 23%` (navy, recalibrated to logo hex)
-- `--muted` → `45 30% 93%` (warm muted, was cool)
-- `--accent` → `38 55% 54%` (antique gold, was brighter)
-- `--ring` → `38 55% 54%`
-- `--destructive` → `350 60% 30%` (burgundy — brand-aligned errors)
-- Brand stack additions:
-  - `--burgundy 350 60% 30%`, `--burgundy-light 350 50% 42%`, `--burgundy-dark 350 65% 20%`
-  - Retune `--gold` to `38 55% 54%`, `--gold-light 45 75% 65%`, `--gold-dark 35 60% 38%`
-  - `--cream` stays `45 40% 96%` (now matches `--background`)
-
-Dark mode (`.dark`):
-
-- Keep navy backgrounds, gold-as-primary
-- Add burgundy tokens lifted for legibility (`350 55% 65%` ≈ `#D4707E`)
-
-## 2. Tailwind extensions — `tailwind.config.ts`
-
-- Add `burgundy: { DEFAULT, light, dark }` color group mirroring navy/gold
-- No keyframe changes (animation budget unchanged)
-
-## 3. Utilities & component classes — `src/index.css`
-
-Add to `@layer utilities`:
-- `.bg-burgundy`, `.bg-burgundy-light`, `.bg-burgundy-dark`
-- `.text-burgundy`, `.text-burgundy-light`, `.text-warm-gray`
-- `.border-burgundy`, `.border-navy`
-
-Add to `@layer components`:
-- `.burgundy-underline` — active nav indicator
-- `.ivory-surface` — `bg-cream border border-gold/20 rounded-lg` warm panel
-
-## 4. Button & badge variants — `src/components/ui/button.tsx`
-
-Add three variants via `cva` (no fork of shadcn):
-- `premium` → burgundy CTA (primary action)
-- `gold` → gold on navy-dark (featured / heritage)
-- `outline-navy` → navy outline secondary
-
-`badge.tsx`: keep, document the existing `.heritage-badge` as the `heritage` style.
-
-## 5. Logo component — `src/components/brand/Logo.tsx`
-
-Already supports `mark | stacked | horizontal | typemark`. Doc and code disagree on names (`square` vs `stacked`, `type` vs `typemark`). Decision: keep current code names, update the doc's variant table to match. No code rename — call sites already wired.
-
-## 6. Surface-level color sweep (presentation only)
-
-Light, additive pass — no logic changes:
-- `Header`: active link → `.burgundy-underline`
-- `CartFab` count badge → burgundy
-- Primary CTAs on `Apply`, `MembershipPlans`, `Login` → `variant="premium"`
-- `Footer` background stays navy-dark (already correct)
-- Page backgrounds: ensure pages rely on `--background` (now ivory) — spot-check `Index`, `Directory`, `Documents`
-
-This is intentionally narrow. We won't repaint every component — only the high-visibility CTAs and the header active state, so the burgundy actually shows up.
-
-## 7. Documentation — `src/content/docs/10-component-and-design.md`
-
-Replace with your enhanced draft, with two corrections:
-- Logo variant names match code (`mark`, `stacked`, `horizontal`, `typemark`)
-- Add a short "Migration notes (May 2026)" callout at the top listing what changed from the previous palette so future devs aren't confused by old screenshots
-
-## 8. Verification
-
-- Visually QA: home, directory, product page, apply, login, footer in light + dark
-- Confirm WCAG: navy/ivory ≥ 7:1, burgundy/ivory ≥ 5.5:1 (DevTools contrast check)
-- `bun run build` clean
+Brand tokens stay the same. Only the surfaces that *use* navy as a fill change. No business-logic changes.
 
 ---
 
-## Recommendations (call out if you want them in scope)
+### 1. Header — light ivory bar with navy text
 
-1. **Burgundy as `--destructive` is unusual.** Errors will look like brand actions. Safer: keep `--destructive` as red, add `--burgundy` separately. I'd recommend this — flagging because your doc currently maps them together.
-2. **Gold contrast.** `#C9A84C` on ivory is ~3.2:1 — fails AA for text. Your doc already says "decorative only" — good. I'll add a lint-style note in the doc and avoid gold text in any component sweep.
-3. **Dark mode burgundy.** Pure `#7B1F2E` on dark navy is unreadable (~2:1). I'll lift it to `#D4707E` as noted.
-4. **Logo asset names.** Doc references `logo-horizontal.png` etc., actual files are `MDDMA_Royal_Heritage_Logo.svg` etc. I'll update the doc to use real filenames (SVGs, not PNGs).
-5. **Optional follow-up (not in this plan):** introduce a `gold-divider` component matching the logo's gold-line-with-dot motif as a section separator. Reinforces brand identity. Say the word and I'll add it.
+`src/components/layout/Header.tsx`
+- Header bg: `bg-primary` → `bg-card border-b border-border` (white card on ivory page).
+- Logo tile: drop the `bg-primary-foreground/95` wrap (no longer needed on a light bar).
+- Nav links:
+  - Inactive: `text-primary-foreground/80 hover:bg-primary-foreground/10` → `text-navy/80 hover:text-navy hover:bg-muted`.
+  - Active: keep gold `bg-accent text-primary` chip + `burgundy-underline` (already on-brand).
+- Login button: `bg-accent text-primary` stays (gold pops well on light).
+- Mobile menu: `text-primary-foreground` icon → `text-navy`. Border divider stays.
+- User menu trigger: `hover:bg-primary-foreground/10` → `hover:bg-muted`.
+
+### 2. Market ticker — soft ivory strip with navy text
+
+`src/components/layout/MarketTicker.tsx`
+- Wrapper `bg-foreground text-background` → `bg-muted text-navy border-b border-border`.
+- Live pill stays gold (`bg-accent text-primary`), but inner ping dots `bg-primary` stay (navy on gold is correct).
+- Item dividers: `text-background/20` → `text-navy/20`. Item text: `text-background/90` → `text-navy/80`.
+
+### 3. Hero section — ivory canvas, navy headings, gold accents
+
+`src/components/home/HeroSection.tsx`
+- Section: `bg-primary` → `bg-cream` (ivory). Drop the white SVG dot pattern (it was a navy-only effect); replace with a very subtle navy/2% pattern or remove entirely.
+- Logo tile wrap: remove the `bg-primary-foreground/95` box (logo already designed on light).
+- Heritage badge row: `text-primary-foreground/80` → `text-navy/70`, separator dot → `text-navy/30`.
+- H1: `text-primary-foreground` → `text-navy`. The `<span class="text-accent">Trade Hub</span>` keeps gold. Sub-line `text-primary-foreground/90` → `text-navy/85`.
+- Command bar: change `bg-background` to `bg-card` + `border border-border shadow-xl` so it lifts off the ivory.
+- Trust line under search: `text-primary-foreground/80` → `text-navy/70`.
+- Category chips: change to ivory chip style — `bg-card border border-border text-navy hover:border-accent hover:text-burgundy`. "Browse all sellers" link `text-primary-foreground/80` → `text-navy/70 hover:text-burgundy`.
+- "Established 1930" big line: stays gold (good); subtitle `text-primary-foreground/70` → `text-navy/60`.
+
+### 4. Footer — ivory footer with navy text, dark bottom bar removed
+
+`src/components/layout/Footer.tsx`
+- Top block: `bg-primary text-primary-foreground` → `bg-cream text-navy border-t border-border`.
+- Logo tile: drop the `bg-primary-foreground/95` wrap.
+- Headings: `text-accent` (gold) — keep, looks good on ivory.
+- Body links: `text-primary-foreground/70 hover:text-accent` → `text-navy/70 hover:text-burgundy`.
+- Address/contact icons stay gold; text `text-primary-foreground/70` → `text-navy/75`.
+- "Documents" / "Install App" pill buttons: `bg-accent/10 border-accent/20 text-accent hover:bg-accent/20` already work on ivory — keep.
+- Bottom bar: `border-t border-primary-foreground/20` → `border-t border-border`; small print `text-primary-foreground/50` → `text-navy/50`.
+
+### 5. Pitch / dark sections (optional but consistent)
+
+`src/components/pitch/PitchSection.tsx`
+- Keep `dark` variant as is (it's opt-in and used for dramatic pitch slides only). No change.
+
+### 6. Tokens — small adjustments only
+
+`src/index.css`
+- Leave palette tokens alone.
+- Add a very subtle border tone if needed (`--border` already 215 25% 88%, fine on ivory).
+- No Tailwind config change needed.
+
+### 7. Sweep for stragglers
+
+After the four files above, grep for `bg-primary` and `bg-foreground` usage in layout/home/footer surfaces to catch any large dark blocks I missed. Section dividers like `TrustStrip` are already light — no change.
 
 ---
 
 ## Files touched
 
-- `src/index.css` (tokens, utilities, components layer)
-- `tailwind.config.ts` (burgundy color group)
-- `src/components/ui/button.tsx` (variants)
-- `src/components/layout/Header.tsx` (active state)
-- `src/components/cart/CartFab.tsx` (badge color)
-- `src/pages/Apply.tsx`, `Login.tsx`, `MembershipPlans.tsx` (primary CTA variants)
-- `src/content/docs/10-component-and-design.md` (replace)
+1. `src/components/layout/Header.tsx`
+2. `src/components/layout/MarketTicker.tsx`
+3. `src/components/home/HeroSection.tsx`
+4. `src/components/layout/Footer.tsx`
+5. (sweep only, edit if found) other layout components using `bg-primary` as a section fill
 
-No DB, no edge functions, no business logic.
+## Out of scope
 
----
+- Buttons (`variant="default"` stays navy — your call to keep navy buttons).
+- `--primary` / `--navy` / `--burgundy` / `--gold` token values.
+- Page content/logic.
+- Dark mode (`.dark` variables).
 
-Confirm and I'll implement. Tell me if you want recommendation #1 (keep destructive red) and #5 (gold divider component) folded in.
+## Visual outcome
+
+- Page: ivory background, navy text, gold heritage accents, burgundy CTAs.
+- Hero: light cream block instead of navy slab.
+- Header: white bar with navy nav + gold active chip.
+- Ticker: soft ivory line at the very top, almost subliminal.
+- Footer: ivory footer, dark only via the gold-bordered pill buttons.
