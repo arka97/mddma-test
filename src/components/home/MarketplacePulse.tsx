@@ -85,9 +85,7 @@ export function MarketplacePulse() {
     };
   }, []);
 
-  const featuredMembers = entries
-    .filter((m) => m.source === "live" || m.isFeatured)
-    .slice(0, 4);
+  const featuredMembers = entries.filter((m) => m.isFeatured).slice(0, 4);
 
   return (
     <section className="border-y border-border bg-muted/40 py-12 sm:py-16">
@@ -165,9 +163,9 @@ export function MarketplacePulse() {
                               <h3 className="truncate text-sm font-semibold text-foreground">
                                 {member.firmName}
                               </h3>
-                              {member.source === "live" && (
+                              {member.isSponsored && (
                                 <Badge variant="success" className="h-4 px-1.5 text-[9px] uppercase">
-                                  Live
+                                  Sponsored
                                 </Badge>
                               )}
                             </div>

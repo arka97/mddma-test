@@ -15,7 +15,6 @@ import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useDirectory } from "@/hooks/queries/useCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
-import { useSellerTradeSignalsBatch } from "@/lib/tradeSignals";
 
 const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor", "Broker"];
 
@@ -61,12 +60,6 @@ const Directory = () => {
     if (!a.isFeatured && b.isFeatured) return 1;
     return 0;
   });
-
-  // Phase C: batch-fetch trade signals for the live companies on screen.
-  // Demo entries don't have a Supabase row, so we just show the placeholder
-  // for them — the SellerSignals component handles signals=null gracefully.
-  const liveIds = sorted.filter((m) => m.source === "live").map((m) => m.id);
-  const { map: signalsMap } = useSellerTradeSignalsBatch(liveIds);
 
   // Build the area filter from live company data so it always matches reality.
   const liveAreas = Array.from(
@@ -152,11 +145,6 @@ const Directory = () => {
                       <div className="relative">
                         <CommodityImage commodity={heroCommodity} aspect="16/10" rounded={false} />
                         <div className="absolute top-2 left-2 flex items-center gap-1.5">
-                          {member.source === "live" && (
-                            <span className="text-[9px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded bg-accent text-accent-foreground">
-                              Live
-                            </span>
-                          )}
                           {member.isSponsored && (
                             <span className="inline-flex items-center gap-0.5 text-[9px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded bg-background/95 text-accent backdrop-blur">
                               <Star className="h-2.5 w-2.5" /> Sponsored
@@ -214,12 +202,10 @@ const Directory = () => {
                           )}
                         </div>
 
-                        {/* Trade signals — live for Supabase entries, placeholder for demo */}
                         <div className="mt-auto pt-2 border-t border-border">
                           <SellerSignals
                             memberSince={member.memberSince}
                             verified={member.verificationStatus === "Verified"}
-                            signals={member.source === "live" ? signalsMap.get(member.id) ?? null : null}
                           />
                         </div>
                       </div>

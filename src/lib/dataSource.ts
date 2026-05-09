@@ -1,16 +1,37 @@
 // ============================================================================
 // dataSource.ts — adapters from Supabase rows to UI entry shapes.
-// ============================================================================
 // All directory and product data comes from Lovable Cloud. No dummy fallback.
-import type { Member } from "@/data/sampleData";
-import type { ProductListing } from "@/data/productListings";
+// ============================================================================
 import type { CompanyRow } from "@/repositories/companies";
 import type { ProductRow } from "@/repositories/products";
 
 // ---------------------------------------------------------------------------
 // Directory entries (companies)
 // ---------------------------------------------------------------------------
-export type DirectoryEntry = Member & { source: "live" | "demo" };
+export interface DirectoryEntry {
+  id: string;
+  firmName: string;
+  ownerName: string;
+  slug: string;
+  area: string;
+  fullAddress: string;
+  commodities: string[];
+  originSpecialization: string[];
+  memberType: "Importer" | "Wholesaler" | "Retailer" | "Processor" | "Broker";
+  verificationStatus: "Verified" | "Not Verified";
+  verificationLevel: "Basic" | "Business";
+  membershipStatus: "Active" | "Pending Renewal" | "Expired";
+  memberSince: number;
+  phone: string;
+  whatsapp: string;
+  email: string;
+  gstNumber: string;
+  fssaiNumber?: string;
+  description: string;
+  isFeatured: boolean;
+  isSponsored: boolean;
+  logoPlaceholder: string;
+}
 
 function initials(name: string): string {
   return (
@@ -50,7 +71,6 @@ export function liveCompanyToEntry(c: CompanyRow): DirectoryEntry {
     isFeatured: c.membership_tier === "paid" || c.is_verified,
     isSponsored: c.membership_tier === "paid",
     logoPlaceholder: initials(c.name),
-    source: "live",
   };
 }
 
@@ -61,7 +81,24 @@ export function mergeDirectory(live: CompanyRow[]): DirectoryEntry[] {
 // ---------------------------------------------------------------------------
 // Product entries
 // ---------------------------------------------------------------------------
-export type ProductEntry = ProductListing & { source: "live" | "demo" };
+export interface ProductEntry {
+  id: string;
+  sellerId: string;
+  commodityId: string;
+  commodity: string;
+  variant: string;
+  origin: string;
+  packaging: string;
+  moq: string;
+  priceMin: number | null;
+  priceMax: number | null;
+  priceUnit: string;
+  location: string;
+  listingDate: string;
+  imageUrl?: string | null;
+  gallery?: string[] | null;
+  videoUrl?: string | null;
+}
 
 export function liveProductToEntry(p: ProductRow): ProductEntry {
   return {
@@ -81,7 +118,6 @@ export function liveProductToEntry(p: ProductRow): ProductEntry {
     imageUrl: p.image_url,
     gallery: p.gallery,
     videoUrl: (p as ProductRow & { video_url?: string | null }).video_url ?? null,
-    source: "live",
   };
 }
 

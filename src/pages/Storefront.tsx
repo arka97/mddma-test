@@ -17,9 +17,7 @@ import {
 } from "lucide-react";
 
 import { RFQModal } from "@/components/RFQModal";
-import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
-import { TradeSignalsCard } from "@/components/commodity/SellerScoreboard";
-import { useSellerTradeSignals } from "@/lib/tradeSignals";
+import { GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
 import { useCart } from "@/contexts/CartContext";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
@@ -96,10 +94,7 @@ const Storefront = () => {
   const isOwner = !!ownCompany && ownCompany.slug === slug;
   const canManage = isOwner || hasRole("admin");
 
-  // Phase C — live trade signals + KYC checklist. Hooks no-op when ids are null
-  // (demo storefronts), so the scoreboard tile renders the placeholder instead.
-  const { signals, loading: signalsLoading } = useSellerTradeSignals(liveCompanyId);
-  
+
 
   if (loading) {
     return (
@@ -125,7 +120,7 @@ const Storefront = () => {
     );
   }
 
-  const sellerListings: import("@/data/productListings").ProductListing[] = [];
+  const sellerListingsCount = liveProducts.length;
   const yearsInBusiness = new Date().getFullYear() - member.memberSince;
 
   return (
@@ -221,7 +216,7 @@ const Storefront = () => {
                       <div className="text-xs text-muted-foreground">Source Countries</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{sellerListings.length}</div>
+                      <div className="text-lg font-bold text-accent">{sellerListingsCount}</div>
                       <div className="text-xs text-muted-foreground">Active Listings</div>
                     </div>
                   </div>
@@ -294,15 +289,10 @@ const Storefront = () => {
                               </td>
                               <td className="py-2.5 px-2 text-xs">
                                 <GuardedPublicPriceLine listing={{
-                                  id: p.id,
-                                  sellerId: liveCompanyId ?? "",
-                                  commodityId: p.id,
-                                  commodity: p.name,
-                                  variant: "",
-                                  origin: p.origin ?? "",
-                                  packaging: "",
-                                  moq: "",
                                   priceMin: p.price_min,
+                                  priceMax: p.price_max,
+                                  priceUnit: `₹/${p.unit ?? "kg"}`,
+                                }} />
                                   priceMax: p.price_max,
                                   priceUnit: `₹/${p.unit ?? "kg"}`,
                                   location: "",
