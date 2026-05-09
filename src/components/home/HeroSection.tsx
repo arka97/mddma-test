@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ShieldCheck, BadgeCheck, ArrowRight } from "lucide-react";
+import { Search, BadgeCheck, ArrowRight } from "lucide-react";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { Logo } from "@/components/brand/Logo";
 
@@ -38,12 +38,6 @@ export function HeroSection() {
           {/* Heritage badge */}
           <div className="inline-block mb-6">
             <Logo variant="horizontal" className="h-16 sm:h-20 w-auto" />
-          </div>
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <ShieldCheck className="h-4 w-4 text-accent" />
-            <span className="text-burgundy font-semibold text-sm">Established 1930</span>
-            <span className="text-navy/30">•</span>
-            <span className="text-navy/75 text-sm">Mumbai&apos;s Trade Authority</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-navy leading-tight mb-8">
