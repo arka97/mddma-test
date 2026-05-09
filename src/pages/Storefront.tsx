@@ -293,11 +293,6 @@ const Storefront = () => {
                                   priceMax: p.price_max,
                                   priceUnit: `₹/${p.unit ?? "kg"}`,
                                 }} />
-                                  priceMax: p.price_max,
-                                  priceUnit: `₹/${p.unit ?? "kg"}`,
-                                  location: "",
-                                  listingDate: new Date().toISOString(),
-                                }} />
                               </td>
                               <td className="py-2.5 px-2">
                                 <div className="flex gap-1">
@@ -380,7 +375,7 @@ const Storefront = () => {
                 </CardContent>
               </Card>
 
-              <TradeSignalsCard signals={signals} loading={signalsLoading} />
+              
             </div>
           </div>
         </div>
