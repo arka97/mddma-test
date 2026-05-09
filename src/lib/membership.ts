@@ -67,3 +67,22 @@ export function daysUntilExpiry(expiresAt: string | null): number | null {
   const ms = new Date(expiresAt).getTime() - Date.now();
   return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
 }
+
+// Stubs retained for AdminModeration UI after legacy table removal.
+// The memberships table no longer exists; these resolve to empty/no-op.
+export interface MembershipWithProfile extends Membership {
+  tier: MembershipTier;
+  profile?: { full_name: string | null; avatar_url: string | null } | null;
+}
+export async function listMembershipsByStatus(_status: "all" | MembershipStatus): Promise<MembershipWithProfile[]> {
+  return [];
+}
+export async function createPaymentLinkForMembership(_id: string): Promise<{ payment_url: string | null; error: string | null }> {
+  return { payment_url: null, error: "Membership payments are no longer managed in-app." };
+}
+export async function manuallyActivateMembership(_id: string, _amount: number, _note: string): Promise<{ error: string | null }> {
+  return { error: "Memberships table removed." };
+}
+export async function cancelMembership(_id: string): Promise<{ error: string | null }> {
+  return { error: "Memberships table removed." };
+}
