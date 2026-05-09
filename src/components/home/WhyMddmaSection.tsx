@@ -5,7 +5,7 @@ const reasons = [
   { icon: Users, title: "350+ Members", description: "Access Mumbai's largest community of dry fruits traders, importers and processors." },
   { icon: Scale, title: "Dispute Resolution", description: "Fair and efficient arbitration to resolve trade disputes quickly." },
   { icon: Globe, title: "Global Sourcing", description: "Members import from 20+ countries — USA, Iran, Afghanistan, Vietnam and more." },
-  { icon: Award, title: "95 Years of Trust", description: "One of India's oldest trade associations with a legacy of integrity since 1930s." },
+  { icon: Award, title: "95 Years of Trust", description: "One of India's oldest trade associations with a legacy of integrity since 1930." },
   { icon: TrendingUp, title: "Market Intelligence", description: "Access expo leads, trade data and market reports to grow your business." },
 ];
 
