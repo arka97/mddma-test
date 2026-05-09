@@ -18,26 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Link, Navigate } from "react-router-dom";
 
 import { uploadFile } from "@/lib/storage";
-import {
-  STATUS_LABEL,
-  formatINR,
-  tierLabel,
-  tierPriceInr,
-  listMembershipsByStatus,
-  createPaymentLinkForMembership,
-  manuallyActivateMembership,
-  cancelMembership,
-  type MembershipWithProfile,
-} from "@/lib/membership";
-import {
-  DOC_LABEL,
-  approveKycSubmission,
-  rejectKycSubmission,
-  listAllKycSubmissions,
-  getSignedKycUrl,
-  statusTone,
-  type KycSubmissionWithProfile,
-} from "@/lib/kyc";
+import { tierLabel } from "@/lib/membership";
 
 const AdminModeration = () => {
   const { hasRole, loading: authLoading, user } = useAuth();
@@ -51,10 +32,6 @@ const AdminModeration = () => {
   const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null }[]>([]);
   const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", file: null as File | null });
   const [savingAd, setSavingAd] = useState(false);
-  const [memberships, setMemberships] = useState<MembershipWithProfile[]>([]);
-  const [busyMembership, setBusyMembership] = useState<string | null>(null);
-  const [kyc, setKyc] = useState<KycSubmissionWithProfile[]>([]);
-  const [busyKyc, setBusyKyc] = useState<string | null>(null);
   const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
   const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false, aliases: "" };
   const [catForm, setCatForm] = useState<typeof emptyCatForm>(emptyCatForm);
@@ -64,23 +41,19 @@ const AdminModeration = () => {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, mem, kycRows, cats] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, cats] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
       supabase.from("circulars").select("id,title,body,is_published,created_at").order("created_at", { ascending: false }),
       supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date").order("created_at", { ascending: false }),
-      listMembershipsByStatus("all"),
-      listAllKycSubmissions("all"),
       listCategories().catch(() => [] as ProductCategoryRow[]),
     ]);
     setCompanies((c ?? []) as typeof companies);
     setProducts(p ?? []);
     setCirculars((circ ?? []) as typeof circulars);
     setAds((adRows ?? []) as typeof ads);
-    setMemberships(mem);
-    setKyc(kycRows);
     setCategories(cats);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
