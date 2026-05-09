@@ -68,6 +68,11 @@ export default {
           light: "hsl(var(--gold-light))",
           dark: "hsl(var(--gold-dark))",
         },
+        burgundy: {
+          DEFAULT: "hsl(var(--burgundy))",
+          light: "hsl(var(--burgundy-light))",
+          dark: "hsl(var(--burgundy-dark))",
+        },
         cream: "hsl(var(--cream))",
       },
       borderRadius: {

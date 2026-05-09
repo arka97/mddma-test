@@ -113,7 +113,7 @@ export function Header() {
             {navigation.map((item) => (
               <Link key={item.name} to={item.href} className={cn(
                 "px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors",
-                isActive(item.href) ? "bg-accent text-primary" : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
+                isActive(item.href) ? "bg-accent text-primary burgundy-underline" : "text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
               )}>{item.name}</Link>
             ))}
           </div>
