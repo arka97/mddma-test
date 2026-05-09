@@ -13,11 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { slugify } from "@/lib/storage";
-import {
-  createPendingMembership,
-  formatINR,
-  TIER_PRICE_INR,
-} from "@/lib/membership";
+import { formatINR, TIER_PRICE_INR } from "@/lib/membership";
 import { Loader2, ShieldCheck, Building2, CheckCircle2, Crown } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 
@@ -74,37 +70,24 @@ const Apply = () => {
       return;
     }
 
-    // 2. Create the pending membership row (Razorpay payment link arrives on admin approval).
-    //    Broker flag is captured in `notes` for the admin to set on the profile after approval.
-    const { error: membershipErr } = await createPendingMembership(user.id, "paid");
-    if (membershipErr) {
-      console.warn("createPendingMembership failed", membershipErr);
-      toast({
-        title: "Application received",
-        description: "We saved your firm details but couldn't queue your membership. Please complete it from My Account → Verification.",
-      });
-    } else {
-      // Best-effort: record broker intent on the user's profile so admin can verify.
-      if (isBroker) {
-        try {
-          // is_broker is admin-only via RLS; this update may no-op for non-admin sessions.
-          // The intent is preserved in the company description / admin queue note.
-          await supabase
-            .from("profiles")
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .update({ designation: "Broker" } as any)
-            .eq("id", user.id);
-        } catch {
-          /* non-fatal */
-        }
+    // Best-effort: record broker intent on the user's profile so admin can verify.
+    if (isBroker) {
+      try {
+        await supabase
+          .from("profiles")
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .update({ designation: "Broker" } as any)
+          .eq("id", user.id);
+      } catch {
+        /* non-fatal */
       }
-      toast({
-        title: "✅ Application submitted",
-        description: "MDDMA committee will review within 48 hours and email your payment link.",
-      });
     }
+    toast({
+      title: "✅ Application submitted",
+      description: "MDDMA committee will review within 48 hours and email your payment link.",
+    });
     setSubmitting(false);
-    navigate("/account/verify");
+    navigate("/account/company");
   };
 
   const price = TIER_PRICE_INR.paid;

@@ -17,9 +17,7 @@ import {
 } from "lucide-react";
 
 import { RFQModal } from "@/components/RFQModal";
-import { GuardedPrice, GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
-import { TradeSignalsCard } from "@/components/commodity/SellerScoreboard";
-import { useSellerTradeSignals } from "@/lib/tradeSignals";
+import { GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
 import { useCart } from "@/contexts/CartContext";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
@@ -96,10 +94,7 @@ const Storefront = () => {
   const isOwner = !!ownCompany && ownCompany.slug === slug;
   const canManage = isOwner || hasRole("admin");
 
-  // Phase C — live trade signals + KYC checklist. Hooks no-op when ids are null
-  // (demo storefronts), so the scoreboard tile renders the placeholder instead.
-  const { signals, loading: signalsLoading } = useSellerTradeSignals(liveCompanyId);
-  
+
 
   if (loading) {
     return (
@@ -125,7 +120,7 @@ const Storefront = () => {
     );
   }
 
-  const sellerListings: import("@/data/productListings").ProductListing[] = [];
+  const sellerListingsCount = liveProducts.length;
   const yearsInBusiness = new Date().getFullYear() - member.memberSince;
 
   return (
