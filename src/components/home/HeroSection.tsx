@@ -41,7 +41,7 @@ export function HeroSection() {
           </div>
           <div className="flex items-center justify-center gap-2 mb-6">
             <ShieldCheck className="h-4 w-4 text-accent" />
-            <span className="text-accent font-semibold text-sm">Established 1930s</span>
+            <span className="text-accent font-semibold text-sm">Established 1930</span>
             <span className="text-primary-foreground/60">•</span>
             <span className="text-primary-foreground/80 text-sm">Mumbai&apos;s Trade Authority</span>
           </div>
@@ -117,7 +117,7 @@ export function HeroSection() {
 
         {/* Brand line */}
         <div className="mt-14 text-center max-w-3xl mx-auto">
-          <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">Established 1930s</div>
+          <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">Established 1930</div>
           <div className="text-sm text-primary-foreground/70">
             One of India&apos;s oldest dry fruits &amp; dates trade associations
           </div>

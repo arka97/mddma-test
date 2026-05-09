@@ -11,7 +11,7 @@ export function TrustStrip() {
           <span>KYC-verified sellers</span>
           <span className="text-border">·</span>
           <ShieldCheck className="h-3.5 w-3.5 text-accent" />
-          <span>Established 1930s</span>
+          <span>Established 1930</span>
         </div>
       </div>
     </div>

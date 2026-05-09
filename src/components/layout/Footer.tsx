@@ -13,7 +13,7 @@ export function Footer() {
               <Logo variant="stacked" className="h-24 w-auto" />
             </div>
             <p className="text-sm text-primary-foreground/80 leading-relaxed">
-              India's digital trade hub for dry fruits & commodities — connecting verified traders, importers, and buyers since the 1930s.
+              India's digital trade hub for dry fruits & commodities — connecting verified traders, importers, and buyers since 1930.
             </p>
           </div>
 
@@ -83,7 +83,7 @@ export function Footer() {
       <div className="border-t border-primary-foreground/20">
         <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-primary-foreground/50">
           <p>© {new Date().getFullYear()} Mumbai Dry Fruits & Dates Merchants Association. All rights reserved.</p>
-          <p>India's Digital Trade Hub · Serving Since 1930s</p>
+          <p>India's Digital Trade Hub · Serving Since 1930</p>
         </div>
       </div>
     </footer>
