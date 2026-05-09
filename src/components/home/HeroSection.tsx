@@ -22,7 +22,7 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative bg-cream overflow-hidden border-b border-border">
+    <section className="relative bg-gradient-to-b from-card via-cream to-muted overflow-hidden">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-[0.04]">
         <div
@@ -56,7 +56,7 @@ export function HeroSection() {
           {/* Command bar */}
           <form
             onSubmit={submit}
-            className="bg-card border border-border rounded-xl shadow-xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 max-w-3xl mx-auto"
+            className="bg-card border border-border/80 ring-1 ring-navy/5 rounded-xl shadow-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 max-w-3xl mx-auto"
           >
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

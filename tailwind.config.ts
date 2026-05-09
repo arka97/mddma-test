@@ -74,6 +74,7 @@ export default {
           dark: "hsl(var(--burgundy-dark))",
         },
         cream: "hsl(var(--cream))",
+        surface: "hsl(var(--surface-tint))",
       },
       borderRadius: {
         lg: "var(--radius)",

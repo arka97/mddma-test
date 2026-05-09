@@ -52,7 +52,7 @@ export function MarketTicker() {
 
   return (
     <div
-      className="bg-muted text-navy border-b border-border overflow-hidden relative"
+      className="bg-muted text-navy border-y border-gold/30 overflow-hidden relative"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >

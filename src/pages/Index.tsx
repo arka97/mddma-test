@@ -8,23 +8,34 @@ import { CommunitySection } from "@/components/home/CommunitySection";
 import { NewsSection } from "@/components/home/NewsSection";
 import { SponsorsSection } from "@/components/home/SponsorsSection";
 import { AdBanner } from "@/components/home/AdBanner";
+import { GoldDivider } from "@/components/brand/GoldDivider";
 
 const Index = () => {
   return (
     <Layout>
       <HeroSection />
+      <GoldDivider />
 
       {/* Homepage Banner Ad */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <AdBanner placement="homepage-banner" />
+      <div className="bg-card">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <AdBanner placement="homepage-banner" />
+        </div>
       </div>
+      <GoldDivider />
 
       <FeaturedCategoriesSection />
+      <GoldDivider />
       <RecentListingsSection />
+      <GoldDivider />
       <WhyMddmaSection />
+      <GoldDivider />
       <FeaturedMembersSection />
+      <GoldDivider />
       <CommunitySection />
+      <GoldDivider />
       <NewsSection />
+      <GoldDivider />
       <SponsorsSection />
     </Layout>
   );

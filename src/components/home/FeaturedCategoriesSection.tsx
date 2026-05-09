@@ -23,7 +23,7 @@ export function FeaturedCategoriesSection() {
   const items = cats.slice(0, 7);
 
   return (
-    <section className="py-16 sm:py-20 bg-muted/50">
+    <section className="py-16 sm:py-20 bg-surface">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">
