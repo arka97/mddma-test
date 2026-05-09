@@ -110,13 +110,6 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Brand line */}
-        <div className="mt-14 text-center max-w-3xl mx-auto">
-          <div className="text-3xl sm:text-4xl font-bold text-accent mb-1">Established 1930</div>
-          <div className="text-sm text-navy/60">
-            One of India&apos;s oldest dry fruits &amp; dates trade associations
-          </div>
-        </div>
       </div>
     </section>
   );
