@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { z } from "zod";
 import { friendlyErrorMessage } from "@/lib/errors";
+import { Logo } from "@/components/brand/Logo";
 
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 const passwordSchema = z.string().min(8, "Min 8 characters").max(72);
@@ -114,7 +115,7 @@ const Login = () => {
           <div className="max-w-md mx-auto">
             <Card className="bg-card border-border">
               <CardHeader className="text-center">
-                <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl">M</div>
+                <Logo variant="mark" className="mx-auto mb-3 h-16 w-16" />
                 <CardTitle className="text-2xl">MDDMA Member Portal</CardTitle>
                 <CardDescription>Sign in or create your account</CardDescription>
               </CardHeader>

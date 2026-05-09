@@ -104,7 +104,9 @@ export function Header() {
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
-            <Logo inverted />
+            <div className="rounded-md bg-primary-foreground/95 p-1">
+              <Logo variant="mark" className="h-8 w-8" />
+            </div>
           </Link>
 
           <div className="hidden lg:flex lg:items-center lg:gap-0.5">
