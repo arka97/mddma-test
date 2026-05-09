@@ -65,12 +65,8 @@ const MembershipPlans = () => {
                       <p>Sponsored Eligible: {tier.sponsoredEligible ? "Yes" : "No"}</p>
                     </div>
                     <Button
-                      className={`w-full ${
-                        tier.highlighted
-                          ? "bg-accent hover:bg-accent/90 text-primary"
-                          : ""
-                      }`}
-                      variant={tier.highlighted ? "default" : "outline"}
+                      className="w-full"
+                      variant={tier.highlighted ? "premium" : "outline-navy"}
                       asChild
                     >
                       <Link to="/apply">Apply Now</Link>
