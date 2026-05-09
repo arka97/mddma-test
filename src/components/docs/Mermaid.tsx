@@ -7,7 +7,7 @@ function ensureInit() {
   mermaid.initialize({
     startOnLoad: false,
     theme: "base",
-    securityLevel: "loose",
+    securityLevel: "strict",
     fontFamily: "inherit",
     themeVariables: {
       primaryColor: "hsl(220 70% 25%)",
