@@ -12,7 +12,7 @@ export function CartFab() {
       aria-label={`RFQ cart with ${count} items`}
     >
       <ShoppingCart className="h-5 w-5" />
-      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-semibold">
+      <span className="absolute -top-1 -right-1 h-5 min-w-5 px-1 rounded-full bg-burgundy text-primary-foreground text-xs flex items-center justify-center font-semibold">
         {count}
       </span>
     </Button>

@@ -6,48 +6,53 @@
 
 @layer base {
   :root {
-    /* Core colors - Corporate Navy & Heritage Gold */
-    --background: 210 40% 98%;
-    --foreground: 215 45% 15%;
+    /* Core colors — Royal Heritage palette (May 2026)
+       Navy #1B2F5E · Burgundy #7B1F2E · Antique Gold #C9A84C · Ivory #F8F4ED */
+    --background: 45 40% 96%;
+    --foreground: 215 55% 23%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 45% 15%;
+    --card-foreground: 215 55% 23%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 45% 15%;
+    --popover-foreground: 215 55% 23%;
 
-    /* Navy Blue - Authority & Trust */
-    --primary: 215 60% 23%;
+    /* Navy Blue — Authority & Trust */
+    --primary: 215 55% 23%;
     --primary-foreground: 45 90% 96%;
 
     /* Lighter navy for secondary actions */
     --secondary: 215 35% 90%;
-    --secondary-foreground: 215 60% 23%;
+    --secondary-foreground: 215 55% 23%;
 
-    /* Subtle backgrounds */
-    --muted: 210 30% 95%;
+    /* Warm muted backgrounds matching the ivory canvas */
+    --muted: 45 30% 93%;
     --muted-foreground: 215 20% 45%;
 
-    /* Gold Accent - Heritage & Prestige */
-    --accent: 38 75% 45%;
+    /* Antique Gold — Heritage & Prestige */
+    --accent: 38 55% 54%;
     --accent-foreground: 0 0% 100%;
 
+    /* Generic destructive red — kept distinct from brand burgundy */
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 215 25% 88%;
     --input: 215 25% 88%;
-    --ring: 38 75% 45%;
+    --ring: 38 55% 54%;
 
     --radius: 0.5rem;
 
-    /* Custom MDDMA tokens */
-    --navy: 215 60% 23%;
+    /* Custom MDDMA brand tokens — calibrated to logo hex values */
+    --navy: 215 55% 23%;
     --navy-light: 215 45% 35%;
     --navy-dark: 215 65% 15%;
-    --gold: 38 75% 45%;
-    --gold-light: 45 85% 55%;
-    --gold-dark: 35 70% 35%;
+    --burgundy: 350 60% 30%;
+    --burgundy-light: 350 50% 42%;
+    --burgundy-dark: 350 65% 20%;
+    --gold: 38 55% 54%;
+    --gold-light: 45 75% 65%;
+    --gold-dark: 35 60% 38%;
     --cream: 45 40% 96%;
     --warm-gray: 30 10% 50%;
 
@@ -72,7 +77,7 @@
     --popover: 215 55% 12%;
     --popover-foreground: 45 30% 95%;
 
-    --primary: 38 75% 50%;
+    --primary: 38 55% 54%;
     --primary-foreground: 215 65% 10%;
 
     --secondary: 215 45% 20%;
@@ -81,7 +86,7 @@
     --muted: 215 40% 18%;
     --muted-foreground: 215 20% 65%;
 
-    --accent: 38 75% 45%;
+    --accent: 38 55% 54%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 45%;
@@ -89,7 +94,12 @@
 
     --border: 215 40% 22%;
     --input: 215 40% 22%;
-    --ring: 38 75% 50%;
+    --ring: 38 55% 54%;
+
+    /* Burgundy lifted for legibility on dark navy (~#D4707E) */
+    --burgundy: 350 55% 65%;
+    --burgundy-light: 350 60% 75%;
+    --burgundy-dark: 350 50% 50%;
 
     --sidebar-background: 215 65% 6%;
     --sidebar-foreground: 45 30% 95%;
@@ -138,6 +148,17 @@
   .card-hover {
     @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
   }
+
+  .burgundy-underline {
+    border-bottom: 2px solid hsl(var(--burgundy));
+    padding-bottom: 0.125rem;
+  }
+
+  .ivory-surface {
+    background-color: hsl(var(--cream));
+    border: 1px solid hsl(var(--gold) / 0.2);
+    border-radius: var(--radius);
+  }
 }
 
 @layer utilities {
@@ -183,6 +204,38 @@
   
   .border-gold {
     border-color: hsl(var(--gold));
+  }
+
+  .bg-burgundy {
+    background-color: hsl(var(--burgundy));
+  }
+
+  .bg-burgundy-light {
+    background-color: hsl(var(--burgundy-light));
+  }
+
+  .bg-burgundy-dark {
+    background-color: hsl(var(--burgundy-dark));
+  }
+
+  .text-burgundy {
+    color: hsl(var(--burgundy));
+  }
+
+  .text-burgundy-light {
+    color: hsl(var(--burgundy-light));
+  }
+
+  .text-warm-gray {
+    color: hsl(var(--warm-gray));
+  }
+
+  .border-burgundy {
+    border-color: hsl(var(--burgundy));
+  }
+
+  .border-navy {
+    border-color: hsl(var(--navy));
   }
 }
 
