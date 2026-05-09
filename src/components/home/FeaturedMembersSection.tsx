@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, MapPin, ShieldCheck, Star } from "lucide-react";
-import { useLiveCompanies } from "@/hooks/useLiveCompanies";
+import { useDirectory } from "@/hooks/queries/useCompanies";
 
 export function FeaturedMembersSection() {
-  const { entries } = useLiveCompanies();
+  const { data: entries = [] } = useDirectory();
   // Live verified/paid first, then any featured demo entry
   const featured = entries
     .filter((m) => m.source === "live" || m.isFeatured)

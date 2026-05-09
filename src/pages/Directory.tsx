@@ -10,7 +10,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { AdBanner } from "@/components/home/AdBanner";
-import { useLiveCompanies } from "@/hooks/useLiveCompanies";
+import { useDirectory } from "@/hooks/queries/useCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
 import { useSellerTradeSignalsBatch } from "@/lib/tradeSignals";
@@ -28,7 +28,7 @@ const Directory = () => {
       : "all"
   );
   const [verificationFilter, setVerificationFilter] = useState<string>("all");
-  const { entries: allMembers, loading } = useLiveCompanies();
+  const { data: allMembers = [], isLoading: loading } = useDirectory();
 
   // Keep URL in sync with the type filter for shareable deep links.
   useEffect(() => {

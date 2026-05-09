@@ -9,7 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRole } from "@/contexts/RoleContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { liveCompanyToEntry, type DirectoryEntry, type LiveCompanyRow } from "@/lib/directoryAdapter";
+import { liveCompanyToEntry, type DirectoryEntry } from "@/lib/dataSource";
+import type { CompanyRow } from "@/repositories/companies";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
   ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye, Loader2,
@@ -74,7 +75,7 @@ const Storefront = () => {
               .maybeSingle();
             if (contactRow) contact = contactRow as typeof contact;
           }
-          const merged = { ...data, ...contact } as unknown as LiveCompanyRow;
+          const merged = { ...data, ...contact } as unknown as CompanyRow;
           setLiveMember(liveCompanyToEntry(merged));
           setLiveCompanyId(data.id);
           const { data: prods } = await supabase
