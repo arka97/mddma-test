@@ -1,4 +1,5 @@
 import { friendlyErrorMessage } from "@/lib/errors";
+import { Logo } from "@/components/brand/Logo";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
