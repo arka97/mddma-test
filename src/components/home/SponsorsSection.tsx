@@ -33,19 +33,17 @@ export function SponsorsSection() {
   if (ads.length === 0) return null;
 
   return (
-    <section className="py-12 bg-muted border-t border-border">
+    <section className="border-t border-border bg-background py-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-xs text-muted-foreground uppercase tracking-wider mb-6">
-          Our Partners & Sponsors
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-8">
+        <p className="t-eyebrow mb-6 text-center text-muted-foreground">Our partners</p>
+        <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
           {ads.map((ad) => (
             <a
               key={ad.id}
               href={ad.link_url ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-6 py-3 rounded-lg bg-card border border-border hover:border-accent/50 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm font-medium text-muted-foreground grayscale transition hover:text-foreground hover:grayscale-0"
             >
               {ad.title}
             </a>

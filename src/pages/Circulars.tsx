@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 interface Circular {
   id: string;
@@ -35,14 +36,12 @@ const Circulars = () => {
 
   return (
     <Layout>
-      <section className="bg-primary py-12">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Circulars & Notices</h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">Latest government notifications, trade updates, and association announcements.</p>
-        </div>
-      </section>
+      <PageHeader
+        title="Circulars & Notices"
+        subtitle="Latest government notifications, trade updates, and association announcements."
+      />
 
-      <section className="py-8 bg-muted/50 border-b border-border">
+      <section className="border-b border-border bg-muted/30 py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

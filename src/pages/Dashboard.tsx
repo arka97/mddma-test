@@ -135,7 +135,7 @@ const Dashboard = () => {
             <Lock className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
             <h2 className="text-xl font-bold text-foreground mb-2">Members Only</h2>
             <p className="text-muted-foreground mb-6">Sign up as a Free Member or upgrade to access the CRM dashboard.</p>
-            <Button className="bg-accent hover:bg-accent/90 text-primary" asChild>
+            <Button variant="accent" asChild>
               <Link to="/apply">Join MDDMA</Link>
             </Button>
           </div>

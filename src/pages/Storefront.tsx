@@ -22,6 +22,7 @@ import { TradeSignalsCard } from "@/components/commodity/SellerScoreboard";
 import { useSellerTradeSignals } from "@/lib/tradeSignals";
 import { useCart } from "@/contexts/CartContext";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
+import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
 
 interface LiveProduct {
   id: string;
@@ -103,8 +104,11 @@ const Storefront = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto text-accent" />
+        <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+          <ProfileHeaderSkeleton />
+          <div className="mt-8">
+            <ListingsGridSkeleton count={6} className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" />
+          </div>
         </div>
       </Layout>
     );
@@ -161,31 +165,31 @@ const Storefront = () => {
       )}
 
       {/* Header */}
-      <section className="bg-primary py-8">
+      <section className="border-b border-border bg-gradient-to-b from-muted/40 to-background py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/directory" className="inline-flex items-center text-primary-foreground/70 hover:text-primary-foreground text-sm mb-4">
+          <Link to="/directory" className="mb-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="mr-1 h-4 w-4" /> Back to Directory
           </Link>
           <div className="flex items-start gap-4">
-            <div className="h-16 w-16 rounded-xl bg-accent flex items-center justify-center text-primary font-bold text-xl flex-shrink-0">
+            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-xl font-bold text-primary-foreground">
               {member.logoPlaceholder}
             </div>
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-bold text-primary-foreground">{member.firmName}</h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="t-h1 text-foreground">{member.firmName}</h1>
                 {member.isSponsored && (
-                  <Badge className="bg-accent/20 text-accent border-accent/30"><Star className="h-3 w-3 mr-1" /> Featured</Badge>
+                  <Badge variant="warning"><Star className="mr-1 h-3 w-3" /> Featured</Badge>
                 )}
               </div>
-              <p className="text-primary-foreground/70 mt-1">{member.ownerName} · {member.memberType}</p>
-              <div className="flex items-center gap-2 mt-2 flex-wrap">
+              <p className="mt-1 text-sm text-muted-foreground">{member.ownerName} · {member.memberType}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 {member.verificationStatus === "Verified" && (
-                  <Badge className="bg-green-500/20 text-green-200 border-green-500/30">
-                    <ShieldCheck className="h-3 w-3 mr-1" /> {member.verificationLevel} Verified
+                  <Badge variant="success">
+                    <ShieldCheck className="mr-1 h-3 w-3" /> {member.verificationLevel} Verified
                   </Badge>
                 )}
-                <Badge variant="outline" className="text-primary-foreground/80 border-primary-foreground/30">
-                  <Calendar className="h-3 w-3 mr-1" /> {yearsInBusiness}+ Years
+                <Badge variant="neutral">
+                  <Calendar className="mr-1 h-3 w-3" /> {yearsInBusiness}+ Years
                 </Badge>
               </div>
             </div>
@@ -309,7 +313,7 @@ const Storefront = () => {
                                 <div className="flex gap-1">
                                   <Button
                                     size="sm"
-                                    className="bg-accent hover:bg-accent/90 text-primary font-semibold text-xs"
+                                    className="text-accent-foreground text-xs"
                                     onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
                                   >
                                     <Send className="h-3 w-3 mr-1" /> Request Price

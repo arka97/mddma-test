@@ -53,4 +53,11 @@ export const qk = {
   roles: {
     me: ["roles", "me"] as const,
   },
+  tradeSignals: {
+    all: ["tradeSignals"] as const,
+    byCompany: (companyId: string) =>
+      [...qk.tradeSignals.all, "company", companyId] as const,
+    batch: (companyIds: string[]) =>
+      [...qk.tradeSignals.all, "batch", [...companyIds].sort().join(",")] as const,
+  },
 } as const;

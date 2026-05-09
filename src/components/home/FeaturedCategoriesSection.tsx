@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { useProducts } from "@/hooks/queries/useProducts";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
+import { CardSkeleton } from "@/components/ui/skeletons";
 import { useMemo } from "react";
 
 export function FeaturedCategoriesSection() {
@@ -20,47 +21,58 @@ export function FeaturedCategoriesSection() {
     return map;
   }, [listings]);
 
-  const items = cats.slice(0, 7);
+  const items = cats.slice(0, 6);
 
   return (
-    <section className="py-16 sm:py-20 bg-surface">
+    <section className="bg-background py-12 sm:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-4">
-            Browse by Category
-          </h2>
-          <p className="text-muted-foreground">
-            Discover products and find verified sellers across Mumbai&apos;s top traded categories
-          </p>
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <h2 className="t-h2 text-foreground">Browse by category</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Top traded commodities across Mumbai's APMC market.
+            </p>
+          </div>
+          <Link
+            to="/products"
+            className="inline-flex items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
+          >
+            All categories <ArrowRight className="ml-1 h-4 w-4" />
+          </Link>
         </div>
 
         {isLoading ? (
-          <div className="text-center py-10">
-            <Loader2 className="h-6 w-6 animate-spin mx-auto text-accent" />
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <CardSkeleton key={i} />
+            ))}
           </div>
         ) : items.length === 0 ? (
-          <div className="text-center py-10 border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground text-sm">
-              Categories will appear here once an admin curates them.
-            </p>
+          <div className="rounded-lg border border-dashed border-border/70 bg-card p-10 text-center text-sm text-muted-foreground">
+            Categories will appear here once an admin curates them.
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {items.map((cat) => {
               const count = counts.get(cat.name) ?? 0;
               return (
                 <Link key={cat.id} to={`/products?cat=${encodeURIComponent(cat.name)}`}>
-                  <Card className="bg-card border-border hover:border-accent/60 card-hover h-full overflow-hidden">
+                  <Card interactive className="h-full overflow-hidden">
                     {cat.image_url ? (
                       <div className="aspect-square w-full overflow-hidden bg-muted">
-                        <img src={cat.image_url} alt={cat.name} className="h-full w-full object-cover" loading="lazy" />
+                        <img
+                          src={cat.image_url}
+                          alt={cat.name}
+                          className="h-full w-full object-cover"
+                          loading="lazy"
+                        />
                       </div>
                     ) : (
                       <CommodityImage commodity={cat.name} aspect="1/1" rounded={false} />
                     )}
-                    <div className="p-3 text-center">
-                      <h3 className="font-semibold text-foreground text-sm">{cat.name}</h3>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <div className="p-3">
+                      <h3 className="truncate text-sm font-semibold text-foreground">{cat.name}</h3>
+                      <p className="mt-0.5 text-[11px] text-muted-foreground">
                         {count} {count === 1 ? "listing" : "listings"}
                       </p>
                     </div>
@@ -70,12 +82,6 @@ export function FeaturedCategoriesSection() {
             })}
           </div>
         )}
-
-        <div className="text-center mt-8">
-          <Link to="/products" className="inline-flex items-center text-accent hover:text-accent/80 font-medium text-sm">
-            View All Products <ArrowRight className="ml-1 h-4 w-4" />
-          </Link>
-        </div>
       </div>
     </section>
   );

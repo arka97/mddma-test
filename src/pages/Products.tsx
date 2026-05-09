@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, Send, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Send, ChevronLeft, ChevronRight } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
 import { AdBanner } from "@/components/home/AdBanner";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 
 import { RFQModal } from "@/components/RFQModal";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
@@ -40,27 +39,29 @@ const Products = () => {
   if (!activeCat) {
     return (
       <Layout>
-        <section className="bg-primary py-12">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
-              Verified Marketplace
-            </h1>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-              Browse commodity categories from KYC-verified MDDMA sellers. Pick a category to view listings.
-            </p>
-          </div>
-        </section>
+        <PageHeader
+          title="Verified Marketplace"
+          subtitle="Browse commodity categories from KYC-verified MDDMA sellers. Pick a category to view listings."
+        />
 
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <AdBanner placement="category-banner" />
         </div>
 
-        <CategoryGrid listings={listings} />
-        <RecentListings
-          listings={listings}
-          limit={8}
-          onRequestQuote={(name) => setRfqProduct(name)}
-        />
+        {isLoading ? (
+          <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <ListingsGridSkeleton count={12} />
+          </div>
+        ) : (
+          <>
+            <CategoryGrid listings={listings} />
+            <RecentListings
+              listings={listings}
+              limit={8}
+              onRequestQuote={(name) => setRfqProduct(name)}
+            />
+          </>
+        )}
 
         {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
       </Layout>
@@ -89,32 +90,32 @@ const Products = () => {
 
   return (
     <Layout>
-      <section className="bg-primary py-10">
+      <section className="border-b border-border bg-muted/30 py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex items-center gap-1 text-sm text-primary-foreground/70 mb-3">
-            <button onClick={clearCategory} className="hover:text-accent inline-flex items-center">
+          <nav className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
+            <button onClick={clearCategory} className="inline-flex items-center hover:text-accent">
               <ChevronLeft className="h-4 w-4" /> Categories
             </button>
             <ChevronRight className="h-3 w-3" />
-            <span className="text-primary-foreground">{activeCat}</span>
+            <span className="text-foreground">{activeCat}</span>
           </nav>
           <div className="flex items-center gap-4">
             {activeCatRow?.image_url && (
               <img
                 src={activeCatRow.image_url}
                 alt={activeCat}
-                className="h-16 w-16 rounded-lg object-cover border border-primary-foreground/20"
+                className="h-16 w-16 rounded-lg border border-border object-cover"
                 loading="lazy"
               />
             )}
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold text-primary-foreground">{activeCat}</h1>
+              <h1 className="t-h1 text-foreground">{activeCat}</h1>
               {activeCatRow?.description && (
-                <p className="text-primary-foreground/80 text-sm mt-1 line-clamp-2">
+                <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                   {activeCatRow.description}
                 </p>
               )}
-              <p className="text-xs text-primary-foreground/70 mt-1">
+              <p className="mt-1 text-xs text-muted-foreground">
                 {inCat.length} {inCat.length === 1 ? "listing" : "listings"}
               </p>
             </div>
@@ -154,8 +155,7 @@ const Products = () => {
               <ChevronLeft className="h-4 w-4 mr-1" /> All Categories
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            {isLoading ? <Loader2 className="h-3 w-3 inline animate-spin mr-1" /> : null}
+          <p className="mt-3 text-sm text-muted-foreground">
             Showing {filtered.length} of {inCat.length} listings in {activeCat}
           </p>
         </div>
@@ -163,7 +163,9 @@ const Products = () => {
 
       <section className="py-8 pb-24 lg:pb-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <ListingsGridSkeleton count={9} className="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" />
+          ) : filtered.length === 0 ? (
             <div className="text-center py-16 border border-dashed border-border rounded-lg">
               <p className="text-muted-foreground">
                 {inCat.length === 0
@@ -219,7 +221,7 @@ const Products = () => {
                     <div className="mt-auto pt-3 border-t border-border space-y-2">
                       <Button
                         size="sm"
-                        className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold"
+                        className="w-full text-accent-foreground"
                         onClick={() =>
                           setRfqProduct(`${listing.commodity} — ${listing.variant}`)
                         }

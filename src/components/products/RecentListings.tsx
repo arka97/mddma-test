@@ -63,7 +63,7 @@ export function RecentListings({ listings, limit = 8, onRequestQuote }: Props) {
                 <div className="mt-auto pt-3 border-t border-border">
                   <Button
                     size="sm"
-                    className="w-full bg-accent hover:bg-accent/90 text-primary font-semibold"
+                    variant="accent" className="w-full"
                     onClick={() => onRequestQuote(`${listing.commodity} — ${listing.variant}`)}
                   >
                     <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote

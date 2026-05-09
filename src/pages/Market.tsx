@@ -79,7 +79,7 @@ const Market = () => {
                     </p>
                   </div>
                 </div>
-                <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold sm:flex-shrink-0">
+                <Button asChild variant="accent" size="sm" className="sm:flex-shrink-0">
                   <Link to="/membership">View plans</Link>
                 </Button>
               </CardContent>
@@ -172,7 +172,7 @@ const Market = () => {
                   </CardContent>
                   {!isPaid && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-t from-background/95 via-background/60 to-transparent">
-                      <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold mt-12">
+                      <Button asChild variant="accent" size="sm" className="mt-12">
                         <Link to="/membership"><Lock className="h-3 w-3 mr-1" /> Unlock insights</Link>
                       </Button>
                     </div>

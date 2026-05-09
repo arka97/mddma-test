@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Search } from "lucide-react";
+import { Menu, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,9 +25,8 @@ const navigation = [
 ];
 
 export function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const [searchQ, setSearchQ] = useState("");
   const lastY = useRef(0);
   const ticking = useRef(false);
@@ -34,23 +34,19 @@ export function Header() {
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
 
-  const isHome = location.pathname === "/";
-
   useEffect(() => {
     const onScroll = () => {
       if (ticking.current) return;
       ticking.current = true;
       requestAnimationFrame(() => {
         const y = window.scrollY;
-        if (mobileMenuOpen || y < 80) {
+        if (drawerOpen || y < 80) {
           setHidden(false);
         } else if (y > lastY.current) {
           setHidden(true);
         } else if (y < lastY.current) {
           setHidden(false);
         }
-        // Show inline search once scrolled past hero area, or always on non-home routes
-        setShowSearch(!isHome || y > 200);
         lastY.current = y;
         ticking.current = false;
       });
@@ -58,7 +54,7 @@ export function Header() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [mobileMenuOpen, isHome]);
+  }, [drawerOpen]);
 
   const submitSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -66,114 +62,160 @@ export function Header() {
     if (searchQ.trim()) sp.set("q", searchQ.trim());
     sp.set("view", "marketplace");
     navigate(`/products?${sp.toString()}`);
+    setDrawerOpen(false);
   };
 
-  const isActive = (href: string) => href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
+  const isActive = (href: string) =>
+    href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
 
-  const handleSignOut = async () => { await signOut(); navigate("/"); };
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   const UserMenu = () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full hover:bg-muted p-1">
-          <Avatar className="h-7 w-7"><AvatarImage src={profile?.avatar_url ?? undefined} /><AvatarFallback className="text-xs">{initials}</AvatarFallback></Avatar>
+        <button className="flex items-center gap-2 rounded-full p-1 hover:bg-muted" aria-label="Account menu">
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={profile?.avatar_url ?? undefined} />
+            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+          </Avatar>
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel>
           <div className="text-sm">{profile?.full_name || "Member"}</div>
-          <div className="text-xs text-muted-foreground truncate">{user?.email}</div>
+          <div className="truncate text-xs text-muted-foreground">{user?.email}</div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild><Link to="/account/profile"><User className="h-4 w-4 mr-2" /> My Profile</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link to="/account/company"><Building2 className="h-4 w-4 mr-2" /> {company ? "My Company" : "Create Company"}</Link></DropdownMenuItem>
-        {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="h-4 w-4 mr-2" /> View My Storefront</Link></DropdownMenuItem>}
-        <DropdownMenuItem asChild><Link to="/account/products"><Package className="h-4 w-4 mr-2" /> My Products</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link to="/account/rfqs"><Inbox className="h-4 w-4 mr-2" /> RFQ Center</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link to="/account/verify"><ShieldCheck className="h-4 w-4 mr-2" /> Verification</Link></DropdownMenuItem>
-        {hasRole("admin") && <DropdownMenuItem asChild><Link to="/account/moderation"><ShieldCheck className="h-4 w-4 mr-2" /> Moderation</Link></DropdownMenuItem>}
+        <DropdownMenuItem asChild><Link to="/account/profile"><User className="mr-2 h-4 w-4" /> My Profile</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link to="/account/company"><Building2 className="mr-2 h-4 w-4" /> {company ? "My Company" : "Create Company"}</Link></DropdownMenuItem>
+        {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="mr-2 h-4 w-4" /> View My Storefront</Link></DropdownMenuItem>}
+        <DropdownMenuItem asChild><Link to="/account/products"><Package className="mr-2 h-4 w-4" /> My Products</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link to="/account/rfqs"><Inbox className="mr-2 h-4 w-4" /> RFQ Center</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link to="/account/verify"><ShieldCheck className="mr-2 h-4 w-4" /> Verification</Link></DropdownMenuItem>
+        {hasRole("admin") && <DropdownMenuItem asChild><Link to="/account/moderation"><ShieldCheck className="mr-2 h-4 w-4" /> Moderation</Link></DropdownMenuItem>}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut}><LogOut className="h-4 w-4 mr-2" /> Sign out</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" /> Sign out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 
   return (
-    <header className={cn("bg-card border-b-2 border-gold/40 shadow-sm transition-transform duration-300", hidden && "-translate-y-full")}>
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 transition-transform duration-300",
+        hidden && "-translate-y-full",
+      )}
+    >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-14 items-center justify-between">
+        <div className="flex h-[52px] items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
-            <div className="p-1">
-              <Logo variant="mark" className="h-8 w-8" />
-            </div>
+            <Logo variant="mark" className="h-8 w-8" />
+            <span className="hidden text-sm font-semibold tracking-tight text-foreground sm:inline">MDDMA</span>
           </Link>
 
           <div className="hidden lg:flex lg:items-center lg:gap-0.5">
             {navigation.map((item) => (
-              <Link key={item.name} to={item.href} className={cn(
-                "px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors",
-                isActive(item.href) ? "bg-accent text-primary burgundy-underline" : "text-navy/75 hover:text-navy hover:bg-muted"
-              )}>{item.name}</Link>
+              <Link
+                key={item.name}
+                to={item.href}
+                className={cn(
+                  "rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
+                  isActive(item.href)
+                    ? "bg-secondary text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
+              >
+                {item.name}
+              </Link>
             ))}
           </div>
 
-          <div className="hidden lg:flex lg:items-center lg:gap-2">
-            {showSearch && (
-              <form onSubmit={submitSearch} className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
-                <Input
-                  value={searchQ}
-                  onChange={(e) => setSearchQ(e.target.value)}
-                  placeholder="Find Sellers…"
-                  aria-label="Find sellers"
-                  className="h-8 w-40 pl-8 py-0 text-xs bg-background"
-                />
-              </form>
-            )}
-            <InstallAppButton iconOnly size="sm" className="h-8 w-8 p-0" />
-            {user ? <UserMenu /> : (
-              <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
-                <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
-              </Button>
-            )}
-          </div>
-
-          <div className="lg:hidden flex items-center gap-2">
-            <InstallAppButton iconOnly size="sm" className="h-8 w-8 p-0" />
-            {user ? <UserMenu /> : (
-              <Button size="sm" className="bg-accent text-primary hover:bg-accent/90 font-semibold h-8 text-xs" asChild>
-                <Link to="/login"><LogIn className="mr-1 h-3.5 w-3.5" /> Login</Link>
-              </Button>
-            )}
-            <button type="button" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="text-navy p-2">
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
-          </div>
-        </div>
-
-        {mobileMenuOpen && (
-          <div className="lg:hidden pb-4 border-t border-border mt-2 pt-4">
-            <form onSubmit={(e) => { submitSearch(e); setMobileMenuOpen(false); }} className="relative mb-3">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground pointer-events-none" />
+          <div className="flex items-center gap-2">
+            <form onSubmit={submitSearch} className="relative hidden md:block">
+              <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={searchQ}
                 onChange={(e) => setSearchQ(e.target.value)}
-                placeholder="Find Sellers…"
+                placeholder="Find sellers…"
                 aria-label="Find sellers"
-                className="h-9 w-full pl-8 text-sm bg-background"
+                className="h-8 w-44 pl-8 text-sm"
               />
             </form>
-            <div className="flex flex-col gap-1">
-              {navigation.map((item) => (
-                <Link key={item.name} to={item.href} onClick={() => setMobileMenuOpen(false)} className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-md transition-colors",
-                  isActive(item.href) ? "bg-accent text-primary" : "text-navy/75 hover:bg-muted"
-                )}>{item.name}</Link>
-              ))}
-            </div>
+            <InstallAppButton iconOnly size="sm" className="h-8 w-8 p-0" />
+            {user ? (
+              <UserMenu />
+            ) : (
+              <Button size="sm" variant="default" className="h-8" asChild>
+                <Link to="/login">
+                  <LogIn className="mr-1 h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Login</span>
+                </Link>
+              </Button>
+            )}
+
+            <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+              <SheetTrigger asChild>
+                <button
+                  type="button"
+                  className="rounded-md p-1.5 text-foreground hover:bg-muted lg:hidden"
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-5 w-5" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-80 p-0">
+                <SheetHeader className="border-b border-border px-5 py-4">
+                  <SheetTitle className="flex items-center gap-2 text-base">
+                    <Logo variant="mark" className="h-6 w-6" />
+                    MDDMA
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col gap-4 p-5">
+                  <form onSubmit={submitSearch} className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={searchQ}
+                      onChange={(e) => setSearchQ(e.target.value)}
+                      placeholder="Find sellers…"
+                      aria-label="Find sellers"
+                      className="h-10 w-full pl-9"
+                    />
+                  </form>
+                  <nav className="flex flex-col gap-1">
+                    {navigation.map((item) => (
+                      <SheetClose asChild key={item.name}>
+                        <Link
+                          to={item.href}
+                          className={cn(
+                            "rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                            isActive(item.href)
+                              ? "bg-secondary text-foreground"
+                              : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                          )}
+                        >
+                          {item.name}
+                        </Link>
+                      </SheetClose>
+                    ))}
+                  </nav>
+                  {!user && (
+                    <SheetClose asChild>
+                      <Button asChild className="w-full">
+                        <Link to="/login">
+                          <LogIn className="mr-2 h-4 w-4" /> Login
+                        </Link>
+                      </Button>
+                    </SheetClose>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
           </div>
-        )}
+        </div>
       </nav>
     </header>
   );

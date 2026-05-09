@@ -97,7 +97,7 @@ export function MembershipStatusCard() {
               </div>
             </div>
           </div>
-          <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold">
+          <Button asChild size="sm" variant="accent">
             <Link to="/apply">Apply <ArrowRight className="ml-1 h-3.5 w-3.5" /></Link>
           </Button>
         </CardContent>
@@ -132,7 +132,7 @@ export function MembershipStatusCard() {
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           {hasPaymentLink && (
-            <Button asChild size="sm" className="bg-accent hover:bg-accent/90 text-primary font-semibold">
+            <Button asChild size="sm" variant="accent">
               <a href={m.payment_link_url!} target="_blank" rel="noopener noreferrer">
                 Pay {formatINR(tierPriceInr(m.tier))} <ExternalLink className="ml-1 h-3.5 w-3.5" />
               </a>

@@ -2,10 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, BadgeCheck, ArrowRight } from "lucide-react";
+import { Search, ShieldCheck, ArrowRight } from "lucide-react";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
-import { Logo } from "@/components/brand/Logo";
-
+import { MarketTicker } from "@/components/layout/MarketTicker";
 
 const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
 
@@ -22,94 +21,68 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative bg-gradient-to-b from-card via-cream to-muted overflow-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 opacity-[0.04]">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231B2F5E' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          }}
-        />
-      </div>
-
-      <div className="relative container mx-auto px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Heritage badge */}
-          <div className="inline-block mb-6">
-            <Logo variant="horizontal" className="h-20 sm:h-24 lg:h-28 w-auto" />
+    <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-muted/40 via-background to-background">
+      <div className="relative container mx-auto px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="t-eyebrow mb-4 inline-flex items-center gap-2 text-muted-foreground">
+            <ShieldCheck className="h-3.5 w-3.5 text-accent" aria-hidden />
+            Established 1930 · Mumbai's Trade Authority
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-navy leading-tight mb-8">
-            India&apos;s Digital Trade Hub
-            <span className="block text-2xl sm:text-3xl md:text-4xl mt-2 text-gold font-semibold">
-              for Dry Fruits, Dates &amp; Commodities
-            </span>
+          <h1 className="t-display mb-4 text-foreground">
+            India's digital trade hub<br className="hidden sm:inline" />
+            <span className="text-accent"> for dry fruits & commodities</span>
           </h1>
 
-          {/* Command bar */}
+          <p className="t-body mx-auto mb-8 max-w-2xl text-muted-foreground">
+            Browse verified sellers, get direct quotes, and track live prices across Mumbai's APMC market.
+          </p>
+
           <form
             onSubmit={submit}
-            className="bg-card border border-border/80 ring-1 ring-navy/5 rounded-xl shadow-2xl p-2 sm:p-3 flex flex-col sm:flex-row gap-2 max-w-3xl mx-auto"
+            className="mx-auto flex max-w-2xl flex-col gap-2 rounded-xl border border-border bg-card p-2 shadow-sm sm:flex-row"
           >
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="What commodity? e.g. Mamra almonds, W320 cashews"
-                className="pl-10 h-11 border-0 focus-visible:ring-1 focus-visible:ring-accent"
+                placeholder="Mamra almonds, W320 cashews, Medjool dates…"
+                className="h-11 border-0 pl-10 shadow-none focus-visible:ring-0"
               />
             </div>
-            <Button
-              type="submit"
-              size="lg"
-              variant="premium"
-              className="h-11 font-semibold sm:w-auto"
-            >
-              <Search className="h-4 w-4 mr-1.5" /> Find Sellers
+            <Button type="submit" size="lg" className="h-11 sm:w-auto">
+              <Search className="mr-1.5 h-4 w-4" /> Find sellers
             </Button>
           </form>
 
-          {/* Trust line under command bar */}
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-xs sm:text-sm text-navy/70">
-            <BadgeCheck className="h-4 w-4 text-accent" />
-            {["Verified Sellers", "Direct Quotes"].map((item, i, arr) => (
-              <span key={item} className="inline-flex items-center gap-2.5">
-                <span className="font-medium tracking-wide uppercase text-[11px] sm:text-xs text-navy/80">
-                  {item}
-                </span>
-                {i < arr.length - 1 && <span className="text-accent/70">•</span>}
-              </span>
-            ))}
+          <div className="mx-auto mt-4 max-w-3xl">
+            <MarketTicker />
           </div>
 
-          {/* Quick category chips */}
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            <span className="text-xs text-navy/60">Popular:</span>
+            <span className="text-xs text-muted-foreground">Popular:</span>
             {HOT_CATEGORIES.map((cat) => (
               <Link
                 key={cat}
                 to={`/products?q=${encodeURIComponent(cat)}&view=marketplace`}
-                className="text-xs px-3 py-1 rounded-full bg-card text-navy hover:text-burgundy border border-border hover:border-accent/60 transition-colors"
+                className="rounded-full border border-border bg-card px-3 py-1 text-xs text-foreground transition-colors hover:border-accent/40 hover:text-accent"
               >
                 {cat}
               </Link>
             ))}
             <Link
               to="/directory"
-              className="text-xs px-3 py-1 rounded-full text-navy/70 hover:text-burgundy inline-flex items-center"
+              className="inline-flex items-center rounded-full px-3 py-1 text-xs text-muted-foreground hover:text-accent"
             >
-              Browse all sellers <ArrowRight className="h-3 w-3 ml-1" />
+              Browse all sellers <ArrowRight className="ml-1 h-3 w-3" />
             </Link>
           </div>
 
-          {/* PWA install CTA */}
-          <div className="mt-8 flex justify-center">
-            <InstallAppButton size="lg" className="h-11 px-5" label="Install MDDMA App" />
+          <div className="mt-6 flex justify-center">
+            <InstallAppButton size="sm" label="Install MDDMA App" />
           </div>
         </div>
-
       </div>
     </section>
   );

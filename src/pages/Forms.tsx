@@ -12,6 +12,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { ShieldCheck, Megaphone, Mail } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Forms = () => {
   const { toast } = useToast();
@@ -23,16 +24,10 @@ const Forms = () => {
 
   return (
     <Layout>
-      <section className="bg-primary py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
-            Get in Touch
-          </h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            Choose the right form for your enquiry
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title="Get in touch"
+        subtitle="Choose the right form for your enquiry."
+      />
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl">
@@ -80,7 +75,7 @@ const Forms = () => {
                     <div className="space-y-2">
                       <Label>Additional Notes</Label><Textarea placeholder="Any additional information..." rows={3} />
                     </div>
-                    <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-primary">Submit Verification Request</Button>
+                    <Button type="submit" variant="accent" className="w-full">Submit Verification Request</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -120,7 +115,7 @@ const Forms = () => {
                     <div className="space-y-2">
                       <Label>Budget & Duration</Label><Textarea placeholder="Tell us about your budget and preferred duration" rows={3} />
                     </div>
-                    <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-primary">Submit Enquiry</Button>
+                    <Button type="submit" variant="accent" className="w-full">Submit Enquiry</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -143,7 +138,7 @@ const Forms = () => {
                     <div className="space-y-2"><Label>Email</Label><Input type="email" required placeholder="Email" /></div>
                     <div className="space-y-2"><Label>Subject</Label><Input required placeholder="How can we help?" /></div>
                     <div className="space-y-2"><Label>Message</Label><Textarea required placeholder="Your message..." rows={5} /></div>
-                    <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-primary">Send Message</Button>
+                    <Button type="submit" variant="accent" className="w-full">Send Message</Button>
                   </form>
                 </CardContent>
               </Card>

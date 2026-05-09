@@ -13,6 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { friendlyErrorMessage } from "@/lib/errors";
 import { Link } from "react-router-dom";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { TableRowSkeleton } from "@/components/ui/skeletons";
 
 const categories = ["Market Updates", "Trade Discussions", "Association Circulars"] as const;
 
@@ -105,7 +107,7 @@ const Community = () => {
             {user ? (
               <div className="mt-4 space-y-2">
                 <Textarea rows={3} maxLength={1500} placeholder="Add a comment..." value={newComment} onChange={(e) => setNewComment(e.target.value)} />
-                <Button onClick={submitComment} className="bg-accent hover:bg-accent/90 text-primary"><Send className="h-3 w-3 mr-1" /> Comment</Button>
+                <Button onClick={submitComment} variant="accent"><Send className="h-3 w-3 mr-1" /> Comment</Button>
               </div>
             ) : (
               <p className="text-sm text-muted-foreground mt-4"><Link to="/login" className="text-accent hover:underline">Sign in</Link> to comment.</p>
@@ -118,12 +120,10 @@ const Community = () => {
 
   return (
     <Layout>
-      <section className="bg-primary py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Trade Community</h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">Market intelligence, discussions and association updates</p>
-        </div>
-      </section>
+      <PageHeader
+        title="Trade Community"
+        subtitle="Market intelligence, discussions and association updates"
+      />
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,7 +140,7 @@ const Community = () => {
                     <Card>
                       <CardContent className="p-0">
                         {loading ? (
-                          <div className="py-10 flex justify-center"><Loader2 className="h-6 w-6 animate-spin" /></div>
+                          <div className="px-4 py-2"><TableRowSkeleton rows={6} /></div>
                         ) : (
                           (tab === "all" ? posts : posts.filter((p) => p.category === tab)).map((post) => (
                             <button key={post.id} onClick={() => openDetail(post)} className="w-full text-left flex items-start gap-3 p-4 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
@@ -180,7 +180,7 @@ const Community = () => {
                         </select>
                       </div>
                       <div className="space-y-1.5"><Label>Message</Label><Textarea rows={4} maxLength={2000} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} /></div>
-                      <Button onClick={submitPost} disabled={submitting} className="w-full bg-accent hover:bg-accent/90 text-primary">
+                      <Button onClick={submitPost} disabled={submitting} variant="accent" className="w-full">
                         {submitting ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Post</>}
                       </Button>
                     </>

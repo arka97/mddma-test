@@ -270,11 +270,11 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
               <ArrowLeft className="h-4 w-4 mr-1" /> {step === 0 ? "Cancel" : "Back"}
             </Button>
             {step < STEPS.length - 1 ? (
-              <Button onClick={() => setStep(step + 1)} className="bg-accent hover:bg-accent/90 text-primary">
+              <Button onClick={() => setStep(step + 1)} variant="accent">
                 Next <ArrowRight className="h-4 w-4 ml-1" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={submitting} className="bg-accent hover:bg-accent/90 text-primary">
+              <Button onClick={handleSubmit} disabled={submitting} variant="accent">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-4 w-4 mr-1" /> Submit RFQ</>}
               </Button>
             )}

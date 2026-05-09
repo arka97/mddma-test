@@ -49,7 +49,7 @@ const DocumentsHub = () => {
         <CardContent className="p-6 space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold gold-gradient-text">{doc.number}</span>
+              <span className="text-2xl font-bold text-accent">{doc.number}</span>
               <FileText className="h-5 w-5 text-accent" />
             </div>
             <div className="flex items-center gap-2">
@@ -89,15 +89,15 @@ const DocumentsHub = () => {
     <div className="min-h-screen bg-primary text-primary-foreground">
       <div className="max-w-5xl mx-auto px-6 py-16 space-y-12">
         <div className="text-center space-y-4">
-          <Badge className="bg-accent text-primary font-semibold text-sm px-4 py-1">v3.1 · May 2026</Badge>
+          <Badge className="bg-accent text-accent-foreground font-semibold text-sm px-4 py-1">v3.1 · May 2026</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-            MDDMA <span className="gold-gradient-text">Documentation</span>
+            MDDMA <span className="text-accent">Documentation</span>
           </h1>
           <p className="text-primary-foreground/70 max-w-2xl mx-auto">
             Public spec ({publicDocs.length} docs) plus owner-only deep reference ({internalDocs.length} docs). Download any single doc or the full set.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
-            <Button onClick={downloadAll} className="bg-accent hover:bg-accent/90 text-primary font-semibold">
+            <Button onClick={downloadAll} variant="accent">
               <Download className="h-4 w-4 mr-2" /> Download all (.zip)
             </Button>
           </div>

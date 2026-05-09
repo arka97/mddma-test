@@ -201,7 +201,7 @@ export function KYCDocsSection() {
                       accept="application/pdf,image/jpeg,image/png,image/webp"
                       onChange={(e) => updateRow(doc, { file: e.target.files?.[0] ?? null, err: null })}
                     />
-                    <Button onClick={() => handleSubmit(doc)} disabled={r.saving} className="bg-accent hover:bg-accent/90 text-primary font-semibold">
+                    <Button onClick={() => handleSubmit(doc)} disabled={r.saving} variant="accent">
                       {r.saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Upload className="h-3.5 w-3.5 mr-1" /> Submit</>}
                     </Button>
                   </div>

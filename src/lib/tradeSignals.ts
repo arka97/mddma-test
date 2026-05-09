@@ -3,8 +3,9 @@
 // Tables aren't yet in generated types.ts, so we launder through `unknown`
 // in a tightly-scoped wrapper (mirrors the kyc.ts / membership.ts pattern).
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { qk } from "@/lib/queryKeys";
 import type { KycDocStatus, KycDocType } from "@/lib/kyc";
 
 export interface TradeSignals {
@@ -22,12 +23,6 @@ export interface TradeSignals {
 }
 
 export type KycChecklist = Record<KycDocType, KycDocStatus | "missing">;
-
-const EMPTY_KYC: KycChecklist = {
-  gst: "missing",
-  pan: "missing",
-  fssai: "missing",
-};
 
 // Minimum trade history before we show real numbers vs. "Establishing trade history".
 export const TRADE_HISTORY_THRESHOLD = 5;
@@ -65,21 +60,6 @@ interface SignalsDb {
 }
 const signalsDb = supabase as unknown as SignalsDb;
 
-interface KycRow { doc_type: KycDocType; status: KycDocStatus; reviewed_at: string | null }
-interface KycDb {
-  from: (table: "verification_submissions") => {
-    select: (cols: string) => {
-      eq: (col: string, val: string) => {
-        order: (col: string, opts?: { ascending?: boolean }) => Promise<{
-          data: KycRow[] | null;
-          error: Error | null;
-        }>;
-      };
-    };
-  };
-}
-const kycDb = supabase as unknown as KycDb;
-
 export async function getSellerTradeSignals(companyId: string): Promise<TradeSignals | null> {
   const { data, error } = await signalsDb
     .from("seller_trade_signals")
@@ -100,96 +80,24 @@ export async function getSellerTradeSignalsBatch(companyIds: string[]): Promise<
   return new Map(data.map((r) => [r.company_id, r]));
 }
 
-export async function getSellerKycChecklist(profileId: string): Promise<KycChecklist> {
-  const { data, error } = await kycDb
-    .from("verification_submissions")
-    .select("doc_type,status,reviewed_at")
-    .eq("profile_id", profileId)
-    .order("submitted_at", { ascending: false });
-  if (error || !data) return { ...EMPTY_KYC };
-  // Latest row per doc_type wins (data is sorted desc by submission).
-  const acc: KycChecklist = { ...EMPTY_KYC };
-  for (const row of data) {
-    if (acc[row.doc_type] === "missing") {
-      acc[row.doc_type] = row.status;
-    }
-  }
-  return acc;
-}
-
 // ---------- React hooks ----------
 
+const EMPTY_MAP: ReadonlyMap<string, TradeSignals> = new Map();
+
 export function useSellerTradeSignals(companyId: string | null | undefined) {
-  const [signals, setSignals] = useState<TradeSignals | null>(null);
-  const [loading, setLoading] = useState<boolean>(!!companyId);
-
-  useEffect(() => {
-    if (!companyId) {
-      setSignals(null);
-      setLoading(false);
-      return;
-    }
-    let alive = true;
-    setLoading(true);
-    getSellerTradeSignals(companyId).then((s) => {
-      if (alive) {
-        setSignals(s);
-        setLoading(false);
-      }
-    });
-    return () => { alive = false; };
-  }, [companyId]);
-
-  return { signals, loading };
+  const { data, isLoading } = useQuery({
+    queryKey: qk.tradeSignals.byCompany(companyId ?? ""),
+    queryFn: () => getSellerTradeSignals(companyId as string),
+    enabled: Boolean(companyId),
+  });
+  return { signals: data ?? null, loading: isLoading };
 }
 
 export function useSellerTradeSignalsBatch(companyIds: string[]) {
-  const [map, setMap] = useState<Map<string, TradeSignals>>(new Map());
-  const [loading, setLoading] = useState<boolean>(companyIds.length > 0);
-  // Stable key for dependency comparison
-  const key = companyIds.slice().sort().join(",");
-
-  useEffect(() => {
-    if (companyIds.length === 0) {
-      setMap(new Map());
-      setLoading(false);
-      return;
-    }
-    let alive = true;
-    setLoading(true);
-    getSellerTradeSignalsBatch(companyIds).then((m) => {
-      if (alive) {
-        setMap(m);
-        setLoading(false);
-      }
-    });
-    return () => { alive = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
-
-  return { map, loading };
-}
-
-export function useSellerKyc(profileId: string | null | undefined) {
-  const [checklist, setChecklist] = useState<KycChecklist>({ ...EMPTY_KYC });
-  const [loading, setLoading] = useState<boolean>(!!profileId);
-
-  useEffect(() => {
-    if (!profileId) {
-      setChecklist({ ...EMPTY_KYC });
-      setLoading(false);
-      return;
-    }
-    let alive = true;
-    setLoading(true);
-    getSellerKycChecklist(profileId).then((c) => {
-      if (alive) {
-        setChecklist(c);
-        setLoading(false);
-      }
-    });
-    return () => { alive = false; };
-  }, [profileId]);
-
-  return { checklist, loading };
+  const { data, isLoading } = useQuery({
+    queryKey: qk.tradeSignals.batch(companyIds),
+    queryFn: () => getSellerTradeSignalsBatch(companyIds),
+    enabled: companyIds.length > 0,
+  });
+  return { map: data ?? EMPTY_MAP, loading: isLoading };
 }

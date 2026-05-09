@@ -141,7 +141,7 @@ const CompanyPage = () => {
               <p className="text-muted-foreground text-sm mt-1">This is your public storefront.</p>
             </div>
             <div className="flex items-center gap-2">
-              {isVerified && <Badge className="bg-accent text-primary"><ShieldCheck className="h-3 w-3 mr-1" /> Verified</Badge>}
+              {isVerified && <Badge className="bg-accent text-accent-foreground"><ShieldCheck className="h-3 w-3 mr-1" /> Verified</Badge>}
               {company?.slug && (
                 <Button asChild variant="outline" size="sm">
                   <Link to={`/store/${company.slug}`}><ExternalLink className="h-4 w-4 mr-1" /> View store</Link>
