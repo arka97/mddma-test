@@ -1,13 +1,32 @@
 import { Link } from "react-router-dom";
 import { Lock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
-import { PriceRange } from "@/components/MarketSignals";
-import type { ProductListing } from "@/data/productListings";
+
+// Minimal listing shape — only the price-relevant fields. Imported by
+// ProductPage / Storefront tables, which already have these columns.
+export interface PricedListing {
+  priceMin: number | null;
+  priceMax: number | null;
+  priceUnit: string;
+}
 
 interface GuardedPriceProps {
-  listing: ProductListing;
+  listing: PricedListing;
   // forces price-on-request copy regardless of auth (used for sensitive lots)
   hidePrice?: boolean;
+}
+
+function PriceRange({ listing }: { listing: PricedListing }) {
+  if (listing.priceMin === null) {
+    return <Badge className="bg-accent/20 text-accent border-accent/30 text-xs font-semibold">Request Price</Badge>;
+  }
+  return (
+    <span className="font-semibold text-foreground text-sm">
+      ₹{listing.priceMin.toLocaleString()} – ₹{listing.priceMax?.toLocaleString()}{" "}
+      <span className="text-xs text-muted-foreground font-normal">{listing.priceUnit}</span>
+    </span>
+  );
 }
 
 // B2B Indian norm = "POA / call for price" until trust is established.

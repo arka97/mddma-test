@@ -1,11 +1,10 @@
-import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
+import { createContext, useContext, useMemo, useState, ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { getLatestMembershipForUser, isMembershipActive, type Membership } from "@/lib/membership";
 
 export type UserRole = "guest" | "free_member" | "paid_member" | "broker" | "admin";
 
 interface RoleContextType {
-  // Effective role: derived from real auth + active membership when signed in;
+  // Effective role: derived from real auth roles when signed in;
   // falls back to the demo override when signed out (so the unauth header
   // dropdown can still preview different role experiences).
   role: UserRole;
@@ -23,9 +22,6 @@ const rolePermissions: Record<UserRole, string[]> = {
 };
 
 // Invariant: paid_member must be a strict superset of free_member permissions.
-// A paid member is no longer a free member in the DB (a trigger removes the
-// free_member row on upgrade), so they rely on this superset for all the
-// browse/storefront/community benefits they had as a free user.
 if (import.meta.env.DEV) {
   const missing = rolePermissions.free_member.filter((p) => !rolePermissions.paid_member.includes(p));
   if (missing.length) {
@@ -39,30 +35,15 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 export function RoleProvider({ children }: { children: ReactNode }) {
   const { user, hasRole } = useAuth();
   const [demoRole, setDemoRole] = useState<UserRole>("guest");
-  const [membership, setMembership] = useState<Membership | null>(null);
-
-  useEffect(() => {
-    if (!user) {
-      setMembership(null);
-      return;
-    }
-    let alive = true;
-    getLatestMembershipForUser(user.id).then((m) => {
-      if (alive) setMembership(m);
-    });
-    return () => {
-      alive = false;
-    };
-  }, [user]);
 
   const effectiveRole = useMemo<UserRole>(() => {
     if (!user) return demoRole;
-    // Real role precedence: admin > broker > paid (active membership OR explicit role) > free
+    // Real role precedence: admin > broker > paid > free
     if (hasRole("admin")) return "admin";
     if (hasRole("broker")) return "broker";
-    if (isMembershipActive(membership) || hasRole("paid_member")) return "paid_member";
+    if (hasRole("paid_member")) return "paid_member";
     return "free_member";
-  }, [user, hasRole, membership, demoRole]);
+  }, [user, hasRole, demoRole]);
 
   const canAccess = (feature: string) => rolePermissions[effectiveRole]?.includes(feature) ?? false;
 
