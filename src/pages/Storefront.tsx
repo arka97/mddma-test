@@ -292,9 +292,6 @@ const Storefront = () => {
                                   priceMin: p.price_min,
                                   priceMax: p.price_max,
                                   priceUnit: `₹/${p.unit ?? "kg"}`,
-                                }} />
-                                  priceMax: p.price_max,
-                                  priceUnit: `₹/${p.unit ?? "kg"}`,
                                   location: "",
                                   listingDate: new Date().toISOString(),
                                 }} />
