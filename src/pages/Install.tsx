@@ -15,8 +15,8 @@ export default function Install() {
     <Layout>
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
-          <div className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-accent text-primary mb-6">
-            <Smartphone className="h-8 w-8" />
+          <div className="inline-block rounded-2xl bg-primary-foreground/95 p-4 mb-6">
+            <Logo variant="stacked" className="h-24 w-auto" />
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Install MDDMA Trade Hub</h1>
           <p className="text-primary-foreground/80 text-lg mb-8">
