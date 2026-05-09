@@ -19,6 +19,7 @@ import {
   TIER_PRICE_INR,
 } from "@/lib/membership";
 import { Loader2, ShieldCheck, Building2, CheckCircle2, Crown } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const PAID_PERKS = [
   "Verified storefront on mddma.in/s/<your-slug>",
@@ -110,17 +111,10 @@ const Apply = () => {
 
   return (
     <Layout>
-      <section className="bg-primary py-10">
-        <div className="container mx-auto px-4 text-center">
-          <div className="mx-auto mb-4 inline-block rounded-lg bg-primary-foreground/95 p-3">
-            <Logo variant="horizontal" className="h-14 w-auto" />
-          </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-2">Apply for Membership</h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            Founding-member pricing locked for 24 months. The MDDMA committee reviews each application.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title="Apply for Membership"
+        subtitle="Founding-member pricing locked for 24 months. The MDDMA committee reviews each application."
+      />
 
       <section className="py-10">
         <div className="container mx-auto px-4 max-w-3xl space-y-6">

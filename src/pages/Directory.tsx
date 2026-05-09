@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, MapPin, ShieldCheck, Star, Loader2, BadgeCheck } from "lucide-react";
+import { Search, MapPin, ShieldCheck, Star, BadgeCheck } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { AdBanner } from "@/components/home/AdBanner";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useDirectory } from "@/hooks/queries/useCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
@@ -73,22 +75,16 @@ const Directory = () => {
 
   return (
     <Layout>
-      <section className="bg-primary py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
-            Member Directory
-          </h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            Find KYC-verified dry fruits and dates merchants across Mumbai&apos;s major trading markets
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title="Member Directory"
+        subtitle="Find KYC-verified dry fruits and dates merchants across Mumbai's major trading markets."
+      />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
         <AdBanner placement="directory-sidebar" />
       </div>
 
-      <section className="py-6 bg-muted/50 border-b border-border">
+      <section className="border-b border-border bg-muted/30 py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">
@@ -134,7 +130,6 @@ const Directory = () => {
             </Select>
           </div>
           <p className="text-sm text-muted-foreground mt-3">
-            {loading ? <Loader2 className="h-3 w-3 inline animate-spin mr-1" /> : null}
             Showing {sorted.length} of {allMembers.length} members
           </p>
         </div>
@@ -142,6 +137,9 @@ const Directory = () => {
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {loading ? (
+            <ListingsGridSkeleton count={8} className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2" />
+          ) : (
           <div className="grid gap-5 sm:grid-cols-2">
               {sorted.map((member) => {
                 const heroCommodity = member.commodities[0] ?? "Mixed Dry Fruits";
@@ -236,6 +234,7 @@ const Directory = () => {
                 </div>
               )}
           </div>
+          )}
         </div>
       </section>
     </Layout>

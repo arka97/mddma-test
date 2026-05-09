@@ -107,7 +107,8 @@ export function CartDrawer() {
                   ))}
                 </div>
                 <Button
-                  className="w-full text-accent-foreground"
+                  variant="accent"
+                  className="w-full"
                   size="sm"
                   disabled={submitting === companyId}
                   onClick={() => sendForCompany(companyId, group.items)}

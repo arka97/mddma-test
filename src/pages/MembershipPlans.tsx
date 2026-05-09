@@ -5,24 +5,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { membershipTiers } from "@/data/sampleData";
 import { CheckCircle2, ShieldCheck, Star, Crown } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const tierIcons = [ShieldCheck, Star, Crown];
 
 const MembershipPlans = () => {
   return (
     <Layout>
-      <section className="bg-primary py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
-            Membership Plans
-          </h1>
-          <p className="text-primary-foreground/80 max-w-2xl mx-auto">
-            Choose the right plan for your business. All plans include directory listing and association membership.
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title="Membership Plans"
+        subtitle="Choose the right plan for your business. All plans include directory listing and association membership."
+      />
 
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
             {membershipTiers.map((tier, index) => {

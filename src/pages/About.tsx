@@ -114,20 +114,18 @@ const About = () => {
   return (
     <Layout>
       {/* Hero */}
-      <section className="bg-primary py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/15 border border-accent/30 text-accent text-xs font-semibold mb-4">
+      <section className="border-b border-border bg-gradient-to-b from-muted/40 to-background py-12 sm:py-16">
+        <div className="container mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+          <div className="t-eyebrow mb-3 inline-flex items-center gap-2 text-accent">
             <Crown className="h-3.5 w-3.5" /> Established 1930 · Mumbai
           </div>
-          <h1 className="text-3xl sm:text-5xl font-bold text-primary-foreground mb-4 leading-tight">
-            About MDDMA
-          </h1>
-          <p className="text-primary-foreground/80 text-base sm:text-lg leading-relaxed">
+          <h1 className="t-h1 mb-3 text-foreground sm:t-display">About MDDMA</h1>
+          <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
             Mumbai Dryfruits & Dates Merchants Association — 95+ years representing importers, traders and brokers of dates, nuts and dry fruits across India.
           </p>
-          <div className="flex flex-wrap justify-center gap-2 mt-6">
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
             {["95+ Years of Service", "APMC Vashi · Navi Mumbai", "Founded by 11 Pioneer Traders"].map((chip) => (
-              <span key={chip} className="px-3 py-1 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground/90 text-xs">
+              <span key={chip} className="rounded-full border border-border bg-card px-3 py-1 text-xs text-foreground">
                 {chip}
               </span>
             ))}
