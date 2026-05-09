@@ -36,13 +36,14 @@ export function HeroSection() {
       <div className="relative container mx-auto px-4 py-14 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div className="text-center max-w-4xl mx-auto">
           {/* Heritage badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/20 border border-accent/30 mb-6">
+          <div className="inline-block rounded-2xl bg-primary-foreground/95 p-4 mb-6 shadow-lg">
+            <Logo variant="horizontal" className="h-16 sm:h-20 w-auto" />
+          </div>
+          <div className="flex items-center justify-center gap-2 mb-6">
             <ShieldCheck className="h-4 w-4 text-accent" />
             <span className="text-accent font-semibold text-sm">Established 1930s</span>
             <span className="text-primary-foreground/60">•</span>
-            <span className="text-primary-foreground/80 text-sm">
-              Mumbai&apos;s Trade Authority
-            </span>
+            <span className="text-primary-foreground/80 text-sm">Mumbai&apos;s Trade Authority</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary-foreground leading-tight mb-8">
