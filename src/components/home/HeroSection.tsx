@@ -37,7 +37,7 @@ export function HeroSection() {
         <div className="text-center max-w-4xl mx-auto">
           {/* Heritage badge */}
           <div className="inline-block mb-6">
-            <Logo variant="horizontal" className="h-16 sm:h-20 w-auto" />
+            <Logo variant="horizontal" className="h-20 sm:h-24 lg:h-28 w-auto" />
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-navy leading-tight mb-8">
