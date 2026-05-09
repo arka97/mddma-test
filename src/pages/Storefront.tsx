@@ -216,7 +216,7 @@ const Storefront = () => {
                       <div className="text-xs text-muted-foreground">Source Countries</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{sellerListings.length}</div>
+                      <div className="text-lg font-bold text-accent">{sellerListingsCount}</div>
                       <div className="text-xs text-muted-foreground">Active Listings</div>
                     </div>
                   </div>
@@ -289,15 +289,10 @@ const Storefront = () => {
                               </td>
                               <td className="py-2.5 px-2 text-xs">
                                 <GuardedPublicPriceLine listing={{
-                                  id: p.id,
-                                  sellerId: liveCompanyId ?? "",
-                                  commodityId: p.id,
-                                  commodity: p.name,
-                                  variant: "",
-                                  origin: p.origin ?? "",
-                                  packaging: "",
-                                  moq: "",
                                   priceMin: p.price_min,
+                                  priceMax: p.price_max,
+                                  priceUnit: `₹/${p.unit ?? "kg"}`,
+                                }} />
                                   priceMax: p.price_max,
                                   priceUnit: `₹/${p.unit ?? "kg"}`,
                                   location: "",
