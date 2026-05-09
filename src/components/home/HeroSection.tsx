@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ShieldCheck, BadgeCheck, ArrowRight } from "lucide-react";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
+import { Logo } from "@/components/brand/Logo";
 
 
 const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
