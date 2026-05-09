@@ -17,6 +17,11 @@ export const qk = {
     byCompany: (companyId: string) =>
       [...qk.products.all, "company", companyId] as const,
   },
+  productCategories: {
+    all: ["productCategories"] as const,
+    list: (filters?: Record<string, unknown>) =>
+      [...qk.productCategories.all, "list", filters ?? {}] as const,
+  },
   rfqs: {
     all: ["rfqs"] as const,
     inbox: (companyId: string) => [...qk.rfqs.all, "inbox", companyId] as const,

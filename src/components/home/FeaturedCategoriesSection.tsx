@@ -7,8 +7,8 @@ import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import { useMemo } from "react";
 
 export function FeaturedCategoriesSection() {
-  const { data: listings } = useProducts();
-  const { data: cats, isLoading } = useProductCategories({ activeOnly: true, featuredOnly: true });
+  const { data: listings = [] } = useProducts();
+  const { data: cats = [], isLoading } = useProductCategories({ activeOnly: true, featuredOnly: true });
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();

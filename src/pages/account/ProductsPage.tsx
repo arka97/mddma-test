@@ -73,7 +73,7 @@ const ProductsPage = () => {
   const [variantsFor, setVariantsFor] = useState<Product | null>(null);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const { data: categories } = useProductCategories({ activeOnly: true });
+  const { data: categories = [] } = useProductCategories({ activeOnly: true });
 
   const load = async () => {
     if (!company) return;
