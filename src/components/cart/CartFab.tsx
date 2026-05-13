@@ -9,7 +9,8 @@ export function CartFab() {
     <Button
       variant="accent"
       onClick={() => setOpen(true)}
-      className="fixed bottom-6 right-6 z-40 h-12 w-12 rounded-full shadow-lg sm:h-14 sm:w-14"
+      className="fixed right-6 z-40 h-12 w-12 rounded-full shadow-lg sm:h-14 sm:w-14"
+      style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
       aria-label={`RFQ cart with ${count} items`}
     >
       <ShoppingCart className="h-5 w-5" />
