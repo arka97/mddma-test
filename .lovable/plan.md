@@ -1,90 +1,83 @@
+## Problem
 
-# Refactor Plan — Tech Debt + Dead Code Trim
+On mobile (especially iOS with notch / Android with cutout), the Login button and hamburger menu in the sticky header are partially hidden behind the status bar / camera cutout, making them un-tappable.
 
-Scope you picked: clean up tech debt + trim unused features. Constraint: **preserve all DB data**. No feature changes visible to end users.
+Root cause in the current code:
+- `index.html` sets `viewport-fit=cover` and `apple-mobile-web-app-status-bar-style=black-translucent`, which intentionally lets the app draw under the status bar.
+- `Header.tsx` uses `sticky top-0` with a fixed `h-[52px]` row and no `env(safe-area-inset-*)` padding, so the status bar / notch overlaps the tap targets.
+- The PWA `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, and `favicon.ico` were generated from the old (pre-Royal-Heritage) logo, so the home-screen icon is stale.
 
-## What I found
+## Scope of changes (frontend / assets only)
 
-**Code referencing tables that don't exist in the DB** (stubs that silently fail):
-- `src/lib/tradeSignals.ts` → reads `seller_trade_signals` (table missing)
-- `src/lib/kyc.ts` + `src/components/account/KYCDocsSection.tsx` + `VerificationCenter.tsx` → reads `kyc_documents` (missing)
-- `src/lib/membership.ts` reads `memberships` (missing — table exists in TS types only)
-- `supabase/functions/promote-verification` references `verification_submissions` (missing)
+### 1. Safe-area aware layout (the actual click bug)
 
-**Sample/dummy data still wired into live pages:**
-- `src/data/sampleData.ts` + `src/data/productListings.ts` consumed by `Storefront`, `MembershipPlans`, `MarketSignals`, `pitch/PitchSection`, `GuardedPrice`, `dataSource.ts`
-- `dataSource.ts` still has merge-with-demo branches even though the memo says "no dummy fallback"
+`src/index.css` — add a small utility layer:
+- Define `--safe-top`, `--safe-right`, `--safe-bottom`, `--safe-left` from `env(safe-area-inset-*)` on `:root`.
+- Add helpers `.pt-safe`, `.pb-safe`, `.pl-safe`, `.pr-safe`, `.px-safe`, plus `.min-h-screen-safe` (uses `100dvh` minus insets).
 
-**Pages/components not linked from anywhere** (dead routes / orphan components):
-- `src/components/pitch/PitchSection.tsx` — only imported by itself; `/pitch` route already redirects to `/documents/vision-and-pitch`
-- `src/components/MarketSignals.tsx` — no live consumer
-- `src/components/home/IndustryFeed.tsx`, `MarketplacePulse.tsx`, `AdBanner.tsx`, `FooterCTA.tsx` — verify against `Index.tsx` before removing (some may be legacy)
-- Legacy redirect routes (`/pitch`, `/mvp-canvas`, `/brd`, `/sow`, `/prd`, `/fsd`, `/sdd`, `/tsd`, `/changelog`) — kept as redirects, fine to leave
+`src/components/layout/Header.tsx`
+- Wrap the existing `<nav>` row with `pt-safe` and add `pl-safe pr-safe` to the container so the logo, Login button, and Menu trigger never sit under the notch/cutout/rounded corners.
+- Keep the 52px row height; the safe-area padding is added on top of it.
+- Bump the touch target of the hamburger and Login button to a minimum of `h-10 w-10` / `min-h-[40px]` on mobile (Apple HIG / Material both recommend ≥44/48dp). Currently the menu button is `p-1.5` on a 20px icon = ~32px, which is too small even without notch overlap.
 
-**Pages with no data behind them** (look real, render empty):
-- `Circulars` → `circulars` table has 0 rows
-- `Community` → `posts` has 0 rows (works, just empty)
-- `Market`, `Broker`, `Dashboard`, `About`, `Forms` — review whether each is still in product scope per memory; `Dashboard` is 361 lines and not linked from header
+`src/components/layout/Footer.tsx` and `src/components/cart/CartFab.tsx`
+- Add `pb-safe` so the footer and the floating cart button clear the iOS home indicator and Android gesture bar.
 
-**Schema-level cleanup candidates** (preserving all rows):
-- View `public_profiles` — confirm consumers, drop if unused
-- `inquiry_products` and `rfq_responses` have 0 rows but are part of the live RFQ contract — keep
-- `companies.review_status`, `is_hidden`, `membership_tier` — all in use, keep
+`src/components/cart/CartDrawer.tsx` and `src/components/ui/sheet.tsx` consumers (mobile sheet)
+- Add `pt-safe pb-safe` to the sheet content so drawer headers/footers aren't clipped.
 
-**Code structure issues:**
-- `AdminModeration.tsx` is 767 lines — split per resource (companies / categories / circulars / ads / users)
-- `Storefront.tsx` (411), `ProductsPage` (420), `About` (380), `Dashboard` (361) are large; extract sub-components
-- `dataSource.ts` carries a `source: "live" | "demo"` field that no UI uses — remove
-- `tradeSignals` / `kyc` libs are dead — delete or actually back them with tables
+`src/components/layout/MarketTicker.tsx`
+- Add `pt-safe` only when it sits at the very top of the viewport (it's currently inside the hero, so likely a no-op — verify during implementation).
 
-## Decision needed before I implement
+### 2. PWA / app icon refresh (Royal Heritage)
 
-The `kyc_documents` / `seller_trade_signals` / `memberships` / `verification_submissions` tables are referenced in code but missing in DB. Two ways to resolve:
+Regenerate icons from `src/assets/brand/MDDMA_Royal_Heritage_1to1.svg` (the square stacked lockup is the right artwork for app icons — the `mark` alone is too small at 48dp):
 
-- **A. Delete the dead code** — drop `lib/kyc.ts`, `lib/tradeSignals.ts`, `KYCDocsSection`, `VerificationCenter`, `promote-verification` edge fn, and the dead `lib/membership.ts` accessors. Simpler. Loses the verification UI scaffolding.
-- **B. Create the tables** — add migrations to make these real. Bigger lift. Turns scope into "schema redesign," which you said no to.
+- `public/icon-192.png` — 192×192, navy background, safe-area padded artwork.
+- `public/icon-512.png` — 512×512, same.
+- `public/icon-512-maskable.png` — 512×512 with the artwork inset to ~80% (Android adaptive icon safe zone, equivalent to the 108dp guideline you mentioned).
+- `public/apple-touch-icon.png` — 180×180, no transparency, navy background (iOS doesn't apply masks but rejects transparent PNGs cleanly).
+- `public/favicon.ico` — multi-size (16, 32, 48) from the logomark.
+- `public/og-image.png` — 1200×630 social card using the horizontal lockup on ivory (replaces the current `.svg` in OG tags, which many scrapers reject).
 
-I'll assume **A** unless you say otherwise.
+`public/manifest.json`
+- Update `theme_color` to `#1B2F5E` (Royal Heritage navy — currently `#0a1f44` from the old palette).
+- Update `background_color` to `#F8F4ED` (Royal Heritage ivory — currently `#ffffff`).
+- Add the maskable icon entry separately from the "any" icon (current entry uses both purposes on the same file, which Android handles poorly):
+  ```json
+  { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+  { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+  { "src": "/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ```
 
-## Plan
+`index.html`
+- Update `<meta name="theme-color">` to `#1B2F5E`.
+- Point `og:image` and `twitter:image` at the new `/og-image.png` (PNG, not SVG).
 
-### Phase 1 — Delete dead code (no DB changes)
-1. Remove `src/data/sampleData.ts` and `src/data/productListings.ts`. Update consumers (`Storefront`, `MembershipPlans`, `MarketSignals`, `PitchSection`, `GuardedPrice`, `dataSource.ts`) to either use live data or hardcoded UI-only constants where appropriate.
-2. Delete `src/components/pitch/PitchSection.tsx` and `src/components/MarketSignals.tsx` (no live consumer).
-3. Delete `src/lib/tradeSignals.ts`, `src/lib/kyc.ts`, `src/lib/__tests__/kyc.test.ts`, `src/lib/__tests__/tradeSignals.test.ts`. Remove imports in `SellerScoreboard`, `SellerSignals`, `account/VerificationCenter`, `account/KYCDocsSection`.
-4. Delete `src/components/account/KYCDocsSection.tsx`, `src/pages/account/VerificationCenter.tsx`, the `/account/verify` route, the verification dropdown link in `Header.tsx`.
-5. Delete `supabase/functions/promote-verification/` and remove its `[functions.promote-verification]` block in `supabase/config.toml`.
-6. Strip the `source: "live" | "demo"` plumbing from `lib/dataSource.ts` — it's never read.
-7. Decide per-page (need your call): keep or drop `About`, `Forms`, `Market`, `Broker`, `Dashboard`, `Install` — see "Open questions" below.
+## Additional recommendations (beyond your list)
 
-### Phase 2 — Tighten existing code
-1. Split `AdminModeration.tsx` (767 lines) into:
-   `pages/account/moderation/CompaniesTab.tsx`, `CategoriesTab.tsx`, `CircularsTab.tsx`, `AdsTab.tsx`, `UsersTab.tsx`, with a thin parent.
-2. Extract sub-components from `Storefront.tsx`, `ProductsPage.tsx`, `Dashboard.tsx` (header / filters / list / detail panels).
-3. Consolidate the two `useToast` exports (`hooks/use-toast.ts` and `components/ui/use-toast.ts` — pick one re-export).
-4. Replace ad-hoc `as unknown as` casts in `companies.ts` (uses `as never` then `(q as any).eq`) with proper typed query builders now that all tables are in `types.ts`.
-5. Verify every `from("...")` call hits a real table (post-cleanup) and remove the `as never` laundering pattern in `tradeSignals`/`kyc` (those files will be gone).
+These are worth doing while we're in here — happy to include or skip per your call:
 
-### Phase 3 — DB hygiene (data-preserving migrations)
-1. Drop unused view `public_profiles` if no consumer in code (verify first).
-2. Drop unused tables that exist only in TS types but never get rows and have no UI: confirm against `types.ts` — likely candidates: `memberships`, `seller_trade_signals`, `verification_submissions`, `kyc_documents` (some of these may not exist in DB at all; if so just remove from generated types — actually `types.ts` is auto-generated, so removing tables in DB will remove them from types automatically).
-3. Add missing `updated_at` triggers anywhere absent (audit `companies`, `products`, `profiles`, `posts`, etc.).
-4. Re-run `supabase--linter` and fix critical findings.
+1. **`100dvh` instead of `100vh`** for any full-height containers (mobile browsers shrink `vh` when the URL bar appears, causing layout jumps).
+2. **`overscroll-behavior: contain`** on the cart drawer and modal scroll areas to stop the rubber-band effect from scrolling the page underneath.
+3. **`touch-action: manipulation`** on all buttons/links to remove the 300ms tap delay on older Android Chrome.
+4. **Disable text size auto-inflation** on iOS via `-webkit-text-size-adjust: 100%` (already in shadcn defaults, just verifying).
+5. **PWA splash screens** for iOS — generate the 8 standard sizes (iPhone SE → iPad Pro) and link them with `<link rel="apple-touch-startup-image">`. Optional but makes the installed app feel native instead of flashing white.
+6. **`scroll-padding-top: calc(52px + env(safe-area-inset-top))`** on `html` so anchor links don't land under the sticky header.
+7. **Larger hit areas on the role simulator dropdown** in the header — same notch issue applies there on demos.
+8. **Capacitor-specific:** if/when wrapping in Capacitor, set `StatusBar.setOverlaysWebView({ overlay: false })` and use `@capacitor/safe-area` to also push CSS variables — your existing `pt-safe` utility will then Just Work in the native shell too.
 
-### Phase 4 — Verify
-- Build clean.
-- Run vitest.
-- Smoke-test: home, /directory, /directory/:slug, /store/:slug, /products, /products/:slug, /community, /circulars, /account/* as paid_member and admin via role simulator.
-- Confirm RFQ create still works (cart → drawer → submit).
+The safe-area items in your message (iOS safe areas, Android displayCutout, flexible insets, adaptive icons, store icon sizes) are all covered above. Items 5 and 8 here are the most impactful follow-ups.
 
-## Open questions
+## Out of scope
 
-I need 5 quick answers before I start swinging the axe:
+- No changes to data model, RLS, or business logic.
+- No new pages or routes.
+- No restyling beyond padding / icon refresh.
 
-1. **Verification flow** — option A (delete it entirely) or B (build the table)? I'm recommending A.
-2. **Pages to keep**: `About`, `Forms`, `Market`, `Broker`, `Dashboard`, `Install` — which of these are still in scope? `Dashboard` is 361 lines but not in the nav; `Market` is in nav but the data sources are stubs.
-3. **Sample data** — OK to delete `sampleData.ts` / `productListings.ts` outright? Pages that currently read them will switch to live DB and may show empty states until rows are seeded.
-4. **`/pitch` and other legacy redirect routes** — keep as redirects (low cost) or drop entirely?
-5. **Home sections** — `IndustryFeed`, `MarketplacePulse`, `AdBanner`, `FooterCTA` — confirm each is still mounted in `Index.tsx` and which (if any) you want trimmed.
+## Verification
 
-Answer those and I'll execute Phase 1 → 4 in order. No DB destructive ops without an explicit "go" — every drop will be a reviewed migration.
+- View `/` on mobile preview (375×812 and 360×800), confirm Login + Menu fully tappable below the notch.
+- Open the cart drawer on mobile, confirm header and submit button are not clipped at top/bottom.
+- `Application` tab in DevTools → Manifest → confirm new icons render with navy background and gold/burgundy artwork.
+- Lighthouse PWA audit should still pass.

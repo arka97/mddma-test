@@ -70,7 +70,7 @@ export function CartDrawer() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-md overflow-y-auto pt-safe pb-safe overscroll-contain">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2"><ShoppingCart className="h-5 w-5" /> RFQ Cart</SheetTitle>
         </SheetHeader>

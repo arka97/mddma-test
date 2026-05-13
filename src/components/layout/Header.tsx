@@ -106,11 +106,11 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 transition-transform duration-300",
+        "sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 transition-transform duration-300 pt-safe",
         hidden && "-translate-y-full",
       )}
     >
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="container mx-auto px-4 pl-safe pr-safe sm:px-6 lg:px-8">
         <div className="flex h-[52px] items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
             <Logo variant="mark" className="h-8 w-8" />
@@ -145,13 +145,13 @@ export function Header() {
                 className="h-8 w-44 pl-8 text-sm"
               />
             </form>
-            <InstallAppButton iconOnly size="sm" className="h-8 w-8 p-0" />
+            <InstallAppButton iconOnly size="sm" className="h-10 w-10 p-0 sm:h-8 sm:w-8" />
             {user ? (
               <UserMenu />
             ) : (
-              <Button size="sm" variant="default" className="h-8" asChild>
+              <Button size="sm" variant="default" className="h-10 min-w-10 sm:h-8" asChild>
                 <Link to="/login">
-                  <LogIn className="mr-1 h-3.5 w-3.5" />
+                  <LogIn className="h-4 w-4 sm:mr-1 sm:h-3.5 sm:w-3.5" />
                   <span className="hidden sm:inline">Login</span>
                 </Link>
               </Button>
@@ -161,7 +161,7 @@ export function Header() {
               <SheetTrigger asChild>
                 <button
                   type="button"
-                  className="rounded-md p-1.5 text-foreground hover:bg-muted lg:hidden"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-md text-foreground hover:bg-muted lg:hidden"
                   aria-label="Open menu"
                 >
                   <Menu className="h-5 w-5" />

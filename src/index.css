@@ -209,6 +209,38 @@
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
+
+  /* Safe-area aware padding for notch / status bar / home indicator */
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pl-safe { padding-left: env(safe-area-inset-left); }
+  .pr-safe { padding-right: env(safe-area-inset-right); }
+  .px-safe {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+  .mt-safe { margin-top: env(safe-area-inset-top); }
+  .mb-safe { margin-bottom: env(safe-area-inset-bottom); }
+  .top-safe { top: env(safe-area-inset-top); }
+  .bottom-safe { bottom: env(safe-area-inset-bottom); }
+
+  /* Touch-friendly: removes 300ms tap delay on legacy Android Chrome */
+  .touch-action-manipulation { touch-action: manipulation; }
+}
+
+@layer base {
+  html {
+    /* Anchor links land below the sticky header + notch */
+    scroll-padding-top: calc(52px + env(safe-area-inset-top));
+    -webkit-text-size-adjust: 100%;
+  }
+  /* Prevent overscroll rubber-band leaking through drawers */
+  body {
+    overscroll-behavior-y: contain;
+  }
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
 }
 
 @keyframes ticker-scroll {
