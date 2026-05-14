@@ -29,6 +29,9 @@ const CompanyPage = lazy(() => import("./pages/account/CompanyPage"));
 const ProductsPage = lazy(() => import("./pages/account/ProductsPage"));
 const RFQInbox = lazy(() => import("./pages/account/RFQInbox"));
 const AdminModeration = lazy(() => import("./pages/account/AdminModeration"));
+const Brands = lazy(() => import("./pages/Brands"));
+const BrandPage = lazy(() => import("./pages/BrandPage"));
+const AccountBrandsPage = lazy(() => import("./pages/account/BrandsPage"));
 
 function RouteFallback() {
   return (
@@ -55,6 +58,8 @@ export function AppRoutes() {
         <Route path="/store/:slug" element={<Storefront />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:slug" element={<ProductPage />} />
+        <Route path="/brands" element={<Brands />} />
+        <Route path="/brands/:slug" element={<BrandPage />} />
         <Route path="/broker" element={<Broker />} />
         <Route path="/market" element={<Market />} />
         <Route path="/dashboard" element={<Dashboard />} />
@@ -71,6 +76,7 @@ export function AppRoutes() {
         <Route path="/account/profile" element={protect(<ProfilePage />)} />
         <Route path="/account/company" element={protect(<CompanyPage />)} />
         <Route path="/account/products" element={protect(<ProductsPage />)} />
+        <Route path="/account/brands" element={protect(<AccountBrandsPage />)} />
         <Route path="/account/rfqs" element={protect(<RFQInbox />)} />
         
         <Route path="/account/moderation" element={protect(<AdminModeration />, "admin")} />

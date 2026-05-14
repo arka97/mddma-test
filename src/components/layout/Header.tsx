@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Search } from "lucide-react";
+import { Menu, LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -19,6 +19,7 @@ const navigation = [
   { name: "About", href: "/about" },
   { name: "Directory", href: "/directory" },
   { name: "Products", href: "/products" },
+  { name: "Brands", href: "/brands" },
   { name: "Market", href: "/market" },
   { name: "Community", href: "/community" },
   { name: "Membership", href: "/membership" },
@@ -94,6 +95,7 @@ export function Header() {
         <DropdownMenuItem asChild><Link to="/account/company"><Building2 className="mr-2 h-4 w-4" /> {company ? "My Company" : "Create Company"}</Link></DropdownMenuItem>
         {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="mr-2 h-4 w-4" /> View My Storefront</Link></DropdownMenuItem>}
         <DropdownMenuItem asChild><Link to="/account/products"><Package className="mr-2 h-4 w-4" /> My Products</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link to="/account/brands"><Sparkles className="mr-2 h-4 w-4" /> My Brands</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/rfqs"><Inbox className="mr-2 h-4 w-4" /> RFQ Center</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/verify"><ShieldCheck className="mr-2 h-4 w-4" /> Verification</Link></DropdownMenuItem>
         {hasRole("admin") && <DropdownMenuItem asChild><Link to="/account/moderation"><ShieldCheck className="mr-2 h-4 w-4" /> Moderation</Link></DropdownMenuItem>}
