@@ -1,66 +1,54 @@
-## Seller Brands — Plan
+## Embed Discourse into Community
 
-Sellers can register one or more **house brands** (e.g., Bazana) sold alongside bulk commodities. Branded SKUs link out to external B2C stores; RFQ stays B2B-only.
+Restructure `/community` so the new Discourse forum becomes the primary discussion surface, and the existing native posts/comments become a read-only archive.
 
-### 1. Database (migration)
+### Tabs layout
 
-**New table `brands`**
-- `id`, `company_id` (FK companies), `slug` (unique), `name`, `tagline`, `story` (text)
-- `logo_url`, `cover_url`, `gallery` (text[])
-- `b2c_url` (external retail link), `social_links` (jsonb)
-- `categories` (text[]), `is_featured` (bool), `is_active` (bool), `sort_order`
-- `created_at`, `updated_at`
+Replace the current "All / Market Updates / Trade Discussions / Association Circulars" tabs with two top-level tabs:
 
-**Alter `products`**
-- Add `brand_id uuid` (nullable, FK brands)
-- Add `is_branded boolean default false`
-- Add `retail_pack_size text` (e.g., "200 g pouch") — display only, not a price
-- Add `b2c_url text` (per-SKU override; falls back to brand's b2c_url)
+1. **Discussions (Discourse)** — default tab. Loads Discourse embed pointing at `https://mddma.discourse.group/`.
+2. **Archive (read-only)** — existing native posts list and detail view. Posting form and comment form removed; the previous category sub-tabs become a simple filter dropdown.
 
-**RLS**
-- Public SELECT on `brands` where `is_active = true`
-- Owner (via companies.owner_id) + admin: INSERT/UPDATE/DELETE on own brands
-- Existing product policies already cover `brand_id` filtering
+### Discourse embed component
 
-### 2. Repositories & hooks
-- `src/repositories/brands.ts` — `listBrands({featured, companyId})`, `getBrandBySlug`, `listBrandsByCompany`
-- `src/hooks/queries/useBrands.ts` — `useBrands`, `useBrandBySlug`, `useBrandsByCompany`
-- Extend `useProducts` to accept `{ brandId?, mode?: "bulk" | "branded" | "all" }`
+New component `src/components/community/DiscourseEmbed.tsx`:
 
-### 3. UI surfaces
+- Renders `<div id="discourse-comments" />`.
+- On mount, sets `window.DiscourseEmbed = { discourseUrl, discourseEmbedUrl }` and injects `embed.js` once.
+- Cleans up on unmount (removes the script tag and the global) so navigating between tabs/routes works.
+- Adds the `<meta name="discourse-username" content="...">` tag dynamically via `react-helmet-async` (already mentioned in head-meta context — install if not present) OR via direct `document.head` mutation with cleanup.
+- Props: `embedUrl: string` (page URL being embedded), `username: string` (Discourse author).
 
-**a. Storefront `/store/:slug`** — new "Our Brands" section above bulk products
-- Horizontal card row of company's brands (logo + name + tagline + "View brand →")
-- Each card links to `/brands/:slug`
+For the Community landing page, `embedUrl` will be `https://mddma.org/community` (canonical) so Discourse creates a single rooted topic list. A future per-thread integration on circulars/products is out of scope for this change.
 
-**b. New routes**
-- `/brands` — discovery grid of all featured/active brands across sellers
-- `/brands/:slug` — brand detail page: hero (cover + logo + story), gallery, branded SKU grid (with retail pack size + "Buy retail" external CTA), seller credit linking back to `/store/:companySlug`
+### Configuration
 
-**c. Homepage** — new `FeaturedBrandsStrip` component
-- Logo carousel of `is_featured` brands, links to `/brands/:slug`
-- Inserted between `FeaturedCategoriesSection` and `MarketplacePulse`
+- Discourse URL hardcoded to `https://mddma.discourse.group/`.
+- Default `discourse-username`: ask user (placeholder `mddma_admin` for now — confirmed with user before shipping).
+- No secrets needed; embed.js is public.
 
-**d. Products page `/products`** — add segmented toggle "Bulk / Branded / All"
-- Branded mode shows products with `is_branded=true`, hides RFQ CTA on retail-only items, shows "Buy retail →" external link instead
+### Native archive cleanup
 
-**e. Account hub** — `/account/brands` (new)
-- CRUD for the seller's brands (logo upload via `company-assets` bucket, story editor, b2c_url)
-- Existing `/account/products` gets a brand picker dropdown + "branded?" toggle + retail pack size + b2c_url
+In `src/pages/Community.tsx`:
+- Keep `load()`, post list, and detail view (read-only).
+- Remove the "Start a discussion" sidebar card and `submitPost`.
+- Remove `submitComment` and the comment textarea in detail view.
+- Add a banner at the top of the Archive tab: "This archive is read-only. New discussions happen in the Discussions tab."
+- Keep the post list, detail view, and comment display intact.
 
-### 4. Guardrails preserved
-- No exact prices anywhere — branded SKUs show pack size + external CTA, never an MRP rendered from DB
-- RFQ remains B2B-only (auth-gated, paid-only submit). Branded items can also be RFQ'd in bulk if not flagged retail-only.
-- All colors via HSL semantic tokens; navy/gold aesthetic
+### Files
 
-### 5. Out of scope
-- In-app B2C cart / checkout / payments
-- Brand verification badges (reuse company verification)
-- Per-brand analytics dashboards
+- New: `src/components/community/DiscourseEmbed.tsx`
+- Edit: `src/pages/Community.tsx` — wrap content in two-tab Tabs, mount `<DiscourseEmbed />` in first tab, strip write paths from archive
+- Edit: `mem://features/community-forum` — note Discourse is primary, native is archive
+- Edit: `mem://index.md` — update the community-forum line
 
-### Files to add/change
-- **New:** migration; `src/repositories/brands.ts`; `src/hooks/queries/useBrands.ts`; `src/pages/Brands.tsx`; `src/pages/BrandPage.tsx`; `src/pages/account/BrandsPage.tsx`; `src/components/brands/BrandCard.tsx`; `src/components/brands/BrandStrip.tsx`; `src/components/home/FeaturedBrandsStrip.tsx`
-- **Edit:** `src/routes.tsx`; `src/pages/Index.tsx`; `src/pages/Storefront.tsx`; `src/pages/Products.tsx`; `src/pages/account/ProductsPage.tsx`; `src/components/layout/Header.tsx` (add Brands nav link); memory index
+### Open question before implementation
 
-### Verification
-- Create one brand seeded for an existing company, attach 2 branded products, confirm: appears on `/brands`, `/brands/:slug`, on company storefront, on homepage strip, and filterable on `/products`. Confirm "Buy retail" opens external URL in new tab. Confirm RLS: anonymous can read brands but not edit.
+I need the Discourse username that should be set as the default topic author for embedded pages (the `DISCOURSE_USERNAME` value). I'll ask in a follow-up after plan approval if you don't include it.
+
+### Out of scope
+
+- Per-thread Discourse embeds on individual circular/product pages
+- SSO between Lovable Cloud auth and Discourse (Discourse handles its own auth in the iframe)
+- Migrating archived posts into Discourse
