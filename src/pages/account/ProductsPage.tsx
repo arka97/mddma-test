@@ -200,6 +200,10 @@ const ProductsPage = () => {
       price_max: priceMax,
       unit,
       is_hidden: !!editing.is_hidden,
+      brand_id: editing.brand_id || null,
+      is_branded: !!editing.is_branded,
+      retail_pack_size: editing.retail_pack_size?.trim() || null,
+      b2c_url: editing.b2c_url?.trim() || null,
     };
 
     let error;
