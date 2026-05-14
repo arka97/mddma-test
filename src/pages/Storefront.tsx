@@ -253,6 +253,14 @@ const Storefront = () => {
                 </CardContent>
               </Card>
 
+              {companyBrands.length > 0 && (
+                <Card className="bg-card border-border">
+                  <CardContent className="p-5">
+                    <BrandStrip brands={companyBrands} title="Our Brands" />
+                  </CardContent>
+                </Card>
+              )}
+
               {/* V2: Product Catalog with controlled pricing */}
               <Card className="bg-card border-border">
                 <CardHeader>
