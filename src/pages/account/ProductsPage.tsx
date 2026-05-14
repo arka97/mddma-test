@@ -19,6 +19,8 @@ import { VariantManager } from "@/components/products/VariantManager";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
+import { useBrandsByCompany } from "@/hooks/queries/useBrands";
+import { Switch } from "@/components/ui/switch";
 
 interface Product {
   id: string;
@@ -34,6 +36,10 @@ interface Product {
   price_max: number | null;
   unit: string | null;
   is_hidden: boolean;
+  brand_id: string | null;
+  is_branded: boolean;
+  retail_pack_size: string | null;
+  b2c_url: string | null;
 }
 
 const MAX_IMAGE_MB = 5;
@@ -45,6 +51,7 @@ const emptyProduct: Partial<Product> = {
   gallery: [], video_url: "",
   price_min: null, price_max: null, unit: "kg",
   is_hidden: false,
+  brand_id: null, is_branded: false, retail_pack_size: "", b2c_url: "",
 };
 
 async function ensureUniqueSlug(companyId: string, base: string, currentId?: string): Promise<string> {
@@ -74,6 +81,7 @@ const ProductsPage = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const { data: categories = [] } = useProductCategories({ activeOnly: true });
+  const { data: companyBrands = [] } = useBrandsByCompany(company?.id);
 
   const load = async () => {
     if (!company) return;
