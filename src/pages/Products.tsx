@@ -27,11 +27,38 @@ const Products = () => {
   const [searchTerm, setSearchTerm] = useState(params.get("q") ?? "");
   const [originFilter, setOriginFilter] = useState<string>(params.get("origin") ?? "all");
   const [rfqProduct, setRfqProduct] = useState<string | null>(null);
+  const mode = (params.get("mode") ?? "all") as "all" | "bulk" | "branded";
 
   const { data: listingsData, isLoading } = useProducts();
   const { data: catsData } = useProductCategories({ activeOnly: true });
-  const listings = listingsData ?? [];
+  const allListings = listingsData ?? [];
+  const listings = mode === "bulk"
+    ? allListings.filter((l) => !l.isBranded)
+    : mode === "branded"
+      ? allListings.filter((l) => l.isBranded)
+      : allListings;
   const cats = catsData ?? [];
+
+  const setMode = (m: "all" | "bulk" | "branded") => {
+    const next = new URLSearchParams(params);
+    if (m === "all") next.delete("mode"); else next.set("mode", m);
+    setParams(next);
+  };
+
+  const ModeToggle = () => (
+    <div className="inline-flex items-center rounded-md border border-border bg-background p-0.5 text-xs">
+      {(["all", "bulk", "branded"] as const).map((m) => (
+        <button
+          key={m}
+          type="button"
+          onClick={() => setMode(m)}
+          className={`px-3 py-1.5 rounded transition ${mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+        >
+          {m === "all" ? "All" : m === "bulk" ? "Bulk" : "Branded"}
+        </button>
+      ))}
+    </div>
+  );
 
   const activeCatRow = cats.find((c) => c.name === activeCat) ?? null;
 
