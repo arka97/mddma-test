@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, Send, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Send, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
