@@ -1,54 +1,43 @@
-## Embed Discourse into Community
+## Fix Discourse "refused to connect" on /community
 
-Restructure `/community` so the new Discourse forum becomes the primary discussion surface, and the existing native posts/comments become a read-only archive.
+### Root cause
 
-### Tabs layout
+Discourse's embed.js renders an `<iframe>` pointing at `https://mddma.discourse.group/embed/comments?embed_url=...`. Discourse refuses to render that iframe (sends `X-Frame-Options: DENY` / restrictive `Content-Security-Policy: frame-ancestors`) unless **two server-side settings on the Discourse instance** are configured. This is **not a code bug in the app** — the embed component is correct.
 
-Replace the current "All / Market Updates / Trade Discussions / Association Circulars" tabs with two top-level tabs:
+Additionally, Discourse Embeddable Hosts only generates topics for URLs they whitelist, AND the embed URL must be a real, publicly fetchable page (Discourse fetches it server-side to scrape title/content for the auto-created topic).
 
-1. **Discussions (Discourse)** — default tab. Loads Discourse embed pointing at `https://mddma.discourse.group/`.
-2. **Archive (read-only)** — existing native posts list and detail view. Posting form and comment form removed; the previous category sub-tabs become a simple filter dropdown.
+### What you need to do in the Discourse admin (one-time)
 
-### Discourse embed component
+1. Go to `https://mddma.discourse.group/admin/customize/embedding`
+2. Under **Embeddable Hosts**, add entries for every origin that will host the embed:
+   - `mddma.org`
+   - `www.mddma.org`
+   - `mddma.lovable.app`
+   - `id-preview--7f1be24f-5c82-46e1-b1af-5043034c22c0.lovable.app` (Lovable preview)
+   - For each, set a **Category** (e.g., "Community") and **Posted by** user (e.g., `system` or your admin username)
+3. Under **Embedding settings**:
+   - Set `embed username key from feed` if you want the page's `<meta name="discourse-username">` to pick the author
+   - Leave `embed truncate` on
+4. Save. Reload `/community` — the iframe will then load.
 
-New component `src/components/community/DiscourseEmbed.tsx`:
+### Code-side improvements (small, optional)
 
-- Renders `<div id="discourse-comments" />`.
-- On mount, sets `window.DiscourseEmbed = { discourseUrl, discourseEmbedUrl }` and injects `embed.js` once.
-- Cleans up on unmount (removes the script tag and the global) so navigating between tabs/routes works.
-- Adds the `<meta name="discourse-username" content="...">` tag dynamically via `react-helmet-async` (already mentioned in head-meta context — install if not present) OR via direct `document.head` mutation with cleanup.
-- Props: `embedUrl: string` (page URL being embedded), `username: string` (Discourse author).
+While the root fix is Discourse-side, I'll also tighten the embed component:
 
-For the Community landing page, `embedUrl` will be `https://mddma.org/community` (canonical) so Discourse creates a single rooted topic list. A future per-thread integration on circulars/products is out of scope for this change.
+1. **Friendly fallback UI**: detect when the iframe fails to load within ~6s (no `discourse-comments` child rendered) and show a card with:
+   - "The discussion forum is being set up. Visit it directly →" linking to `https://mddma.discourse.group/`
+   - This keeps the page usable even before Discourse whitelisting is done.
+2. **Use `window.location.href` as `embedUrl` for preview/dev environments** so each origin (preview vs prod) maps to a Discourse-whitelisted host. Today it's hardcoded to `https://mddma.org/community`, which means even after whitelisting, Discourse will fetch `mddma.org/community` to scrape topic content — fine for prod but the preview will share the same topic. If you'd like preview to be isolated, switch to `window.location.origin + '/community'`.
 
-### Configuration
+### Files to edit (only if you want the fallback + dynamic embed URL)
 
-- Discourse URL hardcoded to `https://mddma.discourse.group/`.
-- Default `discourse-username`: ask user (placeholder `mddma_admin` for now — confirmed with user before shipping).
-- No secrets needed; embed.js is public.
+- `src/components/community/DiscourseEmbed.tsx` — add 6s timeout + fallback card; optionally derive `embedUrl` from `window.location`.
+- `src/pages/Community.tsx` — drop the hardcoded `embedUrl` prop and let the component default to the current origin.
 
-### Native archive cleanup
+### Open question
 
-In `src/pages/Community.tsx`:
-- Keep `load()`, post list, and detail view (read-only).
-- Remove the "Start a discussion" sidebar card and `submitPost`.
-- Remove `submitComment` and the comment textarea in detail view.
-- Add a banner at the top of the Archive tab: "This archive is read-only. New discussions happen in the Discussions tab."
-- Keep the post list, detail view, and comment display intact.
+Do you want me to:
+- **(A) Just document the Discourse admin fix** (no code change) and you'll configure Discourse, or
+- **(B) Also add the fallback card + dynamic embedUrl** so the page degrades gracefully while Discourse is being set up?
 
-### Files
-
-- New: `src/components/community/DiscourseEmbed.tsx`
-- Edit: `src/pages/Community.tsx` — wrap content in two-tab Tabs, mount `<DiscourseEmbed />` in first tab, strip write paths from archive
-- Edit: `mem://features/community-forum` — note Discourse is primary, native is archive
-- Edit: `mem://index.md` — update the community-forum line
-
-### Open question before implementation
-
-I need the Discourse username that should be set as the default topic author for embedded pages (the `DISCOURSE_USERNAME` value). I'll ask in a follow-up after plan approval if you don't include it.
-
-### Out of scope
-
-- Per-thread Discourse embeds on individual circular/product pages
-- SSO between Lovable Cloud auth and Discourse (Discourse handles its own auth in the iframe)
-- Migrating archived posts into Discourse
+I'll ask via a follow-up after plan approval if you don't pick here.
