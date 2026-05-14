@@ -98,9 +98,20 @@ export interface ProductEntry {
   imageUrl?: string | null;
   gallery?: string[] | null;
   videoUrl?: string | null;
+  isBranded?: boolean;
+  brandId?: string | null;
+  retailPackSize?: string | null;
+  b2cUrl?: string | null;
 }
 
 export function liveProductToEntry(p: ProductRow): ProductEntry {
+  const extras = p as ProductRow & {
+    video_url?: string | null;
+    is_branded?: boolean;
+    brand_id?: string | null;
+    retail_pack_size?: string | null;
+    b2c_url?: string | null;
+  };
   return {
     id: p.id,
     sellerId: p.company_id,
@@ -117,7 +128,11 @@ export function liveProductToEntry(p: ProductRow): ProductEntry {
     listingDate: p.created_at,
     imageUrl: p.image_url,
     gallery: p.gallery,
-    videoUrl: (p as ProductRow & { video_url?: string | null }).video_url ?? null,
+    videoUrl: extras.video_url ?? null,
+    isBranded: !!extras.is_branded,
+    brandId: extras.brand_id ?? null,
+    retailPackSize: extras.retail_pack_size ?? null,
+    b2cUrl: extras.b2c_url ?? null,
   };
 }
 

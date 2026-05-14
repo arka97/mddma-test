@@ -59,6 +59,81 @@ export type Database = {
         }
         Relationships: []
       }
+      brands: {
+        Row: {
+          b2c_url: string | null
+          categories: string[]
+          company_id: string
+          cover_url: string | null
+          created_at: string
+          gallery: string[]
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          logo_url: string | null
+          name: string
+          slug: string
+          social_links: Json
+          sort_order: number
+          story: string | null
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          b2c_url?: string | null
+          categories?: string[]
+          company_id: string
+          cover_url?: string | null
+          created_at?: string
+          gallery?: string[]
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          logo_url?: string | null
+          name: string
+          slug: string
+          social_links?: Json
+          sort_order?: number
+          story?: string | null
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          b2c_url?: string | null
+          categories?: string[]
+          company_id?: string
+          cover_url?: string | null
+          created_at?: string
+          gallery?: string[]
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          social_links?: Json
+          sort_order?: number
+          story?: string | null
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brands_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brands_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       circulars: {
         Row: {
           body: string
@@ -420,6 +495,8 @@ export type Database = {
       }
       products: {
         Row: {
+          b2c_url: string | null
+          brand_id: string | null
           category: string | null
           certifications: string[] | null
           company_id: string
@@ -429,6 +506,7 @@ export type Database = {
           id: string
           image_url: string | null
           inquiry_count: number
+          is_branded: boolean
           is_featured: boolean
           is_hidden: boolean
           name: string
@@ -436,6 +514,7 @@ export type Database = {
           packaging_options: string[] | null
           price_max: number | null
           price_min: number | null
+          retail_pack_size: string | null
           slug: string
           unit: string | null
           updated_at: string
@@ -443,6 +522,8 @@ export type Database = {
           view_count: number
         }
         Insert: {
+          b2c_url?: string | null
+          brand_id?: string | null
           category?: string | null
           certifications?: string[] | null
           company_id: string
@@ -452,6 +533,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           inquiry_count?: number
+          is_branded?: boolean
           is_featured?: boolean
           is_hidden?: boolean
           name: string
@@ -459,6 +541,7 @@ export type Database = {
           packaging_options?: string[] | null
           price_max?: number | null
           price_min?: number | null
+          retail_pack_size?: string | null
           slug: string
           unit?: string | null
           updated_at?: string
@@ -466,6 +549,8 @@ export type Database = {
           view_count?: number
         }
         Update: {
+          b2c_url?: string | null
+          brand_id?: string | null
           category?: string | null
           certifications?: string[] | null
           company_id?: string
@@ -475,6 +560,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           inquiry_count?: number
+          is_branded?: boolean
           is_featured?: boolean
           is_hidden?: boolean
           name?: string
@@ -482,6 +568,7 @@ export type Database = {
           packaging_options?: string[] | null
           price_max?: number | null
           price_min?: number | null
+          retail_pack_size?: string | null
           slug?: string
           unit?: string | null
           updated_at?: string
@@ -489,6 +576,13 @@ export type Database = {
           view_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "products_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_company_id_fkey"
             columns: ["company_id"]

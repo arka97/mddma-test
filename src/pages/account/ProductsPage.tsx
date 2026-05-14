@@ -19,6 +19,8 @@ import { VariantManager } from "@/components/products/VariantManager";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
+import { useBrandsByCompany } from "@/hooks/queries/useBrands";
+import { Switch } from "@/components/ui/switch";
 
 interface Product {
   id: string;
@@ -34,6 +36,10 @@ interface Product {
   price_max: number | null;
   unit: string | null;
   is_hidden: boolean;
+  brand_id: string | null;
+  is_branded: boolean;
+  retail_pack_size: string | null;
+  b2c_url: string | null;
 }
 
 const MAX_IMAGE_MB = 5;
@@ -45,6 +51,7 @@ const emptyProduct: Partial<Product> = {
   gallery: [], video_url: "",
   price_min: null, price_max: null, unit: "kg",
   is_hidden: false,
+  brand_id: null, is_branded: false, retail_pack_size: "", b2c_url: "",
 };
 
 async function ensureUniqueSlug(companyId: string, base: string, currentId?: string): Promise<string> {
@@ -74,6 +81,7 @@ const ProductsPage = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const { data: categories = [] } = useProductCategories({ activeOnly: true });
+  const { data: companyBrands = [] } = useBrandsByCompany(company?.id);
 
   const load = async () => {
     if (!company) return;
@@ -192,6 +200,10 @@ const ProductsPage = () => {
       price_max: priceMax,
       unit,
       is_hidden: !!editing.is_hidden,
+      brand_id: editing.brand_id || null,
+      is_branded: !!editing.is_branded,
+      retail_pack_size: editing.retail_pack_size?.trim() || null,
+      b2c_url: editing.b2c_url?.trim() || null,
     };
 
     let error;
@@ -398,6 +410,48 @@ const ProductsPage = () => {
                 <div className="space-y-1.5"><Label>Unit *</Label><Input required value={editing.unit ?? "kg"} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} /></div>
               </div>
               <div className="space-y-1.5"><Label>Description</Label><Textarea rows={4} maxLength={1500} value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} /></div>
+
+              <div className="space-y-3 rounded-md border p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-semibold">Branded retail SKU</Label>
+                    <p className="text-xs text-muted-foreground">Tag this product as part of one of your house brands.</p>
+                  </div>
+                  <Switch
+                    checked={!!editing.is_branded}
+                    onCheckedChange={(v) => setEditing({ ...editing, is_branded: v, brand_id: v ? editing.brand_id ?? null : null })}
+                  />
+                </div>
+                {editing.is_branded && (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <Label>Brand</Label>
+                      {companyBrands.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          No brands yet. <Link to="/account/brands" className="text-accent hover:underline">Create a brand →</Link>
+                        </p>
+                      ) : (
+                        <Select value={editing.brand_id ?? ""} onValueChange={(v) => setEditing({ ...editing, brand_id: v || null })}>
+                          <SelectTrigger><SelectValue placeholder="Pick a brand" /></SelectTrigger>
+                          <SelectContent>
+                            {companyBrands.map((b) => (
+                              <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Retail pack size</Label>
+                      <Input maxLength={60} placeholder="e.g. 200 g pouch" value={editing.retail_pack_size ?? ""} onChange={(e) => setEditing({ ...editing, retail_pack_size: e.target.value })} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Buy retail URL (optional)</Label>
+                      <Input type="url" placeholder="Defaults to brand's URL" value={editing.b2c_url ?? ""} onChange={(e) => setEditing({ ...editing, b2c_url: e.target.value })} />
+                    </div>
+                  </div>
+                )}
+              </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save product"}</Button>
