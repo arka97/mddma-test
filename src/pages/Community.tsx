@@ -97,7 +97,7 @@ const Community = () => {
             </TabsList>
 
             <TabsContent value="discussions">
-              <DiscourseEmbed embedUrl="https://mddma.org/community" />
+              <DiscourseEmbed />
             </TabsContent>
 
             <TabsContent value="archive">
