@@ -71,7 +71,8 @@ const Products = () => {
           subtitle="Browse commodity categories from KYC-verified MDDMA sellers. Pick a category to view listings."
         />
 
-        <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 flex-wrap">
+          <ModeToggle />
           <AdBanner placement="category-banner" />
         </div>
 
@@ -240,21 +241,34 @@ const Products = () => {
                         <h3 className="font-semibold text-foreground truncate">
                           {listing.commodity}
                         </h3>
-                        <p className="text-xs text-muted-foreground truncate">{listing.variant}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {listing.isBranded && listing.retailPackSize ? listing.retailPackSize : listing.variant}
+                        </p>
                       </div>
-                      <GuardedPrice listing={listing} />
+                      {!listing.isBranded && <GuardedPrice listing={listing} />}
+                      {listing.isBranded && (
+                        <Badge variant="warning" className="text-[10px]">Branded</Badge>
+                      )}
                     </div>
 
                     <div className="mt-auto pt-3 border-t border-border space-y-2">
-                      <Button
-                        size="sm"
-                        className="w-full text-accent-foreground"
-                        onClick={() =>
-                          setRfqProduct(`${listing.commodity} — ${listing.variant}`)
-                        }
-                      >
-                        <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
-                      </Button>
+                      {listing.isBranded && listing.b2cUrl ? (
+                        <Button size="sm" className="w-full" asChild>
+                          <a href={listing.b2cUrl} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Buy retail
+                          </a>
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          className="w-full text-accent-foreground"
+                          onClick={() =>
+                            setRfqProduct(`${listing.commodity} — ${listing.variant}`)
+                          }
+                        >
+                          <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
