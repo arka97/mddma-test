@@ -21,6 +21,8 @@ import { GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
 import { useCart } from "@/contexts/CartContext";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
+import { useBrandsByCompany } from "@/hooks/queries/useBrands";
+import { BrandStrip } from "@/components/brands/BrandStrip";
 
 interface LiveProduct {
   id: string;
@@ -48,6 +50,7 @@ const Storefront = () => {
   const [liveCompanyId, setLiveCompanyId] = useState<string | null>(null);
   const [liveProducts, setLiveProducts] = useState<LiveProduct[]>([]);
   const [loading, setLoading] = useState(true);
+  const { data: companyBrands = [] } = useBrandsByCompany(liveCompanyId ?? undefined);
 
   useEffect(() => {
     if (!slug) return;
