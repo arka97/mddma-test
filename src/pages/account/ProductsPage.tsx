@@ -410,6 +410,48 @@ const ProductsPage = () => {
                 <div className="space-y-1.5"><Label>Unit *</Label><Input required value={editing.unit ?? "kg"} onChange={(e) => setEditing({ ...editing, unit: e.target.value })} /></div>
               </div>
               <div className="space-y-1.5"><Label>Description</Label><Textarea rows={4} maxLength={1500} value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} /></div>
+
+              <div className="space-y-3 rounded-md border p-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-sm font-semibold">Branded retail SKU</Label>
+                    <p className="text-xs text-muted-foreground">Tag this product as part of one of your house brands.</p>
+                  </div>
+                  <Switch
+                    checked={!!editing.is_branded}
+                    onCheckedChange={(v) => setEditing({ ...editing, is_branded: v, brand_id: v ? editing.brand_id ?? null : null })}
+                  />
+                </div>
+                {editing.is_branded && (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5 sm:col-span-2">
+                      <Label>Brand</Label>
+                      {companyBrands.length === 0 ? (
+                        <p className="text-xs text-muted-foreground">
+                          No brands yet. <Link to="/account/brands" className="text-accent hover:underline">Create a brand →</Link>
+                        </p>
+                      ) : (
+                        <Select value={editing.brand_id ?? ""} onValueChange={(v) => setEditing({ ...editing, brand_id: v || null })}>
+                          <SelectTrigger><SelectValue placeholder="Pick a brand" /></SelectTrigger>
+                          <SelectContent>
+                            {companyBrands.map((b) => (
+                              <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Retail pack size</Label>
+                      <Input maxLength={60} placeholder="e.g. 200 g pouch" value={editing.retail_pack_size ?? ""} onChange={(e) => setEditing({ ...editing, retail_pack_size: e.target.value })} />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Buy retail URL (optional)</Label>
+                      <Input type="url" placeholder="Defaults to brand's URL" value={editing.b2c_url ?? ""} onChange={(e) => setEditing({ ...editing, b2c_url: e.target.value })} />
+                    </div>
+                  </div>
+                )}
+              </div>
               <div className="flex justify-end gap-2 pt-2">
                 <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
                 <Button type="submit" disabled={saving}>{saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save product"}</Button>
