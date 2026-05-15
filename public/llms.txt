@@ -1,0 +1,26 @@
+# MDDMA — Mumbai Dryfruits & Dates Merchants Association
+
+> India's digital trade hub for dry fruits, dates, nuts and allied commodities. Verified member directory, multi-item RFQ engine, brand storefronts, and live APMC market signals — serving the Mumbai trade since 1930.
+
+MDDMA connects verified importers, wholesalers, traders, and brokers across India's dry fruit and dates supply chain. Buyers browse storefronts and send RFQs; sellers manage product catalogs, brands, and inquiries. Pricing and stock are intentionally controlled (ranges and bands, not exact figures) to protect member margins.
+
+## Pages
+
+- [Home](/): Hero search, featured categories, brand strip, market ticker.
+- [About](/about): MDDMA history, mandate, and governance since 1930.
+- [Member Directory](/directory): Verified seller profiles with filters by category, origin, and verification level.
+- [Commodity Marketplace](/products): Browse listings across almonds, cashews, dates, pistachios, walnuts, raisins and more.
+- [Brands](/brands): House brands published by MDDMA member companies.
+- [Broker Board](/broker): Listings from members operating as brokers.
+- [Market Intelligence](/market): Live APMC trends, demand bands, and price movement signals.
+- [Trade Community](/community): Discourse-powered discussions plus the legacy post archive.
+- [Membership Plans](/membership): Free vs Paid (₹10,000/yr) tiers and benefits.
+- [Circulars](/circulars): Official notices and trade circulars from the association.
+- [Apply](/apply): Membership application flow.
+- [Forms / Contact](/contact): Reach the MDDMA office.
+- [Install App](/install): Add MDDMA Trade Hub to your home screen (PWA).
+
+## Optional
+
+- [Login](/login): Member sign-in.
+- [Documents](/documents): Internal product, business, and engineering documentation (password-gated).
