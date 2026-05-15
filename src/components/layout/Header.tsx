@@ -97,7 +97,6 @@ export function Header() {
         <DropdownMenuItem asChild><Link to="/account/products"><Package className="mr-2 h-4 w-4" /> My Products</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/brands"><Sparkles className="mr-2 h-4 w-4" /> My Brands</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/rfqs"><Inbox className="mr-2 h-4 w-4" /> RFQ Center</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link to="/account/verify"><ShieldCheck className="mr-2 h-4 w-4" /> Verification</Link></DropdownMenuItem>
         {hasRole("admin") && <DropdownMenuItem asChild><Link to="/account/moderation"><ShieldCheck className="mr-2 h-4 w-4" /> Moderation</Link></DropdownMenuItem>}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" /> Sign out</DropdownMenuItem>

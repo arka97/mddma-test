@@ -186,9 +186,7 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
                 <BuyerTrustBadge tier={tier} score={score} compact />
               </div>
               {tier !== "gst" && (
-                <Button asChild size="sm" variant="ghost" className="h-7 text-xs">
-                  <Link to="/account/verify"><ShieldCheck className="h-3 w-3 mr-1" /> Verify · {dailyLimit}/day</Link>
-                </Button>
+                <span className="text-xs text-muted-foreground">{dailyLimit}/day</span>
               )}
             </div>
           )}
