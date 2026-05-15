@@ -30,11 +30,12 @@ export function HeroSection() {
           </div>
 
           <h1 className="t-display mb-4 text-foreground">
-            The home of <span className="text-accent">India's dry fruit trade.</span>
+            The home of<br />
+            <span className="text-accent">India's dry fruit trade.</span>
           </h1>
 
           <p className="t-body mx-auto mb-8 max-w-2xl text-muted-foreground">
-            Browse verified sellers, get direct quotes, and track live prices across Mumbai's APMC market.
+            Browse verified sellers, get direct quotes, and track live prices.
           </p>
 
           <form
