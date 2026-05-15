@@ -126,14 +126,14 @@ export function MarketplacePulse() {
 
           {/* Featured Members */}
           <div>
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+              <div className="min-w-0">
                 <h2 className="t-h2 text-foreground">Featured members</h2>
                 <p className="text-sm text-muted-foreground">Verified traders across Mumbai's markets</p>
               </div>
               <Link
                 to="/directory"
-                className="inline-flex items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
+                className="inline-flex shrink-0 items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
               >
                 Directory <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
