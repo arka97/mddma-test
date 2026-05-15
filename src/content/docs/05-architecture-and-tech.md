@@ -7,11 +7,12 @@ The implementation reference: stack, layering, data model, auth model, the Behav
 | Layer | Choice | Why |
 |---|---|---|
 | Frontend | React 18 + Vite + TypeScript | Lovable native, fast HMR |
-| Styling | Tailwind 3 + shadcn/ui + HSL semantic tokens | Brand-locked navy + gold |
-| Routing | React Router (`BrowserRouter`) | SPA fallback handled by Lovable hosting |
+| Styling | Tailwind 3 + shadcn/ui + HSL semantic tokens | Brand-locked Royal Heritage palette (navy, burgundy, gold, ivory) |
+| Routing | React Router v6 (`BrowserRouter`) | SPA fallback handled by Lovable hosting |
+| Data | TanStack Query (`@tanstack/react-query`) | Caching + invalidation over the repository layer |
 | Backend | **Lovable Cloud** (Auth, Postgres, Storage, Edge Functions) | Single managed surface, no external accounts |
-| Payments | Razorpay (membership + broker addon) | India-first, UPI native |
-| Behavioral Intelligence Layer | **External API service** | Compute-heavy; lives outside edge functions |
+| Payments | Razorpay (single Paid plan, broker is a flag) | India-first, UPI native |
+| Behavioral Intelligence Layer | **External API service** (TECH-001) | Compute-heavy; lives outside edge functions |
 
 ## System architecture
 
@@ -115,20 +116,27 @@ The frontend treats BIL as best-effort: if the API is down, components fall back
 
 ## Edge functions
 
-| Function | Purpose | JWT verify |
+Four functions deploy from `supabase/functions/<name>/index.ts`. Detail in **08 · Edge Functions Reference**.
+
+| Function | Purpose | Auth model |
 |---|---|---|
-| `verify-doc-password` | Gates `/documents/*` with the shared committee password | off |
-| `razorpay-create-payment-link` | Generates a payment link for membership / broker addon | on |
-| `razorpay-webhook` | Confirms successful payment and promotes the user | off (signature verified) |
-| `promote-verification` | Admin action: marks a company verified after KYC review | on |
+| `verify-doc-password` | Gates `/documents/*` with the shared committee password (`DOCS_PASSWORD` secret) | None — constant-time secret compare in code |
+| `get-internal-doc` | Returns markdown for the password-gated internal docs (07–17). Same password as above; bodies never ship to the client bundle | None — password verified per request |
+| `razorpay-create-payment-link` | Generates a Razorpay payment link for a pending membership | JWT bearer; verified to be admin via `user_roles` |
+| `razorpay-webhook` | Receives `payment_link.paid` and activates the membership + role grant | None at JWT layer; HMAC signature verified via `RAZORPAY_WEBHOOK_SECRET` |
+
+There is **no** `promote-verification` edge function in the current build. KYC tier promotion is performed by admins directly (via service-role writes from `/account/moderation`) — the `prevent_profile_privilege_escalation` trigger blocks any other path.
 
 ## Storage buckets
 
-| Bucket | Read | Write |
-|---|---|---|
-| `ad-assets` | public | admin only |
-| `kyc-documents` | owner + admin | owner |
-| `product-images` | public | owner |
+| Bucket | Public read | Write | Used for |
+|---|---|---|---|
+| `avatars` | yes | owner | Profile avatars |
+| `company-assets` | yes | company owner | Logos, covers, gallery |
+| `product-images` | yes | company owner | Product cover, gallery (max 3), product video |
+| `ad-assets` | yes | **admin only** | Homepage / category / directory ad creative |
+
+Size limits and validation live in `src/lib/storage.ts` — 10 MB for images, 100 MB for videos, SVGs explicitly rejected.
 
 ## Frontend conventions
 
