@@ -43,7 +43,7 @@ export async function uploadFile(
     validateFile(file, bucket === "product-images");
   } catch (e) {
     console.error("upload validation failed", e);
-    throw e;
+    return null;
   }
   const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
   const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
