@@ -1,32 +1,26 @@
-# Restore scrolling, keep overflow fix
+## Goal
+Make the home page fully mobile-safe so product/category/member cards never extend past the viewport on phone screens.
 
-## Root cause
+## What I’ll change
+1. Update the home-section header rows so titles and action links stack safely on small screens instead of forcing extra width.
+2. Tighten the category and recent-listings grid items so every card can shrink within a 2-column mobile grid.
+3. Add missing `min-w-0` / width constraints to links and card content wrappers where text or media can force overflow.
+4. Review the featured-members and featured-brands home sections for the same mobile overflow pattern and apply the same containment rules where needed.
+5. Validate the result in the mobile preview and confirm the home screen no longer horizontally spills.
 
-Last commit added to `src/index.css`:
-```css
-html, body { overflow-x: hidden; max-width: 100vw; }
-#root { overflow-x: clip; max-width: 100vw; }
-```
+## Technical details
+- Files likely involved:
+  - `src/components/home/FeaturedCategoriesSection.tsx`
+  - `src/components/home/MarketplacePulse.tsx`
+  - `src/components/home/FeaturedBrandsStrip.tsx`
+  - `src/components/layout/Header.tsx` if the sticky header is contributing width pressure on mobile
+- Fix approach:
+  - convert `justify-between` mobile header rows to stacked/flexible layouts
+  - add `min-w-0` to grid children/cards where truncation currently can’t take effect
+  - ensure card links use `block`/`min-w-0` so they don’t size to content
+  - keep the existing design; this is a containment/responsiveness fix only
 
-Setting `overflow-x: hidden` on `<html>` breaks keyboard (Arrow/PageDown/Space) and some mouse-wheel scenarios because the html element is no longer the viewport scroller — and combining it with `overflow-x` on `body` creates an inconsistent scroll container the browser can't focus. `max-width: 100vw` on html/body also conflicts with native scrollbar gutter on desktop.
-
-## Fix
-
-Replace the html/body overflow rules with the safe pattern that works across all devices:
-
-```css
-html { /* leave alone — must remain the viewport scroller */ }
-body { overflow-x: clip; }   /* clip ≠ hidden: doesn't create a scroll container */
-#root { overflow-x: clip; }
-```
-
-- `overflow-x: clip` prevents horizontal bleed without spawning a scroll container, so vertical scrolling stays on `<html>` where keyboard + wheel expect it.
-- Remove `max-width: 100vw` (causes desktop scrollbar layout shift).
-- Keep the `img/video { max-width: 100% }` and `overflow-wrap: anywhere` rules — those were the real overflow fixes and don't affect scrolling.
-
-## Verification
-- Desktop 1280×720: arrow keys, PageDown, mouse wheel all scroll the page; no horizontal scrollbar.
-- Mobile 390×844: touch scroll works; no horizontal overflow (re-check via `scrollWidth === innerWidth`).
-
-## Out of scope
-No component changes. Pure CSS revert + safer rule set.
+## Validation
+- Check the home page at the current phone viewport.
+- Confirm category cards, recent listings, and featured members fit fully inside the screen.
+- Confirm no horizontal spill remains while vertical scrolling still works normally.
