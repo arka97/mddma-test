@@ -66,9 +66,6 @@ const ProfilePage = () => {
                 tier={((profile as any)?.verification_tier ?? "unverified") as VerificationTier}
                 score={(profile as any)?.buyer_reputation_score ?? 0}
               />
-              <Button asChild size="sm" variant="outline">
-                <Link to="/account/verify"><ShieldCheck className="h-4 w-4 mr-1" /> Verify</Link>
-              </Button>
             </div>
           </div>
           <Card>
