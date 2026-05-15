@@ -72,14 +72,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    const url = new URL(`./content/${file}`, import.meta.url);
-    const source = await Deno.readTextFile(url);
+    const source = CONTENT[file];
+    if (typeof source !== "string") {
+      return new Response(JSON.stringify({ ok: false, error: "Doc not bundled" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     return new Response(JSON.stringify({ ok: true, slug, source }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch {
+  } catch (err) {
+    console.error("get-internal-doc error", err);
     return new Response(JSON.stringify({ ok: false, error: "Server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
