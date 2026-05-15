@@ -139,8 +139,12 @@ const ProductsPage = () => {
     setUploading(true);
     const urls: string[] = [];
     for (const f of accepted) {
-      const url = await uploadFile("product-images", user.id, f);
-      if (url) urls.push(url);
+      try {
+        const url = await uploadFile("product-images", user.id, f);
+        if (url) urls.push(url);
+      } catch (err) {
+        toast({ title: `${f.name}: ${(err as Error).message}`, variant: "destructive" });
+      }
     }
     setUploading(false);
     if (urls.length) setEditing({ ...editing, gallery: [...current, ...urls] });
