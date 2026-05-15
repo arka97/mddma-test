@@ -131,22 +131,24 @@ const Storefront = () => {
       {/* Owner / Admin toolbar */}
       {canManage && !previewMode && (
         <div className="bg-accent/10 border-b border-accent/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-2 text-xs">
-              <ShieldCheck className="h-3.5 w-3.5 text-accent" />
-              <span className="font-medium text-foreground">
-                {isOwner ? "You're viewing your own storefront" : "Admin moderation view"}
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-2 text-xs">
+              <ShieldCheck className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
+              <span>
+                <span className="font-medium text-foreground">
+                  {isOwner ? "You're viewing your own storefront" : "Admin moderation view"}
+                </span>{" "}
+                <span className="text-muted-foreground">— prices are gated to signed-in members.</span>
               </span>
-              <span className="text-muted-foreground">— prices are gated to signed-in members.</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Button size="sm" variant="outline" onClick={() => setPreviewMode(true)}>
+            <div className="grid grid-cols-3 gap-1.5 sm:flex sm:items-center sm:gap-2">
+              <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={() => setPreviewMode(true)}>
                 <Eye className="h-3 w-3 mr-1" /> View as buyer
               </Button>
-              <Button size="sm" asChild>
+              <Button size="sm" className="w-full sm:w-auto" asChild>
                 <Link to="/account/company"><Pencil className="h-3 w-3 mr-1" /> Edit company</Link>
               </Button>
-              <Button size="sm" variant="outline" asChild>
+              <Button size="sm" variant="outline" className="w-full sm:w-auto" asChild>
                 <Link to="/account/products"><Package className="h-3 w-3 mr-1" /> Edit catalog</Link>
               </Button>
             </div>
@@ -270,75 +272,136 @@ const Storefront = () => {
                 </CardHeader>
                 <CardContent>
                   {liveMember && liveProducts.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-border text-left">
-                            <th className="py-2 px-2 text-muted-foreground font-medium w-20">Media</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
-                            <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {liveProducts.map((p) => (
-                            <tr key={p.id} className="border-b border-border/50">
-                              <td className="py-2.5 px-2">
-                                <div className="w-16">
-                                  <ProductMediaCarousel
-                                    commodity={p.name}
-                                    images={[p.image_url, ...(p.gallery ?? [])]}
-                                    videoUrl={p.video_url}
-                                    aspect="1/1"
-                                    rounded
-                                  />
+                    <>
+                      {/* Mobile: card list */}
+                      <ul className="space-y-3 sm:hidden">
+                        {liveProducts.map((p) => (
+                          <li key={p.id} className="rounded-lg border border-border p-3">
+                            <div className="flex gap-3">
+                              <div className="w-20 flex-shrink-0">
+                                <ProductMediaCarousel
+                                  commodity={p.name}
+                                  images={[p.image_url, ...(p.gallery ?? [])]}
+                                  videoUrl={p.video_url}
+                                  aspect="1/1"
+                                  rounded
+                                />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="font-medium text-foreground text-sm truncate">{p.name}</div>
+                                <div className="text-xs text-muted-foreground truncate">
+                                  {p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}
                                 </div>
-                              </td>
-                              <td className="py-2.5 px-2">
-                                <div className="font-medium text-foreground">{p.name}</div>
-                                <div className="text-xs text-muted-foreground">{p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}</div>
-                              </td>
-                              <td className="py-2.5 px-2 text-xs">
-                                <GuardedPublicPriceLine listing={{
-                                  priceMin: p.price_min,
-                                  priceMax: p.price_max,
-                                  priceUnit: `₹/${p.unit ?? "kg"}`,
-                                }} />
-                              </td>
-                              <td className="py-2.5 px-2">
-                                <div className="flex gap-1">
-                                  <Button
-                                    size="sm"
-                                    className="text-accent-foreground text-xs"
-                                    onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
-                                  >
-                                    <Send className="h-3 w-3 mr-1" /> Request Price
-                                  </Button>
-                                  {liveCompanyId && (
+                                <div className="mt-1 text-xs">
+                                  <GuardedPublicPriceLine listing={{
+                                    priceMin: p.price_min,
+                                    priceMax: p.price_max,
+                                    priceUnit: `₹/${p.unit ?? "kg"}`,
+                                  }} />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="mt-3 grid grid-cols-2 gap-2">
+                              <Button
+                                size="sm"
+                                className="text-accent-foreground text-xs"
+                                onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
+                              >
+                                <Send className="h-3 w-3 mr-1" /> Request Price
+                              </Button>
+                              {liveCompanyId && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-xs"
+                                  onClick={() => addItem({
+                                    productId: p.id,
+                                    productName: p.name,
+                                    companyId: liveCompanyId,
+                                    companyName: member.firmName,
+                                    companySlug: slug,
+                                    imageUrl: p.image_url,
+                                    quantity: "",
+                                  })}
+                                >
+                                  + Cart
+                                </Button>
+                              )}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                      {/* Desktop / tablet: table */}
+                      <div className="hidden sm:block overflow-x-auto">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="border-b border-border text-left">
+                              <th className="py-2 px-2 text-muted-foreground font-medium w-20">Media</th>
+                              <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
+                              <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
+                              <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {liveProducts.map((p) => (
+                              <tr key={p.id} className="border-b border-border/50">
+                                <td className="py-2.5 px-2">
+                                  <div className="w-16">
+                                    <ProductMediaCarousel
+                                      commodity={p.name}
+                                      images={[p.image_url, ...(p.gallery ?? [])]}
+                                      videoUrl={p.video_url}
+                                      aspect="1/1"
+                                      rounded
+                                    />
+                                  </div>
+                                </td>
+                                <td className="py-2.5 px-2">
+                                  <div className="font-medium text-foreground">{p.name}</div>
+                                  <div className="text-xs text-muted-foreground">{p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}</div>
+                                </td>
+                                <td className="py-2.5 px-2 text-xs">
+                                  <GuardedPublicPriceLine listing={{
+                                    priceMin: p.price_min,
+                                    priceMax: p.price_max,
+                                    priceUnit: `₹/${p.unit ?? "kg"}`,
+                                  }} />
+                                </td>
+                                <td className="py-2.5 px-2">
+                                  <div className="flex gap-1">
                                     <Button
                                       size="sm"
-                                      variant="outline"
-                                      className="text-xs"
-                                      onClick={() => addItem({
-                                        productId: p.id,
-                                        productName: p.name,
-                                        companyId: liveCompanyId,
-                                        companyName: member.firmName,
-                                        companySlug: slug,
-                                        imageUrl: p.image_url,
-                                        quantity: "",
-                                      })}
+                                      className="text-accent-foreground text-xs"
+                                      onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
                                     >
-                                      + Cart
+                                      <Send className="h-3 w-3 mr-1" /> Request Price
                                     </Button>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                                    {liveCompanyId && (
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="text-xs"
+                                        onClick={() => addItem({
+                                          productId: p.id,
+                                          productName: p.name,
+                                          companyId: liveCompanyId,
+                                          companyName: member.firmName,
+                                          companySlug: slug,
+                                          imageUrl: p.image_url,
+                                          quantity: "",
+                                        })}
+                                      >
+                                        + Cart
+                                      </Button>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
                   ) : (
                     <p className="text-muted-foreground text-center py-6">No active listings yet.</p>
                   )}
