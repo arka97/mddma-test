@@ -175,7 +175,7 @@ export function Header() {
               >
                 <SheetHeader className="border-b border-border px-5 py-4">
                   <SheetTitle className="flex items-center text-base">
-                    <Logo variant="horizontal" className="h-9 w-auto" />
+                    <Logo variant="mark" className="h-10 w-10" />
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 p-5">
