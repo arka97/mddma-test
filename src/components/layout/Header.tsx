@@ -115,8 +115,8 @@ export function Header() {
       <nav className="container mx-auto px-4 pl-safe pr-safe sm:px-6 lg:px-8">
         <div className="flex h-[52px] items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2" aria-label="MDDMA — Home">
-            <Logo variant="mark" className="h-8 w-8" />
-            <span className="hidden text-sm font-semibold tracking-tight text-foreground sm:inline">MDDMA</span>
+            <Logo variant="mark" className="h-9 w-9 rounded-md ring-1 ring-border" />
+            <span className="text-sm font-semibold tracking-tight text-foreground">MDDMA</span>
           </Link>
 
           <div className="hidden lg:flex lg:items-center lg:gap-0.5">
@@ -169,7 +169,11 @@ export function Header() {
                   <Menu className="h-5 w-5" />
                 </button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-80 p-0">
+              <SheetContent
+                side="right"
+                className="w-80 p-0"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
                 <SheetHeader className="border-b border-border px-5 py-4">
                   <SheetTitle className="flex items-center gap-2 text-base">
                     <Logo variant="mark" className="h-6 w-6" />
@@ -177,16 +181,6 @@ export function Header() {
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 p-5">
-                  <form onSubmit={submitSearch} className="relative">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      value={searchQ}
-                      onChange={(e) => setSearchQ(e.target.value)}
-                      placeholder="Find sellers…"
-                      aria-label="Find sellers"
-                      className="h-10 w-full pl-9"
-                    />
-                  </form>
                   <nav className="flex flex-col gap-1">
                     {navigation.map((item) => (
                       <SheetClose asChild key={item.name}>
@@ -204,6 +198,16 @@ export function Header() {
                       </SheetClose>
                     ))}
                   </nav>
+                  <form onSubmit={submitSearch} className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={searchQ}
+                      onChange={(e) => setSearchQ(e.target.value)}
+                      placeholder="Find sellers…"
+                      aria-label="Find sellers"
+                      className="h-10 w-full pl-9"
+                    />
+                  </form>
                   {!user && (
                     <SheetClose asChild>
                       <Button asChild className="w-full">
