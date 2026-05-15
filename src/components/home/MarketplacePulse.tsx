@@ -24,7 +24,7 @@ interface LiveListing {
 function ListingCard({ p, signedIn }: { p: LiveListing; signedIn: boolean }) {
   const sellerSlug = p.companies?.slug;
   return (
-    <Link to={sellerSlug ? `/store/${sellerSlug}` : "/products"} className="group">
+    <Link to={sellerSlug ? `/store/${sellerSlug}` : "/products"} className="group block min-w-0">
       <Card interactive className="h-full overflow-hidden">
         <div className="aspect-[16/10] overflow-hidden bg-muted">
           {p.image_url ? (
@@ -93,14 +93,14 @@ export function MarketplacePulse() {
         <div className="grid gap-10 lg:grid-cols-2">
           {/* Recent Listings */}
           <div>
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+              <div className="min-w-0">
                 <h2 className="t-h2 text-foreground">Recent listings</h2>
                 <p className="text-sm text-muted-foreground">Latest commodities from verified sellers</p>
               </div>
               <Link
                 to="/products?view=marketplace"
-                className="inline-flex items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
+                className="inline-flex shrink-0 items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
               >
                 View all <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
@@ -126,14 +126,14 @@ export function MarketplacePulse() {
 
           {/* Featured Members */}
           <div>
-            <div className="mb-6 flex items-end justify-between gap-4">
-              <div>
+            <div className="mb-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+              <div className="min-w-0">
                 <h2 className="t-h2 text-foreground">Featured members</h2>
                 <p className="text-sm text-muted-foreground">Verified traders across Mumbai's markets</p>
               </div>
               <Link
                 to="/directory"
-                className="inline-flex items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
+                className="inline-flex shrink-0 items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
               >
                 Directory <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
@@ -151,7 +151,7 @@ export function MarketplacePulse() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {featuredMembers.map((member) => (
-                  <Link key={member.id} to={`/store/${member.slug}`}>
+                  <Link key={member.id} to={`/store/${member.slug}`} className="block min-w-0">
                     <Card interactive className="h-full">
                       <CardContent className="p-4">
                         <div className="mb-2 flex items-start gap-3">
