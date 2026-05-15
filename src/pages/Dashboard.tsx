@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Inbox, Phone, Handshake, CheckCircle, Lock, ArrowRight, Bell, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MembershipStatusCard } from "@/components/account/MembershipStatusCard";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 type RfqStatus = "new" | "viewed" | "responded" | "negotiating" | "converted" | "closed";
 type RfqPriority = "hot" | "warm" | "cold";
@@ -98,7 +99,7 @@ const Dashboard = () => {
       .then(({ data, error }) => {
         if (!alive) return;
         if (error) {
-          toast({ title: "Failed to load RFQs", description: error.message, variant: "destructive" });
+          toast({ title: "Failed to load RFQs", description: friendlyErrorMessage(error), variant: "destructive" });
           setRfqs([]);
         } else {
           setRfqs((data ?? []) as RfqRow[]);
@@ -150,7 +151,7 @@ const Dashboard = () => {
     const { error } = await supabase.from("rfqs").update({ status: newStatus }).eq("id", id);
     if (error) {
       setRfqs(prev);
-      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+      toast({ title: "Update failed", description: friendlyErrorMessage(error), variant: "destructive" });
       return;
     }
     toast({ title: "Status Updated", description: `Inquiry moved to ${statusConfig[newStatus].label}` });
