@@ -114,8 +114,9 @@ export function Header() {
     >
       <nav className="container mx-auto px-4 pl-safe pr-safe sm:px-6 lg:px-8">
         <div className="flex h-[72px] items-center justify-between gap-3">
-          <Link to="/" className="flex items-center py-2.5" aria-label="MDDMA — Home">
+          <Link to="/" className="flex items-center gap-2 py-2.5" aria-label="MDDMA — Home">
             <Logo variant="mark" className="h-[60px] w-[60px]" />
+            <span className="hidden font-bold tracking-tight text-foreground text-lg sm:inline">MDDMA</span>
           </Link>
 
           <div className="hidden lg:flex lg:items-center lg:gap-0.5">
@@ -174,8 +175,9 @@ export function Header() {
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
                 <SheetHeader className="border-b border-border px-5 py-4">
-                  <SheetTitle className="flex items-center text-base">
+                  <SheetTitle className="flex items-center gap-2 text-base">
                     <Logo variant="mark" className="h-10 w-10" />
+                    <span className="font-bold tracking-tight text-sm">MDDMA</span>
                   </SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col gap-4 p-5">

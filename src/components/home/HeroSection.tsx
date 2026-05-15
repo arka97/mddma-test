@@ -26,7 +26,7 @@ export function HeroSection() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="t-eyebrow mb-4 inline-flex items-center gap-2 text-muted-foreground">
             <ShieldCheck className="h-3.5 w-3.5 text-accent" aria-hidden />
-            Established 1930 · India's Trade Authority
+            Established 1930 · Mumbai Dry Fruits and Dates Merchants Association
           </div>
 
           <h1 className="t-display mb-4 text-foreground">
