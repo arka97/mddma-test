@@ -151,7 +151,7 @@ const Dashboard = () => {
     const { error } = await supabase.from("rfqs").update({ status: newStatus }).eq("id", id);
     if (error) {
       setRfqs(prev);
-      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+      toast({ title: "Update failed", description: friendlyErrorMessage(error), variant: "destructive" });
       return;
     }
     toast({ title: "Status Updated", description: `Inquiry moved to ${statusConfig[newStatus].label}` });
