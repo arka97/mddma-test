@@ -35,7 +35,7 @@ export function HeroSection() {
           </h1>
 
           <p className="t-body mx-auto mb-8 max-w-2xl text-muted-foreground">
-            Browse verified sellers, get direct quotes, and track live prices across Mumbai's APMC market.
+            Browse verified sellers, get direct quotes, and track live prices.
           </p>
 
           <form
