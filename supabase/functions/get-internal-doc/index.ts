@@ -18,6 +18,9 @@ const SLUG_TO_FILE: Record<string, string> = {
   "money-and-membership": "12-money-and-membership.md",
   "operations-runbook": "13-operations-runbook.md",
   "roadmap-and-glossary": "14-roadmap-and-glossary.md",
+  "security-and-rls": "15-security-and-rls.md",
+  "storage-and-media": "16-storage-and-media.md",
+  "owner-quickstart": "17-owner-quickstart.md",
 };
 
 function constantTimeEqual(a: string, b: string) {
