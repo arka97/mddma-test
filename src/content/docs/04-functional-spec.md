@@ -89,12 +89,14 @@ sequenceDiagram
 
 | Route | Purpose |
 |---|---|
-| `/account/profile` | Edit display name, contact preferences |
-| `/account/company` | Edit company name, GST, address, categories |
-| `/account/products` | CRUD products and variants |
-| `/account/rfqs` | RFQ inbox (Sent / Received) |
-| `/account/verify` | Upload KYC docs and view verification status |
-| `/account/moderation` | Admin only: members, posts, ads moderation |
+| `/account/profile` | Edit display name, contact preferences, view membership state |
+| `/account/company` | Edit company name, GST, address, categories, branding |
+| `/account/products` | CRUD products and variants (with image + video upload) |
+| `/account/brands` | CRUD brands belonging to the user's company |
+| `/account/rfqs` | RFQ inbox — **Sent** (as buyer) and **Received** (as seller) tabs |
+| `/account/moderation` | Admin only: approve companies, manage circulars, manage ads, member moderation |
+
+There is **no `/account/verify`** route. KYC tier promotion happens through admin moderation (`profiles.verification_tier`, `*_verified_at` timestamps) — the trigger `prevent_profile_privilege_escalation` blocks any non-admin write to those fields.
 
 ## Admin CMS `/account/moderation`
 

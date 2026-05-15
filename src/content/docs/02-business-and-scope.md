@@ -11,22 +11,22 @@ This document defines **what the platform is for the Association as a business**
 
 ## Monetisation — one tier, one flag
 
-The earlier multi-tier ladder (Silver / Gold / Platinum) is killed. It created decision fatigue with no revenue lift. The model is now binary plus an optional broker flag.
+The earlier multi-tier ladder (Silver / Gold / Platinum) is killed. It created decision fatigue with no revenue lift. The model is now binary plus an optional broker flag — **same price either way**.
 
 ```mermaid
 flowchart TD
-  Visitor((Visitor)) -->|signs up free| Free[Free Member<br/>browse directory<br/>read circulars]
+  Visitor((Visitor)) -->|signs up free| Free[Free Member<br/>browse directory<br/>read circulars<br/>post in forum]
   Free -->|pays ₹10,000/yr| Paid[Paid Member<br/>RFQ unlimited<br/>storefront<br/>products + variants<br/>verification badge]
-  Paid -->|pays ₹5,000/yr addon| Broker[Broker flag<br/>visible on Broker board<br/>cross-listing tools]
+  Paid -.ticks 'I operate as a broker'.-> Broker[is_broker = true<br/>listed on /broker<br/>SAME ₹10,000 fee]
 ```
 
 | Tier | Annual fee | What's included |
 |---|---|---|
-| Free | ₹0 | Browse directory, read circulars, view community forum |
-| Paid | ₹10,000 | All Free + send/receive RFQs, public storefront, product catalogue with variants, verification badge |
-| Broker flag | + ₹5,000 | Listed on Broker board, broker-specific tools |
+| Free | ₹0 | Browse directory, read circulars, view & post in community forum |
+| Paid | ₹10,000 | All Free + send/receive RFQs, public storefront, product catalogue with variants, verification badge, full contact reveal |
+| Broker | ₹10,000 | A Paid Member with `profiles.is_broker = true`. Listed on `/broker`. **No separate fee** (BIZ-003). |
 
-**Lead Packs are not part of the product** and never will be. Selling buyer-attention by the unit conflicts with the Association's role as a trust authority.
+**Lead Packs are not part of the product** and never will be (BIZ-001). Selling buyer-attention by the unit conflicts with the Association's role as a trust authority.
 
 ## Engagement scope (Statement of Work)
 
