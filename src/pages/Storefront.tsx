@@ -130,15 +130,14 @@ const Storefront = () => {
   return (
     <Layout>
       <Seo
-        title={`${member.name} — Verified MDDMA Storefront`}
-        description={(member.description ?? `${member.name} — verified MDDMA member offering dry fruits, dates and nuts to buyers across India.`).slice(0, 160)}
+        title={`${member.firmName} — Verified MDDMA Storefront`}
+        description={(member.description ?? `${member.firmName} — verified MDDMA member offering dry fruits, dates and nuts to buyers across India.`).slice(0, 160)}
         path={`/store/${slug}`}
         jsonLd={{
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: member.name,
+          name: member.firmName,
           url: `https://mddma.org/store/${slug}`,
-          logo: member.logoUrl ?? undefined,
         }}
       />
       {/* Owner / Admin toolbar */}

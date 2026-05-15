@@ -78,7 +78,7 @@ const BrandPage = () => {
     <Layout>
       <Seo
         title={`${brand.name} — House Brand on MDDMA`}
-        description={(brand.tagline ?? brand.description ?? `${brand.name} — a house brand from an MDDMA member company.`).slice(0, 160)}
+        description={(brand.tagline ?? brand.story ?? `${brand.name} — a house brand from an MDDMA member company.`).slice(0, 160)}
         path={`/brands/${brand.slug}`}
         jsonLd={{
           "@context": "https://schema.org",
