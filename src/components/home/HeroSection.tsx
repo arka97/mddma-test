@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ShieldCheck, ArrowRight } from "lucide-react";
+import { Search, ArrowRight } from "lucide-react";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { MarketTicker } from "@/components/layout/MarketTicker";
 
@@ -24,9 +24,9 @@ export function HeroSection() {
     <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-muted/40 via-background to-background">
       <div className="relative container mx-auto px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="t-eyebrow mb-4 inline-flex items-center gap-2 text-muted-foreground">
-            <ShieldCheck className="h-3.5 w-3.5 text-accent" aria-hidden />
-            Established 1930 · Mumbai Dry Fruits and Dates Merchants Association
+          <div className="t-eyebrow mb-4 flex flex-col items-center gap-0.5 text-muted-foreground">
+            <div>Mumbai Dry Fruits and Dates Merchants Association</div>
+            <div>Established 1930</div>
           </div>
 
           <h1 className="t-display mb-4 text-foreground">
