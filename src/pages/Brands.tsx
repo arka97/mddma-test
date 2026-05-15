@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { useBrands } from "@/hooks/queries/useBrands";
 import { BrandCard } from "@/components/brands/BrandCard";
@@ -10,6 +11,7 @@ const Brands = () => {
 
   return (
     <Layout>
+      <Seo title='House Brands by MDDMA Members — Indian Dry Fruit Brands' description='Discover consumer dry fruit, nut and dates brands built by MDDMA member companies. Bulk B2B inquiries and retail links.' path='/brands' />
       <PageHeader
         title="House Brands"
         subtitle="Discover consumer brands built by MDDMA member companies. Bulk B2B inquiries via the seller's storefront; retail purchases at the brand's own shop."

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { Search, MapPin, ShieldCheck, Star, BadgeCheck } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -68,6 +69,7 @@ const Directory = () => {
 
   return (
     <Layout>
+      <Seo title='MDDMA Member Directory — Verified Dry Fruit & Dates Traders' description='Browse verified MDDMA member companies — importers, wholesalers, brokers and processors of dry fruits, dates and nuts across India.' path='/directory' />
       <PageHeader
         title="Member Directory"
         subtitle="Find KYC-verified dry fruits and dates merchants across Mumbai's major trading markets."

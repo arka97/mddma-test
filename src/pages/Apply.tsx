@@ -3,6 +3,7 @@ import { Logo } from "@/components/brand/Logo";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -94,6 +95,7 @@ const Apply = () => {
 
   return (
     <Layout>
+      <Seo title='Apply for MDDMA Membership — Verified Trade Network' description="Apply to join MDDMA. Free or Paid (₹10,000/year) — get verified, list your storefront and connect to India's dry fruit trade." path='/apply' />
       <PageHeader
         title="Apply for Membership"
         subtitle="Founding-member pricing locked for 24 months. The MDDMA committee reviews each application."

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Search, Calendar } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ const Circulars = () => {
 
   return (
     <Layout>
+      <Seo title='MDDMA Circulars & Announcements — Trade Notices' description='Official circulars, notices and announcements from the Mumbai Dryfruits & Dates Merchants Association.' path='/circulars' />
       <PageHeader
         title="Circulars & Notices"
         subtitle="Latest government notifications, trade updates, and association announcements."

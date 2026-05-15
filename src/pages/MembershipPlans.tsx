@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ const tierIcons = [ShieldCheck, Star, Crown];
 const MembershipPlans = () => {
   return (
     <Layout>
+      <Seo title='MDDMA Membership Plans — Free & Paid (₹10,000/year)' description='Join MDDMA. Choose Free for buyers or Paid (₹10,000/year) for verified seller storefront, RFQ inbox and trust badges.' path='/membership' />
       <PageHeader
         title="Membership Plans"
         subtitle="Choose the right plan for your business. All plans include directory listing and association membership."

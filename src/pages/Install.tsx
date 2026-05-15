@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { Logo } from "@/components/brand/Logo";
 import { Smartphone, Wifi, Zap, Home, Share, Plus, Download } from "lucide-react";
@@ -13,6 +14,7 @@ const benefits = [
 export default function Install() {
   return (
     <Layout>
+      <Seo title='Install the MDDMA App' description='Install MDDMA as a Progressive Web App on your phone or desktop for fast access to the trade hub.' path='/install' />
       <section className="bg-primary text-primary-foreground py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
           <div className="inline-block rounded-2xl bg-primary-foreground/95 p-4 mb-6">

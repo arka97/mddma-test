@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useRole } from "@/contexts/RoleContext";
@@ -55,6 +56,7 @@ const Market = () => {
 
   return (
     <Layout>
+      <Seo title='Live Market Intelligence — Prices & Trends | MDDMA' description='Live price bands, demand signals and supply intel for almonds, dates, pistachios, cashews and walnuts across India.' path='/market' />
       <section className="bg-primary py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Market Intelligence</h1>

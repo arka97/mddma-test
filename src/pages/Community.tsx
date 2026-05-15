@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,6 +84,7 @@ const Community = () => {
 
   return (
     <Layout>
+      <Seo title='MDDMA Community Forum — Discuss Trade & Market' description='Discuss market updates, trade practices and association circulars with verified MDDMA members.' path='/community' />
       <PageHeader
         title="Trade Community"
         subtitle="Live discussions on Discourse, plus a read-only archive of earlier posts"
