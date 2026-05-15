@@ -151,7 +151,7 @@ export function MarketplacePulse() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {featuredMembers.map((member) => (
-                  <Link key={member.id} to={`/store/${member.slug}`}>
+                  <Link key={member.id} to={`/store/${member.slug}`} className="block min-w-0">
                     <Card interactive className="h-full">
                       <CardContent className="p-4">
                         <div className="mb-2 flex items-start gap-3">
