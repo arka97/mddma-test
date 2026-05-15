@@ -1,83 +1,59 @@
-## Goal
+# Mobile-first / PWA-first hardening
 
-Bring the entire `/documents` set to v3.1.2 ground-truth: every doc reflects the live database, edge functions, routes, contexts, repositories, and shipped features. Add owner-focused docs for things that are currently scattered or missing.
+The screenshots show three classes of issues on a ~390px viewport:
 
-## Doc set after this update — 17 total
+1. The almond hero image and the "Featured members" card extend past the right edge.
+2. The "Recent listings" product image renders enormous and clipped — its carousel/image is not respecting the card width.
+3. General horizontal scroll bleed across sections.
 
-Public (bundled in client, in `src/content/docs/`):
+Root cause is a mix of: missing `min-w-0` on flex/grid children that wrap images, intrinsic-sized media inside `ProductMediaCarousel`, and no global `overflow-x` guard on `<html>/<body>`. The app is not yet truly mobile-first — it's desktop-first with sm/lg breakpoints layered on.
 
-```text
-01 Vision & Pitch
-02 Business & Scope
-03 Product & UX
-04 Functional Spec
-05 Architecture & Tech
-06 Build & Operations
-```
+This plan fixes overflow now and elevates the whole app to PWA-first mobile-first.
 
-Internal / password-gated (in `supabase/functions/get-internal-doc/content/`):
+## Scope
 
-```text
-07 Database Reference
-08 Edge Functions Reference
-09 Frontend Architecture
-10 Components & Design System
-11 Decisions Log
-12 Money & Membership
-13 Operations Runbook
-14 Roadmap & Glossary
-15 Security, RLS & Threat Model            (NEW)
-16 Storage, Media & Uploads                (NEW)
-17 Owner Quickstart & "Where do I…?"       (NEW)
-```
+### 1. Global overflow + viewport guards (`src/index.css`, `index.html`)
+- Add `html, body { overflow-x: hidden; max-width: 100vw; }` and `#root { overflow-x: clip; }`.
+- Verify `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">` is present in `index.html`.
+- Add `img, video { max-width: 100%; height: auto; }` base rule so no media can blow out its container.
 
-## Per-doc updates (what changes vs. today)
+### 2. Fix media containers
+- `src/components/commodity/ProductMediaCarousel.tsx`: ensure root has `w-full max-w-full overflow-hidden` and inner `<img>/<video>` use `w-full h-full object-cover`. Audit aspect-ratio wrapper.
+- `src/components/commodity/CommodityImage.tsx`: same — clamp to parent width.
+- `src/components/products/RecentListings.tsx`: card grid children need `min-w-0`; the `relative` media wrapper needs `w-full overflow-hidden`.
 
-**01 Vision & Pitch** — bump "doc 01 of 17", refresh "Last verified" date, keep thesis; tighten copy.
+### 3. Mobile-first grid/layout audit
+For each home section + key list pages, switch from desktop-first to mobile-first classes and add `min-w-0` to all grid/flex children that contain text or media:
+- `FeaturedCategoriesSection` (already 2-col on mobile — verify cards don't overflow)
+- `RecentListings`
+- `WhyMddmaSection`
+- `Directory`, `Products`, `Brands`, `Storefront`, `MemberProfile`, `BrandPage`, `ProductPage` cards
+- `Header` / `MarketTicker` — confirm ticker uses `overflow-hidden` properly and header chips wrap on small screens
+- `CartDrawer`, `RFQModal` — verify they respect `100vw` and use `max-w-[calc(100vw-2rem)]`
 
-**02 Business & Scope** — lock pricing to single ₹10,000/yr Paid tier, broker = `is_broker` flag (no separate price), confirm Lead Packs out (BIZ-001), WhatsApp Business API out (TECH-003). Engagement timeline updated to current state.
+### 4. Touch + safe-area polish (mobile-first defaults)
+- Ensure all sticky/fixed elements (Header, CartFab, MarketTicker) use `pt-safe`/`pb-safe` already defined.
+- Bump min tap target to 44px on primary CTAs where smaller (`h-9` → `h-11` on mobile via `h-11 sm:h-9` where appropriate).
+- Confirm `CartFab` doesn't overlap bottom content (add `pb-20 sm:pb-0` to last section if needed).
 
-**03 Product & UX** — RBAC matrix matches `app_role` enum (`admin`, `broker`, `paid_member`, `free_member`); add Role Simulator note; RFQ requires auth (UX-002); buyer-reputation > seller-reputation (GOV-001); controlled-transparency rules (no exact price/stock; bands High/Med/Low; demand trend).
+### 5. PWA-first verification (no new SW work needed)
+The app already ships `public/manifest.json` and an `InstallAppButton`. Confirm:
+- Manifest has `display: "standalone"`, theme_color, icons (already present ✓).
+- `index.html` has `apple-mobile-web-app-capable`, `apple-touch-icon`, `theme-color` meta tags. Add any missing.
+- `useInstallPrompt` covers iOS Safari, Android, in-app browsers (already present ✓).
+- No service worker is added (per project PWA guidance — manifest-only install is the right call here).
 
-**04 Functional Spec** — module specs aligned to shipped pages: Directory, Storefront, Products+ProductPage, Brands, Multi-item RFQ Cart (FAB+Drawer, draft auto-save), Community (Discourse primary, native posts/comments archive read-only), Circulars, Forms, Admin Moderation CMS (circulars + ads + companies). Acceptance criteria refreshed.
-
-**05 Architecture & Tech** — stack (React 18 + Vite + Tailwind + shadcn + TanStack Query), Lovable Cloud, layering (page → hook → repository → supabase client), `dataSource.ts` live+sample merge, BIL noted as external API (TECH-001), edge functions list = the 4 deployed.
-
-**06 Build & Operations** — env vars from `.env`, secrets list (DOCS_PASSWORD, LOVABLE_API_KEY, SUPABASE\_\*, GOOGLE_SEARCH_CONSOLE_API_KEY connector), seeding strategy, sitemap script (`scripts/generate-sitemap.ts`), PWA + InstallAppButton, deploy via Lovable, test strategy (Vitest).
-
-**07 Database Reference** — fully regenerated from live schema: 13 tables (advertisements, brands, circulars, comments, companies, inquiry_products, posts, product_categories, product_variants, products, profiles, rfq_responses, rfqs, user_roles), every column with type/nullable/default, every RLS policy verbatim, every db function (downgrade_to_free, enforce_product_gallery_limit, handle_new_user, has_role, update_updated_at_column, get_buyer_reputation_tier, prevent_profile_privilege_escalation, remove_free_when_upgraded, trg_rfqs_set_priority_score), enums (`app_role`, `verification_tier`, `rfq_status`, `review_status`), storage buckets (avatars, company-assets, product-images, ad-assets), updated ER diagram.
-
-**08 Edge Functions Reference** — exact 4 functions: `get-internal-doc`, `verify-doc-password`, `razorpay-create-payment-link`, `razorpay-webhook`. Per function: purpose, JWT verify flag, secrets used, request/response, failure modes, how to test from `curl`/dashboard.
-
-**09 Frontend Architecture** — full route table from `routes.tsx` including alias redirects (/admin, /pitch, /brd, /sow, /prd, /fsd, /sdd, /tsd, /changelog), Provider tree (AppProviders → Auth, Role, Cart, QueryClient), hook→repo chain, Role Simulator location & flow, Seo component, ScrollToTop, ProtectedRoute, PasswordGate.
-
-**10 Components & Design System** — refreshed component inventory grouped by folder (layout, home, commodity, brands, products, cart, community, docs, pwa, account, ui), HSL token reference from `index.css`, Tailwind extensions, breakpoints, animation tokens, Navy + Gold palette decision.
-
-**11 Decisions Log** — append/refresh: BIZ-001 Lead Packs killed; BIZ-002 single Paid ₹10K tier; UX-001 controlled-transparency; UX-002 RFQ auth-required; TECH-001 BIL is external; TECH-002 docs password server-side only; TECH-003 no WA Business API; GOV-001 buyer-reputation primary; SEC-001 privilege-escalation trigger on profiles; SEC-002 has_role SECURITY DEFINER pattern; OPS-001 sitemap generator script; PWA-001 installable.
-
-**12 Money & Membership** — single Paid plan ₹10,000/yr, broker checkbox flag (no extra fee), legacy DB tier rows handled by `lib/membership.ts` accessors (`tierLabel`, `tierPriceInr`), end-to-end Razorpay flow (create-payment-link → checkout → webhook → role grant via `remove_free_when_upgraded`), KYC ladder (`verification_tier` enum + `email/company/gst_verified_at`), downgrade flow.
-
-**13 Operations Runbook** — recipes: bootstrap admin (admin@mddma.org auto-grant in `handle_new_user`), grant a role manually, seed sample data, rotate `DOCS_PASSWORD`, update circulars/ads via /account/moderation, debug RFQ not appearing in inbox, common psql queries.
-
-**14 Roadmap & Glossary** — 6-month roadmap, BIL Phase 2 spec, rejected ideas register, glossary (RFQ, KYC tiers, BIL, Discourse, controlled transparency, etc.).
-
-**15 Security, RLS & Threat Model (NEW)** — explicit security model: `has_role()` SECURITY DEFINER pattern; per-table policy matrix; `prevent_profile_privilege_escalation` trigger (blocks non-admin writes to verification_tier, buyer_reputation_score, is_broker, gstin, company_name, *_verified_at, rfq_count, rfq_response_rate); admin-only roles management; `enforce_product_gallery_limit` (max 3 gallery + cover); auth flow + session handling; password reset; what is intentionally public (active categories, published circulars, in-window ads, non-hidden products, posts/comments); attack surfaces and how mitigated.
-
-**16 Storage, Media & Uploads (NEW)** — buckets and intended use (avatars, company-assets, product-images, ad-assets — admin-only write); size limits in `lib/storage.ts` (10 MB images / 100 MB videos), MIME allowlist, `UploadValidationError` surfacing pattern, gallery cap trigger, image vs video paths in ProductsPage, public URL strategy, recommended folder conventions.
-
-**17 Owner Quickstart & "Where do I…?" (NEW)** — single-page operator index for the solo owner: how to add an admin, publish a circular, run an ad campaign, approve a company, refund a Razorpay payment, change docs password, regenerate sitemap, simulate roles for a demo, locate any feature by URL → file path.
+### 6. Verification
+- Use `browser--set_viewport_size` at 375×812 and 390×844, navigate `/`, `/products`, `/directory`, `/brands`, `/account/profile`, capture screenshots, confirm zero horizontal scroll.
+- Quick desktop regression at 1280×720.
 
 ## Out of scope
-
-- No code/feature changes — docs only.
-- No changes to `_meta.ts` ordering scheme beyond appending 15/16/17.
-- No edits to public marketing pages.
+- No backend, RLS, or data-model changes.
+- No new pages or features.
+- No service-worker / offline caching (intentional — manifest-only PWA per project guidance).
+- No redesign of sections — only responsiveness + overflow fixes.
 
 ## Technical notes
-
-- Public docs are imported via `?raw` in `src/content/docs/_meta.ts`. Adding 15/16/17 as **internal** means no `_meta.ts` import needed for their bodies — only DocMeta entries with `internal: true`. Their markdown lives only in `supabase/functions/get-internal-doc/content/` and is fetched after `verify-doc-password`.
-- All 8→11 internal markdown files must also be present in the edge function `content/` folder (already there for 07–14; 15/16/17 will be added).
-- Update reading-order references from "01 of 14" to "01 of 17" in any doc that mentions the count.
-- Refresh "Last verified" date stamp in each doc to today.
-- Mermaid diagrams kept; ER diagram regenerated where schema changed.
-- No migration, no edge function code change, no route change.
+- `min-w-0` on flex/grid children is the canonical fix for "child with `truncate` or media still overflows parent" — Tailwind grid items default to `min-width: auto`.
+- `overflow-x: clip` on `#root` is preferred over `hidden` (doesn't create a scroll container, preserves sticky positioning).
+- Mobile-first means base classes target ~360px; `sm:`/`md:`/`lg:` only widen, never narrow.
