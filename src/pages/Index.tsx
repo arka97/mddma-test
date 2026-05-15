@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturedCategoriesSection } from "@/components/home/FeaturedCategoriesSection";
 import { FeaturedBrandsStrip } from "@/components/home/FeaturedBrandsStrip";
@@ -10,6 +11,11 @@ import { FooterCTA } from "@/components/home/FooterCTA";
 
 const Index = () => (
   <Layout>
+    <Seo
+      title="MDDMA — Dry Fruits, Dates & Commodities | Verified B2B Trade"
+      description="Source dry fruits, dates, nuts, spices, honey & more from verified sellers. India's most trusted B2B trade network — only on MDDMA."
+      path="/"
+    />
     <HeroSection />
     <FeaturedCategoriesSection />
     <FeaturedBrandsStrip />
