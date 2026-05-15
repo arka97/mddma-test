@@ -57,6 +57,7 @@ async function downloadAll(password: string | null) {
 }
 
 const DocumentsHub = () => {
+  const { password } = useDocAuthState();
   const [read, setRead] = useState<Set<string>>(new Set());
   useEffect(() => {
     try {
