@@ -1,28 +1,34 @@
-import { useState, createContext, useContext, type ReactNode } from "react";
+import { useState, createContext, useContext, useCallback, type ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock, ShieldCheck, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
-const AuthContext = createContext(false);
-const AuthSetContext = createContext<(() => void) | null>(null);
+interface DocAuthValue {
+  unlocked: boolean;
+  /** Held in memory only — never persisted. Used to fetch internal docs from the edge function. */
+  password: string | null;
+}
 
-export const useDocAuth = () => useContext(AuthContext);
+const AuthContext = createContext<DocAuthValue>({ unlocked: false, password: null });
+const AuthSetContext = createContext<((pw: string) => void) | null>(null);
+
+export const useDocAuth = () => useContext(AuthContext).unlocked;
+export const useDocAuthState = () => useContext(AuthContext);
 
 export function DocAuthProvider({ children }: { children: ReactNode }) {
-  const [unlocked, setUnlocked] = useState(false);
+  const [state, setState] = useState<DocAuthValue>({ unlocked: false, password: null });
+  const unlock = useCallback((pw: string) => setState({ unlocked: true, password: pw }), []);
   return (
-    <AuthContext.Provider value={unlocked}>
-      <AuthSetContext.Provider value={() => setUnlocked(true)}>
-        {children}
-      </AuthSetContext.Provider>
+    <AuthContext.Provider value={state}>
+      <AuthSetContext.Provider value={unlock}>{children}</AuthSetContext.Provider>
     </AuthContext.Provider>
   );
 }
 
 export function PasswordGate({ children }: { children: ReactNode }) {
-  const unlocked = useContext(AuthContext);
+  const { unlocked } = useContext(AuthContext);
   const unlock = useContext(AuthSetContext);
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -39,7 +45,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
         body: { password },
       });
       if (!fnErr && (data as any)?.ok) {
-        unlock?.();
+        unlock?.(password);
         setError(false);
       } else {
         setError(true);
