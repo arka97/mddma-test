@@ -1,17 +1,12 @@
+// Public docs are bundled into the client. Internal docs are NEVER imported
+// here — their markdown lives only in the get-internal-doc edge function and
+// is fetched after server-side password verification.
 import vision from "./01-vision-and-pitch.md?raw";
 import business from "./02-business-and-scope.md?raw";
 import product from "./03-product-and-ux.md?raw";
 import functional from "./04-functional-spec.md?raw";
 import architecture from "./05-architecture-and-tech.md?raw";
 import ops from "./06-build-and-operations.md?raw";
-import dbref from "./07-database-reference.md?raw";
-import edgeref from "./08-edge-functions-reference.md?raw";
-import frontend from "./09-frontend-architecture.md?raw";
-import componentDesign from "./10-component-and-design.md?raw";
-import decisions from "./11-decisions-log.md?raw";
-import money from "./12-money-and-membership.md?raw";
-import runbook from "./13-operations-runbook.md?raw";
-import roadmap from "./14-roadmap-and-glossary.md?raw";
 
 export interface DocMeta {
   number: string;
