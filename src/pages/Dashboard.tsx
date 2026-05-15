@@ -99,7 +99,7 @@ const Dashboard = () => {
       .then(({ data, error }) => {
         if (!alive) return;
         if (error) {
-          toast({ title: "Failed to load RFQs", description: error.message, variant: "destructive" });
+          toast({ title: "Failed to load RFQs", description: friendlyErrorMessage(error), variant: "destructive" });
           setRfqs([]);
         } else {
           setRfqs((data ?? []) as RfqRow[]);
