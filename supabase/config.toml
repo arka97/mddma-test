@@ -3,5 +3,8 @@ project_id = "jkqckirzgdfgssgcfags"
 [functions.verify-doc-password]
 verify_jwt = false
 
+[functions.get-internal-doc]
+verify_jwt = false
+
 [functions.promote-verification]
 verify_jwt = true
