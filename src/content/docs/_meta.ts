@@ -148,14 +148,6 @@ export const SOURCES: Record<string, string> = {
   "functional-spec": functional,
   "architecture-and-tech": architecture,
   "build-and-operations": ops,
-  "database-reference": dbref,
-  "edge-functions-reference": edgeref,
-  "frontend-architecture": frontend,
-  "component-and-design": componentDesign,
-  "decisions-log": decisions,
-  "money-and-membership": money,
-  "operations-runbook": runbook,
-  "roadmap-and-glossary": roadmap,
 };
 
 export function getDoc(slug: string): { meta: DocMeta; source: string } | null {
@@ -163,4 +155,8 @@ export function getDoc(slug: string): { meta: DocMeta; source: string } | null {
   const source = SOURCES[slug];
   if (!meta || !source) return null;
   return { meta, source };
+}
+
+export function isInternalSlug(slug: string): boolean {
+  return Boolean(DOCS.find((d) => d.slug === slug)?.internal);
 }
