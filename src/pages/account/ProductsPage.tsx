@@ -163,10 +163,15 @@ const ProductsPage = () => {
     if (!file.type.startsWith("video/")) { toast({ title: "Please choose a video file", variant: "destructive" }); return; }
     if (file.size > MAX_VIDEO_MB * 1024 * 1024) { toast({ title: `Video must be ≤ ${MAX_VIDEO_MB}MB`, variant: "destructive" }); return; }
     setUploading(true);
-    const url = await uploadFile("product-images", user.id, file);
-    setUploading(false);
-    if (url) setEditing({ ...editing, video_url: url });
-    else toast({ title: "Upload failed", variant: "destructive" });
+    try {
+      const url = await uploadFile("product-images", user.id, file);
+      if (url) setEditing({ ...editing, video_url: url });
+      else toast({ title: "Upload failed", variant: "destructive" });
+    } catch (err) {
+      toast({ title: (err as Error).message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
