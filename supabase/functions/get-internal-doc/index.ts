@@ -1,7 +1,8 @@
 // Serves "internal" markdown docs only after server-side password check.
-// Files live next to this script under ./content/<NN-slug>.md and are NEVER
-// shipped to the client bundle. Password is the same DOCS_PASSWORD secret
-// used by verify-doc-password.
+// Content is bundled at build time via content.ts (generated from ./content/*.md)
+// because Supabase edge functions don't ship loose files alongside the bundle.
+
+import { CONTENT } from "./content.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -71,14 +72,20 @@ Deno.serve(async (req) => {
       });
     }
 
-    const url = new URL(`./content/${file}`, import.meta.url);
-    const source = await Deno.readTextFile(url);
+    const source = CONTENT[file];
+    if (typeof source !== "string") {
+      return new Response(JSON.stringify({ ok: false, error: "Doc not bundled" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     return new Response(JSON.stringify({ ok: true, slug, source }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
-  } catch {
+  } catch (err) {
+    console.error("get-internal-doc error", err);
     return new Response(JSON.stringify({ ok: false, error: "Server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
