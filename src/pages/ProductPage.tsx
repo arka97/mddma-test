@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +40,20 @@ const ProductPage = () => {
 
   return (
     <Layout>
+      <Seo
+        title={`${product.name} — MDDMA Verified Sellers`}
+        description={(product.description ?? `Get verified seller quotes for ${product.name} on MDDMA — India's trusted dry fruit & dates trade network.`).slice(0, 160)}
+        path={`/products/${product.slug}`}
+        ogType="product"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description ?? undefined,
+          image: product.image_url ?? undefined,
+          url: `https://mddma.org/products/${product.slug}`,
+        }}
+      />
       <section className="bg-primary py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/products" className="inline-flex items-center text-primary-foreground/70 hover:text-primary-foreground text-sm mb-4">
