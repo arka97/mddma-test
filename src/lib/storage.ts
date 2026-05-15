@@ -39,7 +39,12 @@ export async function uploadFile(
   userId: string,
   file: File,
 ): Promise<string | null> {
-  validateFile(file, bucket === "product-images");
+  try {
+    validateFile(file, bucket === "product-images");
+  } catch (e) {
+    console.error("upload validation failed", e);
+    throw e;
+  }
   const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
   const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const { error } = await supabase.storage.from(bucket).upload(path, file, {
