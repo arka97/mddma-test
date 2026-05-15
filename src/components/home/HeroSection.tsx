@@ -26,12 +26,11 @@ export function HeroSection() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="t-eyebrow mb-4 inline-flex items-center gap-2 text-muted-foreground">
             <ShieldCheck className="h-3.5 w-3.5 text-accent" aria-hidden />
-            Established 1930 · Mumbai's Trade Authority
+            Established 1930 · India's Trade Authority
           </div>
 
           <h1 className="t-display mb-4 text-foreground">
-            India's digital trade hub<br className="hidden sm:inline" />
-            <span className="text-accent"> for dry fruits & commodities</span>
+            The home of <span className="text-accent">India's dry fruit trade.</span>
           </h1>
 
           <p className="t-body mx-auto mb-8 max-w-2xl text-muted-foreground">
