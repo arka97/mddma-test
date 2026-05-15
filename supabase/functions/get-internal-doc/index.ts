@@ -1,7 +1,8 @@
 // Serves "internal" markdown docs only after server-side password check.
-// Files live next to this script under ./content/<NN-slug>.md and are NEVER
-// shipped to the client bundle. Password is the same DOCS_PASSWORD secret
-// used by verify-doc-password.
+// Content is bundled at build time via content.ts (generated from ./content/*.md)
+// because Supabase edge functions don't ship loose files alongside the bundle.
+
+import { CONTENT } from "./content.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
