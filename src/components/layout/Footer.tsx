@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { MapPin, Phone, Mail, Clock, Lock, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/Logo";
+import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 
 const platformLinks = [
   { to: "/directory", label: "Member Directory" },
@@ -14,6 +15,7 @@ const platformLinks = [
 ];
 
 export function Footer() {
+  const { isInstalled } = useInstallPrompt();
   return (
     <footer className="bg-primary text-primary-foreground pb-safe">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -79,11 +81,13 @@ export function Footer() {
                   <Lock className="mr-1.5 h-3.5 w-3.5" /> Documents
                 </Link>
               </Button>
-              <Button variant="secondary" size="sm" asChild>
-                <Link to="/install">
-                  <Download className="mr-1.5 h-3.5 w-3.5" /> Install App
-                </Link>
-              </Button>
+              {!isInstalled && (
+                <Button variant="secondary" size="sm" asChild>
+                  <Link to="/install">
+                    <Download className="mr-1.5 h-3.5 w-3.5" /> Install App
+                  </Link>
+                </Button>
+              )}
             </div>
           </div>
         </div>

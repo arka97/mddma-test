@@ -9,12 +9,14 @@ import { RoleProvider } from "@/contexts/RoleContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { DocAuthProvider } from "@/components/PasswordGate";
 import { queryClient } from "@/lib/queryClient";
+import ScrollToTop from "@/components/ScrollToTop";
 
 export function AppProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <AuthProvider>
             <RoleProvider>
               <CartProvider>
