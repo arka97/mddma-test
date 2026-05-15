@@ -133,8 +133,7 @@ export function RFQModal({ productName, productId, companyId, onClose }: RFQModa
       buyer_company: formData.company || null,
       buyer_phone: formData.phone || null,
       buyer_email: formData.email || null,
-      // priority_score scales with buyer reputation — sellers see high-rep buyers first
-      priority_score: score,
+      // priority_score is forced server-side by a trigger from the buyer's reputation
       status: "new",
     });
     setSubmitting(false);
