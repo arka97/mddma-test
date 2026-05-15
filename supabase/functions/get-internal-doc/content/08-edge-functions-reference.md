@@ -1,17 +1,17 @@
 # Edge Functions Reference
 
-Every edge function in the project, in detail. All four live under `supabase/functions/<name>/index.ts` and deploy automatically.
+Every edge function actually deployed in the project, in detail. All four live under `supabase/functions/<name>/index.ts` and deploy automatically when you save changes.
 
 | Function | Purpose | Auth |
 |---|---|---|
-| `verify-doc-password` | Validate the `/documents` shared passphrase | None — public |
-| `razorpay-create-payment-link` | Generate a Razorpay payment link for a pending membership | Admin only |
-| `razorpay-webhook` | Receive `payment_link.paid` events and activate memberships | None — verified by signature |
-| `promote-verification` | Move a profile's `verification_tier` forward (email → company → gst) | Authenticated user (self) |
+| `verify-doc-password` | Validate the `/documents` shared passphrase | None — public, constant-time secret compare |
+| `get-internal-doc` | Return markdown for password-gated internal docs (07–17) | None at JWT layer; password verified per request |
+| `razorpay-create-payment-link` | Generate a Razorpay payment link for a pending membership | Bearer JWT; admin role required |
+| `razorpay-webhook` | Receive `payment_link.paid` events and activate memberships | None at JWT layer; HMAC signature verified |
 
-All four have `verify_jwt = false` (the default in this project) and validate the JWT or signature **in code**.
+All four have `verify_jwt = false` (the project default) and validate the JWT or signature **in code** — never trust the gateway alone.
 
-> ⚠️ **Implementation status (May 2026):** `verify-doc-password` and `promote-verification` are live and fully functional. The two Razorpay functions are deployed and code-complete, but they read/write a `memberships` table whose migration has not yet been applied — so the payment flow will fail on first DB lookup until that migration ships. Treat them as "wired but dormant".
+> ⚠️ **Implementation status (May 2026):** `verify-doc-password` and `get-internal-doc` are live and load-bearing — the entire `/documents` hub depends on them. The two Razorpay functions are deployed and code-complete, but they read/write a `memberships` table whose migration has not yet been applied. Until that schema ships, they will fail on first DB lookup. Treat them as "wired but dormant"; manual role grants via `INSERT INTO user_roles` work today.
 
 ---
 
@@ -23,6 +23,49 @@ All four have `verify_jwt = false` (the default in this project) and validate th
 **Secret** `DOCS_PASSWORD` — value set in Supabase secrets (never documented in source).
 
 Constant-time comparison protects against timing oracles. Returns 400 for malformed input, 500 if the secret is unset. The frontend `PasswordGate` component caches a successful result in `sessionStorage` and gates `/documents/*` accordingly.
+
+```ts
+const { data } = await supabase.functions.invoke("verify-doc-password", {
+  body: { password: input },
+});
+if (data?.ok) sessionStorage.setItem("docs-pw-ok", "1");
+```
+
+---
+
+## `get-internal-doc`
+
+**Endpoint** `POST /functions/v1/get-internal-doc`
+**Body** `{ "password": string, "slug"?: string }`
+**Response** `{ "ok": true, "slug": string, "source": string }` or `{ "ok": true, "slugs": string[] }` if no slug
+**Secret** `DOCS_PASSWORD` (same as above)
+
+Internal markdown bodies (docs 07–17) live next to the function under `./content/<NN-slug>.md` and are **never** bundled into the client. The function validates the password, looks up the slug in `SLUG_TO_FILE`, reads the file, and returns the body inline.
+
+| Slug | File |
+|---|---|
+| `database-reference` | `07-database-reference.md` |
+| `edge-functions-reference` | `08-edge-functions-reference.md` |
+| `frontend-architecture` | `09-frontend-architecture.md` |
+| `component-and-design` | `10-component-and-design.md` |
+| `decisions-log` | `11-decisions-log.md` |
+| `money-and-membership` | `12-money-and-membership.md` |
+| `operations-runbook` | `13-operations-runbook.md` |
+| `roadmap-and-glossary` | `14-roadmap-and-glossary.md` |
+| `security-and-rls` | `15-security-and-rls.md` |
+| `storage-and-media` | `16-storage-and-media.md` |
+| `owner-quickstart` | `17-owner-quickstart.md` |
+
+### Failure modes
+
+| Status | Cause |
+|---|---|
+| 400 | Missing/oversized password |
+| 401 | Password mismatch |
+| 404 | Unknown slug |
+| 500 | Server error reading the markdown file |
+
+**To add a new internal doc:** drop the `.md` in `supabase/functions/get-internal-doc/content/`, add an entry to `SLUG_TO_FILE` in `index.ts`, and add a `DocMeta` row with `internal: true` to `src/content/docs/_meta.ts`. No body import is needed in the client bundle.
 
 ---
 
@@ -55,7 +98,11 @@ sequenceDiagram
   EF-->>A: { payment_url, razorpay_order_id }
 ```
 
-The payment link uses `notes.membership_id` so the webhook can find the row again. `callback_url` returns the user to `/account/verify?membership=<id>`.
+The payment link uses `notes.membership_id` so the webhook can find the row again. `callback_url` returns the user to `/account/profile?membership=<id>` (the legacy `/account/verify` URL was removed; update the edge function's `callback_url` if you re-introduce a verification page).
+
+### Pricing
+
+`TIER_PRICE_INR` collapses every legacy tier (`paid`, `broker`, `trader`, `importer`) to **₹10,000**. Per BIZ-002 / BIZ-003, the broker addon doesn't exist — `is_broker` is just a flag set on `profiles`.
 
 ### Failure modes
 
@@ -85,7 +132,7 @@ The payment link uses `notes.membership_id` so the webhook can find the row agai
    - `razorpay_payment_id`
    - `razorpay_order_id`
    - `amount_paid_inr` (paise → rupees)
-3. The RPC flips status to `active`, sets `starts_at = now()`, `expires_at = now() + 1 year`, applies the 24-month `founding_lock_until`, and INSERTs `paid_member` (and `broker` if profile flagged) into `user_roles`. The `remove_free_when_upgraded` trigger then deletes the user's `free_member` row.
+3. The RPC flips status to `active`, sets `starts_at = now()`, `expires_at = now() + 1 year`, applies the 24-month `founding_lock_until`, and INSERTs `paid_member` (and `broker` if profile flagged) into `user_roles`. The `remove_free_when_upgraded` trigger then deletes the user's `free_member` row (ROLE-001).
 
 ### Failure modes
 
@@ -102,38 +149,13 @@ Events: `payment_link.paid` (and optionally `payment_link.partially_paid`).
 
 ---
 
-## `promote-verification`
+## Functions intentionally NOT in the project
 
-**Endpoint** `POST /functions/v1/promote-verification`
-**Auth** Bearer JWT — operates on the calling user's own profile only.
-**Body** `{ "target": "email" | "company" | "gst", "company_name"?: string, "gstin"?: string }`
-**Response** `{ "ok": true }` or `{ "error": string }`
-**Secrets** None beyond Supabase service role.
-
-### Tier ladder
-
-```text
-unverified → email → company → gst
-```
-
-Each step is one-way. The function refuses to demote and refuses to skip a step.
-
-| Target | Requires | Validation |
-|---|---|---|
-| `email` | `auth.users.email_confirmed_at` not null | — |
-| `company` | currently `email` | `company_name` length 2–120 |
-| `gst` | currently `company` | `gstin` matches `^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$` |
-
-On success it writes the matching `*_verified_at` timestamp and sets `buyer_reputation_score` to `index(target) * 20 + (gst ? 20 : 0)` (so unverified=0, email=20, company=40, gst=80). The `prevent_profile_privilege_escalation` trigger normally blocks these field changes — this function uses the service role to bypass.
-
-### Failure modes
-
-| Status | Cause |
+| Name | Why not |
 |---|---|
-| 401 | No bearer token |
-| 400 | Invalid target, email not confirmed, invalid company name, invalid GSTIN, attempting demotion |
-| 404 | Profile row missing |
-| 500 | Service role write failed |
+| `promote-verification` | KYC tier promotion is handled by admins via `/account/moderation` (service-role writes). Earlier docs referred to a self-serve edge function; that path was never shipped. |
+| BIL inference functions | Behavioral Intelligence Layer is an external API (TECH-001), not Supabase edge functions. |
+| WhatsApp messaging functions | We use `wa.me` deeplinks only (TECH-003). |
 
 ---
 
@@ -145,6 +167,11 @@ import { supabase } from "@/integrations/supabase/client";
 // password gate
 const { data } = await supabase.functions.invoke("verify-doc-password", {
   body: { password: input },
+});
+
+// internal doc (after gate)
+const { data: doc } = await supabase.functions.invoke("get-internal-doc", {
+  body: { password: cachedPw, slug: "decisions-log" },
 });
 
 // admin generates a payment link (uses caller's bearer token automatically)
@@ -160,6 +187,7 @@ Never call functions by path. Always use `supabase.functions.invoke()`.
 
 Edge function logs stream into Lovable Cloud and are accessible from the project's Cloud panel. Common patterns:
 
-- **`razorpay-webhook: signature mismatch`** — wrong `RAZORPAY_WEBHOOK_SECRET`, or Razorpay was configured to send to a different URL. Compare the dashboard webhook secret with the Supabase secret.
+- **`razorpay-webhook: signature mismatch`** — wrong `RAZORPAY_WEBHOOK_SECRET`, or Razorpay was configured to send to a different URL.
 - **`activate_membership failed`** — usually a unique-constraint clash on `user_roles`. The trigger handles it via `ON CONFLICT DO NOTHING`; if you see this, inspect the `_payload` for malformed JSON.
 - **`Razorpay rejected the request`** — most common cause is a phone number missing the `+91` prefix.
+- **`get-internal-doc: Unknown slug`** — slug missing from `SLUG_TO_FILE`. Re-deploy after adding it.

@@ -80,7 +80,19 @@ Use `/account/moderation` → toggle `is_verified` on the company, or run:
 UPDATE public.companies SET is_verified = true WHERE slug = '<slug>';
 ```
 
-To bump KYC tier on a profile (bypassing the regex check), call the RPC manually as service role — but prefer pushing the user through `/account/verify` so the audit timestamps are accurate.
+To bump KYC tier on a profile (admin / service role only — non-admin writes are blocked by `prevent_profile_privilege_escalation`):
+
+```sql
+UPDATE public.profiles
+   SET verification_tier = 'gst',
+       gst_verified_at   = now(),
+       company_verified_at = COALESCE(company_verified_at, now()),
+       email_verified_at   = COALESCE(email_verified_at,   now()),
+       buyer_reputation_score = 80
+ WHERE id = '<user-uuid>';
+```
+
+There is no `promote-verification` edge function — promotion is admin-driven.
 
 ### 5 · Find a stuck RFQ
 
@@ -110,7 +122,7 @@ In Lovable Cloud, open the project's Cloud panel and look at the function-specif
 |---|---|
 | `razorpay-webhook` | `signature mismatch`, `activate_membership failed`, `activated membership` |
 | `razorpay-create-payment-link` | `Razorpay create link failed`, the HTTP status |
-| `promote-verification` | `verification update failed` |
+| `get-internal-doc` | `Unknown slug` (means a doc was added to `_meta.ts` but not to `SLUG_TO_FILE`) |
 | `verify-doc-password` | usually silent — only logs on 500 |
 
 ### 7 · Debug a failed Razorpay webhook

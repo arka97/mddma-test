@@ -21,16 +21,18 @@ The frontend reads from `.env`, which Lovable Cloud manages automatically:
 
 ## Required secrets (edge functions)
 
-Stored via the Lovable secrets manager; never committed to the repo.
+Stored via the Lovable secrets manager; never committed to the repo. Inspect & rotate from **Lovable Cloud → Settings → Secrets**.
 
 | Secret | Used by |
 |---|---|
-| `DOCS_PASSWORD` | `verify-doc-password` |
-| `RAZORPAY_KEY_ID` | `razorpay-create-payment-link`, `razorpay-webhook` |
-| `RAZORPAY_KEY_SECRET` | `razorpay-create-payment-link`, `razorpay-webhook` |
+| `DOCS_PASSWORD` | `verify-doc-password`, `get-internal-doc` |
+| `RAZORPAY_KEY_ID` | `razorpay-create-payment-link` |
+| `RAZORPAY_KEY_SECRET` | `razorpay-create-payment-link` |
 | `RAZORPAY_WEBHOOK_SECRET` | `razorpay-webhook` |
 | `APP_URL` | `razorpay-create-payment-link` (callback redirect) |
-| `BIL_API_URL` (optional) | Frontend signal layer (build-time) |
+| `LOVABLE_API_KEY` | Reserved — Lovable AI Gateway |
+| `GOOGLE_SEARCH_CONSOLE_API_KEY` | Connector-managed; SEO ingest |
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `SUPABASE_JWKS`, `SUPABASE_PUBLISHABLE_KEY*`, `SUPABASE_SECRET_KEYS` | Auto-injected by Lovable Cloud — do not rotate manually |
 
 ## Seeding demo data
 
@@ -38,23 +40,29 @@ Directory, storefront, and product listings render **only live database rows** (
 
 To seed the database with realistic content for a pilot:
 
-1. Sign in as an admin.
-2. Open `/account/moderation` → **Members** → use the seed action.
-3. Publish at least 3 circulars and 1 home-page ad to populate the home shell.
+1. Sign in as an admin (`admin@mddma.org` is auto-granted `admin` by the `handle_new_user` trigger on first signup).
+2. Open `/account/moderation` → approve member companies (`review_status='approved'`, `is_hidden=false`).
+3. Publish at least 3 circulars and 1 active homepage ad to populate the home shell (RLS only shows ads that are `is_active` and inside `start_date`/`end_date`).
 
 ## Test strategy
 
 Vitest unit tests live under `src/lib/__tests__/`. They cover the pure logic that controls money and trust:
 
-- `membership.test.ts` — tier resolution
-- `kyc.test.ts` — verification state transitions
-- `tradeSignals.test.ts` — controlled-transparency formatting (no exact prices leak)
+- `membership.test.ts` — single-Paid-tier resolution and legacy fallback (`tierLabel`, `tierPriceInr`)
 
 ```bash
 bunx vitest run
 ```
 
-Run before any release.
+Run before any release. Lovable's harness runs builds automatically on every change; never run `bun run build` or `tsc` manually.
+
+## Sitemap
+
+`scripts/generate-sitemap.ts` writes `public/sitemap.xml` for the public routes. Re-run after adding a new public route:
+
+```bash
+bun run scripts/generate-sitemap.ts
+```
 
 ## Build, preview, publish
 
@@ -103,12 +111,13 @@ gantt
 
 | Situation | Action |
 |---|---|
-| **Member can't log in** | Check `auth.users` row exists; resend confirmation from auth panel |
-| **Verification stuck** | Open `/account/moderation` → KYC tab → review docs |
-| **RFQ not delivered** | Inspect `rfqs` row; confirm seller `company_id` matches; check RLS allows seller to read |
-| **Payment received but not promoted** | Re-run `razorpay-webhook` with the event payload from Razorpay dashboard |
-| **Doc vault password lost** | Update `DOC_PASSWORD` secret; redeploy `verify-doc-password` |
-| **Live site blank** | Check Cloud project status; if `ACTIVE_HEALTHY`, hard-refresh; otherwise wait for state to recover |
+| **Member can't log in** | Check `auth.users` row exists; resend confirmation from Lovable Cloud → Users panel |
+| **Verification stuck** | Open `/account/moderation` → companies tab → toggle `is_verified` or update `verification_tier` directly |
+| **RFQ not delivered** | Inspect the `rfqs` row; confirm `company_id` matches a real company; check the seller is the `companies.owner_id` |
+| **Payment received but not promoted** | Re-send the webhook event from Razorpay dashboard (idempotent), or grant the role manually via `INSERT INTO user_roles` |
+| **Doc vault password lost** | Update the `DOCS_PASSWORD` secret in Cloud Settings; both `verify-doc-password` and `get-internal-doc` pick it up on next call |
+| **Live site blank** | Run `cloud_status` (or check Cloud panel); if `ACTIVE_HEALTHY`, hard-refresh; otherwise wait for state to recover |
+| **Upload fails silently** | Check console for `UploadValidationError` — usually file size (10 MB images / 100 MB videos) or unsupported MIME (SVG blocked) |
 
 ## Backups & data ownership
 

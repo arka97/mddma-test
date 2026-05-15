@@ -227,7 +227,6 @@ Defined in `tailwind.config.ts`:
 | Component | Role |
 |---|---|
 | `account/MembershipStatusCard.tsx` | Shows tier, status, expiry; CTA varies by state |
-| `account/KYCDocsSection.tsx` | Upload + tier-promotion buttons → `promote-verification` |
 | `trust/BuyerTrustBadge.tsx` | Reads `buyer_reputation_score`, maps to tier label via `get_buyer_reputation_tier` |
 
 ### Behavioral / signals

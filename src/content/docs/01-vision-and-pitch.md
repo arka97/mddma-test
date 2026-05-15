@@ -2,9 +2,9 @@
 
 > **Thesis.** MDDMA does not expose the dry-fruits and dates market — it **structures and controls** it. The platform is a Behavioral Trade Operating System for the Mumbai Dry Fruits & Dates Merchants Association: a verified directory, a controlled-transparency catalogue, and a structured negotiation engine designed to keep pricing power inside the association.
 
-> **Where this doc sits.** This is doc **01 of 14** — the start of the canonical reading order. Public spec runs **01 → 06**; owner-only deep reference runs **07 → 14**. Read in order on first pass; later, jump by topic. Authoritative invariants live in **11 · Decisions Log** — when narratives in earlier docs conflict with a decision entry, the decision entry wins.
+> **Where this doc sits.** This is doc **01 of 17** — the start of the canonical reading order. Public spec runs **01 → 06**; owner-only deep reference runs **07 → 17**. Read in order on first pass; later, jump by topic. Authoritative invariants live in **11 · Decisions Log** — when narratives in earlier docs conflict with a decision entry, the decision entry wins.
 
-> **Last verified** May 2026 against the live database, the deployed edge functions, and `src/App.tsx`.
+> **Last verified** May 2026 against the live database (`public` schema), the four deployed edge functions, and `src/routes.tsx`.
 
 ## The problem
 
@@ -55,9 +55,9 @@ flowchart LR
     C3[Circulars + community forum]
   end
   subgraph Revenue
-    R1[Free tier]
+    R1[Free tier ₹0]
     R2[Paid member ₹10,000/yr]
-    R3[Broker flag ₹5,000/yr]
+    R3[Broker = is_broker flag · same fee, no addon]
   end
   Problem --> Solution --> Channels --> Revenue
 ```
@@ -73,11 +73,13 @@ flowchart LR
 
 A single typical lot saved from price-shopping recovers more than the annual paid-member fee. The break-even target is conservative: **40 paid members in year one** covers all platform costs and funds the BIL roadmap.
 
-| Year | Paid members | Brokers | Annual revenue |
-|---|---|---|---|
-| 1 | 40 | 10 | ₹4.5 lakh |
-| 2 | 120 | 25 | ₹13.25 lakh |
-| 3 | 250 | 50 | ₹27.5 lakh |
+| Year | Paid members (incl. brokers) | Annual revenue at ₹10K/yr |
+|---|---|---|
+| 1 | 40 | ₹4.0 lakh |
+| 2 | 120 | ₹12.0 lakh |
+| 3 | 250 | ₹25.0 lakh |
+
+Brokers are not a separate SKU — `profiles.is_broker = true` flips a flag on the same Paid membership and lists the member on `/broker`. (See decision **BIZ-003** in `11 · Decisions Log`.)
 
 ## What we are explicitly **not** building
 

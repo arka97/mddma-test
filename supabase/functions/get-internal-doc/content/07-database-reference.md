@@ -57,7 +57,7 @@ One row per authenticated user. Created automatically by the `handle_new_user` t
 | `company_name` | text | null | Protected — only edge fn can set |
 | `gstin` | text | null | Protected — validated against `^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$` |
 | `is_broker` | bool | `false` | Protected; flag, no separate price |
-| `verification_tier` | enum | `unverified` | Protected; promoted only via `promote-verification` edge fn |
+| `verification_tier` | enum | `unverified` | Protected; promoted by admin (service role) — there is **no** `promote-verification` edge function in the current build |
 | `buyer_reputation_score` | int | `0` | Protected; 0–100, derived from tier |
 | `rfq_count` | int | `0` | Protected; bumped server-side |
 | `rfq_response_rate` | numeric | `0` | Protected |
@@ -67,7 +67,7 @@ One row per authenticated user. Created automatically by the `handle_new_user` t
 | `created_at`, `updated_at` | timestamptz | `now()` | |
 
 **RLS** — self or admin can SELECT / UPDATE; self can INSERT; nobody can DELETE.
-**Trigger** `prevent_profile_privilege_escalation` (BEFORE UPDATE): non-admins cannot modify any of the 11 protected fields above. The `promote-verification` and Razorpay edge functions bypass via service role.
+**Trigger** `prevent_profile_privilege_escalation` (BEFORE UPDATE): non-admins cannot modify any of the 11 protected fields above. Admin updates via `/account/moderation` and the Razorpay activation path bypass via the `admin` role check.
 
 ### `user_roles`
 The single source of truth for what a user can do. **Never** stored on `profiles`.

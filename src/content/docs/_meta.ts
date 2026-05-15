@@ -139,6 +139,33 @@ export const DOCS: DocMeta[] = [
     diagramCount: 1,
     internal: true,
   },
+  {
+    number: "15",
+    slug: "security-and-rls",
+    title: "Security, RLS & Threat Model",
+    summary: "Per-table RLS matrix, guard triggers, what's intentionally public, threat surfaces, audit checklist.",
+    readTime: "8 min",
+    diagramCount: 0,
+    internal: true,
+  },
+  {
+    number: "16",
+    slug: "storage-and-media",
+    title: "Storage, Media & Uploads",
+    summary: "Buckets, path conventions, 10/100 MB size limits, MIME allowlist, gallery cap, orphan cleanup.",
+    readTime: "6 min",
+    diagramCount: 0,
+    internal: true,
+  },
+  {
+    number: "17",
+    slug: "owner-quickstart",
+    title: "Owner Quickstart & Where Do I…?",
+    summary: "Single-page operator index: every common task, feature→file map, release checklist.",
+    readTime: "8 min",
+    diagramCount: 0,
+    internal: true,
+  },
 ];
 
 export const SOURCES: Record<string, string> = {
