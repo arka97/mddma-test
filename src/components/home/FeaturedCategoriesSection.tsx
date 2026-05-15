@@ -26,8 +26,8 @@ export function FeaturedCategoriesSection() {
   return (
     <section className="bg-background py-12 sm:py-16">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 flex items-end justify-between gap-4">
-          <div>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+          <div className="min-w-0">
             <h2 className="t-h2 text-foreground">Browse by category</h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Top traded commodities across Mumbai's APMC market.
@@ -35,7 +35,7 @@ export function FeaturedCategoriesSection() {
           </div>
           <Link
             to="/products"
-            className="inline-flex items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
+            className="inline-flex shrink-0 items-center whitespace-nowrap text-sm font-medium text-accent hover:text-accent/80"
           >
             All categories <ArrowRight className="ml-1 h-4 w-4" />
           </Link>
