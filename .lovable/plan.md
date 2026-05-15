@@ -1,10 +1,33 @@
-## Changes
+## Problem
+The homepage gives no visual cue that this is MDDMA. The navbar shows only a small icon crest (no wordmark), and the hero section never mentions "MDDMA" or "Mumbai Dry Fruits and Dates Merchants Association".
 
-**1. Hero copy** (`src/components/home/HeroSection.tsx`)
-- Eyebrow: "Established 1930 · Mumbai's Trade Authority" → "Established 1930 · India's Trade Authority"
-- H1: "India's digital trade hub for dry fruits & commodities" → "The home of India's dry fruit trade."
+## Solution
 
-**2. Header logo** (`src/components/layout/Header.tsx` + assets)
-- Copy `user-uploads://MDDMA_Royal_Heritage_Logo-2.svg` → `src/assets/brand/MDDMA_Royal_Heritage_Logo.svg` (overwrites existing horizontal variant used by `Logo`)
-- Switch header `<Logo>` from `variant="mark"` to `variant="horizontal"` and bump size (~h-12), remove the redundant "MDDMA" text span next to it since the new logo includes the wordmark
-- Mobile sheet header: same horizontal variant at a smaller size (~h-8)
+### 1. Navbar — add visible wordmark next to the logo mark
+`src/components/layout/Header.tsx`
+- Keep `Logo variant="mark"` (the crest) at the current `h-[60px] w-[60px]`
+- Add a text span reading **"MDDMA"** immediately to the right of the crest, styled with `font-bold tracking-tight text-lg` (or `text-base` if space is tight on smaller desktops)
+- Keep the existing nav link items, search bar, and buttons untouched
+- Mobile sheet header: same mark + "MDDMA" text at a smaller size (`text-sm`)
+
+### 2. Hero — surface the full association name
+`src/components/home/HeroSection.tsx`
+- Insert a new line **below the eyebrow, above the H1**:
+  ```
+  Mumbai Dry Fruits and Dates Merchants Association
+  ```
+  Styled as `text-sm uppercase tracking-widest text-muted-foreground` so it reads as institutional context without competing with the headline.
+- Alternatively, fold it into the eyebrow if it feels too busy:
+  ```
+  Established 1930 · Mumbai Dry Fruits and Dates Merchants Association
+  ```
+  (preferred — keeps the vertical rhythm tight)
+
+### 3. No other changes
+- Do not modify `Logo.tsx` or the SVG assets
+- Do not change hero headline copy, search bar, market ticker, or CTAs
+- Do not alter footer, SEO tags, or any other page sections
+
+## Files to edit
+- `src/components/layout/Header.tsx`
+- `src/components/home/HeroSection.tsx`
