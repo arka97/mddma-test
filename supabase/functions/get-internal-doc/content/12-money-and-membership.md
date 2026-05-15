@@ -93,14 +93,14 @@ unverified  →  email  →  company  →  gst
 
 (Numbers on the right are `buyer_reputation_score` after each step.)
 
-| Tier | What gets checked | Where |
+| Tier | What gets checked | How it gets set today |
 |---|---|---|
 | `unverified` | nothing | default on signup |
-| `email` | `auth.users.email_confirmed_at` not null | `promote-verification` target=`email` |
-| `company` | `company_name` length 2–120 | `promote-verification` target=`company` |
-| `gst` | GSTIN matches the 15-char regex | `promote-verification` target=`gst` |
+| `email` | `auth.users.email_confirmed_at` not null | Admin sets `email_verified_at = now()` from `/account/moderation` (or via service-role SQL) |
+| `company` | `company_name` length 2–120 | Admin sets `company_verified_at` after reviewing the member's company record |
+| `gst` | GSTIN matches the 15-char regex | Admin sets `gst_verified_at` after manual GST verification |
 
-Each call to `promote-verification` writes the appropriate `*_verified_at` timestamp and recomputes the reputation score. Demotion is impossible (the function refuses).
+The earlier design called for a self-serve `promote-verification` edge function. **That function does not exist in the current build.** Promotion is admin-driven so the audit trail is unambiguous; the `prevent_profile_privilege_escalation` trigger blocks every other path.
 
 `get_buyer_reputation_tier(score)` maps the score to a label:
 

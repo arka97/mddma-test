@@ -43,13 +43,15 @@ The full route table from `src/App.tsx`. Every protected route wraps its element
 | `/account/profile` | `ProfilePage` | authenticated |
 | `/account/company` | `CompanyPage` | authenticated |
 | `/account/products` | `ProductsPage` | authenticated |
+| `/account/brands` | `BrandsPage` (account/) | authenticated |
 | `/account/rfqs` | `RFQInbox` | authenticated |
-| `/account/verify` | `VerificationCenter` | authenticated |
 | `/account/moderation` | `AdminModeration` | admin |
 | `/documents` | `DocumentsHub` | password-gated |
 | `/documents/:slug` | `DocViewer` | password-gated |
 | `/pitch`, `/mvp-canvas`, `/brd`, `/sow`, `/prd`, `/fsd`, `/sdd`, `/tsd`, `/changelog` | redirects to `/documents/*` | — |
 | `*` | `NotFound` | — |
+
+There is **no `/account/verify`** route. KYC tier promotion is done by admins from `/account/moderation` (the `prevent_profile_privilege_escalation` trigger blocks any other path).
 
 ### `ProtectedRoute`
 Reads `useAuth` and `useRole`. If no session, redirects to `/login` preserving the return URL. If `requireRole` is set and the user doesn't have it (effective role, simulator-aware), redirects to `/`.
