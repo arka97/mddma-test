@@ -56,7 +56,7 @@ export function FeaturedCategoriesSection() {
             {items.map((cat) => {
               const count = counts.get(cat.name) ?? 0;
               return (
-                <Link key={cat.id} to={`/products?cat=${encodeURIComponent(cat.name)}`}>
+                <Link key={cat.id} to={`/products?cat=${encodeURIComponent(cat.name)}`} className="block min-w-0">
                   <Card interactive className="h-full overflow-hidden">
                     {cat.image_url ? (
                       <div className="aspect-square w-full overflow-hidden bg-muted">
