@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -75,6 +76,18 @@ const BrandPage = () => {
 
   return (
     <Layout>
+      <Seo
+        title={`${brand.name} — House Brand on MDDMA`}
+        description={(brand.tagline ?? brand.story ?? `${brand.name} — a house brand from an MDDMA member company.`).slice(0, 160)}
+        path={`/brands/${brand.slug}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Brand",
+          name: brand.name,
+          url: `https://mddma.org/brands/${brand.slug}`,
+          logo: brand.logo_url ?? undefined,
+        }}
+      />
       {/* Hero */}
       <section className="relative border-b border-border">
         {brand.cover_url && (

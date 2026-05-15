@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -128,6 +129,17 @@ const Storefront = () => {
 
   return (
     <Layout>
+      <Seo
+        title={`${member.firmName} — Verified MDDMA Storefront`}
+        description={(member.description ?? `${member.firmName} — verified MDDMA member offering dry fruits, dates and nuts to buyers across India.`).slice(0, 160)}
+        path={`/store/${slug}`}
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          name: member.firmName,
+          url: `https://mddma.org/store/${slug}`,
+        }}
+      />
       {/* Owner / Admin toolbar */}
       {canManage && !previewMode && (
         <div className="bg-accent/10 border-b border-accent/30">

@@ -1,6 +1,6 @@
-import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -97,22 +97,31 @@ function initialsOf(name: string) {
 }
 
 const About = () => {
-  useEffect(() => {
-    document.title = "About MDDMA — Mumbai Dry Fruits & Dates Merchants Association";
-    const meta = document.querySelector('meta[name="description"]') ?? (() => {
-      const m = document.createElement("meta");
-      m.setAttribute("name", "description");
-      document.head.appendChild(m);
-      return m;
-    })();
-    meta.setAttribute(
-      "content",
-      "MDDMA — founded 1930. Mumbai's dry fruits & dates merchants association: history, leadership, committee members and contact details.",
-    );
-  }, []);
-
   return (
     <Layout>
+      <Seo
+        title="About MDDMA — Mumbai Dry Fruits & Dates Association"
+        description="MDDMA, founded 1930. History, leadership, committee members and contact details for the Mumbai Dryfruits & Dates Merchants Association."
+        path="/about"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          name: "Mumbai Dryfruits & Dates Merchants Association",
+          alternateName: "MDDMA",
+          url: "https://mddma.org/about",
+          telephone: "+91-22-27650827",
+          email: "vijaybhuta@gmail.com",
+          foundingDate: "1930",
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "C/o E-29, APMC Market-I, Phase-II, Sector-19, Masala Market",
+            addressLocality: "Navi Mumbai",
+            postalCode: "400705",
+            addressRegion: "MH",
+            addressCountry: "IN",
+          },
+        }}
+      />
       {/* Hero */}
       <section className="border-b border-border bg-gradient-to-b from-muted/40 to-background py-12 sm:py-16">
         <div className="container mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">

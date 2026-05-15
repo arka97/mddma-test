@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Search, Send, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -118,6 +119,7 @@ const Products = () => {
 
   return (
     <Layout>
+      <Seo title='Dry Fruits & Dates Marketplace — MDDMA Verified Sellers' description='Search verified listings of almonds, cashews, dates, pistachios, walnuts and more from MDDMA-vetted sellers. Get direct quotes via RFQ.' path='/products' />
       <section className="border-b border-border bg-muted/30 py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">

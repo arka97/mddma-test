@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ const Forms = () => {
 
   return (
     <Layout>
+      <Seo title='Forms & Contact — MDDMA' description='Download forms and get in touch with the MDDMA office for membership, applications and general queries.' path='/forms' />
       <PageHeader
         title="Get in touch"
         subtitle="Choose the right form for your enquiry."
