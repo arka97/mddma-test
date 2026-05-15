@@ -6,10 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Download, FileText, CheckCircle2, Circle, Package, Lock } from "lucide-react";
 import { DOCS, SOURCES, type DocMeta } from "@/content/docs/_meta";
+import { useDocAuthState } from "@/components/PasswordGate";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const READ_KEY = "mddma:doc-read";
 
-async function downloadAll() {
+async function downloadAll(password: string | null) {
   const zip = new JSZip();
   const folder = zip.folder("mddma-docs")!;
   folder.file(
@@ -18,9 +21,30 @@ async function downloadAll() {
       (d) => `- ${d.number}. **${d.title}** — ${d.summary} (\`${d.slug}.md\`)`,
     ).join("\n")}\n`,
   );
-  for (const d of DOCS) {
-    folder.file(`${d.number}-${d.slug}.md`, SOURCES[d.slug]);
+
+  // Public docs are bundled — write directly.
+  for (const d of DOCS.filter((d) => !d.internal)) {
+    const src = SOURCES[d.slug];
+    if (src) folder.file(`${d.number}-${d.slug}.md`, src);
   }
+
+  // Internal docs are fetched from the password-protected edge function.
+  const internal = DOCS.filter((d) => d.internal);
+  if (internal.length > 0) {
+    if (!password) {
+      toast({ title: "Internal docs skipped", description: "Re-enter the vault password to include internal docs in the zip." });
+    } else {
+      for (const d of internal) {
+        const { data, error } = await supabase.functions.invoke("get-internal-doc", {
+          body: { password, slug: d.slug },
+        });
+        if (!error && (data as any)?.ok && typeof (data as any).source === "string") {
+          folder.file(`${d.number}-${d.slug}.md`, (data as any).source);
+        }
+      }
+    }
+  }
+
   const blob = await zip.generateAsync({ type: "blob" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -33,6 +57,7 @@ async function downloadAll() {
 }
 
 const DocumentsHub = () => {
+  const { password } = useDocAuthState();
   const [read, setRead] = useState<Set<string>>(new Set());
   useEffect(() => {
     try {
@@ -97,7 +122,7 @@ const DocumentsHub = () => {
             Public spec ({publicDocs.length} docs) plus owner-only deep reference ({internalDocs.length} docs). Download any single doc or the full set.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
-            <Button onClick={downloadAll} variant="accent">
+            <Button onClick={() => downloadAll(password)} variant="accent">
               <Download className="h-4 w-4 mr-2" /> Download all (.zip)
             </Button>
           </div>
