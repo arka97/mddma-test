@@ -9,14 +9,14 @@ export function FeaturedBrandsStrip() {
   return (
     <section className="border-y border-border bg-muted/30 py-10">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between mb-5">
-          <div>
+        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 mb-5">
+          <div className="min-w-0">
             <p className="t-eyebrow text-accent flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5" /> Featured Brands
             </p>
             <h2 className="t-h2 text-foreground mt-1">House brands by MDDMA members</h2>
           </div>
-          <Link to="/brands" className="text-sm text-accent hover:underline whitespace-nowrap">View all →</Link>
+          <Link to="/brands" className="text-sm text-accent hover:underline whitespace-nowrap shrink-0">View all →</Link>
         </div>
         <div className="flex gap-4 overflow-x-auto pb-2 snap-x -mx-2 px-2">
           {brands.map((b) => (
