@@ -13,6 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Inbox, Phone, Handshake, CheckCircle, Lock, ArrowRight, Bell, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MembershipStatusCard } from "@/components/account/MembershipStatusCard";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 type RfqStatus = "new" | "viewed" | "responded" | "negotiating" | "converted" | "closed";
 type RfqPriority = "hot" | "warm" | "cold";
