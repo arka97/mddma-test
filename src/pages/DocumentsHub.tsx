@@ -121,7 +121,7 @@ const DocumentsHub = () => {
             Public spec ({publicDocs.length} docs) plus owner-only deep reference ({internalDocs.length} docs). Download any single doc or the full set.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
-            <Button onClick={downloadAll} variant="accent">
+            <Button onClick={() => downloadAll(password)} variant="accent">
               <Download className="h-4 w-4 mr-2" /> Download all (.zip)
             </Button>
           </div>
