@@ -24,7 +24,7 @@ interface LiveListing {
 function ListingCard({ p, signedIn }: { p: LiveListing; signedIn: boolean }) {
   const sellerSlug = p.companies?.slug;
   return (
-    <Link to={sellerSlug ? `/store/${sellerSlug}` : "/products"} className="group">
+    <Link to={sellerSlug ? `/store/${sellerSlug}` : "/products"} className="group block min-w-0">
       <Card interactive className="h-full overflow-hidden">
         <div className="aspect-[16/10] overflow-hidden bg-muted">
           {p.image_url ? (
