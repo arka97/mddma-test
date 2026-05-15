@@ -234,9 +234,26 @@
     scroll-padding-top: calc(52px + env(safe-area-inset-top));
     -webkit-text-size-adjust: 100%;
   }
-  /* Prevent overscroll rubber-band leaking through drawers */
+  /* Mobile-first overflow guards — nothing should ever cause horizontal scroll */
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
   body {
     overscroll-behavior-y: contain;
+  }
+  #root {
+    overflow-x: clip;
+    max-width: 100vw;
+  }
+  /* Media must never blow out its container */
+  img, video, svg, canvas, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+  /* Long unbroken strings (URLs, SKUs, descriptions) should wrap, not push layout */
+  p, h1, h2, h3, h4, h5, h6, span, li, td, th, a {
+    overflow-wrap: anywhere;
   }
   button, a, [role="button"] {
     touch-action: manipulation;
