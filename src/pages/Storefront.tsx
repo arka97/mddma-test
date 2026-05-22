@@ -65,19 +65,9 @@ const Storefront = () => {
       .then(async ({ data }) => {
         if (!alive) return;
         if (data) {
-          // Contact info (email/phone/gstin) is only available to authenticated members.
-          let contact: { email: string | null; phone: string | null; gstin: string | null } = {
-            email: null, phone: null, gstin: null,
-          };
-          const { data: { session } } = await supabase.auth.getSession();
-          if (session) {
-            const { data: contactRow } = await supabase
-              .from("companies")
-              .select("email,phone,gstin")
-              .eq("slug", slug)
-              .maybeSingle();
-            if (contactRow) contact = contactRow as typeof contact;
-          }
+          // Contact info (email/phone/gstin) is intentionally not exposed via
+          // direct table reads. Members initiate contact through the RFQ flow.
+          const contact = { email: null, phone: null, gstin: null };
           const merged = { ...data, ...contact } as unknown as CompanyRow;
           setLiveMember(liveCompanyToEntry(merged));
           setLiveCompanyId(data.id);
