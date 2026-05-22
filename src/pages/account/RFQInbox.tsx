@@ -1,6 +1,7 @@
 import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -178,6 +179,7 @@ const RFQInbox = () => {
 
   return (
     <Layout>
+        <Seo title="RFQ Inbox — MDDMA" description="Members-only page." path="/account/rfqs" noindex />
       <section className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
           <h1 className="text-3xl font-bold mb-6 flex items-center gap-2"><Inbox /> RFQ Center</h1>

@@ -2,6 +2,7 @@ import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -96,6 +97,7 @@ const ProductsPage = () => {
   if (!user) return null;
   if (!company) return (
     <Layout>
+        <Seo title="My Products — MDDMA" description="Members-only page." path="/account/products" noindex />
       <div className="py-20 text-center">
         <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
         <h2 className="text-xl font-semibold mb-2">Create your company first</h2>
@@ -239,6 +241,7 @@ const ProductsPage = () => {
 
   return (
     <Layout>
+        <Seo title="My Products — MDDMA" description="Members-only page." path="/account/products" noindex />
       <section className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           <div className="flex items-center justify-between mb-6">

@@ -1,6 +1,7 @@
 import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -57,6 +58,7 @@ const ProfilePage = () => {
 
   return (
     <Layout>
+        <Seo title="My Profile — MDDMA" description="Members-only page." path="/account/profile" noindex />
       <section className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-3">

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -125,6 +126,7 @@ const Dashboard = () => {
   if (!access) {
     return (
       <Layout>
+        <Seo title="Dashboard — MDDMA" description="Members-only page." path="/dashboard" noindex />
         <section className="bg-primary py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Lead CRM Dashboard</h1>
@@ -165,6 +167,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
+        <Seo title="Dashboard — MDDMA" description="Members-only page." path="/dashboard" noindex />
       <section className="bg-primary py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-primary-foreground mb-2">Lead CRM Dashboard</h1>
