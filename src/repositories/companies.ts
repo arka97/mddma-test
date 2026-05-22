@@ -71,26 +71,20 @@ export async function getCompanyBySlug(slug: string) {
 }
 
 /**
- * Authenticated-only: fetch contact details (email/phone/gstin) for a company.
- * Returns null for anonymous viewers because RLS / column grants block access.
+ * Contact details (email/phone/gstin) are no longer exposed via direct SELECT.
+ * Only the owner can read their own contact info, through getCompanyByOwner.
  */
-export async function getCompanyContactBySlug(slug: string) {
-  const { data, error } = await supabase
-    .from("companies")
-    .select("slug,email,phone,gstin")
-    .eq("slug", slug)
-    .maybeSingle();
-  if (error) return null;
-  return data as { slug: string; email: string | null; phone: string | null; gstin: string | null } | null;
+export async function getCompanyContactBySlug(_slug: string) {
+  return null as { slug: string; email: string | null; phone: string | null; gstin: string | null } | null;
 }
 
-export async function getCompanyByOwner(ownerId: string) {
-  const { data, error } = await supabase
-    .from("companies")
-    .select(COMPANY_FULL_COLUMNS)
-    .eq("owner_id", ownerId)
-    .maybeSingle();
-  if (error) throw new Error(friendlyErrorMessage(error));
-  return (data ?? null) as CompanyRow | null;
+export async function getCompanyByOwner(_ownerId: string) {
+  // Uses the SECURITY DEFINER RPC `get_my_company` so the owner can read their
+  // own row including contact columns, which are revoked from the
+  // `authenticated` role at the column level.
+  const { data, error } = await (supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown; error: unknown }>)("get_my_company");
+  if (error) throw new Error(friendlyErrorMessage(error as never));
+  const row = Array.isArray(data) ? data[0] : data;
+  return (row ?? null) as CompanyRow | null;
 }
 
