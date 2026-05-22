@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode, useCallback } from "react";
+import { toast } from "sonner";
 
 export interface CartItem {
   productId: string;
@@ -32,37 +33,105 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) return JSON.parse(raw);
-    } catch {}
+    } catch {
+      /* ignore */
+    }
     return [];
   });
   const [isOpen, setOpen] = useState(false);
+  const itemsRef = useRef(items);
+  itemsRef.current = items;
 
   useEffect(() => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch {}
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      /* ignore */
+    }
   }, [items]);
 
   const addItem = useCallback((item: CartItem) => {
     setItems((prev) => {
-      const exists = prev.find((p) => p.productId === item.productId && (p.variantId ?? null) === (item.variantId ?? null));
-      if (exists) return prev.map((p) => p === exists ? { ...p, quantity: item.quantity || p.quantity } : p);
+      const exists = prev.find(
+        (p) =>
+          p.productId === item.productId &&
+          (p.variantId ?? null) === (item.variantId ?? null),
+      );
+      if (exists)
+        return prev.map((p) =>
+          p === exists ? { ...p, quantity: item.quantity || p.quantity } : p,
+        );
       return [...prev, item];
     });
     setOpen(true);
   }, []);
 
+  /**
+   * Removing an item shows an 8-second Undo toast. Mistakes shouldn't punish
+   * non-tech users — they get a clear way out without rebuilding their cart.
+   */
   const removeItem = useCallback((productId: string, variantId?: string | null) => {
-    setItems((prev) => prev.filter((p) => !(p.productId === productId && (p.variantId ?? null) === (variantId ?? null))));
+    const removed = itemsRef.current.find(
+      (p) => p.productId === productId && (p.variantId ?? null) === (variantId ?? null),
+    );
+    setItems((prev) =>
+      prev.filter(
+        (p) => !(p.productId === productId && (p.variantId ?? null) === (variantId ?? null)),
+      ),
+    );
+    if (removed) {
+      toast(`Removed ${removed.productName}`, {
+        duration: 8000,
+        action: {
+          label: "Undo",
+          onClick: () => {
+            setItems((prev) => {
+              const stillThere = prev.find(
+                (p) =>
+                  p.productId === removed.productId &&
+                  (p.variantId ?? null) === (removed.variantId ?? null),
+              );
+              return stillThere ? prev : [...prev, removed];
+            });
+          },
+        },
+      });
+    }
   }, []);
 
-  const updateQuantity = useCallback((productId: string, variantId: string | null | undefined, quantity: string) => {
-    setItems((prev) => prev.map((p) => p.productId === productId && (p.variantId ?? null) === (variantId ?? null) ? { ...p, quantity } : p));
-  }, []);
+  const updateQuantity = useCallback(
+    (productId: string, variantId: string | null | undefined, quantity: string) => {
+      setItems((prev) =>
+        prev.map((p) =>
+          p.productId === productId && (p.variantId ?? null) === (variantId ?? null)
+            ? { ...p, quantity }
+            : p,
+        ),
+      );
+    },
+    [],
+  );
 
   const clear = useCallback(() => setItems([]), []);
-  const clearCompany = useCallback((companyId: string) => setItems((prev) => prev.filter((p) => p.companyId !== companyId)), []);
+  const clearCompany = useCallback(
+    (companyId: string) => setItems((prev) => prev.filter((p) => p.companyId !== companyId)),
+    [],
+  );
 
   return (
-    <CartContext.Provider value={{ items, addItem, removeItem, updateQuantity, clear, clearCompany, count: items.length, isOpen, setOpen }}>
+    <CartContext.Provider
+      value={{
+        items,
+        addItem,
+        removeItem,
+        updateQuantity,
+        clear,
+        clearCompany,
+        count: items.length,
+        isOpen,
+        setOpen,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

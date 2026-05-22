@@ -9,7 +9,9 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -147,6 +149,8 @@ export function Header() {
               />
             </form>
             <InstallAppButton iconOnly size="sm" className="h-10 w-10 p-0 sm:h-8 sm:w-8" />
+            <LanguageSwitcher />
+
             {user ? (
               <UserMenu />
             ) : (
