@@ -42,8 +42,9 @@ const ProductPage = () => {
     <Layout>
       <Seo
         title={`${product.name} — Member Catalogue · MDDMA`}
-        description="Member product page. Members-only."
+        description={`View specifications and request a quote for ${product.name} from a verified MDDMA member merchant. Members-only product page.`}
         path={`/products/${product.slug}`}
+        ogType="product"
         noindex
       />
       <section className="bg-primary py-8">
