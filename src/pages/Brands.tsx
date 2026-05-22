@@ -11,7 +11,7 @@ const Brands = () => {
 
   return (
     <Layout>
-      <Seo title='House Brands by MDDMA Members — Indian Dry Fruit Brands' description='Discover consumer dry fruit, nut and dates brands built by MDDMA member companies. Bulk B2B inquiries and retail links.' path='/brands' />
+      <Seo title='Member Brands — MDDMA' description='House brands by MDDMA member companies. Members-only.' path='/brands' noindex />
       <PageHeader
         title="House Brands"
         subtitle="Discover consumer brands built by MDDMA member companies. Bulk B2B inquiries via the seller's storefront; retail purchases at the brand's own shop."

@@ -119,7 +119,7 @@ const Products = () => {
 
   return (
     <Layout>
-      <Seo title='Dry Fruits & Dates Marketplace — MDDMA Verified Sellers' description='Search verified listings of almonds, cashews, dates, pistachios, walnuts and more from MDDMA-vetted sellers. Get direct quotes via RFQ.' path='/products' />
+      <Seo title='Member Product Catalogue — MDDMA' description='Member product catalogue and RFQ. Members-only.' path='/products' noindex />
       <section className="border-b border-border bg-muted/30 py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">

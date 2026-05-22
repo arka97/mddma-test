@@ -111,7 +111,7 @@ const Login = () => {
 
   return (
     <Layout>
-      <Seo title='Sign in to MDDMA' description='Sign in to your MDDMA account to manage your storefront, RFQs and member profile.' path='/login' />
+      <Seo title='Sign in to MDDMA' description='Member sign-in.' path='/login' noindex />
       <section className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-md mx-auto">
