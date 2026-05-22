@@ -143,6 +143,7 @@ export type Database = {
           id: string
           is_published: boolean
           published_at: string | null
+          slug: string | null
           title: string
           updated_at: string
         }
@@ -154,6 +155,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           published_at?: string | null
+          slug?: string | null
           title: string
           updated_at?: string
         }
@@ -165,6 +167,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           published_at?: string | null
+          slug?: string | null
           title?: string
           updated_at?: string
         }
@@ -936,6 +939,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      slugify: { Args: { _title: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "broker" | "paid_member" | "free_member"
