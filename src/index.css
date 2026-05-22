@@ -160,6 +160,12 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "cv11", "ss01", "tnum";
+    /* Larger base on mobile for older eyes; tightens up on tablet+. */
+    font-size: 17px;
+  }
+
+  @media (min-width: 768px) {
+    body { font-size: 16px; }
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -170,11 +176,13 @@
 @layer components {
   /* Type scale */
   .t-display {
-    font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    font-weight: 700;
+    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+    font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    font-weight: 400;
   }
+
 
   .t-h1 {
     font-size: clamp(1.875rem, 2.5vw + 1rem, 2.5rem);
