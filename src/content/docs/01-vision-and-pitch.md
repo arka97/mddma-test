@@ -90,7 +90,10 @@ Brokers are not a separate SKU — `profiles.is_broker = true` flips a flag on t
 
 These omissions are not gaps; they are the design.
 
+> **Suite update (May 2026):** the documentation has grown from 6 to **28 docs** (6 public 01–06 + 22 internal 07–28). The new pack 18–28 adds the legal, operator, and pilot policies — Privacy, Terms, Refund, Grievance, KYC, SOW & SLA, Committee Guide, Retention, Pilot Plan, GTM playbook, and the Member-Data Migration plan.
+
 ## Read next
 
 - **02 · Business & Scope** — what we sell and what's in the contract.
 - **03 · Product & UX** — how members experience the platform.
+- **19 · Privacy Policy** & **27 · Pilot Plan** — the new operator-facing essentials.

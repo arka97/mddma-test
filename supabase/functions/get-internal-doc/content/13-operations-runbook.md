@@ -2,6 +2,8 @@
 
 The day-to-day playbook. Skim the table of contents; jump to the recipe you need.
 
+> **For the committee:** this doc is SQL-heavy and for the developer. If you're an office-staff or committee member, start with **doc 25 (Committee Operator Guide)** — every common task (approve a company, publish a circular, run an ad, pin a post) has a zero-SQL version there. Per OPS-001 (doc 11), committee members never run SQL.
+
 ## Recipes
 
 1. Seed demo data for a pilot

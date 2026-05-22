@@ -111,3 +111,27 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 - RPC `downgrade_to_free(_user_id)` (called by `cancelMembership` and "Free" admin moderation button)
 - Backfill migration `20260501_paid_replaces_free.sql` cleaned existing data
 - Dev-mode invariant in `RoleContext` asserts `paid_member` permissions ⊇ `free_member` permissions
+
+### LEGAL-001 — Legal stack is a pre-requisite for Razorpay live mode
+**Decision** Privacy Policy (doc 19), Terms of Service (doc 20), Refund & Cancellation (doc 21) and Grievance & Redressal (doc 22) must be published as public routes **before** Razorpay live keys are flipped on.
+**Why** Razorpay onboarding requires the three policy URLs; DPDP and IT Rules 2021 require the grievance officer notice. Skipping this gates the entire monetisation flow and exposes the Association to regulator action.
+**Locked** May 2026.
+**Enforced in** Doc 06 roadmap "Promote Privacy/Terms/Refund pages" precedes "Razorpay live mode". The four markdown bodies are drafted; promotion to `/privacy`, `/terms`, `/refund`, `/grievance` is a routes-and-footer change.
+
+### LEGAL-002 — Aditya Parmar is the named Grievance & Data Protection Officer
+**Decision** A single named individual is the sole point of contact for all DPDP Act §11–14 rights requests, IT Rules 2021 §3(11) grievances, content-takedown requests, and data-breach notices. That individual is **Aditya Parmar** (grievance@mddma.org, +91 22 2784 1234).
+**Why** DPDP §8(9) and IT Rules §3(11) require a named, reachable officer. A shared inbox without a named human does not meet the legal test. Succession is documented in doc 22 §1.
+**Locked** May 2026.
+**Enforced in** Docs 19 §2, 21 §6, 22 §1, 23 throughout, 25 §10, 26 §5. Footer block on `/privacy`, `/terms`, `/refund`, `/grievance` (once those routes ship).
+
+### OPS-001 — Committee never runs SQL
+**Decision** Office staff and committee members operate the platform exclusively through `/account/moderation`. SQL recipes (doc 13, doc 17) are for the developer only.
+**Why** Operator error in SQL is irreversible and PII-laden. The non-technical guide (doc 25) covers every committee task without exposing a query console.
+**Locked** May 2026.
+**Enforced in** Doc 25 is the canonical committee surface; docs 13 and 17 carry a banner pointing at doc 25 first.
+
+### DATA-001b — RFQ rows anonymised at 7 years, hard-deleted at 10
+**Decision** `rfqs` rows are kept for 7 years from creation for trade-audit purposes. At year 7 the snapshotted buyer fields (`buyer_name`, `buyer_email`, `buyer_phone`, `buyer_company`, `message`, `delivery_location`, `buyer_id`) are overwritten or nulled. At year 10 the row is hard-deleted.
+**Why** Reconciles the deliberate snapshotting in `rfqs` (so deletes don't break audit) with DPDP §12 erasure rights. Members are told this upfront in the Privacy Policy and the response to any erasure request.
+**Locked** May 2026.
+**Enforced in** Doc 19 §7, doc 26 §2/§3. Implementation is the `retention-cron` edge function (planned, see doc 26 §7); until it ships the Grievance Officer runs the operations manually each quarter.

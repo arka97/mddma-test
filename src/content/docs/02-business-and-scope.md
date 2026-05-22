@@ -57,7 +57,23 @@ gantt
 - Verified-member onboarding flow with KYC document upload.
 - RFQ engine with multi-item cart, drafts, and quote thread.
 - Native community forum (posts + comments).
-- Documentation suite (this set of 6 documents) maintained in source control.
+- Documentation suite — **28 docs as of May 2026** (6 public 01–06 + 22 internal 07–28), versioned in source control. The pack 18–28 covers the legal, policy and operator essentials below.
+
+### Legal, policy & operator pack (shipped May 2026)
+
+| # | Doc | Why it exists |
+|---|---|---|
+| 18 | Member Data Audit & Migration | 350+ legacy members move in with consent and dedupe |
+| 19 | Privacy Policy | DPDP Act 2023 + IT Rules 2021 compliance |
+| 20 | Terms of Service | Account, listing, RFQ, payment, liability terms |
+| 21 | Refund & Cancellation | Required by Razorpay; cooling-off + pro-rata rules |
+| 22 | Grievance & Redressal | Named officer + IT Rules timelines |
+| 23 | KYC & Verification Policy | The "what / how long / who can see" behind the tier ladder |
+| 24 | SOW & Maintenance SLA | Build + maintenance scope, severity SLAs, IP |
+| 25 | Committee Operator Guide | Zero-SQL guide for office staff |
+| 26 | Data Retention & Deletion | RFQ snapshot anonymisation + erasure workflow |
+| 27 | Pilot Plan & Success Criteria | 90-day cohort, must-hit metrics, decision rule |
+| 28 | GTM & Onboarding Playbook | Pattern D execution, anchor scripts, founding window |
 
 ### Milestones & payments
 
@@ -67,6 +83,7 @@ gantt
 | M2 | Directory + storefronts + RFQ cart | Pilot kickoff | 35% |
 | M3 | CMS + forum + verification | Public launch | 25% |
 | M4 | BIL phase-2 contract & first signal endpoint | Signed off by committee | 15% |
+| M5 | Legal & operator doc pack (18–28) | Counsel review + committee sign-off | included in maintenance |
 
 ### Ways of working
 
