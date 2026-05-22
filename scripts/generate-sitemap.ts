@@ -26,8 +26,6 @@ const staticEntries: SitemapEntry[] = [
   { path: "/membership", changefreq: "monthly", priority: "0.8" },
   { path: "/apply", changefreq: "monthly", priority: "0.7" },
   { path: "/install", changefreq: "monthly", priority: "0.5" },
-  { path: "/faq", changefreq: "monthly", priority: "0.8" },
-  { path: "/knowledge", changefreq: "weekly", priority: "0.8" },
   { path: "/circulars", changefreq: "weekly", priority: "0.7" },
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
 ];
@@ -82,14 +80,22 @@ async function main() {
   const circulars = await fetchPublishedCircularSlugs();
   const knowledge = readKnowledgeSlugs();
 
+  // /knowledge index + knowledge slugs only included when articles exist
+  // (route is not wired up yet — avoid 404 entries per SEO sitemap audit).
+  const knowledgeEntries: SitemapEntry[] =
+    knowledge.length > 0
+      ? [
+          { path: "/knowledge", changefreq: "weekly", priority: "0.8" },
+          ...knowledge.map((s) => ({ path: `/knowledge/${s}`, changefreq: "monthly" as const, priority: "0.7" })),
+        ]
+      : [];
+
   const entries: SitemapEntry[] = [
     ...staticEntries,
-    { path: "/knowledge", changefreq: "weekly", priority: "0.8" },
-    ...knowledge.map((s) => ({ path: `/knowledge/${s}`, changefreq: "monthly" as const, priority: "0.7" })),
+    ...knowledgeEntries,
     ...circulars.map((s) => ({ path: `/circulars/${s}`, changefreq: "monthly" as const, priority: "0.6" })),
   ];
 
-  // De-dupe (/knowledge appears twice above intentionally for clarity; collapse here)
   const seen = new Set<string>();
   const unique = entries.filter((e) => (seen.has(e.path) ? false : (seen.add(e.path), true)));
 

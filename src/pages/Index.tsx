@@ -12,8 +12,8 @@ import { FooterCTA } from "@/components/home/FooterCTA";
 const Index = () => (
   <Layout>
     <Seo
-      title="MDDMA — Dry Fruits, Dates & Commodities | Verified B2B Trade"
-      description="Source dry fruits, dates, nuts, spices, honey & more from verified sellers. India's most trusted B2B trade network — only on MDDMA."
+      title="MDDMA — Verified B2B Dry Fruits & Dates Trade Network"
+      description="Official MDDMA member portal — verified dry fruits, dates and nuts merchants of Mumbai. Member directory, RFQs, circulars and trade knowledge base."
       path="/"
     />
     <HeroSection />

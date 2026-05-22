@@ -131,7 +131,7 @@ const Storefront = () => {
     <Layout>
       <Seo
         title={`${member.firmName} — Member Storefront · MDDMA`}
-        description="Member storefront. Members-only."
+        description={`Official member storefront for ${member.firmName}, a verified MDDMA dry fruits and dates merchant. Catalogue, certifications and trade history — members-only access.`}
         path={`/store/${slug}`}
         noindex
       />
