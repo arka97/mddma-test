@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { Lock, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
-import type { ProductListing } from "@/repositories/products";
+import type { ProductEntry } from "@/lib/dataSource";
 
 interface Props {
-  listing: ProductListing;
+  listing: ProductEntry;
   href: string;
   /** When true, prices are blurred behind a sign-in lock. */
   signedIn?: boolean;
