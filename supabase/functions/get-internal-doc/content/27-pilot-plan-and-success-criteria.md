@@ -26,7 +26,7 @@ Pilot is **two-sided** — sellers alone do not validate the platform. Locked at
 | W0 | **Pre-launch** | Privacy / Terms / Refund / Grievance live; founding-window banner up; 8–10 seller anchors + 8–10 buyer anchors privately briefed |
 | W1–W2 | **Soft launch** | Anchors only; founding-window pricing; daily monitoring; bug bashes |
 | W3–W4 | **Open beta** | Free observers invited; first round of RFQs encouraged; first circular published |
-| W5–W8 | **Steady state** | Public discoverability via SEO; first ad campaigns; first refund request expected |
+| W5–W8 | **Steady state** | Public content surface (home, about, knowledge, FAQ, circulars) accruing authority; **member acquisition continues via Pattern D warm intros; no paid ads during pilot**; first refund request expected |
 | W9–W12 | **Review** | Data freeze, metrics report, committee decision call |
 
 ## 4. Success metrics (quantitative)

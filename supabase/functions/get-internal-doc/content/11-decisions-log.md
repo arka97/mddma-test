@@ -20,6 +20,7 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 | DATA-001 | Live-only reads; sample data is a test fixture, not a fallback | Locked |
 | ROLE-001 | `paid_member` and `free_member` mutually exclusive at the DB | Locked |
 | PILOT-001 | Pilot = 8–10 two-sided (sellers + buyers); supersedes earlier "20" / "25" figures | Locked |
+| GTM-001 | Two-tier public/gated: public authority layer is prerendered & AI-optimized; transactional core stays gated & noindex | Locked |
 
 ---
 

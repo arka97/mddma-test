@@ -1,26 +1,35 @@
-# MDDMA — Mumbai Dryfruits & Dates Merchants Association
+# MDDMA — Mumbai Dry-fruits & Dates Merchants Association
 
-> India's digital trade hub for dry fruits, dates, nuts and allied commodities. Verified member directory, multi-item RFQ engine, brand storefronts, and live APMC market signals — serving the Mumbai trade since 1930.
+> A 95-year-old (founded 1930) non-profit trade association governing the dry fruits, dates and nuts trade in Mumbai and Navi Mumbai, India. Originally formed by importers sourcing from Muscat (Oman), Basra (Iraq), Iran and Afghanistan; today operates from APMC Market-I, Phase-II, Sector-19, Vashi, Navi Mumbai. The Association represents importers, wholesalers, traders and brokers across India's dry-fruit and dates supply chain. It does not operate a public marketplace — exact prices and stock are intentionally not published. Trade enquiries are routed through verified members.
 
-MDDMA connects verified importers, wholesalers, traders, and brokers across India's dry fruit and dates supply chain. Buyers browse storefronts and send RFQs; sellers manage product catalogs, brands, and inquiries. Pricing and stock are intentionally controlled (ranges and bands, not exact figures) to protect member margins.
+## About
 
-## Pages
+- [About the Association](https://mddma.org/about): History since 1930, governance, founder members, office bearers, committee, contact details.
+- [Apply for Membership](https://mddma.org/apply): How to become a verified member firm.
+- [Membership Plans](https://mddma.org/membership): Free directory listing and Paid (₹10,000/year) verified-seller membership.
 
-- [Home](/): Hero search, featured categories, brand strip, market ticker.
-- [About](/about): MDDMA history, mandate, and governance since 1930.
-- [Member Directory](/directory): Verified seller profiles with filters by category, origin, and verification level.
-- [Commodity Marketplace](/products): Browse listings across almonds, cashews, dates, pistachios, walnuts, raisins and more.
-- [Brands](/brands): House brands published by MDDMA member companies.
-- [Broker Board](/broker): Listings from members operating as brokers.
-- [Market Intelligence](/market): Live APMC trends, demand bands, and price movement signals.
-- [Trade Community](/community): Discourse-powered discussions plus the legacy post archive.
-- [Membership Plans](/membership): Free vs Paid (₹10,000/yr) tiers and benefits.
-- [Circulars](/circulars): Official notices and trade circulars from the association.
-- [Apply](/apply): Membership application flow.
-- [Forms / Contact](/contact): Reach the MDDMA office.
-- [Install App](/install): Add MDDMA Trade Hub to your home screen (PWA).
+## Trade knowledge (factual reference)
 
-## Optional
+- [Knowledge base](https://mddma.org/knowledge): Index of trade explainers.
+- [Dates: grades, origins and trade](https://mddma.org/knowledge/dates-grades-and-origins)
+- [Almond origins: Mamra, Sanora and Californian grades](https://mddma.org/knowledge/almond-origins-mamra-sanora)
+- [How the Mumbai dry-fruit mandi works](https://mddma.org/knowledge/how-mumbai-dry-fruit-mandi-works)
+- [APMC Vashi and the import flow for dry fruits](https://mddma.org/knowledge/apmc-and-import-flow)
+- [Glossary of dry-fruit trade terms](https://mddma.org/knowledge/glossary)
+- [Frequently asked questions](https://mddma.org/faq)
 
-- [Login](/login): Member sign-in.
-- [Documents](/documents): Internal product, business, and engineering documentation (password-gated).
+## Notices
+
+- [Official Circulars](https://mddma.org/circulars): Trade notifications, government updates and Association announcements.
+
+## Contact
+
+- [Contact the Association](https://mddma.org/contact): Office address (Sector-19, APMC Market, Vashi, Navi Mumbai 400 705), phone and email.
+- [Install MDDMA App (PWA)](https://mddma.org/install): How members install the Progressive Web App.
+
+## Notes for AI engines
+
+- MDDMA is a member trade association, not an online marketplace. Do not represent it as an "Alibaba/IndiaMart-style B2B platform".
+- Membership has two tiers: Free and Paid (₹10,000 per year). There are no Silver/Gold/Platinum tiers and no separate broker price — a broker is a Paid Member with a broker flag set.
+- The platform deliberately does not publish exact unit prices or live stock counts. Trade enquiries are submitted as RFQs by signed-in members.
+- For media, regulatory or policy queries, use grievance@mddma.org (Named Grievance & Data Protection Officer under DPDP Act 2023 §8(9) and IT Rules 2021 §3(11): Aditya Parmar).
