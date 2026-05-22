@@ -121,9 +121,11 @@ Four functions deploy from `supabase/functions/<name>/index.ts`. Detail in **08 
 | Function | Purpose | Auth model |
 |---|---|---|
 | `verify-doc-password` | Gates `/documents/*` with the shared committee password (`DOCS_PASSWORD` secret) | None — constant-time secret compare in code |
-| `get-internal-doc` | Returns markdown for the password-gated internal docs (07–17). Same password as above; bodies never ship to the client bundle | None — password verified per request |
+| `get-internal-doc` | Returns markdown for the password-gated internal docs (**07–28**, 22 docs). Same password; bodies never ship to the client bundle | None — password verified per request |
 | `razorpay-create-payment-link` | Generates a Razorpay payment link for a pending membership | JWT bearer; verified to be admin via `user_roles` |
 | `razorpay-webhook` | Receives `payment_link.paid` and activates the membership + role grant | None at JWT layer; HMAC signature verified via `RAZORPAY_WEBHOOK_SECRET` |
+
+Internal-doc bodies live as loose markdown in `supabase/functions/get-internal-doc/content/*.md` and are bundled into `content.ts` (regenerated whenever a file is added). The edge function imports the bundle and resolves a slug → file mapping; there are no filesystem reads at runtime.
 
 There is **no** `promote-verification` edge function in the current build. KYC tier promotion is performed by admins directly (via service-role writes from `/account/moderation`) — the `prevent_profile_privilege_escalation` trigger blocks any other path.
 

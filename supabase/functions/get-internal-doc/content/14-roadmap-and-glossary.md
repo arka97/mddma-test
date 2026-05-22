@@ -9,21 +9,28 @@ gantt
   title MDDMA next six months
   dateFormat  YYYY-MM-DD
   section Pilot
-  Pilot with 20 founding members      :active, 2026-05-03, 4w
-  Public launch                       :        2026-05-31, 1w
+  Pilot with 25 anchor members        :active, 2026-05-03, 12w
+  W12 continue/iterate/sunset call    :        2026-07-26, 1w
+  Public launch (post-pilot)          :        2026-08-02, 1w
+  section Legal & operator pack
+  Docs 18-28 drafted                  :done,   2026-05-20, 1w
+  Promote Privacy/Terms/Refund pages  :        2026-05-24, 1w
+  Counsel review + sign-off           :        2026-05-31, 2w
+  section Payments
+  Razorpay live mode + webhook drill  :        2026-05-31, 2w
   section BIL Phase 2
-  BIL API spec frozen                 :        2026-06-07, 1w
-  BIL signal endpoints                :        2026-06-14, 4w
-  Buyer-reputation feedback loop      :        2026-07-12, 3w
+  BIL API spec frozen                 :        2026-06-21, 1w
+  BIL signal endpoints                :        2026-06-28, 4w
+  Buyer-reputation feedback loop      :        2026-07-26, 3w
   section Polish
-  PWA push notifications              :        2026-08-02, 2w
-  Reporting dashboard for admins      :        2026-08-16, 3w
+  PWA push notifications              :        2026-08-16, 2w
+  Reporting dashboard for admins      :        2026-08-30, 3w
   section Hardening
-  Backup + restore drill              :        2026-09-06, 1w
-  Security review (third party)       :        2026-09-13, 2w
+  Backup + restore drill              :        2026-09-20, 1w
+  Security review (third party)       :        2026-09-27, 2w
 ```
 
-The Phase 2 BIL is the largest single piece of work — it converts the existing `demand_score`, `trend_direction`, and `priority_score` fields from manual seeds into computed signals.
+The Phase 2 BIL is the largest single piece of work — it converts the existing `demand_score`, `trend_direction`, and `priority_score` fields from manual seeds into computed signals. The pilot (doc 27) and the legal-stack-as-Razorpay-prerequisite (LEGAL-001) now precede BIL in the sequence.
 
 ## Behavioral Intelligence Layer — contract
 
@@ -135,6 +142,7 @@ Do not re-pitch these without a written reason that defeats the original objecti
 | **Verification tier** | KYC ladder: `unverified` → `email` → `company` → `gst`. |
 | **Founder admin** | `admin@mddma.org` — bypasses paid + KYC checks. |
 | **Founding lock** | 24-month price-and-tier guarantee on the first paid signup. |
+| **Founding window** | The first 90 days after public go-live during which anchors get the founding-lock price (doc 27, doc 28). |
 | **Role simulator** | Header dropdown that lets you preview the site as any role. Demo only — no server-side effect. |
 | **Live discovery** | Directory / Storefront / Products read live DB rows. Sample data is preserved for tests but not merged into production lists (see DATA-001 in `decisions-log`). |
 | **Live ticker** | Global scrolling band at the top of the page showing `commodity range ±%` from priced products. |
@@ -142,6 +150,12 @@ Do not re-pitch these without a written reason that defeats the original objecti
 | **BIL** | Behavioral Intelligence Layer — the external API. |
 | **BIL signal** | Any one of: `demand_score`, `trend_direction`, `stock_band`, `rank_in_category`. |
 | **wa.me deeplink** | A `https://wa.me/<phone>?text=...` URL that opens WhatsApp with a prefilled message. |
+| **Grievance Officer** | The named individual responsible for DPDP / IT-Rules complaints. Currently **Aditya Parmar** — see LEGAL-002 and doc 22. |
+| **Anchor (cohort)** | One of the 25 Paid members onboarded via Bhuta-led 1:1 intros during the pilot (doc 27, doc 28). |
+| **Pattern D** | The locked acquisition pattern: warm intros via Bhuta + committee only, no cold outreach. See doc 28. |
+| **Legal hold** | A retention exception applied to rows that would otherwise be anonymised or deleted, triggered by an active dispute, regulator notice, or law-enforcement preservation request (doc 26 §6). |
+| **DPDP** | Digital Personal Data Protection Act 2023 — India's primary data-protection statute. |
+| **IT Rules 2021** | Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules — sets the §3(11) grievance officer + 15-day SLA. |
 
 ### Acronyms
 

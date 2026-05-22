@@ -123,6 +123,11 @@ A global scrolling ticker (top of every page) renders curated market signals —
 
 Every module ships with a single rule: **exact prices and exact stock figures must not appear in the rendered DOM**, regardless of role. UI components (`<GuardedPrice>`, stock-band, trend chip) are the enforcement point.
 
+## Member-facing legal & policy pages
+
+Privacy (doc 19), Terms (doc 20), Refund (doc 21) and Grievance (doc 22) currently live behind the `/documents` password alongside the rest of the suite. Promoting them to **public routes** (`/privacy`, `/terms`, `/refund`, `/grievance`) with a footer link block is a follow-up task — required before Razorpay live mode and before any large-scale member onboarding. The markdown bodies are already counsel-ready drafts; promotion is a routes-and-layout change, not a content change.
+
 ## Read next
 
 - **05 · Architecture & Tech** — how this is implemented.
+- **23 · KYC & Verification Policy** — the trust ladder in policy form.

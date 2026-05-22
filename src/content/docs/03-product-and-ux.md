@@ -84,7 +84,11 @@ Public marketplaces rate sellers and let buyers hide. MDDMA inverts this:
 
 ## Verification & badges
 
-A **Verified** badge appears next to a member when KYC documents (GST, business registration, identity) have been reviewed and approved by an admin. Verification is a one-time gate, not a recurring re-check, and the badge is the single visual proof of trust on the platform.
+A **Verified** badge appears next to a member when KYC documents (GST, business registration, identity) have been reviewed and approved by an admin. Verification is a one-time gate, not a recurring re-check, and the badge is the single visual proof of trust on the platform. The full policy — what we check, who can see KYC documents, how long they are retained, and the revocation path — lives in **doc 23 (KYC & Verification Policy)**.
+
+## Member-facing policies
+
+Privacy Policy (doc 19), Terms of Service (doc 20), Refund & Cancellation (doc 21) and the Grievance & Redressal mechanism (doc 22) are first-class member-facing documents. **Aditya Parmar** is the named Grievance & Data Protection Officer; their contact appears on the relevant pages and in the footer once the policies are promoted to public routes.
 
 ## Read next
 

@@ -96,16 +96,21 @@ gantt
   Native forum (posts + comments)    :done, 2026-04-15, 2w
   Verification center                :done, 2026-04-20, 1w
   Markdown documentation hub         :done, 2026-04-28, 1w
+  Pilot with 25 anchor members       :done, 2026-05-03, 3w
+  Mobile responsiveness pass         :done, 2026-05-18, 1w
+  Legal & operator doc pack (18-28)  :done, 2026-05-20, 1w
   section Next
-  Pilot with 20 members              :active, 2026-05-03, 4w
-  Razorpay live mode + webhooks hard :2026-05-10, 2w
-  Behavioral Intelligence Layer v1   :2026-06-07, 6w
-  Buyer reputation scoring           :2026-07-01, 4w
-  Demand-trend chips on every card   :2026-07-20, 3w
+  Promote Privacy/Terms/Refund pages :2026-05-24, 1w
+  Razorpay live mode + webhooks hard :2026-05-31, 2w
+  Behavioral Intelligence Layer v1   :2026-06-21, 6w
+  Buyer reputation scoring           :2026-07-15, 4w
+  Demand-trend chips on every card   :2026-08-03, 3w
   section Later
-  Broker matchmaking automation      :2026-09-01, 6w
-  Multi-language (Marathi, Gujarati) :2026-10-01, 4w
+  Broker matchmaking automation      :2026-09-15, 6w
+  Multi-language (Marathi, Gujarati) :2026-10-15, 4w
 ```
+
+Pilot is currently in **week 3 of 12** (per doc 27). Doc-pack detour pushed BIL v1 and buyer-reputation start dates by two weeks; pilot W12 review remains on schedule.
 
 ## Operational runbook
 
@@ -118,12 +123,16 @@ gantt
 | **Doc vault password lost** | Update the `DOCS_PASSWORD` secret in Cloud Settings; both `verify-doc-password` and `get-internal-doc` pick it up on next call |
 | **Live site blank** | Run `cloud_status` (or check Cloud panel); if `ACTIVE_HEALTHY`, hard-refresh; otherwise wait for state to recover |
 | **Upload fails silently** | Check console for `UploadValidationError` — usually file size (10 MB images / 100 MB videos) or unsupported MIME (SVG blocked) |
+| **Member asks for a refund** | Forward to `grievance@mddma.org`; follow doc 21 (Refund & Cancellation) |
+| **Member asks to delete their data** | Forward to `grievance@mddma.org`; follow doc 26 §5 (erasure workflow + retention exceptions) |
+| **Committee member is stuck on a task** | Point them at doc 25 (zero-SQL Committee Operator Guide) before escalating |
 
 ## Backups & data ownership
 
-The Postgres database, storage buckets, and edge function code all live in the Lovable Cloud project owned by the Association. Daily snapshots are retained by the platform. Member contact data and KYC documents must not be exported outside this project.
+The Postgres database, storage buckets, and edge function code all live in the Lovable Cloud project owned by the Association. Daily snapshots are retained by the platform. Member contact data and KYC documents must not be exported outside this project. Retention windows for each data class are defined in **doc 26 (Data Retention & Deletion Policy)**.
 
 ## Read next
 
 - **01 · Vision & Pitch** — refresh on the why.
 - **05 · Architecture & Tech** — internals reference.
+- **17 · Owner Quickstart**, **25 · Committee Operator Guide**, **27 · Pilot Plan** — operator pack.

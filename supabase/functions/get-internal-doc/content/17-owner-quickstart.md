@@ -15,14 +15,18 @@ You're the only operator. This doc answers every "how do I do X right now" quest
 | Goal | Path | Notes |
 |---|---|---|
 | Add another admin | SQL only | `INSERT INTO user_roles (user_id, role) VALUES ('<uuid>', 'admin');` |
-| Approve a member's company | `/account/moderation` → Companies | Set `review_status='approved'`, `is_hidden=false`. |
-| Mark a member verified | `/account/moderation` → Companies | Toggle `is_verified`. |
-| Promote a member's KYC tier | `/account/moderation` (or SQL) | See doc 13 §4. There is no self-serve `/account/verify` flow. |
-| Publish a circular | `/account/moderation` → Circulars → New | Tick `Published`; appears on `/circulars` immediately. |
-| Run an ad campaign | `/account/moderation` → Ads | Upload image to `ad-assets`, set `placement`, dates, `is_active`. |
-| Pin a forum post | `/account/moderation` → Posts | Sets `posts.is_pinned = true`. |
+| Approve a member's company | `/account/moderation` → Companies | Set `review_status='approved'`, `is_hidden=false`. Committee version in doc 25 §2. |
+| Mark a member verified | `/account/moderation` → Companies | Toggle `is_verified`. Committee version in doc 25 §3. |
+| Promote a member's KYC tier | `/account/moderation` (or SQL) | See doc 13 §4 and doc 23 (policy). There is no self-serve `/account/verify` flow. |
+| Publish a circular | `/account/moderation` → Circulars → New | Tick `Published`; appears on `/circulars` immediately. Committee version in doc 25 §4. |
+| Run an ad campaign | `/account/moderation` → Ads | Upload image to `ad-assets`, set `placement`, dates, `is_active`. Committee version in doc 25 §5. |
+| Pin a forum post | `/account/moderation` → Posts | Sets `posts.is_pinned = true`. Committee version in doc 25 §6. |
 | Cancel a member's paid status | SQL | `SELECT downgrade_to_free('<uuid>');` |
-| Refund a Razorpay payment | Razorpay dashboard | Then `SELECT downgrade_to_free('<uuid>');` to remove role. |
+| Refund a Razorpay payment | Razorpay dashboard | Then `SELECT downgrade_to_free('<uuid>');` to remove role. **Policy:** doc 21. |
+| Member asks to delete their data | Email handover to Grievance Officer | Acknowledge in 24h; follow doc 26 §5 erasure workflow + retention exceptions. |
+| Member raises a privacy complaint | Forward to grievance@mddma.org | Officer = Aditya Parmar. See doc 22. |
+| Update Privacy / Terms / Refund / Grievance copy | Edit docs 19 / 20 / 21 / 22 | Re-run the content bundler (see "Add an internal doc"). Material changes require 14-day notice (doc 19 §11). |
+| Hand a guide to the committee | Send them doc 25 link | Zero-SQL screenshots-only operator guide. OPS-001 says committee never runs SQL. |
 | Change the docs password | Cloud → Settings → Secrets → `DOCS_PASSWORD` | Both `verify-doc-password` and `get-internal-doc` pick it up immediately. |
 | Regenerate the sitemap | `bun run scripts/generate-sitemap.ts` | Writes `public/sitemap.xml`. |
 | Simulate a different role | Header role simulator | Demo only; no server-side effect. |
@@ -30,7 +34,7 @@ You're the only operator. This doc answers every "how do I do X right now" quest
 | Inspect database rows | Cloud → Tables | Or use the Supabase MCP tools from chat. |
 | Rotate a secret | Cloud → Settings → Secrets → edit | Edge functions read fresh on next invocation. |
 | Add a new public route | Edit `src/routes.tsx` | Then re-run sitemap script. |
-| Add a new internal doc | See "Add an internal doc" below | |
+| Add a new internal doc | See "Add an internal doc" below | Suite currently has **22 internal docs (07–28)**. |
 
 ## Feature → file map
 
@@ -53,6 +57,10 @@ When you need to touch the code, here's where each feature lives.
 | Auth | `src/pages/Login.tsx`, `src/contexts/AuthContext.tsx` |
 | Role simulator | `src/contexts/RoleContext.tsx`, `src/components/layout/Header.tsx` |
 | Documents hub | `src/pages/DocumentsHub.tsx`, `src/pages/DocViewer.tsx`, `src/components/PasswordGate.tsx` |
+| Public doc bodies (01–06) | `src/content/docs/*.md` + `src/content/docs/_meta.ts` |
+| Internal doc bodies (07–28) | `supabase/functions/get-internal-doc/content/*.md` + `content.ts` (bundled) |
+| Member-facing policy bodies | Internal doc slugs `privacy-policy`, `terms-of-service`, `refund-and-cancellation-policy`, `grievance-and-redressal`, `kyc-and-verification-policy`, `data-retention-and-deletion-policy` |
+| Committee guide | Internal doc slug `committee-operator-guide` (doc 25) |
 | Storage / uploads | `src/lib/storage.ts` |
 | Live ticker | `src/components/layout/MarketTicker.tsx` |
 | SEO `<head>` | `src/components/Seo.tsx` |
