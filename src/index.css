@@ -52,6 +52,14 @@
     /* Logo/brand-only static color (NOT a theme accent) */
     --brand-gold: 38 55% 54%;
 
+    /* Soft section surfaces — used as alternating page bands for hims-style rhythm. */
+    --surface-cream: 36 38% 96%;
+    --surface-sand:  32 30% 92%;
+    --surface-sage:  140 18% 92%;
+    --surface-blush: 12 45% 95%;
+
+
+
     /* One-cycle aliases — let unmigrated callers (account/admin pages,
        hard-coded utility classes) resolve to the new theme until they
        are swept in commit 3. Drop in a follow-up PR. */
