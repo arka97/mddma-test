@@ -52,6 +52,14 @@
     /* Logo/brand-only static color (NOT a theme accent) */
     --brand-gold: 38 55% 54%;
 
+    /* Soft section surfaces — used as alternating page bands for hims-style rhythm. */
+    --surface-cream: 36 38% 96%;
+    --surface-sand:  32 30% 92%;
+    --surface-sage:  140 18% 92%;
+    --surface-blush: 12 45% 95%;
+
+
+
     /* One-cycle aliases — let unmigrated callers (account/admin pages,
        hard-coded utility classes) resolve to the new theme until they
        are swept in commit 3. Drop in a follow-up PR. */
@@ -126,6 +134,13 @@
     --cream: 222 47% 7%;
     --warm-gray: 220 12% 65%;
 
+    /* Dark-mode soft surfaces — subtle navy tints */
+    --surface-cream: 222 35% 11%;
+    --surface-sand:  222 30% 13%;
+    --surface-sage:  170 20% 12%;
+    --surface-blush: 0 25% 13%;
+
+
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 210 20% 96%;
     --sidebar-primary: 158 60% 48%;
@@ -145,6 +160,12 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "cv11", "ss01", "tnum";
+    /* Larger base on mobile for older eyes; tightens up on tablet+. */
+    font-size: 17px;
+  }
+
+  @media (min-width: 768px) {
+    body { font-size: 16px; }
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -155,11 +176,13 @@
 @layer components {
   /* Type scale */
   .t-display {
-    font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    font-weight: 700;
+    font-family: "Instrument Serif", ui-serif, Georgia, serif;
+    font-size: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.015em;
+    font-weight: 400;
   }
+
 
   .t-h1 {
     font-size: clamp(1.875rem, 2.5vw + 1rem, 2.5rem);

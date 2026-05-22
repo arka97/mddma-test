@@ -94,16 +94,27 @@ export default {
           dark: "hsl(var(--burgundy-dark))",
         },
         cream: "hsl(var(--cream))",
+        surface: {
+          cream: "hsl(var(--surface-cream))",
+          sand: "hsl(var(--surface-sand))",
+          sage: "hsl(var(--surface-sage))",
+          blush: "hsl(var(--surface-blush))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2xl": "1rem",
+        "3xl": "1.5rem",
       },
       fontFamily: {
         sans: ["Inter Variable", "Inter", "system-ui", "sans-serif"],
         mono: ["JetBrains Mono Variable", "ui-monospace", "monospace"],
+        serif: ['"Instrument Serif"', "ui-serif", "Georgia", "serif"],
+        display: ['"Instrument Serif"', "ui-serif", "Georgia", "serif"],
       },
+
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
