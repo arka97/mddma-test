@@ -32,8 +32,6 @@ const AdminModeration = lazy(() => import("./pages/account/AdminModeration"));
 const Brands = lazy(() => import("./pages/Brands"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
 const AccountBrandsPage = lazy(() => import("./pages/account/BrandsPage"));
-const Help = lazy(() => import("./pages/Help"));
-
 
 function RouteFallback() {
   return (
@@ -72,9 +70,7 @@ export function AppRoutes() {
         <Route path="/contact" element={<Forms />} />
         <Route path="/login" element={<Login />} />
         <Route path="/apply" element={<Apply />} />
-        <Route path="/help" element={<Help />} />
         <Route path="/install" element={<Install />} />
-
         <Route path="/admin" element={<Navigate to="/account/moderation" replace />} />
 
         <Route path="/account/profile" element={protect(<ProfilePage />)} />

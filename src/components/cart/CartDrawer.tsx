@@ -70,21 +70,15 @@ export function CartDrawer() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
-      <SheetContent
-        side="bottom"
-        className="h-[92vh] w-full overflow-y-auto rounded-t-3xl border-t-0 pb-safe pt-safe overscroll-contain sm:bottom-0 sm:left-auto sm:right-0 sm:top-0 sm:h-full sm:max-w-md sm:rounded-none sm:rounded-l-none"
-      >
+      <SheetContent className="w-full sm:max-w-md overflow-y-auto pt-safe pb-safe overscroll-contain">
         <SheetHeader>
-          <SheetTitle className="flex items-center gap-2 text-lg"><ShoppingCart className="h-5 w-5" /> Your price request</SheetTitle>
+          <SheetTitle className="flex items-center gap-2"><ShoppingCart className="h-5 w-5" /> RFQ Cart</SheetTitle>
         </SheetHeader>
 
-
         {items.length === 0 ? (
-          <div className="py-16 text-center text-base text-muted-foreground">
-            Your request is empty.<br />
-            <span className="text-sm">Tap any product, then "Add to request" to start.</span>
+          <div className="py-16 text-center text-sm text-muted-foreground">
+            Your cart is empty. Add products to send a combined RFQ.
           </div>
-
         ) : (
           <div className="space-y-6 mt-6">
             {Object.entries(grouped).map(([companyId, group]) => (
@@ -114,17 +108,17 @@ export function CartDrawer() {
                 </div>
                 <Button
                   variant="accent"
-                  className="h-12 w-full text-base"
+                  className="w-full"
+                  size="sm"
                   disabled={submitting === companyId}
                   onClick={() => sendForCompany(companyId, group.items)}
                 >
-                  {submitting === companyId ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-4 w-4 mr-2" /> Send request</>}
+                  {submitting === companyId ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Send RFQ</>}
                 </Button>
               </div>
             ))}
           </div>
         )}
-
       </SheetContent>
     </Sheet>
   );
