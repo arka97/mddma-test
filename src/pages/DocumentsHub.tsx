@@ -119,7 +119,7 @@ const DocumentsHub = () => {
             MDDMA <span className="text-accent">Documentation</span>
           </h1>
           <p className="text-primary-foreground/70 max-w-2xl mx-auto">
-            Public spec ({publicDocs.length} docs) plus owner-only deep reference ({internalDocs.length} docs). Download any single doc or the full set.
+            Start with doc 00. Public spec ({publicDocs.length} docs) plus owner-only deep reference ({internalDocs.length} docs). Download any single doc or the full set.
           </p>
           <div className="flex items-center justify-center gap-3 pt-2">
             <Button onClick={() => downloadAll(password)} variant="accent">

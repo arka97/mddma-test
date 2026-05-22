@@ -20,7 +20,7 @@ A header **role simulator** lets the committee experience the site as any role d
 flowchart TD
   G[Guest] -->|signup| F[Free member]
   F -->|pays ₹10K| P[Paid member]
-  P -->|+₹5K addon| B[Broker]
+  P -->|is_broker flag, same fee| B[Broker]
   P -->|appointed by Association| A[Admin]
 
   G -.can see.-> Public[Directory list, Circulars, Forum read]

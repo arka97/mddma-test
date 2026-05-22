@@ -24,7 +24,7 @@ graph TD
   end
   subgraph Repository_layer
     Repos[repositories/*<br/>typed supabase queries]
-    DS[lib/dataSource.ts<br/>merges live + sample]
+    DS[lib/dataSource.ts<br/>live-only adapter]
   end
   subgraph Lovable_Cloud
     Auth[Auth]
@@ -49,7 +49,7 @@ graph TD
 1. **Pages** never call `supabase.from()` directly. They call hooks.
 2. **Hooks** (`src/hooks/queries/*`) own loading/error state and call repositories.
 3. **Repositories** (`src/repositories/*`) own typed `supabase.from()` queries and shape responses.
-4. **`lib/dataSource.ts`** merges live database rows with curated sample data (live wins on slug conflict). This is the seam that lets the demo look full from day one.
+4. **`lib/dataSource.ts`** adapts live database rows into UI-shape entries (`DirectoryEntry`, `ProductEntry`). It is **live-only** (DATA-001) — sample arrays in `src/data/*` are kept as type fixtures and for offline previews, never merged into production reads.
 
 This split is what stopped the "KGVPL invisible" class of bugs: there is exactly one place a discovery list is built.
 

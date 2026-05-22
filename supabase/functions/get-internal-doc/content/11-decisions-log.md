@@ -19,6 +19,7 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 | GOV-001 | Buyer reputation, not seller reputation | Locked |
 | DATA-001 | Live-only reads; sample data is a test fixture, not a fallback | Locked |
 | ROLE-001 | `paid_member` and `free_member` mutually exclusive at the DB | Locked |
+| PILOT-001 | Pilot = 8–10 two-sided (sellers + buyers); supersedes earlier "20" / "25" figures | Locked |
 
 ---
 
@@ -135,3 +136,10 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 **Why** Reconciles the deliberate snapshotting in `rfqs` (so deletes don't break audit) with DPDP §12 erasure rights. Members are told this upfront in the Privacy Policy and the response to any erasure request.
 **Locked** May 2026.
 **Enforced in** Doc 19 §7, doc 26 §2/§3. Implementation is the `retention-cron` edge function (planned, see doc 26 §7); until it ships the Grievance Officer runs the operations manually each quarter.
+
+### PILOT-001 — Pilot is 8–10 two-sided, not 20 or 25 one-sided
+**Decision** The 90-day pilot cohort is **8–10 seller anchors plus 8–10 buyer anchors**, recruited by Bhuta-led warm intros (Pattern D). Sellers and buyers should overlap in commodity so real RFQ flow is guaranteed.
+**Why** A one-sided directory (sellers only) cannot validate the RFQ engine — the only signal that matters. Earlier "20 members" / "25 anchor members" wording in docs 02, 06, 14, 27, 28 assumed seller-only recruitment and was never reconciled with the two-sided thesis. Smaller, two-sided cohort gives a real signal in 90 days; larger cohort doesn't help if buyers are missing.
+**Locked** May 2026.
+**Replaces** "20 members" (doc 02), "25 anchor members" (docs 06, 14, 27, 28). All success metrics in doc 27 §4 were rescaled accordingly.
+**Enforced in** Doc 27 §2 (cohort table), doc 27 §4 (metrics), doc 28 §2 (outreach sequence), docs 02 / 06 / 14 gantts, `mem://architecture/implementation-status`.

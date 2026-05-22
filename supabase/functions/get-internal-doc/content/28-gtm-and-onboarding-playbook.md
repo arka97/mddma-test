@@ -15,18 +15,18 @@ Operationalises the locked **Pattern D** (Bhuta & committee warm intros) from me
 
 ## 2. Anchor outreach sequence (Bhuta-led)
 
-The 25 anchors are contacted in this order, one per business day, so onboarding load stays sane.
+Pilot anchors are **8–10 sellers + 8–10 buyers** (PILOT-001). They are contacted in alternating seller/buyer order, one per business day, so onboarding load stays sane and the platform never tips into being a one-sided directory.
 
 **T-0 (call):** Bhuta phones the member. ~10 minutes. Script in §3.
 **T+1 (WhatsApp):** Bhuta sends the personal intro template (§4).
 **T+2 (email):** Office sends the formal welcome email (§5).
-**T+3 to T+10:** Member completes sign-up + `/apply` + lists 3 products. Office checks in on day 5 if listing is incomplete.
+**T+3 to T+10:** Member completes sign-up + `/apply` + (sellers) lists 3 products / (buyers) submits 2 RFQs to anchor sellers. Office checks in on day 5 if incomplete.
 **T+14 (call):** Bhuta or office calls for 2-week feedback (§6).
 **T+45 (call):** Same, 6-week feedback.
 
 ## 3. Bhuta phone-call script
 
-> "Namaste — Bhuta here. You know me from [past trade / past committee work]. I'm calling about something the Association is putting together that I think you'll want to be in on early. It's a digital directory and trade hub for our community — only members, only verified, no Alibaba-style chaos. We're inviting the first 25 trusted houses to join during a founding window with a locked price. I'd like to add you. Can I send you the details on WhatsApp and have my office walk you through it later this week? It takes 15 minutes."
+> "Namaste — Bhuta here. You know me from [past trade / past committee work]. I'm calling about something the Association is putting together that I think you'll want to be in on early. It's a digital directory and trade hub for our community — only members, only verified, no Alibaba-style chaos. We're inviting a small founding group of trusted houses — eight to ten sellers and eight to ten buyers — to join in a founding window with a locked price. I'd like to add you. Can I send you the details on WhatsApp and have my office walk you through it later this week? It takes 15 minutes."
 
 **Allowed pivots:**
 - If they ask "what does it cost?" → "Ten thousand a year, locked at this price for two years if you join in the first 90 days."
@@ -62,7 +62,7 @@ The 25 anchors are contacted in this order, one per business day, so onboarding 
 
 > Dear [Name],
 >
-> Thank you for joining the MDDMA digital platform as one of our founding 25 members. This email is your written welcome and a copy of the key links you'll need.
+> Thank you for joining the MDDMA digital platform as one of our founding two-sided pilot members (8–10 sellers + 8–10 buyers). This email is your written welcome and a copy of the key links you'll need.
 >
 > - Sign in: mddma.org/login
 > - Apply / claim listing: mddma.org/apply

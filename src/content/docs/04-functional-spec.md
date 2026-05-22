@@ -29,7 +29,7 @@ flowchart LR
 ## Discovery modules
 
 ### Directory `/directory`
-- Lists verified Association members merged from the live database with curated sample data; **live wins on slug conflict**.
+- Lists verified Association members from the live database only (DATA-001). Sample arrays in `src/data/` remain as type fixtures and offline-preview material; they are not merged into production reads.
 - Public list view (name, badges, city, category chips). Full contact card requires Paid.
 - Filters: category, city, verified, broker.
 - **Acceptance:** new member added in admin appears in the list within one cache cycle; non-Paid users see "Become a member to view contact" instead of phone numbers.

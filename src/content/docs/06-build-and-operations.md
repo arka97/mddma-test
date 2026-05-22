@@ -96,7 +96,7 @@ gantt
   Native forum (posts + comments)    :done, 2026-04-15, 2w
   Verification center                :done, 2026-04-20, 1w
   Markdown documentation hub         :done, 2026-04-28, 1w
-  Pilot with 25 anchor members       :done, 2026-05-03, 3w
+  Pilot · 8–10 two-sided (PILOT-001) :active, 2026-05-03, 12w
   Mobile responsiveness pass         :done, 2026-05-18, 1w
   Legal & operator doc pack (18-28)  :done, 2026-05-20, 1w
   section Next

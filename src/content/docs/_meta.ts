@@ -1,6 +1,7 @@
 // Public docs are bundled into the client. Internal docs are NEVER imported
 // here — their markdown lives only in the get-internal-doc edge function and
 // is fetched after server-side password verification.
+import startHere from "./00-start-here.md?raw";
 import vision from "./01-vision-and-pitch.md?raw";
 import business from "./02-business-and-scope.md?raw";
 import product from "./03-product-and-ux.md?raw";
@@ -19,6 +20,14 @@ export interface DocMeta {
 }
 
 export const DOCS: DocMeta[] = [
+  {
+    number: "00",
+    slug: "start-here",
+    title: "Start Here",
+    summary: "Five-minute on-ramp: what MDDMA is, what's live vs planned vs killed, and which doc to read next by role.",
+    readTime: "5 min",
+    diagramCount: 0,
+  },
   {
     number: "01",
     slug: "vision-and-pitch",
@@ -268,6 +277,7 @@ export const DOCS: DocMeta[] = [
 ];
 
 export const SOURCES: Record<string, string> = {
+  "start-here": startHere,
   "vision-and-pitch": vision,
   "business-and-scope": business,
   "product-and-ux": product,

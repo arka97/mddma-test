@@ -1,74 +1,114 @@
-## Goal
+# Plan — Doc 00 "Start Here" + Red-Team Reconciliation Pass
 
-Bring every `/documents` markdown file into alignment with the platform's actual state as of today (22 May 2026). The 11 new docs (18–28) were added in the last turn but the older docs still claim a "6-document suite", an outdated roadmap, and stale "what's shipped" lists. This refresh closes that gap without changing any product behaviour.
+The orientation gap and the contradictions are one task. Writing Doc 00 honestly forces the cleanup, and cleanup without an on-ramp leaves the suite still un-navigable. Done together in one pass.
 
-## What's drifted (verified by reading the files)
+Audience lead: **new committee member / operator** (non-technical institutional tone). Other audiences get sub-sections, not separate docs.
 
-- **Docs 01–06** repeatedly say "the 6 documents in this suite" / "Read next: 06" — the suite is now 28 docs.
-- **Doc 02 §Deliverables** lists "this set of 6 documents" and **§Engagement scope** has no entry for the policy/operator pack (18–28).
-- **Doc 06 §Roadmap** marks the markdown hub "shipped" but predates the policy pack, mobile responsiveness pass, and the internal-doc edge-function bundle fix.
-- **Doc 06 §Required secrets** is current but doesn't mention the new internal docs.
-- **Doc 11 (Decisions Log)** has no entry for the GO-LIVE-blocker decisions implied by 19/20/21 (legal stack required) or the KYC-maximalist follow-through (doc 23).
-- **Doc 13 (Operations Runbook)** SQL-heavy recipes should cross-link to doc 25 (non-technical guide) so admins know there's a friendlier path.
-- **Doc 14 (Roadmap & Glossary)** still shows the old roadmap and a glossary missing terms now used by the new docs (Grievance Officer, founding-window, legal hold, anchor cohort).
-- **Doc 17 (Owner Quickstart)** "Add an internal doc" recipe is correct but the "Where do I…?" table doesn't list the new pages.
-- **Memory `architecture/implementation-status`** still claims "currently using realistic sample data" — outright wrong; live DB has been in for weeks.
+---
 
-## What gets edited (no new docs, no code, no schema)
+## Part A — Reconcile drift FIRST (before Doc 00 references anything)
 
-### Public canonical (`src/content/docs/`)
+Three contradictions confirmed against code and locked decisions. Fix at source, then Doc 00 can quote a single truth.
 
-1. **01-vision-and-pitch.md** — update "Read next" to point at the new docs that matter (19 Privacy, 27 Pilot). Add one line acknowledging the legal & operator pack now exists.
-2. **02-business-and-scope.md**
-   - Replace "this set of 6 documents" with "this suite (28 docs as of May 2026)".
-   - Add a milestone row M5 (legal & operator pack shipped, May 2026).
-   - Add a new "What's now also in scope" sub-section listing: Privacy / Terms / Refund / Grievance / KYC policy / SOW / Committee guide / Retention / Pilot plan / GTM playbook / Migration plan — each one-line.
-3. **03-product-and-ux.md** — add a single sentence in the governance section: "Member-facing policies (Privacy, Terms, Refund) are linked from the footer; the Grievance Officer is named in-app."
-4. **04-functional-spec.md** — add a short "Member-facing legal & policy pages" subsection noting they live behind the `/documents` password until they are promoted to public routes (future work; not in this turn).
-5. **05-architecture-and-tech.md** — refresh the doc-system paragraph: 6 public bundled + 22 internal (07–28) served by `get-internal-doc`. Note the bundle is generated from `./content/*.md`.
-6. **06-build-and-operations.md**
-   - §Roadmap: move "Pilot with 20 members" to ✅ done (active since 2026-05-03 per doc 02; we're in week 3). Add a new shipped row for "Mobile responsiveness pass" and "Legal & operator doc pack (18–28)". Push BIL v1 and buyer-reputation start dates by 2 weeks to reflect the doc-pack detour.
-   - §Test strategy: note that the new docs add no new code paths — vitest scope unchanged.
-   - §Operational runbook: add a row "Member asks for refund / data deletion → forward to grievance@mddma.org; see docs 21 & 26".
-   - §Read next: add 17, 25, 27.
+### A1. Broker pricing — strip every "+₹5K" / "addon" survival
 
-### Internal (`supabase/functions/get-internal-doc/content/`)
+- **Truth (BIZ-003, memory):** Broker is a flag on the single ₹10K Paid plan. No addon. No separate tier.
+- **Action:** grep the suite for `5,000`, `5K`, `addon`, `+₹5`, `Silver`, `Gold`, `Platinum` and the RBAC mermaid in `03-product-and-ux.md`. Rewrite any survivors. Most likely hits: doc 03 mermaid, doc 12 (money), older roadmap text.
 
-7. **11-decisions-log.md** — append 4 new locked-decision rows:
-   - LEGAL-001: Privacy/Terms/Refund/Grievance are pre-requisites for Razorpay live mode (doc 21).
-   - LEGAL-002: Grievance Officer is **Aditya Parmar**, single point of contact for DPDP and IT-Rules complaints.
-   - OPS-001: Committee uses the non-technical guide (doc 25); no SQL in office hands.
-   - DATA-001: RFQ rows anonymised at year 7, hard-deleted at year 10 (doc 26 §3).
-8. **13-operations-runbook.md** — top-of-file note: "For zero-SQL recipes the committee can run themselves, see doc 25." Add cross-links from "Approve a company", "Publish a circular", "Run an ad", "Pin a post" rows to their doc-25 counterparts.
-9. **14-roadmap-and-glossary.md**
-   - Replace the dated roadmap with the post-doc-pack roadmap matching doc 06 above.
-   - Glossary: add **Grievance Officer**, **Anchor (cohort)**, **Founding window**, **Legal hold**, **Pattern D**, **DPDP**, **IT Rules 2021**.
-10. **17-owner-quickstart.md**
-    - "Where do I…?" table: add rows for *"Member asks to delete their data"* → doc 26 §5, *"Member asks for refund"* → doc 21, *"Privacy/Terms/Refund/Grievance update"* → doc 19/20/21/22, *"Committee needs a guide they can read"* → doc 25.
-    - "Feature → file map": add a "Member-facing policies" row pointing at the new docs (slug list).
-    - Update the "internal doc count" passage to reflect 22 internal docs.
+### A2. Live + sample data merge — remove the "merged" language
 
-### Memory (one update, no others)
+- **Truth (verified from `src/lib/dataSource.ts`):** "All directory and product data comes from Lovable Cloud. No dummy fallback." `mergeDirectory` / `mergeProducts` just map live rows; sample arrays in `src/data/` are type fixtures only.
+- **Action:**
+  - Fix doc 04 and doc 05 wording ("merged from live + sample, live wins on slug conflict" → "live-only; sample arrays retained as type fixtures and offline previews").
+  - Update `mem://architecture/v3-1-locked-decisions` and the Core memory line that still says "merged with sample" → "live-only (DATA-001)".
+  - Add `DATA-001` row to doc 11 decisions log if missing (currently referenced but never logged).
 
-11. **`mem://architecture/implementation-status`** — rewrite from the stale "demo with sample data" to: "Cloud backend live since Feb 2026. Directory, RFQ, Forum, CMS, Membership flow, PWA, docs hub all shipped. 28-doc suite (6 public + 22 internal incl. legal/operator pack added May 2026). Pilot active week 3 of 12."
+### A3. Pilot size — lock at 8–10 two-sided
 
-### Memory index — no change required
+- **Truth (your decision this turn):** 8–10 members, two-sided (buyers + sellers both onboarded).
+- **Action:**
+  - Add `PILOT-001` row to `11-decisions-log.md`: "Pilot scope = 8–10 two-sided members; supersedes earlier '20' / '25' figures."
+  - Replace "20 members" / "25 anchor members" in: `02-business-and-scope.md`, `06-build-and-operations.md` (gantt + ops table), `14-roadmap-and-glossary.md`, `27-pilot-plan-and-success-criteria.md` (internal).
+  - Update `mem://architecture/implementation-status` pilot line.
 
-The index already references implementation-status; the body update flows through.
+### A4. Single roadmap source of truth
 
-## Out of scope (deliberately)
+- Three gantts disagree (docs 02, 06, 14). Pick **doc 06 as canonical** (it's the build & ops doc). Replace the other two gantts with a one-line "see doc 06 for the live roadmap" + a tight bullet list of current-quarter milestones only. No more parallel gantts.
 
-- No new public routes (`/privacy`, `/terms`, `/refund` stay TODO — flagged as a future task in doc 04).
-- No new edge functions; the existing bundle generation already handles 22 internal docs.
-- No DB schema, no RLS, no auth changes.
-- No code component changes; this is a documentation-only refresh.
-- I will not edit the published "effective date" line on docs 19–22 — counsel review is still pending.
+---
 
-## Verification after edits
+## Part B — Write Doc 00 (Start Here)
 
-- Re-read `/documents` in the preview at the current 271195 password; spot-check that doc 02 §Deliverables, doc 06 §Roadmap, and doc 17 "Where do I…?" reflect the new state.
-- Confirm `supabase/functions/get-internal-doc/content.ts` does not need regeneration (these edits are all in-place to existing files; the regen script reads file contents at build time — I will re-run the generator to be safe).
+New public doc at `src/content/docs/00-start-here.md`, registered in `_meta.ts` as the first entry. Public (not internal).
 
-## Deliverable
+### Structure (one page, ~800 words, committee-led tone)
 
-One round of focused markdown edits to 10 existing files plus one memory update. No new files, no behaviour changes, no breaking changes to the docs URLs.
+1. **About the Association** (150 words)
+   - 95-year-old non-profit trade body, ~350 wholesale dry-fruit member firms, committee-governed, currently chaired by Bhuta.
+   - Replacing a WhatsApp-based status quo (circulars, RFQs, rate-checks scattered across groups) with one auditable surface.
+   - Grievance & Data Protection Officer: Aditya Parmar.
+
+2. **What this platform is, in one paragraph**
+   - Behavioral Trade OS: member directory + RFQ engine + circulars + price-controlled product catalogue, on a PWA, India-DPDP-aware.
+
+3. **What's live, planned, and explicitly out of scope** — the status board (the missing table)
+
+   | Capability | Status | Where to read |
+   |---|---|---|
+   | Auth, RBAC, role simulator | Live | doc 05, doc 15 |
+   | Member directory + storefronts + product catalogue | Live (live DB, no sample merge) | doc 04 |
+   | Multi-item RFQ engine + cart | Live | doc 04 |
+   | Admin CMS (circulars + ads) | Live | doc 04, doc 13 |
+   | Native forum (posts + comments) | Live (read-only archive; Discourse is primary) | doc 04 |
+   | KYC verification center | Live | doc 23 |
+   | Razorpay payment links | Built, test-mode only | doc 12, doc 06 |
+   | Behavioral Intelligence Layer (BIL) | Planned, external API (TECH-001) | doc 05 |
+   | Buyer reputation scoring | Planned (Q3) | doc 06 |
+   | WhatsApp Business API | **Out of scope** (TECH-003); `wa.me` deeplinks only | doc 11 |
+   | Lead Packs module | **Killed** (BIZ-001) | doc 11 |
+   | Silver/Gold/Platinum tiers | **Killed**; single ₹10K Paid + broker flag (BIZ-003) | doc 11 |
+
+4. **Reading path by role** (4 short sub-sections, 3–5 links each)
+   - **Committee member / operator** (lead role) → doc 17 (owner quickstart) → doc 25 (zero-SQL guide) → doc 22 (grievance SOP) → doc 13 (runbook).
+   - **Prospective member** → doc 01 (pitch) → doc 02 (scope & pricing) → doc 27 (pilot status).
+   - **Government / regulator** → "About the Association" above → doc 19 (privacy) → doc 22 (grievance) → doc 23 (KYC) → doc 26 (retention).
+   - **Developer** → doc 05 (architecture) → doc 06 (build & ops, incl. local setup) → doc 07 (DB) → doc 11 (decisions log).
+
+5. **Trade-term mini-glossary** (6 inline one-liners: Mamra, Sanora, mandi, APMC, RFQ, BIL) → "full glossary in doc 14".
+
+6. **One-line context note** for the developer audience (kept small, not in the institutional intro): "Built and maintained by a single engineer under an SOW + SLA — see doc 24." This avoids it reading as a risk signal to regulators while still giving devs the context doc 17 assumes.
+
+### Registration
+
+- Prepend Doc 00 to `DOCS` array in `src/content/docs/_meta.ts` with `number: "00"`, `internal: false`.
+- Doc 00 is bundled (public), so it goes in `SOURCES` like docs 01–06. No edge-function changes needed.
+- Update `DocumentsHub.tsx` copy: "Public spec (7 docs) plus owner-only reference (22 docs)".
+
+---
+
+## Part C — Memory updates
+
+- `mem://index.md` Core: remove "merged with sample" → "live-only".
+- `mem://architecture/implementation-status`: pilot size 8–10 two-sided; payment status = test-mode; doc count = 29.
+- `mem://architecture/v3-1-locked-decisions`: add PILOT-001; reaffirm DATA-001 (live-only).
+
+---
+
+## Out of scope (explicit)
+
+- No code changes outside docs + `_meta.ts` + `DocumentsHub.tsx` copy.
+- No new edge functions, routes, RLS, or schema.
+- No edits to docs 19–22 "effective date" lines (counsel review still pending).
+- No new internal docs — Doc 00 is **public** because regulators and prospective members need it.
+- Not touching the BIL design or the Razorpay live-mode work — those stay in their existing planned slots.
+
+---
+
+## Deliverable order
+
+1. Reconcile (A1–A4) — quick grep-and-replace pass across ~8 files.
+2. Write Doc 00 (B) — new file + `_meta.ts` + Hub copy.
+3. Memory sync (C).
+4. Report back with: files changed, contradictions fixed (with before/after one-liners), and the new doc count.
+
+Approve and I'll execute in that order.
