@@ -56,7 +56,7 @@ const Market = () => {
 
   return (
     <Layout>
-      <Seo title='Live Market Intelligence — Prices & Trends | MDDMA' description='Live price bands, demand signals and supply intel for almonds, dates, pistachios, cashews and walnuts across India.' path='/market' />
+      <Seo title='Market Intelligence — MDDMA' description='Live market signals for members.' path='/market' noindex />
       <section className="bg-primary py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Market Intelligence</h1>

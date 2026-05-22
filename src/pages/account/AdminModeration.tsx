@@ -1,6 +1,7 @@
 import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -222,6 +223,7 @@ const AdminModeration = () => {
 
   return (
     <Layout>
+        <Seo title="Moderation — MDDMA" description="Members-only page." path="/account/moderation" noindex />
       <section className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
           <h1 className="text-3xl font-bold mb-6 flex items-center gap-2"><ShieldCheck /> Admin Moderation</h1>

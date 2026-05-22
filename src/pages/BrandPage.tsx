@@ -77,16 +77,10 @@ const BrandPage = () => {
   return (
     <Layout>
       <Seo
-        title={`${brand.name} — House Brand on MDDMA`}
-        description={(brand.tagline ?? brand.story ?? `${brand.name} — a house brand from an MDDMA member company.`).slice(0, 160)}
+        title={`${brand.name} — Member Brand · MDDMA`}
+        description="Member brand on MDDMA. Members-only."
         path={`/brands/${brand.slug}`}
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Brand",
-          name: brand.name,
-          url: `https://mddma.org/brands/${brand.slug}`,
-          logo: brand.logo_url ?? undefined,
-        }}
+        noindex
       />
       {/* Hero */}
       <section className="relative border-b border-border">

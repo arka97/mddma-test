@@ -1,4 +1,5 @@
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { useRole } from "@/contexts/RoleContext";
 import { Lock, Inbox } from "lucide-react";
@@ -11,6 +12,7 @@ const Broker = () => {
   if (!hasAccess) {
     return (
       <Layout>
+        <Seo title="Broker Marketplace — MDDMA" description="Broker board (members-only)." path="/broker" noindex />
         <section className="bg-primary py-12">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Broker Marketplace</h1>
@@ -33,6 +35,7 @@ const Broker = () => {
 
   return (
     <Layout>
+      <Seo title="Broker Marketplace — MDDMA" description="Broker board (members-only)." path="/broker" noindex />
       <section className="bg-primary py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Broker Marketplace</h1>

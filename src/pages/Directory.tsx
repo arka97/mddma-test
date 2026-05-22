@@ -69,7 +69,7 @@ const Directory = () => {
 
   return (
     <Layout>
-      <Seo title='MDDMA Member Directory — Verified Dry Fruit & Dates Traders' description='Browse verified MDDMA member companies — importers, wholesalers, brokers and processors of dry fruits, dates and nuts across India.' path='/directory' />
+      <Seo title='Member Directory — MDDMA' description='Verified MDDMA member directory. Members-only.' path='/directory' noindex />
       <PageHeader
         title="Member Directory"
         subtitle="Find KYC-verified dry fruits and dates merchants across Mumbai's major trading markets."

@@ -25,7 +25,7 @@ const Forms = () => {
 
   return (
     <Layout>
-      <Seo title='Forms & Contact — MDDMA' description='Download forms and get in touch with the MDDMA office for membership, applications and general queries.' path='/forms' />
+      <Seo title='Forms & Contact — MDDMA' description='Member forms (verification, advertising). Public contact lives at /contact.' path='/forms' noindex />
       <PageHeader
         title="Get in touch"
         subtitle="Choose the right form for your enquiry."

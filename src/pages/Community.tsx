@@ -84,7 +84,7 @@ const Community = () => {
 
   return (
     <Layout>
-      <Seo title='MDDMA Community Forum — Discuss Trade & Market' description='Discuss market updates, trade practices and association circulars with verified MDDMA members.' path='/community' />
+      <Seo title='Community Forum — MDDMA' description='Members-only discussion forum.' path='/community' noindex />
       <PageHeader
         title="Trade Community"
         subtitle="Live discussions on Discourse, plus a read-only archive of earlier posts"
