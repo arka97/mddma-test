@@ -44,7 +44,7 @@ gantt
   Admin CMS (circulars, ads)    :done, 2026-04-05, 2w
   Forum + verification          :done, 2026-04-19, 2w
   section Pilot & launch
-  Pilot with 20 members         :active, 2026-05-03, 4w
+  Pilot · 8–10 two-sided (PILOT-001) :active, 2026-05-03, 12w
   Public launch (committee)     : 2026-05-31, 1w
   section Phase 2
   Behavioral Intelligence Layer : 2026-06-07, 6w

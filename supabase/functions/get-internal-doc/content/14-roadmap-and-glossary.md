@@ -9,7 +9,7 @@ gantt
   title MDDMA next six months
   dateFormat  YYYY-MM-DD
   section Pilot
-  Pilot with 25 anchor members        :active, 2026-05-03, 12w
+  Pilot · 8–10 two-sided (PILOT-001)  :active, 2026-05-03, 12w
   W12 continue/iterate/sunset call    :        2026-07-26, 1w
   Public launch (post-pilot)          :        2026-08-02, 1w
   section Legal & operator pack

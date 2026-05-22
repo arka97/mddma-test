@@ -8,19 +8,22 @@ The **MDDMA Pilot** is the first 90 days after production go-live with a defined
 
 ## 2. Cohort
 
+Pilot is **two-sided** — sellers alone do not validate the platform. Locked at **8–10 active members per side** (PILOT-001).
+
 | Group | Target size | Recruitment path |
 |---|---|---|
-| **Anchor Paid members** | 25 | Bhuta & committee warm intros (locked Pattern D, memory) |
-| **Free observers** | 75 | Office staff + WhatsApp opt-in (per doc 18) |
+| **Anchor Paid sellers** | 8–10 | Bhuta & committee warm intros (locked Pattern D, memory) |
+| **Anchor Paid buyers** | 8–10 | Bhuta & committee warm intros; ideally trading with the seller cohort |
+| **Free observers** | 30–40 | Office staff + WhatsApp opt-in (per doc 18) |
 | **Buyer guests** | open | Public; no recruitment |
 
-**Anchor selection criteria:** active trader, willing to RSVP to a 30-minute onboarding call, agreeable to a 2-week and 6-week feedback call.
+**Anchor selection criteria:** active trader, willing to RSVP to a 30-minute onboarding call, agreeable to a 2-week and 6-week feedback call. The seller and buyer cohorts should overlap in commodity to guarantee real RFQ flow rather than a one-sided directory.
 
 ## 3. Phases
 
 | Week | Phase | Focus |
 |---|---|---|
-| W0 | **Pre-launch** | Privacy / Terms / Refund / Grievance live; founding-window banner up; 25 anchors privately briefed |
+| W0 | **Pre-launch** | Privacy / Terms / Refund / Grievance live; founding-window banner up; 8–10 seller anchors + 8–10 buyer anchors privately briefed |
 | W1–W2 | **Soft launch** | Anchors only; founding-window pricing; daily monitoring; bug bashes |
 | W3–W4 | **Open beta** | Free observers invited; first round of RFQs encouraged; first circular published |
 | W5–W8 | **Steady state** | Public discoverability via SEO; first ad campaigns; first refund request expected |
@@ -32,11 +35,12 @@ Three tiers: **Must-hit** (any miss = iterate/sunset), **Target** (aspirational)
 
 | Metric | Must-hit (W12) | Target | Stretch |
 |---|---|---|---|
-| Anchor activation rate (Paid, listed ≥3 products, responded to ≥1 RFQ) | **≥ 16/25 (64%)** | 20/25 | 24/25 |
-| Total approved companies | **≥ 60** | 100 | 150 |
-| Total RFQs submitted | **≥ 120** | 250 | 500 |
+| Seller anchor activation (Paid, listed ≥3 products, responded to ≥1 RFQ) | **≥ 6/10** | 8/10 | 10/10 |
+| Buyer anchor activation (Paid, submitted ≥2 RFQs to anchor sellers) | **≥ 6/10** | 8/10 | 10/10 |
+| Total approved companies (anchors + organic) | **≥ 25** | 50 | 80 |
+| Total RFQs submitted | **≥ 40** | 100 | 200 |
 | Median time-to-first-seller-response on an RFQ | **≤ 48 office hours** | ≤ 24h | ≤ 8h |
-| Total Razorpay-captured Paid memberships | **≥ 15** | 25 | 40 |
+| Total Razorpay-captured Paid memberships | **≥ 12** | 20 | 30 |
 | Refund request rate | **≤ 20% of paid** | ≤ 10% | ≤ 5% |
 | Privacy / grievance complaints upheld | **0 systemic** | 0 | 0 |
 | S1 incidents (per doc 24 §9) | **≤ 2 in 90 days** | 0 | 0 |
