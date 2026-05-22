@@ -78,7 +78,7 @@ const BrandPage = () => {
     <Layout>
       <Seo
         title={`${brand.name} — Member Brand · MDDMA`}
-        description="Member brand on MDDMA. Members-only."
+        description={`Discover ${brand.name}, a featured brand from a verified MDDMA member merchant. Brand story and branded product catalogue — members-only.`}
         path={`/brands/${brand.slug}`}
         noindex
       />
