@@ -20,6 +20,8 @@ import { useProducts } from "@/hooks/queries/useProducts";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import { CategoryGrid } from "@/components/products/CategoryGrid";
 import { RecentListings } from "@/components/products/RecentListings";
+import { ProductListRow } from "@/components/products/ProductListRow";
+
 
 const Products = () => {
   const [params, setParams] = useSearchParams();
@@ -210,72 +212,87 @@ const Products = () => {
               </Link>
             </div>
           ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {filtered.map((listing) => (
-                <Card
-                  key={listing.id}
-                  className="bg-card border-border hover:border-accent/50 card-hover h-full overflow-hidden flex flex-col"
-                >
-                  <div className="relative">
-                    <ProductMediaCarousel
-                      commodity={listing.commodity}
-                      alt={`${listing.commodity} ${listing.variant}`}
-                      images={[listing.imageUrl, ...(listing.gallery ?? [])]}
-                      videoUrl={listing.videoUrl}
-                      aspect="16/10"
-                      rounded={false}
-                    />
-                    {listing.origin && (
-                      <div className="absolute top-2 left-2 z-10">
-                        <Badge
-                          variant="outline"
-                          className="bg-background/95 backdrop-blur text-[10px]"
-                        >
-                          {listing.origin}
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
+            <>
+              {/* Mobile: dense single-column list (Misumi-style). */}
+              <div className="grid gap-3 sm:hidden">
+                {filtered.map((listing) => (
+                  <ProductListRow
+                    key={listing.id}
+                    listing={listing}
+                    href={`/products/${listing.id}`}
+                  />
+                ))}
+              </div>
 
-                  <CardContent className="p-4 flex flex-col flex-1">
-                    <div className="flex items-start justify-between gap-2 mb-3">
-                      <div className="min-w-0">
-                        <h3 className="font-semibold text-foreground truncate">
-                          {listing.commodity}
-                        </h3>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {listing.isBranded && listing.retailPackSize ? listing.retailPackSize : listing.variant}
-                        </p>
-                      </div>
-                      {!listing.isBranded && <GuardedPrice listing={listing} />}
-                      {listing.isBranded && (
-                        <Badge variant="warning" className="text-[10px]">Branded</Badge>
+              {/* Tablet+: original card grid. */}
+              <div className="hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3">
+                {filtered.map((listing) => (
+                  <Card
+                    key={listing.id}
+                    className="bg-card border-border hover:border-accent/50 card-hover h-full overflow-hidden flex flex-col"
+                  >
+                    <div className="relative">
+                      <ProductMediaCarousel
+                        commodity={listing.commodity}
+                        alt={`${listing.commodity} ${listing.variant}`}
+                        images={[listing.imageUrl, ...(listing.gallery ?? [])]}
+                        videoUrl={listing.videoUrl}
+                        aspect="16/10"
+                        rounded={false}
+                      />
+                      {listing.origin && (
+                        <div className="absolute top-2 left-2 z-10">
+                          <Badge
+                            variant="outline"
+                            className="bg-background/95 backdrop-blur text-[10px]"
+                          >
+                            {listing.origin}
+                          </Badge>
+                        </div>
                       )}
                     </div>
 
-                    <div className="mt-auto pt-3 border-t border-border space-y-2">
-                      {listing.isBranded && listing.b2cUrl ? (
-                        <Button size="sm" className="w-full" asChild>
-                          <a href={listing.b2cUrl} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Buy retail
-                          </a>
-                        </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          className="w-full text-accent-foreground"
-                          onClick={() =>
-                            setRfqProduct(`${listing.commodity} — ${listing.variant}`)
-                          }
-                        >
-                          <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <CardContent className="p-4 flex flex-col flex-1">
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div className="min-w-0">
+                          <h3 className="font-semibold text-foreground truncate">
+                            {listing.commodity}
+                          </h3>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {listing.isBranded && listing.retailPackSize ? listing.retailPackSize : listing.variant}
+                          </p>
+                        </div>
+                        {!listing.isBranded && <GuardedPrice listing={listing} />}
+                        {listing.isBranded && (
+                          <Badge variant="warning" className="text-[10px]">Branded</Badge>
+                        )}
+                      </div>
+
+                      <div className="mt-auto pt-3 border-t border-border space-y-2">
+                        {listing.isBranded && listing.b2cUrl ? (
+                          <Button size="sm" className="w-full" asChild>
+                            <a href={listing.b2cUrl} target="_blank" rel="noopener noreferrer">
+                              <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Buy retail
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            className="w-full text-accent-foreground"
+                            onClick={() =>
+                              setRfqProduct(`${listing.commodity} — ${listing.variant}`)
+                            }
+                          >
+                            <Send className="h-3.5 w-3.5 mr-1.5" /> Ask for price
+                          </Button>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </>
+
           )}
         </div>
       </section>
