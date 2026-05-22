@@ -56,7 +56,9 @@ const CompanyPage = () => {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase.from("companies").select("*").eq("owner_id", user.id).maybeSingle();
+      const { data: rpcData } = await (supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown }>)("get_my_company");
+      const rows = Array.isArray(rpcData) ? rpcData : rpcData ? [rpcData] : [];
+      const data = (rows[0] ?? null) as any;
       if (data) {
         setCompanyId(data.id);
         setIsVerified(!!data.is_verified);

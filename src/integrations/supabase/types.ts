@@ -932,6 +932,52 @@ export type Database = {
     Functions: {
       downgrade_to_free: { Args: { _user_id: string }; Returns: undefined }
       get_buyer_reputation_tier: { Args: { _score: number }; Returns: string }
+      get_company_contact_admin: {
+        Args: { _company_id: string }
+        Returns: {
+          email: string
+          gstin: string
+          phone: string
+        }[]
+      }
+      get_my_company: {
+        Args: never
+        Returns: {
+          address: string | null
+          categories: string[] | null
+          certifications: string[] | null
+          city: string | null
+          country: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          email: string | null
+          established_year: number | null
+          gstin: string | null
+          id: string
+          is_hidden: boolean
+          is_verified: boolean
+          logo_url: string | null
+          membership_tier: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          rejection_reason: string | null
+          review_status: Database["public"]["Enums"]["review_status"]
+          slug: string
+          social_links: Json | null
+          state: string | null
+          tagline: string | null
+          updated_at: string
+          website: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "companies"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
