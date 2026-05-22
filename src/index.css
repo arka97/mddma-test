@@ -134,6 +134,13 @@
     --cream: 222 47% 7%;
     --warm-gray: 220 12% 65%;
 
+    /* Dark-mode soft surfaces — subtle navy tints */
+    --surface-cream: 222 35% 11%;
+    --surface-sand:  222 30% 13%;
+    --surface-sage:  170 20% 12%;
+    --surface-blush: 0 25% 13%;
+
+
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 210 20% 96%;
     --sidebar-primary: 158 60% 48%;
