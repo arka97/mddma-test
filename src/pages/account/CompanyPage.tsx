@@ -58,7 +58,7 @@ const CompanyPage = () => {
     (async () => {
       const { data: rpcData } = await (supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown }>)("get_my_company");
       const rows = Array.isArray(rpcData) ? rpcData : rpcData ? [rpcData] : [];
-      const data = (rows[0] ?? null) as Record<string, unknown> | null;
+      const data = (rows[0] ?? null) as any;
       if (data) {
         setCompanyId(data.id);
         setIsVerified(!!data.is_verified);
