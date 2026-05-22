@@ -1,12 +1,12 @@
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { HeroSection } from "@/components/home/HeroSection";
+import { TrustStrip } from "@/components/home/TrustStrip";
 import { FeaturedCategoriesSection } from "@/components/home/FeaturedCategoriesSection";
+import { HowItWorksSection } from "@/components/home/HowItWorksSection";
 import { FeaturedBrandsStrip } from "@/components/home/FeaturedBrandsStrip";
 import { MarketplacePulse } from "@/components/home/MarketplacePulse";
-import { WhyMddmaSection } from "@/components/home/WhyMddmaSection";
-import { IndustryFeed } from "@/components/home/IndustryFeed";
-import { SponsorsSection } from "@/components/home/SponsorsSection";
+import { HomeFaq } from "@/components/home/HomeFaq";
 import { FooterCTA } from "@/components/home/FooterCTA";
 
 const Index = () => (
@@ -17,12 +17,14 @@ const Index = () => (
       path="/"
     />
     <HeroSection />
+    <TrustStrip />
     <FeaturedCategoriesSection />
+    <HowItWorksSection />
+    <div className="bg-surface-cream">
+      <MarketplacePulse />
+    </div>
     <FeaturedBrandsStrip />
-    <MarketplacePulse />
-    <WhyMddmaSection />
-    <IndustryFeed />
-    <SponsorsSection />
+    <HomeFaq />
     <FooterCTA />
   </Layout>
 );

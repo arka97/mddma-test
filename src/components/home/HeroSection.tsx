@@ -2,11 +2,19 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, ArrowRight } from "lucide-react";
-import { InstallAppButton } from "@/components/pwa/InstallAppButton";
-import { MarketTicker } from "@/components/layout/MarketTicker";
+import { Search, ShieldCheck } from "lucide-react";
 
-const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
+/**
+ * Hims-style hero — calm, generous whitespace, one clear primary action.
+ * Designed for older / non-tech traders: large display headline, plain words,
+ * single primary CTA, secondary text link.
+ */
+const HOT_CATEGORIES = [
+  { label: "Almonds", hi: "बादाम" },
+  { label: "Cashews", hi: "काजू" },
+  { label: "Dates", hi: "खजूर" },
+  { label: "Pistachios", hi: "पिस्ता" },
+];
 
 export function HeroSection() {
   const navigate = useNavigate();
@@ -21,66 +29,57 @@ export function HeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-muted/40 via-background to-background">
-      <div className="relative container mx-auto px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-20">
+    <section className="relative overflow-hidden bg-surface-cream">
+      <div className="container mx-auto px-4 py-12 sm:px-6 sm:py-20 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="t-eyebrow mb-4 flex flex-col items-center gap-0.5 text-muted-foreground">
-            <div>Mumbai Dry Fruits and Dates Merchants Association</div>
-            <div>Established 1930</div>
-          </div>
+          <p className="t-eyebrow mb-4 text-muted-foreground">
+            Mumbai Dry Fruits &amp; Dates Merchants Association · Since 1930
+          </p>
 
-          <h1 className="t-display mb-4 text-foreground">
-            The home of<br />
-            <span className="text-accent">India's dry fruit trade.</span>
+          <h1 className="font-display text-5xl text-foreground sm:text-6xl md:text-7xl">
+            Buy &amp; sell dry fruits,
+            <br className="hidden sm:block" />
+            <span className="italic text-accent"> the verified way.</span>
           </h1>
 
-          <p className="t-body mx-auto mb-8 max-w-2xl text-muted-foreground">
-            Browse verified sellers, get direct quotes, and track live prices.
+          <p className="mx-auto mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
+            Find trusted Mumbai sellers. Send one price request. Get replies on WhatsApp.
           </p>
 
           <form
             onSubmit={submit}
-            className="mx-auto flex max-w-2xl flex-col gap-2 rounded-xl border border-border bg-card p-2 shadow-sm sm:flex-row"
+            className="mx-auto mt-8 flex max-w-xl flex-col gap-2 rounded-2xl border border-border bg-card p-2 shadow-sm sm:flex-row"
           >
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Mamra almonds, W320 cashews, Medjool dates…"
-                className="h-11 border-0 pl-10 shadow-none focus-visible:ring-0"
+                placeholder="Search: dal, cashew, dates, sugar…"
+                aria-label="Search commodities or sellers"
+                className="h-12 border-0 pl-11 text-base shadow-none focus-visible:ring-0"
               />
             </div>
-            <Button type="submit" size="lg" className="h-11 sm:w-auto">
-              <Search className="mr-1.5 h-4 w-4" /> Find sellers
+            <Button type="submit" size="lg" className="h-12 text-base sm:w-auto">
+              Search
             </Button>
           </form>
 
-          <div className="mx-auto mt-4 max-w-3xl">
-            <MarketTicker />
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-            <span className="text-xs text-muted-foreground">Popular:</span>
-            {HOT_CATEGORIES.map((cat) => (
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            {HOT_CATEGORIES.map((c) => (
               <Link
-                key={cat}
-                to={`/products?q=${encodeURIComponent(cat)}&view=marketplace`}
-                className="rounded-full border border-border bg-card px-3 py-1 text-xs text-foreground transition-colors hover:border-accent/40 hover:text-accent"
+                key={c.label}
+                to={`/products?q=${encodeURIComponent(c.label)}&view=marketplace`}
+                className="rounded-full border border-border bg-card px-4 py-2 text-sm text-foreground transition-colors hover:border-accent/40 hover:text-accent"
               >
-                {cat}
+                {c.label} <span className="text-muted-foreground">· {c.hi}</span>
               </Link>
             ))}
-            <Link
-              to="/directory"
-              className="inline-flex items-center rounded-full px-3 py-1 text-xs text-muted-foreground hover:text-accent"
-            >
-              Browse all sellers <ArrowRight className="ml-1 h-3 w-3" />
-            </Link>
           </div>
 
-          <div className="mt-6 flex justify-center">
-            <InstallAppButton size="sm" label="Install MDDMA App" />
+          <div className="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <ShieldCheck className="h-4 w-4 text-success" />
+            <span>1,200+ GST-verified Mumbai traders</span>
           </div>
         </div>
       </div>
