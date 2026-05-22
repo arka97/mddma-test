@@ -41,18 +41,10 @@ const ProductPage = () => {
   return (
     <Layout>
       <Seo
-        title={`${product.name} — MDDMA Verified Sellers`}
-        description={(product.description ?? `Get verified seller quotes for ${product.name} on MDDMA — India's trusted dry fruit & dates trade network.`).slice(0, 160)}
+        title={`${product.name} — Member Catalogue · MDDMA`}
+        description="Member product page. Members-only."
         path={`/products/${product.slug}`}
-        ogType="product"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: product.name,
-          description: product.description ?? undefined,
-          image: product.image_url ?? undefined,
-          url: `https://mddma.org/products/${product.slug}`,
-        }}
+        noindex
       />
       <section className="bg-primary py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
