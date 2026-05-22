@@ -369,9 +369,9 @@ function renderPage(route: PrerenderRoute, assetTags: string): string {
     <title>${route.title}</title>
     <meta name="description" content="${route.description.replace(/"/g, "&quot;")}" />
     <meta name="author" content="MDDMA" />
-    <link rel="canonical" href="${canonical}" />
 
     <link rel="manifest" href="/manifest.json" />
+
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/brand/MDDMA_logomark.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
