@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +18,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 
 const Forms = () => {
   const { toast } = useToast();
+  const { pathname } = useLocation();
+  const isContact = pathname === "/contact";
   const handleSubmit = (formName: string) => (e: React.FormEvent) => {
     e.preventDefault();
     toast({ title: `${formName} Submitted!`, description: "We'll respond within 2 business days." });
@@ -25,11 +28,20 @@ const Forms = () => {
 
   return (
     <Layout>
-      <Seo title='Forms & Contact — MDDMA' description='Member forms (verification, advertising). Public contact lives at /contact.' path='/forms' noindex />
+      {isContact ? (
+        <Seo
+          title="Contact MDDMA — Mumbai Dry-fruits & Dates Association"
+          description="Contact the Mumbai Dry-fruits & Dates Merchants Association. Office at APMC Vashi, Navi Mumbai. Phone +91-22-27650827. Email grievance@mddma.org."
+          path="/contact"
+        />
+      ) : (
+        <Seo title='Forms & Contact — MDDMA' description='Member forms (verification, advertising). Public contact lives at /contact.' path='/forms' noindex />
+      )}
       <PageHeader
         title="Get in touch"
         subtitle="Choose the right form for your enquiry."
       />
+
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl">
