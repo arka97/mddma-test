@@ -4,7 +4,6 @@ import { Search, MapPin, ShieldCheck, Star, BadgeCheck } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,6 +15,7 @@ import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useDirectory } from "@/hooks/queries/useCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
+import { FiltersSheet, FiltersSheetTrigger } from "@/components/products/FiltersSheet";
 
 const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor", "Broker"];
 
@@ -30,6 +30,7 @@ const Directory = () => {
       : "all"
   );
   const [verificationFilter, setVerificationFilter] = useState<string>("all");
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const { data: allMembers = [], isLoading: loading } = useDirectory();
 
   // Keep URL in sync with the type filter for shareable deep links.
@@ -67,21 +68,87 @@ const Directory = () => {
     new Set(allMembers.map((m) => (m.area ?? "").trim()).filter(Boolean))
   ).sort();
 
+  const activeCount =
+    (areaFilter !== "all" ? 1 : 0) +
+    (typeFilter !== "all" ? 1 : 0) +
+    (verificationFilter !== "all" ? 1 : 0);
+
+  const clearAll = () => {
+    setAreaFilter("all");
+    setTypeFilter("all");
+    setVerificationFilter("all");
+  };
+
+  const FilterControls = () => (
+    <>
+      <div className="space-y-2">
+        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Area</label>
+        <Select value={areaFilter} onValueChange={setAreaFilter}>
+          <SelectTrigger className="h-11"><SelectValue placeholder="All Areas" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Areas</SelectItem>
+            {liveAreas.map((a) => (
+              <SelectItem key={a} value={a}>{a}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Type</label>
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger className="h-11"><SelectValue placeholder="All Types" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Types</SelectItem>
+            {memberTypes.map((t) => (
+              <SelectItem key={t} value={t}>{t}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Verification</label>
+        <Select value={verificationFilter} onValueChange={setVerificationFilter}>
+          <SelectTrigger className="h-11"><SelectValue placeholder="Verification" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="Verified">Verified</SelectItem>
+            <SelectItem value="Not Verified">Not Verified</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </>
+  );
+
   return (
     <Layout>
       <Seo title='MDDMA Member Directory — Verified Dry Fruit & Dates Traders' description='Browse verified MDDMA member companies — importers, wholesalers, brokers and processors of dry fruits, dates and nuts across India.' path='/directory' />
       <PageHeader
-        title="Member Directory"
-        subtitle="Find KYC-verified dry fruits and dates merchants across Mumbai's major trading markets."
+        title="Find sellers"
+        subtitle="KYC-verified dry fruit and dates traders across Mumbai's APMC market."
       />
 
       <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
         <AdBanner placement="directory-sidebar" />
       </div>
 
-      <section className="border-b border-border bg-muted/30 py-6">
+      <section className="border-b border-border bg-muted/30 py-4">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-3">
+          {/* Mobile: search + filter button */}
+          <div className="flex items-center gap-2 md:hidden">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search seller, owner, product…"
+                className="h-11 pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <FiltersSheetTrigger onClick={() => setFiltersOpen(true)} activeCount={activeCount} />
+          </div>
+
+          {/* Desktop: inline filter row */}
+          <div className="hidden md:flex md:flex-row md:gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -91,44 +158,23 @@ const Directory = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select value={areaFilter} onValueChange={setAreaFilter}>
-              <SelectTrigger className="w-full md:w-44">
-                <SelectValue placeholder="All Areas" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Areas</SelectItem>
-                {liveAreas.map((a) => (
-                  <SelectItem key={a} value={a}>{a}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full md:w-44">
-                <SelectValue placeholder="All Types" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {memberTypes.map((t) => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={verificationFilter} onValueChange={setVerificationFilter}>
-              <SelectTrigger className="w-full md:w-44">
-                <SelectValue placeholder="Verification" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="Verified">Verified</SelectItem>
-                <SelectItem value="Not Verified">Not Verified</SelectItem>
-              </SelectContent>
-            </Select>
+            <FilterControls />
           </div>
+
           <p className="text-sm text-muted-foreground mt-3">
-            Showing {sorted.length} of {allMembers.length} members
+            Showing {sorted.length} of {allMembers.length} sellers
           </p>
         </div>
       </section>
+
+      <FiltersSheet
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        activeCount={activeCount}
+        onClear={clearAll}
+      >
+        <FilterControls />
+      </FiltersSheet>
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -218,7 +264,7 @@ const Directory = () => {
 
               {sorted.length === 0 && (
                 <div className="text-center py-12 col-span-full">
-                  <p className="text-muted-foreground">No members found matching your criteria.</p>
+                  <p className="text-muted-foreground">No sellers match your filters. Tap Clear all to start over.</p>
                 </div>
               )}
           </div>
