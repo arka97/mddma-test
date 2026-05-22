@@ -22,6 +22,17 @@ const SLUG_TO_FILE: Record<string, string> = {
   "security-and-rls": "15-security-and-rls.md",
   "storage-and-media": "16-storage-and-media.md",
   "owner-quickstart": "17-owner-quickstart.md",
+  "member-data-audit-migration": "18-member-data-audit-migration.md",
+  "privacy-policy": "19-privacy-policy.md",
+  "terms-of-service": "20-terms-of-service.md",
+  "refund-and-cancellation-policy": "21-refund-and-cancellation-policy.md",
+  "grievance-and-redressal": "22-grievance-and-redressal.md",
+  "kyc-and-verification-policy": "23-kyc-and-verification-policy.md",
+  "sow-and-maintenance-sla": "24-sow-and-maintenance-sla.md",
+  "committee-operator-guide": "25-committee-operator-guide.md",
+  "data-retention-and-deletion-policy": "26-data-retention-and-deletion-policy.md",
+  "pilot-plan-and-success-criteria": "27-pilot-plan-and-success-criteria.md",
+  "gtm-and-onboarding-playbook": "28-gtm-and-onboarding-playbook.md",
 };
 
 function constantTimeEqual(a: string, b: string) {
