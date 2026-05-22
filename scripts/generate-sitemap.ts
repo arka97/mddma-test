@@ -30,23 +30,10 @@ const staticEntries: SitemapEntry[] = [
   { path: "/contact", changefreq: "monthly", priority: "0.6" },
 ];
 
-async function fetchPublishedCircularSlugs(): Promise<string[]> {
-  const url = `${SUPABASE_URL}/rest/v1/circulars?select=slug&is_published=eq.true`;
-  try {
-    const res = await fetch(url, {
-      headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` },
-    });
-    if (!res.ok) {
-      console.warn(`sitemap: circulars fetch failed (${res.status})`);
-      return [];
-    }
-    const rows = (await res.json()) as Array<{ slug: string | null }>;
-    return rows.map((r) => r.slug).filter((s): s is string => Boolean(s));
-  } catch (err) {
-    console.warn(`sitemap: circulars fetch error`, err);
-    return [];
-  }
-}
+// Circular detail pages (/circulars/<slug>) are intentionally NOT emitted —
+// no public route handles them yet (see src/routes.tsx). The /circulars index
+// remains indexable. Restore detail emission once a public CircularDetail route ships.
+
 
 function readKnowledgeSlugs(): string[] {
   const dir = resolve("src/content/knowledge");
