@@ -38,6 +38,8 @@ The single most asked question from a new reader. The table below is the source 
 | Lead Packs module | **Killed** (BIZ-001) | doc 11 |
 | Silver / Gold / Platinum tiers | **Killed** (BIZ-002) — single ₹10K Paid tier | doc 11 |
 | Separate broker price / "₹5K addon" | **Killed** (BIZ-003) — broker is a flag on the same ₹10K plan | doc 11 |
+| Public authority layer (home, about, membership, circulars, knowledge, FAQ) | **Live** — prerendered, AI-friendly (GTM-001) | doc 11 |
+| Transactional core (directory, products, RFQ, storefronts, broker) | **Live** — `noindex` + auth-walled (GTM-001) | doc 11 |
 
 ## Reading path by role
 

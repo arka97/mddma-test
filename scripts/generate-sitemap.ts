@@ -1,7 +1,10 @@
 // Generates public/sitemap.xml. Runs before `vite dev` and `vite build`.
-// Fetches dynamic slugs (companies, products, brands) via Supabase REST.
+// GTM-001: lists ONLY the public authority layer. Transactional routes
+// (/directory, /products, /brands, /broker, /market, /community, /dashboard,
+// /account/*, /documents, /login, /forms) are intentionally excluded —
+// they are `noindex` per-route via <Seo noindex />.
 
-import { writeFileSync } from "node:fs";
+import { writeFileSync, readdirSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 
 const BASE_URL = "https://mddma.org";
@@ -15,39 +18,44 @@ interface SitemapEntry {
   priority?: string;
 }
 
+// Public authority layer only. Legal pack (/privacy /terms /refund /grievance)
+// is deferred to the sitemap until LEGAL-001 ships counsel-reviewed copy.
 const staticEntries: SitemapEntry[] = [
-  { path: "/", changefreq: "daily", priority: "1.0" },
-  { path: "/about", changefreq: "monthly", priority: "0.7" },
-  { path: "/directory", changefreq: "daily", priority: "0.9" },
-  { path: "/products", changefreq: "daily", priority: "0.9" },
-  { path: "/brands", changefreq: "weekly", priority: "0.8" },
-  { path: "/broker", changefreq: "weekly", priority: "0.7" },
-  { path: "/market", changefreq: "daily", priority: "0.8" },
-  { path: "/community", changefreq: "daily", priority: "0.7" },
+  { path: "/", changefreq: "weekly", priority: "1.0" },
+  { path: "/about", changefreq: "monthly", priority: "0.9" },
   { path: "/membership", changefreq: "monthly", priority: "0.8" },
-  { path: "/circulars", changefreq: "weekly", priority: "0.6" },
-  { path: "/forms", changefreq: "monthly", priority: "0.5" },
-  { path: "/contact", changefreq: "monthly", priority: "0.5" },
-  { path: "/apply", changefreq: "monthly", priority: "0.6" },
-  { path: "/install", changefreq: "monthly", priority: "0.4" },
+  { path: "/apply", changefreq: "monthly", priority: "0.7" },
+  { path: "/install", changefreq: "monthly", priority: "0.5" },
+  { path: "/faq", changefreq: "monthly", priority: "0.8" },
+  { path: "/knowledge", changefreq: "weekly", priority: "0.8" },
+  { path: "/circulars", changefreq: "weekly", priority: "0.7" },
+  { path: "/contact", changefreq: "monthly", priority: "0.6" },
 ];
 
-async function fetchSlugs(table: string, filter = ""): Promise<string[]> {
-  const url = `${SUPABASE_URL}/rest/v1/${table}?select=slug${filter ? `&${filter}` : ""}`;
+async function fetchPublishedCircularSlugs(): Promise<string[]> {
+  const url = `${SUPABASE_URL}/rest/v1/circulars?select=slug&is_published=eq.true`;
   try {
     const res = await fetch(url, {
       headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` },
     });
     if (!res.ok) {
-      console.warn(`sitemap: ${table} fetch failed (${res.status})`);
+      console.warn(`sitemap: circulars fetch failed (${res.status})`);
       return [];
     }
     const rows = (await res.json()) as Array<{ slug: string | null }>;
     return rows.map((r) => r.slug).filter((s): s is string => Boolean(s));
   } catch (err) {
-    console.warn(`sitemap: ${table} fetch error`, err);
+    console.warn(`sitemap: circulars fetch error`, err);
     return [];
   }
+}
+
+function readKnowledgeSlugs(): string[] {
+  const dir = resolve("src/content/knowledge");
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((f) => f.endsWith(".md"))
+    .map((f) => f.replace(/\.md$/, ""));
 }
 
 function xml(entries: SitemapEntry[]) {
@@ -71,22 +79,23 @@ function xml(entries: SitemapEntry[]) {
 }
 
 async function main() {
-  const [companies, products, brands] = await Promise.all([
-    fetchSlugs("companies_public"),
-    fetchSlugs("products"),
-    fetchSlugs("brands", "is_active=eq.true"),
-  ]);
+  const circulars = await fetchPublishedCircularSlugs();
+  const knowledge = readKnowledgeSlugs();
 
   const entries: SitemapEntry[] = [
     ...staticEntries,
-    ...companies.map((s) => ({ path: `/store/${s}`, changefreq: "weekly" as const, priority: "0.7" })),
-    ...products.map((s) => ({ path: `/products/${s}`, changefreq: "weekly" as const, priority: "0.6" })),
-    ...brands.map((s) => ({ path: `/brands/${s}`, changefreq: "weekly" as const, priority: "0.6" })),
+    { path: "/knowledge", changefreq: "weekly", priority: "0.8" },
+    ...knowledge.map((s) => ({ path: `/knowledge/${s}`, changefreq: "monthly" as const, priority: "0.7" })),
+    ...circulars.map((s) => ({ path: `/circulars/${s}`, changefreq: "monthly" as const, priority: "0.6" })),
   ];
 
-  writeFileSync(resolve("public/sitemap.xml"), xml(entries));
+  // De-dupe (/knowledge appears twice above intentionally for clarity; collapse here)
+  const seen = new Set<string>();
+  const unique = entries.filter((e) => (seen.has(e.path) ? false : (seen.add(e.path), true)));
+
+  writeFileSync(resolve("public/sitemap.xml"), xml(unique));
   console.log(
-    `sitemap.xml written — ${entries.length} entries (${companies.length} stores, ${products.length} products, ${brands.length} brands)`,
+    `sitemap.xml written — ${unique.length} entries (${knowledge.length} knowledge, ${circulars.length} circulars, public layer only — GTM-001)`,
   );
 }
 

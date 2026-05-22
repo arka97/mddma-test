@@ -144,3 +144,25 @@ Every locked product, technical, UX, governance, data, and role decision — wit
 **Locked** May 2026.
 **Replaces** "20 members" (doc 02), "25 anchor members" (docs 06, 14, 27, 28). All success metrics in doc 27 §4 were rescaled accordingly.
 **Enforced in** Doc 27 §2 (cohort table), doc 27 §4 (metrics), doc 28 §2 (outreach sequence), docs 02 / 06 / 14 gantts, `mem://architecture/implementation-status`.
+
+### GTM-001 — Two-tier public/gated, AI-optimized
+**Decision** The platform has two **physically distinct** surfaces with opposite optimization targets:
+- **Public authority layer** — `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/circulars/<slug>`, `/knowledge`, `/knowledge/<slug>`, `/faq`, `/contact` — is **prerendered into static HTML** (content + JSON-LD in the initial response) and **explicitly opens itself to AI crawlers** (GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, PerplexityBot, Google-Extended) in `robots.txt`. Optimized for SEO + GEO + AEO + AIO.
+- **Transactional core** — `/directory`, `/products`, `/products/<slug>`, `/store/<slug>`, `/brands`, `/brands/<slug>`, `/broker`, `/market`, `/community`, `/dashboard`, `/account/*`, `/documents`, `/documents/<slug>`, `/login`, `/forms` — stays gated and emits `<meta name="robots" content="noindex">`. **No price, stock band, or member contact ever appears in indexable HTML.** Fully compatible with UX-001 controlled transparency.
+
+**Pattern D remains the member-acquisition channel.** The public content layer is the **credibility + inbound-discovery channel** (warm-introed members Google "MDDMA" and arrive at an authoritative trust surface; regulators and journalists land on policy/knowledge pages directly). It is not a marketplace and the meta layer must never describe it as one.
+
+**Why** Two earlier choices were in direct conflict: (a) Pattern D + UX-001 said no public discovery; (b) the live meta layer ("source from verified sellers… India's most trusted B2B trade network") and `doc 27 §3 W5–W8` ("Public discoverability via SEO; first ad campaigns") said the opposite. The site shipped open-marketplace copy on a client-rendered SPA that AI crawlers can't read at all — worst of both worlds. The fix is to split the surfaces and prerender the public layer so AI engines can actually see it.
+
+**Locked** May 2026. **Supersedes** the earlier "no SEO" reading of Pattern D and the W5–W8 SEO/ads line in doc 27.
+
+**Enforced in**
+- `index.html` head (Organization JSON-LD, trust-body title/description, dropped WebSite+SearchAction schema).
+- `public/robots.txt` (per-bot Allow lines for AI crawlers, plus sitemap directive).
+- `public/llms.txt` (lists only the public layer; explicit "not a marketplace" note for AI engines).
+- `scripts/generate-sitemap.ts` (public layer only; transactional routes excluded).
+- `src/components/Seo.tsx` `noindex` prop, applied on every transactional page.
+- Per-route Helmet (FAQPage, Article, BreadcrumbList JSON-LD) on `/faq`, `/knowledge/<slug>`, `/circulars/<slug>`.
+- `src/components/home/HeroSection.tsx` — re-skinned for guests as an authority page (history + knowledge teasers + recent circulars), not a marketplace search.
+- Doc 27 §3 (W5–W8 row), doc 00 status table, `mem://architecture/v3-1-locked-decisions`, `mem://index.md` Core.
+
