@@ -11,8 +11,6 @@ export function ActionRequiredCircular() {
     listCirculars({ publishedOnly: true })
       .then((rows) => {
         if (!alive) return;
-        // Prefer the most recent "action required" / compliance / urgent circular,
-        // else the latest circular overall.
         const flagged = rows.find((r) =>
           ["action", "urgent", "compliance", "regulatory"].some((k) =>
             (r.category ?? "").toLowerCase().includes(k) || r.title.toLowerCase().includes(k),
@@ -25,14 +23,14 @@ export function ActionRequiredCircular() {
   }, []);
 
   if (!circular) return null;
+  const href = `/circulars/${circular.slug ?? ""}`;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-warning/40 bg-warning/5 p-4 shadow-sm">
+    <article className="rounded-2xl border border-warning/40 bg-warning/5 p-4 shadow-sm">
       <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-warning-foreground">
-        <AlertTriangle className="h-3 w-3" />
-        Circular · Action required
+        <AlertTriangle className="h-3 w-3" /> Circular · Action required
       </div>
-      <h3 className="mt-2 text-sm font-semibold leading-snug text-foreground">{circular.title}</h3>
+      <h3 className="mt-2 text-base font-semibold leading-snug text-foreground">{circular.title}</h3>
       {circular.body && (
         <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
           {circular.body.replace(/[#*_>`]/g, "").slice(0, 140)}
@@ -40,13 +38,13 @@ export function ActionRequiredCircular() {
       )}
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <Link
-          to="/circulars"
+          to={href}
           className="inline-flex items-center gap-1 rounded-full bg-foreground px-3 py-1.5 text-xs font-semibold text-background hover:opacity-90"
         >
           Read &amp; act <ArrowRight className="h-3 w-3" />
         </Link>
         <Link to="/circulars" className="text-xs font-medium text-muted-foreground hover:text-foreground">
-          See all circulars
+          All circulars
         </Link>
       </div>
     </article>
