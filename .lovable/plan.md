@@ -1,94 +1,47 @@
+# Collapsing Header + Rotating Ad Carousel
 
-# Mobile-first PWA shell + Today/Home redesign
+## 1. Header collapse-on-scroll (`src/components/layout/Header.tsx`)
 
-## What you'll see
+Split the header into two rows that already exist:
+- **Row 1 (top)** — location chip + logo + Install + Login/Avatar
+- **Row 2 (bottom)** — search input
 
-A new app shell that feels like a native mobile app: slim top bar with location + avatar, bottom tab bar (Today / Members / RFQs / Circulars / Account), and a Home screen rebuilt to match the wireframe — search, live rates ticker, 2×2 quick actions, ad slot, paid-member CTA, action-required circular, category grid, recent listings, featured members, partners strip. Desktop keeps the same sections in a hybrid 2-column layout with a short authority paragraph for SEO. No HeroSection / Marketplace / WhyMddma blocks brought back.
+Behavior:
+- On scroll down past ~24px, Row 1 collapses (height → 0, opacity → 0, `pointer-events-none`) with a 200ms transition.
+- On scroll back up to top, Row 1 re-expands.
+- Row 2 (search) stays sticky at top across all states. Header itself remains `sticky top-0`.
+- Desktop `lg:` nav links currently live in Row 1; on `<lg` they're already hidden so collapse only affects mobile/tablet visuals. On `lg+`, keep Row 1 always visible (no collapse) to preserve desktop nav.
 
-## App shell
+Implementation:
+- Add a `useScrolled(threshold=24)` hook (local to Header or `src/hooks/use-scrolled.ts`) using a passive `scroll` listener with `requestAnimationFrame` throttling.
+- Wrap Row 1 in a div with classes like `transition-all duration-200 overflow-hidden` and toggle `h-12 opacity-100` vs `h-0 opacity-0 pointer-events-none` based on `scrolled && !isDesktop`. Use Tailwind `lg:!h-12 lg:!opacity-100` to force-disable collapse on desktop.
+- Search row stays as-is; no change to its sticky behavior (parent `<header>` already sticky).
 
-Replace `Header` everywhere with a new `MobileTopBar`:
-- Left: location chip ("Pydhonie, Mumbai" — static for now, hooked to profile if available)
-- Center: condensed search input that routes to `/products?q=...&view=marketplace`
-- Right: avatar dropdown (current `UserMenu` reused) or Login button if signed out
-- Sticky, safe-area aware, slim (52–56px)
-- On `≥lg`, expands gutters and adds the primary nav links inline (Directory / Products / Brands / Market / Community / Membership) so desktop still has top nav
+## 2. Move ad slot under header + make it a rotating carousel
 
-Add a new `MobileBottomTabBar`:
-- 5 tabs: Today (`/`), Members (`/directory`), RFQs (`/account/rfqs` if signed in else `/login?next=/account/rfqs`), Circulars (`/circulars`), Account (`/account/profile` if signed in else `/login`)
-- Visible only `<lg` (mobile + tablet); hidden on desktop
-- Fixed bottom, safe-area-inset-bottom, active-tab highlighted with primary color
-- Reserves bottom padding on `<main>` so content isn't covered; CartFab repositioned above it on mobile
+Currently `src/pages/Index.tsx` renders `<AdSlot placement="homepage-banner" />` mid-feed and again as `category-banner`. Move the homepage-banner to render **immediately below header**, above the `TodayHeader` greeting.
 
-Old `Header.tsx` is replaced (not just edited) — keeps `InstallAppButton`, search, and `UserMenu` behaviors. `Layout.tsx` updated to render `MobileTopBar` + children + `Footer` (desktop only) + `MobileBottomTabBar`.
+Changes:
+- In `Index.tsx`, move `<AdSlot placement="homepage-banner" />` to the first grid row (`lg:col-span-12`), before `TodayHeader`. Keep `category-banner` slot where it is.
+- Rewrite `src/components/home/today/AdSlot.tsx` to render a **rotating carousel** when multiple ads exist for that placement:
+  - Use existing `src/components/ui/carousel.tsx` (embla) with `opts={{ loop: true }}` and the `embla-carousel-autoplay` plugin (already a transitive dep via embla; if not present, fall back to a `setInterval` that calls `api.scrollNext()` every 5s).
+  - One ad per slide, same card styling as today (aspect-[16/7] image + title + "Learn more").
+  - Show dot indicators below when >1 ad. Hide controls when only 1 ad (render as today, no carousel chrome).
+  - Pause autoplay on hover/focus.
 
-## Home page (`src/pages/Index.tsx`)
+## 3. Out of scope
+- No changes to `Layout.tsx`, bottom tab bar, repositories, or admin CMS.
+- No DB/schema changes — uses existing `advertisements` rows for `homepage-banner` placement.
+- Desktop header behavior unchanged (no collapse on `lg+`).
 
-Drop all current sections. Compose from new small components under `src/components/home/today/`:
-
-1. `TodayHeader` — "Today on the market" + subtitle (already inside content, since top bar is global)
-2. `LiveRatesTicker` — horizontal scroll strip with badges (LIVE pill + commodity · origin + price range, separator chars). Reuses existing `MarketTicker` data hook if present; otherwise stub with the same 6 items from the wireframe
-3. `QuickActionsGrid` — 2×2 tiles: Post RFQ (badge: "12 active"), Circulars ("4 new"), Market ("APMC"), Brands ("180+"). Each is a Link with icon + label + meta
-4. `AdSlot` — pulls from `repositories/advertisements.ts`; placement key `home-top`; falls back to empty render
-5. `MembershipCTA` — "Become a Paid Member ₹10,000/yr…" card with Apply button. Hidden when user already paid (`hasRole('paid_member')`)
-6. `ActionRequiredCircular` — pinned circular card with progress copy + primary CTA + "Read more"; sourced from `repositories/circulars.ts` where `pinned=true`
-7. `CategoryGrid` — 6-tile emoji grid (uses `useProductCategories`), shows top 6 with listing counts; "View all" → `/products`
-8. `RecentListings` — vertical list of last 5 products (emoji + name — category + price band + seller · location), "View all" → `/products`
-9. `AdSlot` second — placement key `home-mid`
-10. `FeaturedMembers` — 2 sponsored cards with avatar, name, principal, role, GST/FSSAI badges, location, top commodities, "Member since YYYY", View store link
-11. `PartnersStrip` — "OUR PARTNERS" eyebrow + 6 partner names (from `SponsorsSection` data, restyled as a single horizontal scroll row)
-12. **Desktop-only** `AuthorityBlurb` — 2–3 sentences on 95-year MDDMA history, rendered as semantic `<section>` with H2 and visible only `md:block` for SEO crawlers (page stays indexable since `/` is in the public authority layer)
-
-## Desktop hybrid grid (`md+`)
-
-Inside `Index.tsx`, wrap sections in a 12-col `lg:grid lg:grid-cols-12 lg:gap-6` where:
-- Search row spans full width (wider input)
-- LiveRatesTicker spans 12
-- QuickActionsGrid spans 4, MembershipCTA spans 4, ActionRequiredCircular spans 4 (one row)
-- AdSlot spans 12
-- CategoryGrid spans 7, RecentListings spans 5
-- FeaturedMembers spans 12 in a 2-col inner grid
-- PartnersStrip spans 12
-- AuthorityBlurb spans 12
-
-Mobile (`<md`) stays single-column stack in the wireframe order.
-
-## Visual / token notes
-
-- Use existing HSL semantic tokens (`--primary` navy, `--accent` emerald, `--gold` for the membership/sponsored badges, `--warning` for ACTION REQUIRED).
-- LIVE pill: `bg-destructive/10 text-destructive` with a small pulsing dot.
-- Tile cards: `rounded-2xl border bg-card shadow-sm` to read app-like, not desktop-marketing.
-- Bottom tab bar: `bg-background/95 backdrop-blur border-t`, active icon `text-primary`, inactive `text-muted-foreground`.
-- Respect Pricing rule: only show ranges + High/Med/Low — no exact prices anywhere.
-
-## Files
-
-```text
-src/components/layout/MobileTopBar.tsx        (new, replaces Header role)
-src/components/layout/MobileBottomTabBar.tsx  (new)
-src/components/layout/Layout.tsx              (edit: mount new shell)
-src/components/layout/Header.tsx              (delete or keep as thin re-export)
-src/components/home/today/TodayHeader.tsx
-src/components/home/today/LiveRatesTicker.tsx
-src/components/home/today/QuickActionsGrid.tsx
-src/components/home/today/AdSlot.tsx
-src/components/home/today/MembershipCTA.tsx
-src/components/home/today/ActionRequiredCircular.tsx
-src/components/home/today/CategoryGrid.tsx
-src/components/home/today/RecentListings.tsx
-src/components/home/today/FeaturedMembers.tsx
-src/components/home/today/PartnersStrip.tsx
-src/components/home/today/AuthorityBlurb.tsx
-src/pages/Index.tsx                           (rewrite: compose the above)
-src/components/cart/CartFab.tsx               (edit: lift above bottom tab bar on mobile)
-```
-
-Out of scope (not touched): all `/account/*`, `/admin/*`, `/documents/*`, edge functions, DB schema, routes config (existing routes remain), Footer (still rendered on desktop).
+## Technical notes
+- Files edited: `src/components/layout/Header.tsx`, `src/components/home/today/AdSlot.tsx`, `src/pages/Index.tsx`.
+- New file (optional): `src/hooks/use-scrolled.ts`.
+- If `embla-carousel-autoplay` isn't installed, add it via `bun add embla-carousel-autoplay` during build mode.
+- Respect `prefers-reduced-motion`: skip autoplay when user prefers reduced motion.
 
 ## Done when
-
-- `/` on a 390×844 viewport matches the wireframe order and density (single-column, app-like cards).
-- Bottom tab bar visible on every page on mobile, hidden on desktop.
-- Top bar replaces the current header on every viewport, with desktop showing inline primary nav.
-- Desktop `/` renders the new sections in the hybrid grid plus the SEO authority paragraph; no HeroSection/Marketplace/WhyMddma re-appears.
-- All colors come from HSL semantic tokens; no exact prices/stock leaked.
+- Scrolling down on `/` on mobile hides the top header row; search stays pinned at top.
+- Scrolling back to top reveals the top row again.
+- A rotating ad carousel sits directly under the header, auto-advancing every ~5s with dot indicators; single-ad case renders without controls.
+- Desktop layout unchanged structurally; ad carousel also appears at the top of the desktop grid.
