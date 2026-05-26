@@ -273,8 +273,8 @@ const Storefront = () => {
                       {/* Mobile: card list */}
                       <ul className="space-y-3 sm:hidden">
                         {liveProducts.map((p) => (
-                          <li key={p.id} className="rounded-lg border border-border p-3">
-                            <div className="flex gap-3">
+                          <li key={p.id} className="min-w-0 overflow-hidden rounded-lg border border-border p-3">
+                            <div className="flex min-w-0 gap-3">
                               <div className="w-20 flex-shrink-0">
                                 <ProductMediaCarousel
                                   commodity={p.name}
@@ -285,8 +285,8 @@ const Storefront = () => {
                                 />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <div className="font-medium text-foreground text-sm truncate">{p.name}</div>
-                                <div className="text-xs text-muted-foreground truncate">
+                                <div className="truncate break-words text-sm font-medium text-foreground">{p.name}</div>
+                                <div className="truncate text-xs text-muted-foreground">
                                   {p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}
                                 </div>
                                 <div className="mt-1 text-xs">
