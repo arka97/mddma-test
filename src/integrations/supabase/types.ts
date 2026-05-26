@@ -59,6 +59,42 @@ export type Database = {
         }
         Relationships: []
       }
+      analyst_reports: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          kind: string
+          published_at: string
+          requires_paid: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          published_at?: string
+          requires_paid?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          kind?: string
+          published_at?: string
+          requires_paid?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       brands: {
         Row: {
           b2c_url: string | null
@@ -218,10 +254,15 @@ export type Database = {
           email: string | null
           established_year: number | null
           gstin: string | null
+          hours: string | null
           id: string
+          iec: string | null
           is_hidden: boolean
+          is_sponsored: boolean
           is_verified: boolean
+          languages: string[]
           logo_url: string | null
+          markets: string[]
           membership_tier: string | null
           name: string
           owner_id: string
@@ -233,6 +274,7 @@ export type Database = {
           state: string | null
           tagline: string | null
           updated_at: string
+          verification_tier_label: string | null
           website: string | null
         }
         Insert: {
@@ -247,10 +289,15 @@ export type Database = {
           email?: string | null
           established_year?: number | null
           gstin?: string | null
+          hours?: string | null
           id?: string
+          iec?: string | null
           is_hidden?: boolean
+          is_sponsored?: boolean
           is_verified?: boolean
+          languages?: string[]
           logo_url?: string | null
+          markets?: string[]
           membership_tier?: string | null
           name: string
           owner_id: string
@@ -262,6 +309,7 @@ export type Database = {
           state?: string | null
           tagline?: string | null
           updated_at?: string
+          verification_tier_label?: string | null
           website?: string | null
         }
         Update: {
@@ -276,10 +324,15 @@ export type Database = {
           email?: string | null
           established_year?: number | null
           gstin?: string | null
+          hours?: string | null
           id?: string
+          iec?: string | null
           is_hidden?: boolean
+          is_sponsored?: boolean
           is_verified?: boolean
+          languages?: string[]
           logo_url?: string | null
+          markets?: string[]
           membership_tier?: string | null
           name?: string
           owner_id?: string
@@ -291,6 +344,7 @@ export type Database = {
           state?: string | null
           tagline?: string | null
           updated_at?: string
+          verification_tier_label?: string | null
           website?: string | null
         }
         Relationships: []
@@ -350,6 +404,66 @@ export type Database = {
           },
         ]
       }
+      market_signals: {
+        Row: {
+          analyst_note: string | null
+          category: string | null
+          commodity_name: string
+          created_at: string
+          demand: string
+          id: string
+          inquiries_week: number
+          is_active: boolean
+          origin: string | null
+          price_max: number | null
+          price_min: number | null
+          requires_paid: boolean
+          sort_order: number
+          supply: string
+          trend: string
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          analyst_note?: string | null
+          category?: string | null
+          commodity_name: string
+          created_at?: string
+          demand?: string
+          id?: string
+          inquiries_week?: number
+          is_active?: boolean
+          origin?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          requires_paid?: boolean
+          sort_order?: number
+          supply?: string
+          trend?: string
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          analyst_note?: string | null
+          category?: string | null
+          commodity_name?: string
+          created_at?: string
+          demand?: string
+          id?: string
+          inquiries_week?: number
+          is_active?: boolean
+          origin?: string | null
+          price_max?: number | null
+          price_min?: number | null
+          requires_paid?: boolean
+          sort_order?: number
+          supply?: string
+          trend?: string
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           author_id: string
@@ -391,10 +505,12 @@ export type Database = {
           aliases: string[]
           created_at: string
           description: string | null
+          emoji: string | null
           id: string
           image_url: string | null
           is_active: boolean
           is_featured: boolean
+          is_hot: boolean
           name: string
           slug: string
           sort_order: number
@@ -404,10 +520,12 @@ export type Database = {
           aliases?: string[]
           created_at?: string
           description?: string | null
+          emoji?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
+          is_hot?: boolean
           name: string
           slug: string
           sort_order?: number
@@ -417,10 +535,12 @@ export type Database = {
           aliases?: string[]
           created_at?: string
           description?: string | null
+          emoji?: string | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           is_featured?: boolean
+          is_hot?: boolean
           name?: string
           slug?: string
           sort_order?: number
@@ -500,6 +620,7 @@ export type Database = {
         Row: {
           b2c_url: string | null
           brand_id: string | null
+          caliber: string | null
           category: string | null
           certifications: string[] | null
           company_id: string
@@ -509,16 +630,21 @@ export type Database = {
           id: string
           image_url: string | null
           inquiry_count: number
+          inquiry_count_7d: number
           is_branded: boolean
           is_featured: boolean
           is_hidden: boolean
+          lead_time_hours: number | null
+          moisture: string | null
           name: string
           origin: string | null
           packaging_options: string[] | null
           price_max: number | null
           price_min: number | null
           retail_pack_size: string | null
+          shelf_life: string | null
           slug: string
+          stock_kg: number | null
           unit: string | null
           updated_at: string
           video_url: string | null
@@ -527,6 +653,7 @@ export type Database = {
         Insert: {
           b2c_url?: string | null
           brand_id?: string | null
+          caliber?: string | null
           category?: string | null
           certifications?: string[] | null
           company_id: string
@@ -536,16 +663,21 @@ export type Database = {
           id?: string
           image_url?: string | null
           inquiry_count?: number
+          inquiry_count_7d?: number
           is_branded?: boolean
           is_featured?: boolean
           is_hidden?: boolean
+          lead_time_hours?: number | null
+          moisture?: string | null
           name: string
           origin?: string | null
           packaging_options?: string[] | null
           price_max?: number | null
           price_min?: number | null
           retail_pack_size?: string | null
+          shelf_life?: string | null
           slug: string
+          stock_kg?: number | null
           unit?: string | null
           updated_at?: string
           video_url?: string | null
@@ -554,6 +686,7 @@ export type Database = {
         Update: {
           b2c_url?: string | null
           brand_id?: string | null
+          caliber?: string | null
           category?: string | null
           certifications?: string[] | null
           company_id?: string
@@ -563,16 +696,21 @@ export type Database = {
           id?: string
           image_url?: string | null
           inquiry_count?: number
+          inquiry_count_7d?: number
           is_branded?: boolean
           is_featured?: boolean
           is_hidden?: boolean
+          lead_time_hours?: number | null
+          moisture?: string | null
           name?: string
           origin?: string | null
           packaging_options?: string[] | null
           price_max?: number | null
           price_min?: number | null
           retail_pack_size?: string | null
+          shelf_life?: string | null
           slug?: string
+          stock_kg?: number | null
           unit?: string | null
           updated_at?: string
           video_url?: string | null
@@ -954,10 +1092,15 @@ export type Database = {
           email: string | null
           established_year: number | null
           gstin: string | null
+          hours: string | null
           id: string
+          iec: string | null
           is_hidden: boolean
+          is_sponsored: boolean
           is_verified: boolean
+          languages: string[]
           logo_url: string | null
+          markets: string[]
           membership_tier: string | null
           name: string
           owner_id: string
@@ -969,6 +1112,7 @@ export type Database = {
           state: string | null
           tagline: string | null
           updated_at: string
+          verification_tier_label: string | null
           website: string | null
         }[]
         SetofOptions: {
