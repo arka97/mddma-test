@@ -234,14 +234,19 @@
     scroll-padding-top: calc(52px + env(safe-area-inset-top));
     -webkit-text-size-adjust: 100%;
   }
-  /* Horizontal-overflow guard. `clip` (not `hidden`) avoids creating a scroll
-     container, so vertical scrolling stays on <html> and keyboard/wheel work. */
-  body {
+  /* Horizontal-overflow hard guard. Combine `clip` (no scroll container)
+     with explicit max-width so a stray wide descendant cannot push the
+     page sideways even if its ancestors fail to constrain it. */
+  html, body {
     overflow-x: clip;
+    max-width: 100vw;
+  }
+  body {
     overscroll-behavior-y: contain;
   }
   #root {
     overflow-x: clip;
+    max-width: 100vw;
   }
   /* Media must never blow out its container */
   img, video, svg, canvas, iframe {
