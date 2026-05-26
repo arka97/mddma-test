@@ -477,7 +477,6 @@ function extractHeadAssets(distIndexHtml: string): string {
 }
 
 function renderPage(route: PrerenderRoute, assetTags: string): string {
-  const canonical = route.path === "/" ? `${SITE}/` : `${SITE}${route.path}`;
   const ogType = route.ogType ?? "website";
   const jsonLdArr = route.jsonLd ? (Array.isArray(route.jsonLd) ? route.jsonLd : [route.jsonLd]) : [];
   const jsonLdTags = jsonLdArr
@@ -494,7 +493,6 @@ function renderPage(route: PrerenderRoute, assetTags: string): string {
     <meta name="author" content="MDDMA" />
 
     <link rel="manifest" href="/manifest.json" />
-    <link rel="canonical" href="${canonical}" />
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/brand/MDDMA_logomark.svg" />
