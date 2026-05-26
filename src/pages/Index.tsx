@@ -20,6 +20,11 @@ const Index = () => (
       path="/"
     />
 
+    {/* Rotating ad carousel sits flush under the header */}
+    <div className="container mx-auto max-w-6xl px-4 pt-3 sm:px-6 sm:pt-4 lg:px-8">
+      <AdSlot placement="homepage-banner" />
+    </div>
+
     {/* Mobile: single column app feed. Desktop (lg+): 12-col hybrid grid. */}
     <div className="container mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
       <div className="space-y-5 lg:grid lg:grid-cols-12 lg:gap-6 lg:space-y-0">
@@ -41,9 +46,6 @@ const Index = () => (
           <ActionRequiredCircular />
         </div>
 
-        <div className="lg:col-span-12">
-          <AdSlot placement="homepage-banner" />
-        </div>
 
         <div className="lg:col-span-7">
           <CategoryGrid />

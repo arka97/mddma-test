@@ -4,8 +4,10 @@ import { LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Sea
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useScrolled } from "@/hooks/use-scrolled";
 
 import { useAuth } from "@/contexts/AuthContext";
+
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -28,6 +30,8 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
+  const scrolled = useScrolled(24);
+
 
   const submitSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -78,8 +82,17 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 pt-safe">
       <div className="container mx-auto px-3 pl-safe pr-safe sm:px-6 lg:px-8">
-        {/* Row 1: location chip + brand (desktop) + avatar */}
-        <div className="flex h-12 items-center justify-between gap-2">
+        {/* Row 1: collapses on scroll on mobile/tablet, always visible on desktop */}
+        <div
+          className={cn(
+            "flex items-center justify-between gap-2 overflow-hidden transition-all duration-200 ease-out",
+            scrolled
+              ? "h-0 opacity-0 pointer-events-none lg:h-12 lg:opacity-100 lg:pointer-events-auto"
+              : "h-12 opacity-100",
+          )}
+          aria-hidden={scrolled ? "true" : "false"}
+        >
+
           <div className="flex min-w-0 items-center gap-2">
             <Link to="/" className="flex items-center gap-2 lg:py-1" aria-label="MDDMA — Home">
               <Logo variant="mark" className="h-8 w-8 lg:h-9 lg:w-9" />
