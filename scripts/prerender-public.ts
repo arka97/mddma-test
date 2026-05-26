@@ -12,6 +12,7 @@ import { resolve, dirname } from "node:path";
 
 const DIST = resolve("dist");
 const SITE = "https://mddma.org";
+const LOGO_PNG = `${SITE}/icon-192.png`;
 
 interface PrerenderRoute {
   path: string;                // e.g. "/about" — must start with "/" and not end with "/"
@@ -43,6 +44,128 @@ const ORG_REF = {
 };
 
 const ROUTES: PrerenderRoute[] = [
+  {
+    path: "/",
+    title: "MDDMA — Mumbai Dry-fruits & Dates Merchants Association",
+    description:
+      "MDDMA is the official 95-year-old trade association for India's dry fruits, dates and nuts trade. Verified members, governance, circulars and knowledge base — based at APMC Vashi, Navi Mumbai.",
+    jsonLd: [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "Mumbai Dry-fruits & Dates Merchants Association",
+        alternateName: "MDDMA",
+        foundingDate: "1930",
+        url: SITE,
+        logo: LOGO_PNG,
+        image: `${SITE}/og-image.png`,
+        description:
+          "A 95-year-old non-profit trade association governing the dry fruits, dates and nuts trade in Mumbai and Navi Mumbai, India. Originally founded in 1930 by importers of dates and dry fruits from Muscat, Basra, Iran and Afghanistan; today operates from APMC Market, Vashi.",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "C/o E-29, APMC Market-I, Phase-II, Sector-19, Masala Market",
+          addressLocality: "Navi Mumbai",
+          addressRegion: "Maharashtra",
+          postalCode: "400705",
+          addressCountry: "IN",
+        },
+        telephone: "+91-22-27650827",
+        email: "grievance@mddma.org",
+        areaServed: "IN",
+        knowsAbout: [
+          "dry fruits",
+          "dates",
+          "nuts",
+          "almonds",
+          "cashews",
+          "pistachios",
+          "walnuts",
+          "raisins",
+          "wholesale trade",
+          "import-export",
+          "APMC Vashi",
+          "trade association governance",
+        ],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        url: `${SITE}/`,
+        name: "MDDMA",
+        publisher: { "@type": "Organization", name: "Mumbai Dry-fruits & Dates Merchants Association" },
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "What is MDDMA?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "MDDMA (Mumbai Dry-fruits & Dates Merchants Association) is a 95-year-old non-profit trade association governing India's dry fruits, dates and nuts trade. Founded in 1930 in Bombay by importers of dates and dry fruits from Muscat, Basra, Iran and Afghanistan, it operates today from APMC Market, Vashi, Navi Mumbai.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "What does MDDMA do for its members?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "MDDMA verifies traders, runs trade-dispute arbitration, liaises with APMC, FSSAI, Customs and policy bodies, shares market intelligence, advocates on import policy, runs educational seminars, and represents members at trade shows.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "How can I become a member of MDDMA?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "There are two membership options: a free tier for buyers (basic directory listing and ability to submit RFQs) and a paid tier at ₹10,000 per year for verified seller storefronts, RFQ inbox, priority directory placement and market intelligence. Apply at https://mddma.org/apply.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Where is MDDMA based?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "MDDMA is based at C/o E-29, APMC Market-I, Phase-II, Sector-19, Masala Market, Navi Mumbai, Maharashtra 400705, India. Phone: +91-22-27650827.",
+            },
+          },
+        ],
+      },
+    ],
+    body: `
+      <main>
+        <h1>MDDMA — the official 95-year-old trade association for India's dry fruits, dates and nuts trade.</h1>
+        <p>
+          The Mumbai Dry-fruits &amp; Dates Merchants Association (MDDMA) was founded in 1930 in Bombay
+          by importers and traders of dates and dry fruits from Muscat (Oman), Basra (Iraq), Iran and
+          Afghanistan. Today MDDMA operates from APMC Market, Vashi (Navi Mumbai) and represents
+          verified importers, traders and brokers across India.
+        </p>
+        <h2>What MDDMA does</h2>
+        <ul>
+          <li>Verifies members and maintains the trusted trader directory.</li>
+          <li>Arbitrates trade disputes between members.</li>
+          <li>Liaises with APMC, FSSAI, Customs and policy bodies.</li>
+          <li>Publishes circulars, market intelligence and trade signals.</li>
+          <li>Runs the structured RFQ engine connecting verified buyers and sellers.</li>
+          <li>Advocates on import policy for dates, nuts and dry fruits.</li>
+        </ul>
+        <h2>Membership</h2>
+        <p>
+          <strong>Free</strong> — basic directory listing and ability to submit RFQs.
+          <strong>Paid (₹10,000/year)</strong> — verified seller storefront, RFQ inbox, priority
+          directory placement, market intelligence reports and trust badge.
+          <a href="/apply">Apply for membership</a>.
+        </p>
+        <h2>Contact</h2>
+        <p>
+          C/o E-29, APMC Market-I, Phase-II, Sector-19, Masala Market, Navi Mumbai, Maharashtra
+          400705, India. Phone: <a href="tel:+912227650827">+91-22-27650827</a>. Email:
+          <a href="mailto:grievance@mddma.org">grievance@mddma.org</a>.
+        </p>
+      </main>`,
+  },
   {
     path: "/about",
     title: "About MDDMA — Mumbai Dry-fruits & Dates Association, est. 1930",
@@ -354,7 +477,7 @@ function extractHeadAssets(distIndexHtml: string): string {
 }
 
 function renderPage(route: PrerenderRoute, assetTags: string): string {
-  const canonical = `${SITE}${route.path}`;
+  const canonical = route.path === "/" ? `${SITE}/` : `${SITE}${route.path}`;
   const ogType = route.ogType ?? "website";
   const jsonLdArr = route.jsonLd ? (Array.isArray(route.jsonLd) ? route.jsonLd : [route.jsonLd]) : [];
   const jsonLdTags = jsonLdArr
@@ -371,11 +494,14 @@ function renderPage(route: PrerenderRoute, assetTags: string): string {
     <meta name="author" content="MDDMA" />
 
     <link rel="manifest" href="/manifest.json" />
+    <link rel="canonical" href="${canonical}" />
 
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/svg+xml" href="/brand/MDDMA_logomark.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#1B2F5E" />
+    <meta name="google-site-verification" content="snCmNoEIyEYd88Qm830ByXgiPEc1BxAYBZFugC6z5So" />
 
     <meta property="og:type" content="${ogType}" />
     <meta property="og:site_name" content="MDDMA" />
@@ -412,7 +538,9 @@ function main() {
   }
 
   for (const route of ROUTES) {
-    const outPath = resolve(DIST, route.path.replace(/^\//, ""), "index.html");
+    const outPath = route.path === "/"
+      ? resolve(DIST, "index.html")
+      : resolve(DIST, route.path.replace(/^\//, ""), "index.html");
     mkdirSync(dirname(outPath), { recursive: true });
     writeFileSync(outPath, renderPage(route, assetTags));
     console.log(`prerender: wrote ${outPath}`);
