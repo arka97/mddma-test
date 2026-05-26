@@ -13,6 +13,21 @@ function emojiFor(name: string) {
   return "🌰";
 }
 
+const ORIGIN_SHORT: Record<string, string> = {
+  "united states": "USA", "united states of america": "USA", "usa": "USA",
+  "united kingdom": "UK", "uk": "UK",
+  "united arab emirates": "UAE", "uae": "UAE",
+  "south africa": "ZA", "saudi arabia": "KSA",
+  "afghanistan": "AFG", "australia": "AUS",
+};
+function shortOrigin(s: string) {
+  const k = s.trim().toLowerCase();
+  if (ORIGIN_SHORT[k]) return ORIGIN_SHORT[k];
+  if (s.length <= 8) return s.toUpperCase();
+  return s.slice(0, 6).toUpperCase();
+}
+
+
 interface Props {
   href: string;
   name: string;
@@ -38,8 +53,8 @@ export function ListingRow({
           <span aria-hidden>{emojiFor(name)}</span>
         )}
         {origin && (
-          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded bg-background/95 px-1 text-[8px] font-semibold uppercase tracking-wide text-foreground shadow">
-            {origin}
+          <span className="absolute -bottom-1 left-1/2 max-w-[64px] -translate-x-1/2 truncate whitespace-nowrap rounded bg-background/95 px-1 text-[8px] font-semibold uppercase leading-none tracking-wide text-foreground shadow">
+            {shortOrigin(origin)}
           </span>
         )}
         {hot && (

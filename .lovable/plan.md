@@ -1,28 +1,15 @@
-# Browse categories — use real images on home
+# Fix overflowing origin badge in Recent listings
 
-Replace the emoji-only tiles in `src/components/home/today/CategoryGrid.tsx` with actual images, matching the pattern already used in `src/components/home/FeaturedCategoriesSection.tsx` and `src/components/products/CategoryGrid.tsx`.
+## Problem
+In `ListingRow`, the `origin` badge under the 56px thumbnail uses `absolute left-1/2 -translate-x-1/2` with no `whitespace-nowrap` or width cap. When `origin` is a long string like `"UNITED STATES"`, it wraps character-by-character into a vertical column that overflows the card — matching the screenshot ("UNI / TED / STA / TES").
 
-## Changes
+## Fix
+Edit `src/components/products/ListingRow.tsx`:
 
-**`src/components/home/today/CategoryGrid.tsx`**
-- Render each tile as a small card with an image on top and the name + listing count below.
-- Image source priority:
-  1. `cat.image_url` (admin-uploaded) → `<img>` with `object-cover`.
-  2. Fallback → `<CommodityImage commodity={cat.name} aspect="1/1" rounded={false} />` (uses Unsplash map + emoji/gradient fallback).
-- Keep the HOT/Featured ribbon (top-left, over the image).
-- Keep grid: `grid-cols-3 sm:grid-cols-6`, rounded-2xl card, border, hover lift.
-- Drop the large center emoji; emoji only survives inside CommodityImage's error fallback.
-- Tile layout:
-  ```text
-  ┌──────────────┐
-  │   [image]    │  aspect-square
-  ├──────────────┤
-  │ Almonds      │  text-[12px] font-semibold
-  │ 12 listings  │  text-[10px] muted
-  └──────────────┘
-  ```
+1. Add `whitespace-nowrap`, `max-w-[64px]`, `truncate`, and `leading-none` to the origin badge so long names stay on one line and ellipsize.
+2. Shorten common long country names to ISO-style codes via a tiny map (`UNITED STATES → USA`, `UNITED KINGDOM → UK`, `UNITED ARAB EMIRATES → UAE`, `SOUTH AFRICA → ZA`, `AFGHANISTAN → AFG`). Anything else: take first 6 chars uppercased.
+3. Keep visual position (bottom-center of thumbnail).
 
 ## Out of scope
-- No schema, repository, or query changes (`image_url` already exists on `product_categories`).
-- No changes to `/products` page CategoryGrid or `FeaturedCategoriesSection` (already image-based).
-- No new image uploads — admins continue to manage `image_url` via existing CMS.
+- No DB or query changes.
+- No changes to other listing surfaces unless they reuse `ListingRow` (they will inherit the fix automatically).
