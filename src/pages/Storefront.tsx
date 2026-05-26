@@ -198,7 +198,7 @@ const Storefront = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-6 min-w-0">
               {/* Description */}
               <Card className="bg-card border-border">
                 <CardHeader><CardTitle>About the Company</CardTitle></CardHeader>
