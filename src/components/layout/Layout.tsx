@@ -12,7 +12,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="flex min-h-screen flex-col">
       <Header />
       {/* Bottom tab bar reserves ~64px on mobile so content isn't covered */}
-      <main className="flex-1 pb-[72px] lg:pb-0">{children}</main>
+      <main className="w-full min-w-0 overflow-x-hidden flex-1 pb-[72px] lg:pb-0">{children}</main>
       <div className="hidden lg:block">
         <Footer />
       </div>
