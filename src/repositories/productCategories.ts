@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
 
 const COLUMNS =
-  "id,name,slug,description,image_url,sort_order,is_active,is_featured,aliases,created_at,updated_at" as const;
+  "id,name,slug,description,image_url,sort_order,is_active,is_featured,aliases,emoji,is_hot,created_at,updated_at" as const;
 
 export interface ProductCategoryRow {
   id: string;
@@ -15,6 +15,8 @@ export interface ProductCategoryRow {
   is_active: boolean;
   is_featured: boolean;
   aliases: string[];
+  emoji: string | null;
+  is_hot: boolean;
   created_at: string;
   updated_at: string;
 }
