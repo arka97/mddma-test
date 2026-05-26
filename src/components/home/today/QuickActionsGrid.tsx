@@ -86,7 +86,7 @@ export function QuickActionsGrid() {
             className="group flex flex-col gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
           >
             <div className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${toneMap[t.tone]}`}>
-              <Icon className="h-4.5 w-4.5" strokeWidth={2.25} />
+              <Icon className="h-5 w-5" strokeWidth={2.25} />
             </div>
             <div className="min-w-0">
               <div className="text-sm font-semibold text-foreground">{t.label}</div>
