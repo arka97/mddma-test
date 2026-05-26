@@ -81,7 +81,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/75 pt-safe">
-      <div className="container mx-auto px-3 pl-safe pr-safe sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 pl-safe pr-safe sm:px-6 lg:px-8">
         {/* Row 1: collapses on scroll on mobile/tablet, always visible on desktop */}
         <div
           className={cn(
