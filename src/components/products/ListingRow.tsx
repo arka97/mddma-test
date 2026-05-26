@@ -13,6 +13,21 @@ function emojiFor(name: string) {
   return "🌰";
 }
 
+const ORIGIN_SHORT: Record<string, string> = {
+  "united states": "USA", "united states of america": "USA", "usa": "USA",
+  "united kingdom": "UK", "uk": "UK",
+  "united arab emirates": "UAE", "uae": "UAE",
+  "south africa": "ZA", "saudi arabia": "KSA",
+  "afghanistan": "AFG", "australia": "AUS",
+};
+function shortOrigin(s: string) {
+  const k = s.trim().toLowerCase();
+  if (ORIGIN_SHORT[k]) return ORIGIN_SHORT[k];
+  if (s.length <= 8) return s.toUpperCase();
+  return s.slice(0, 6).toUpperCase();
+}
+
+
 interface Props {
   href: string;
   name: string;
