@@ -23,7 +23,7 @@ export function ActionRequiredCircular() {
   }, []);
 
   if (!circular) return null;
-  const href = `/circulars/${circular.slug ?? ""}`;
+  const href = "/circulars";
 
   return (
     <article className="rounded-2xl border border-warning/40 bg-warning/5 p-4 shadow-sm">
