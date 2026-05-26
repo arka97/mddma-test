@@ -4,8 +4,10 @@ import { LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Sea
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useScrolled } from "@/hooks/use-scrolled";
 
 import { useAuth } from "@/contexts/AuthContext";
+
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
