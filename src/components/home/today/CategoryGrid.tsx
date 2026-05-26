@@ -4,16 +4,7 @@ import { useMemo } from "react";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import { useProducts } from "@/hooks/queries/useProducts";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const EMOJI_FALLBACK: Record<string, string> = {
-  almond: "🌰", cashew: "🥜", date: "🌴", pistachio: "🌿",
-  walnut: "🌰", raisin: "🍇", anjeer: "🟤", fig: "🟤", saffron: "🌺",
-};
-function emojiFor(name: string) {
-  const k = name.toLowerCase();
-  for (const [key, e] of Object.entries(EMOJI_FALLBACK)) if (k.includes(key)) return e;
-  return "🌰";
-}
+import { CommodityImage } from "@/components/commodity/CommodityImage";
 
 export function CategoryGrid({ heading = "Browse categories", subtitle = "Pick a category to explore listings" }: { heading?: string; subtitle?: string }) {
   const { data: cats = [], isLoading } = useProductCategories({ activeOnly: true });
