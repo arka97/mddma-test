@@ -139,12 +139,12 @@ const CompanyPage = () => {
         <Seo title="My Company — MDDMA" description="Members-only page." path="/account/company" noindex />
       <section className="py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2"><Building2 /> Business Profile</h1>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2"><Building2 className="flex-shrink-0" /> Business Profile</h1>
               <p className="text-muted-foreground text-sm mt-1">This is your public storefront.</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {isVerified && <Badge className="bg-accent text-accent-foreground"><ShieldCheck className="h-3 w-3 mr-1" /> Verified</Badge>}
               {company?.slug && (
                 <Button asChild variant="outline" size="sm">
