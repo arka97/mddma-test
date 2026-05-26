@@ -9,8 +9,10 @@ export function CartFab() {
     <Button
       variant="accent"
       onClick={() => setOpen(true)}
-      className="fixed right-6 z-40 h-12 w-12 rounded-full shadow-lg sm:h-14 sm:w-14"
-      style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+      className="fixed right-4 z-40 h-12 w-12 rounded-full shadow-lg sm:right-6 sm:h-14 sm:w-14"
+      // Sit above the mobile bottom tab bar (~64px) on small screens;
+      // on lg+ the tab bar is hidden so use the standard inset.
+      style={{ bottom: "calc(env(safe-area-inset-bottom) + 80px)" }}
       aria-label={`RFQ cart with ${count} items`}
     >
       <ShoppingCart className="h-5 w-5" />
