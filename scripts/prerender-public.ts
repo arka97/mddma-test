@@ -477,6 +477,7 @@ function extractHeadAssets(distIndexHtml: string): string {
 }
 
 function renderPage(route: PrerenderRoute, assetTags: string): string {
+  const canonical = route.path === "/" ? `${SITE}/` : `${SITE}${route.path}`;
   const ogType = route.ogType ?? "website";
   const jsonLdArr = route.jsonLd ? (Array.isArray(route.jsonLd) ? route.jsonLd : [route.jsonLd]) : [];
   const jsonLdTags = jsonLdArr
