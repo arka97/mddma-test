@@ -4,16 +4,7 @@ import { useMemo } from "react";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import { useProducts } from "@/hooks/queries/useProducts";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const EMOJI_FALLBACK: Record<string, string> = {
-  almond: "🌰", cashew: "🥜", date: "🌴", pistachio: "🌿",
-  walnut: "🌰", raisin: "🍇", anjeer: "🟤", fig: "🟤", saffron: "🌺",
-};
-function emojiFor(name: string) {
-  const k = name.toLowerCase();
-  for (const [key, e] of Object.entries(EMOJI_FALLBACK)) if (k.includes(key)) return e;
-  return "🌰";
-}
+import { CommodityImage } from "@/components/commodity/CommodityImage";
 
 export function CategoryGrid({ heading = "Browse categories", subtitle = "Pick a category to explore listings" }: { heading?: string; subtitle?: string }) {
   const { data: cats = [], isLoading } = useProductCategories({ activeOnly: true });
@@ -63,18 +54,31 @@ export function CategoryGrid({ heading = "Browse categories", subtitle = "Pick a
               <Link
                 key={cat.id}
                 to={`/products?cat=${encodeURIComponent(cat.name)}`}
-                className="group relative flex flex-col items-center gap-1 rounded-2xl border border-border bg-card p-3 text-center shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
               >
                 {hot && (
-                  <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-0.5 rounded bg-accent px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-accent-foreground">
+                  <span className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded bg-accent px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-accent-foreground shadow">
                     <Flame className="h-2 w-2" /> {cat.is_hot ? "Hot" : "Featured"}
                   </span>
                 )}
-                <span className="text-3xl leading-none" aria-hidden>{cat.emoji || emojiFor(cat.name)}</span>
-                <span className="mt-1 truncate text-[12px] font-semibold text-foreground">{cat.name}</span>
-                <span className="text-[10px] tabular-nums text-muted-foreground">
-                  {count} {count === 1 ? "listing" : "listings"}
-                </span>
+                {cat.image_url ? (
+                  <div className="aspect-square w-full overflow-hidden bg-muted">
+                    <img
+                      src={cat.image_url}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                ) : (
+                  <CommodityImage commodity={cat.name} aspect="1/1" rounded={false} />
+                )}
+                <div className="px-2 py-2 text-center">
+                  <div className="truncate text-[12px] font-semibold text-foreground">{cat.name}</div>
+                  <div className="text-[10px] tabular-nums text-muted-foreground">
+                    {count} {count === 1 ? "listing" : "listings"}
+                  </div>
+                </div>
               </Link>
             );
           })}
