@@ -138,7 +138,7 @@ const Storefront = () => {
                 <span className="text-muted-foreground">— prices are gated to signed-in members.</span>
               </span>
             </div>
-            <div className="grid grid-cols-3 gap-1.5 sm:flex sm:items-center sm:gap-2">
+            <div className="grid grid-cols-1 gap-1.5 sm:flex sm:items-center sm:gap-2">
               <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={() => setPreviewMode(true)}>
                 <Eye className="h-3 w-3 mr-1" /> View as buyer
               </Button>

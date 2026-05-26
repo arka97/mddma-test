@@ -293,7 +293,7 @@ const Dashboard = () => {
                     </div>
                   ) : (
                     <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
+                      <table className="w-full min-w-[760px] text-sm">
                         <thead>
                           <tr className="border-b border-border text-left">
                             <th className="py-2 px-3 text-muted-foreground font-medium">Buyer</th>
