@@ -4,12 +4,10 @@ import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Pin, ArrowLeft, MessagesSquare, Archive } from "lucide-react";
+import { Pin, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { TableRowSkeleton } from "@/components/ui/skeletons";
-import { DiscourseEmbed } from "@/components/community/DiscourseEmbed";
 
 const categories = ["All", "Market Updates", "Trade Discussions", "Association Circulars"] as const;
 
@@ -53,7 +51,7 @@ const Community = () => {
       <Layout>
         <section className="py-8">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
-            <Button variant="ghost" size="sm" onClick={() => setOpenPost(null)} className="mb-4"><ArrowLeft className="h-4 w-4 mr-1" /> Back to archive</Button>
+            <Button variant="ghost" size="sm" onClick={() => setOpenPost(null)} className="mb-4"><ArrowLeft className="h-4 w-4 mr-1" /> Back to forum</Button>
             <Card>
               <CardHeader>
                 <Badge variant="outline" className="w-fit text-xs">{openPost.category}</Badge>
@@ -73,7 +71,6 @@ const Community = () => {
               ))}
               {comments.length === 0 && <p className="text-sm text-muted-foreground">No comments.</p>}
             </div>
-            <p className="text-xs text-muted-foreground mt-6 italic">Read-only archive. Continue the conversation in the Discussions tab.</p>
           </div>
         </section>
       </Layout>
@@ -87,55 +84,39 @@ const Community = () => {
       <Seo title='Community Forum — MDDMA' description='Members-only discussion forum.' path='/community' noindex />
       <PageHeader
         title="Trade Community"
-        subtitle="Live discussions on Discourse, plus a read-only archive of earlier posts"
+        subtitle="Member discussions, market updates, and association circulars"
       />
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
-          <Tabs defaultValue="discussions">
-            <TabsList className="mb-6">
-              <TabsTrigger value="discussions" className="gap-2"><MessagesSquare className="h-4 w-4" /> Discussions</TabsTrigger>
-              <TabsTrigger value="archive" className="gap-2"><Archive className="h-4 w-4" /> Archive</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="discussions">
-              <DiscourseEmbed />
-            </TabsContent>
-
-            <TabsContent value="archive">
-              <div className="mb-4 rounded-md border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-                This archive is read-only. New discussions happen in the Discussions tab.
-              </div>
-              <div className="mb-4 flex flex-wrap gap-2">
-                {categories.map((c) => (
-                  <Button key={c} size="sm" variant={filter === c ? "accent" : "outline"} onClick={() => setFilter(c)}>{c}</Button>
-                ))}
-              </div>
-              <Card>
-                <CardContent className="p-0">
-                  {loading ? (
-                    <div className="px-4 py-2"><TableRowSkeleton rows={6} /></div>
-                  ) : filtered.length === 0 ? (
-                    <p className="p-6 text-sm text-muted-foreground text-center">No archived posts.</p>
-                  ) : (
-                    filtered.map((post) => (
-                      <button key={post.id} onClick={() => openDetail(post)} className="w-full text-left flex items-start gap-3 p-4 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
-                        {post.is_pinned && <Pin className="h-4 w-4 text-accent flex-shrink-0 mt-1" />}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-foreground text-sm leading-tight">{post.title}</h3>
-                          <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                            <span>{authors[post.author_id] ?? "Member"}</span>
-                            <Badge variant="outline" className="text-xs">{post.category}</Badge>
-                            <span>{new Date(post.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
-                          </div>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <div className="mb-4 flex flex-wrap gap-2">
+            {categories.map((c) => (
+              <Button key={c} size="sm" variant={filter === c ? "accent" : "outline"} onClick={() => setFilter(c)}>{c}</Button>
+            ))}
+          </div>
+          <Card>
+            <CardContent className="p-0">
+              {loading ? (
+                <div className="px-4 py-2"><TableRowSkeleton rows={6} /></div>
+              ) : filtered.length === 0 ? (
+                <p className="p-6 text-sm text-muted-foreground text-center">No posts yet. Be the first to start a conversation.</p>
+              ) : (
+                filtered.map((post) => (
+                  <button key={post.id} onClick={() => openDetail(post)} className="w-full text-left flex items-start gap-3 p-4 border-b border-border last:border-0 hover:bg-muted/50 transition-colors">
+                    {post.is_pinned && <Pin className="h-4 w-4 text-accent flex-shrink-0 mt-1" />}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-foreground text-sm leading-tight">{post.title}</h3>
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                        <span>{authors[post.author_id] ?? "Member"}</span>
+                        <Badge variant="outline" className="text-xs">{post.category}</Badge>
+                        <span>{new Date(post.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                      </div>
+                    </div>
+                  </button>
+                ))
+              )}
+            </CardContent>
+          </Card>
         </div>
       </section>
     </Layout>
