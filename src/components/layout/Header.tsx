@@ -30,6 +30,8 @@ export function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
+  const scrolled = useScrolled(24);
+
 
   const submitSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
