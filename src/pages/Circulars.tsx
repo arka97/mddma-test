@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { AdSlot } from "@/components/home/today/AdSlot";
 
 interface Circular {
   id: string;
@@ -52,6 +53,10 @@ const Circulars = () => {
           <p className="text-sm text-muted-foreground mt-3">Showing {filtered.length} circulars</p>
         </div>
       </section>
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 max-w-3xl">
+        <AdSlot placement="circulars-banner" />
+      </div>
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-4 max-w-3xl">

@@ -30,8 +30,8 @@ const AdminModeration = () => {
   const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string }[]>([]);
   const [circularForm, setCircularForm] = useState({ title: "", body: "", category: "general" });
   const [savingCircular, setSavingCircular] = useState(false);
-  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null }[]>([]);
-  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", file: null as File | null });
+  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null; priority: number }[]>([]);
+  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null });
   const [savingAd, setSavingAd] = useState(false);
   const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
   const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false, aliases: "" };
@@ -48,7 +48,7 @@ const AdminModeration = () => {
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
       supabase.from("circulars").select("id,title,body,is_published,created_at").order("created_at", { ascending: false }),
-      supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date").order("created_at", { ascending: false }),
+      supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date,priority").order("priority", { ascending: false }).order("created_at", { ascending: false }),
       listCategories().catch(() => [] as ProductCategoryRow[]),
     ]);
     setCompanies((c ?? []) as typeof companies);
@@ -147,15 +147,20 @@ const AdminModeration = () => {
       image_url: url,
       link_url: adForm.link_url || null,
       placement: adForm.placement,
+      priority: adForm.priority,
       is_active: true,
     });
     setSavingAd(false);
     if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", file: null }); load(); }
+    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null }); load(); }
   };
   const toggleAdActive = async (id: string, val: boolean) => {
     const { error } = await supabase.from("advertisements").update({ is_active: val }).eq("id", id);
     if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const updateAdPriority = async (id: string, val: number) => {
+    const { error } = await supabase.from("advertisements").update({ priority: val }).eq("id", id);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); else load();
   };
   const deleteAd = async (id: string) => {
     if (!confirm("Delete this ad?")) return;
@@ -367,7 +372,12 @@ const AdminModeration = () => {
                         <option value="homepage-banner">Homepage Banner</option>
                         <option value="directory-banner">Directory Banner</option>
                         <option value="products-banner">Products Banner</option>
+                        <option value="circulars-banner">Circulars Banner</option>
                       </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Priority (higher shows first)</Label>
+                      <Input type="number" value={adForm.priority} onChange={(e) => setAdForm({ ...adForm, priority: Number(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1.5"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setAdForm({ ...adForm, file: e.target.files?.[0] ?? null })} /></div>
                     <Button onClick={saveAd} disabled={savingAd} variant="accent">
@@ -377,11 +387,23 @@ const AdminModeration = () => {
                 </Card>
                 {ads.map((a) => (
                   <Card key={a.id}>
-                    <CardContent className="p-3 flex items-center gap-3">
+                    <CardContent className="p-3 flex items-center gap-3 flex-wrap">
                       <img src={a.image_url} alt={a.title} className="h-12 w-20 object-cover rounded" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{a.title}</p>
-                        <p className="text-xs text-muted-foreground">{a.placement} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                        <p className="text-xs text-muted-foreground">{a.placement} · priority {a.priority} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Label className="text-xs text-muted-foreground">Priority</Label>
+                        <Input
+                          type="number"
+                          defaultValue={a.priority}
+                          className="h-8 w-20"
+                          onBlur={(e) => {
+                            const v = Number(e.target.value) || 0;
+                            if (v !== a.priority) updateAdPriority(a.id, v);
+                          }}
+                        />
                       </div>
                       {a.is_active ? <Badge className="bg-accent text-accent-foreground">Active</Badge> : <Badge variant="outline">Paused</Badge>}
                       <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>

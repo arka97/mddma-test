@@ -10,6 +10,7 @@ export interface AdRow {
   start_date: string;
   end_date: string | null;
   is_active: boolean;
+  priority: number;
   impressions: number;
   clicks: number;
   created_at: string;
@@ -24,7 +25,9 @@ export async function listAdsByPlacement(placement: string) {
     .eq("placement", placement)
     .eq("is_active", true)
     .lte("start_date", today)
-    .or(`end_date.is.null,end_date.gte.${today}`);
+    .or(`end_date.is.null,end_date.gte.${today}`)
+    .order("priority", { ascending: false })
+    .order("created_at", { ascending: false });
   if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? []) as AdRow[];
 }

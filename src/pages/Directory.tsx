@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { AdBanner } from "@/components/home/AdBanner";
+import { AdSlot } from "@/components/home/today/AdSlot";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useDirectory } from "@/hooks/queries/useCompanies";
@@ -76,7 +76,7 @@ const Directory = () => {
       />
 
       <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
-        <AdBanner placement="directory-sidebar" />
+        <AdSlot placement="directory-banner" />
       </div>
 
       <section className="border-b border-border bg-muted/30 py-6">

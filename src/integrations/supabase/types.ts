@@ -25,6 +25,7 @@ export type Database = {
           is_active: boolean
           link_url: string | null
           placement: string
+          priority: number
           start_date: string
           title: string
           updated_at: string
@@ -39,6 +40,7 @@ export type Database = {
           is_active?: boolean
           link_url?: string | null
           placement?: string
+          priority?: number
           start_date?: string
           title: string
           updated_at?: string
@@ -53,6 +55,7 @@ export type Database = {
           is_active?: boolean
           link_url?: string | null
           placement?: string
+          priority?: number
           start_date?: string
           title?: string
           updated_at?: string

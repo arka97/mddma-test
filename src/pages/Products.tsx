@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
-import { AdBanner } from "@/components/home/AdBanner";
+import { AdSlot } from "@/components/home/today/AdSlot";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 
@@ -74,7 +74,7 @@ const Products = () => {
 
         <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3 flex-wrap">
           <ModeToggle />
-          <AdBanner placement="category-banner" />
+          <AdSlot placement="products-banner" />
         </div>
 
         {isLoading ? (
@@ -154,7 +154,7 @@ const Products = () => {
       </section>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <AdBanner placement="category-banner" />
+        <AdSlot placement="products-banner" />
       </div>
 
       <section className="py-6 bg-muted/50 border-b border-border">
