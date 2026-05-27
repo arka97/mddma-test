@@ -158,6 +158,10 @@ const AdminModeration = () => {
     const { error } = await supabase.from("advertisements").update({ is_active: val }).eq("id", id);
     if (error) toast({ title: "Failed", variant: "destructive" }); else load();
   };
+  const updateAdPriority = async (id: string, val: number) => {
+    const { error } = await supabase.from("advertisements").update({ priority: val }).eq("id", id);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" }); else load();
+  };
   const deleteAd = async (id: string) => {
     if (!confirm("Delete this ad?")) return;
     const { error } = await supabase.from("advertisements").delete().eq("id", id);
