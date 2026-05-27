@@ -1,14 +1,13 @@
 import { Link } from "react-router-dom";
-import { Send, Megaphone, LineChart, Sparkles } from "lucide-react";
+import { Users, Megaphone, LineChart, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface Tile {
   label: string;
   meta: string;
   href: string;
-  icon: typeof Send;
+  icon: typeof Users;
   tone: "accent" | "primary" | "warning" | "gold";
 }
 
@@ -20,8 +19,6 @@ const toneMap: Record<Tile["tone"], string> = {
 };
 
 export function QuickActionsGrid() {
-  const { user } = useAuth();
-  const [rfqCount, setRfqCount] = useState<number | null>(null);
   const [circularCount, setCircularCount] = useState<number | null>(null);
   const [brandCount, setBrandCount] = useState<number | null>(null);
 
@@ -30,13 +27,11 @@ export function QuickActionsGrid() {
     const since = new Date(Date.now() - 14 * 86400_000).toISOString();
 
     (async () => {
-      const [{ count: rfqs }, { count: circs }, { count: brands }] = await Promise.all([
-        supabase.from("rfqs").select("id", { count: "exact", head: true }).gte("created_at", since),
+      const [{ count: circs }, { count: brands }] = await Promise.all([
         supabase.from("circulars").select("id", { count: "exact", head: true }).eq("is_published", true).gte("published_at", since),
         supabase.from("brands" as never).select("id", { count: "exact", head: true }),
       ]);
       if (!alive) return;
-      setRfqCount(rfqs ?? 0);
       setCircularCount(circs ?? 0);
       setBrandCount(brands ?? 0);
     })();
@@ -46,10 +41,10 @@ export function QuickActionsGrid() {
 
   const tiles: Tile[] = [
     {
-      label: "Post RFQ",
-      meta: rfqCount == null ? "Send to verified" : `${rfqCount} this fortnight`,
-      href: user ? "/account/rfqs" : "/login?next=/account/rfqs",
-      icon: Send,
+      label: "Member Directory",
+      meta: "Browse verified traders",
+      href: "/directory",
+      icon: Users,
       tone: "accent",
     },
     {
