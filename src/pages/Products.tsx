@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
-import { AdBanner } from "@/components/home/AdBanner";
+import { AdSlot } from "@/components/home/today/AdSlot";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 
