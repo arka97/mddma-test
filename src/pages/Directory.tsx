@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { AdBanner } from "@/components/home/AdBanner";
+import { AdSlot } from "@/components/home/today/AdSlot";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useDirectory } from "@/hooks/queries/useCompanies";
