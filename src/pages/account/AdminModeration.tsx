@@ -30,8 +30,8 @@ const AdminModeration = () => {
   const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string }[]>([]);
   const [circularForm, setCircularForm] = useState({ title: "", body: "", category: "general" });
   const [savingCircular, setSavingCircular] = useState(false);
-  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null }[]>([]);
-  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", file: null as File | null });
+  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null; priority: number }[]>([]);
+  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null });
   const [savingAd, setSavingAd] = useState(false);
   const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
   const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false, aliases: "" };
