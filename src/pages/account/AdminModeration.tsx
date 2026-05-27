@@ -147,11 +147,12 @@ const AdminModeration = () => {
       image_url: url,
       link_url: adForm.link_url || null,
       placement: adForm.placement,
+      priority: adForm.priority,
       is_active: true,
     });
     setSavingAd(false);
     if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", file: null }); load(); }
+    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null }); load(); }
   };
   const toggleAdActive = async (id: string, val: boolean) => {
     const { error } = await supabase.from("advertisements").update({ is_active: val }).eq("id", id);
