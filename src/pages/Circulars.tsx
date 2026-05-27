@@ -54,6 +54,10 @@ const Circulars = () => {
         </div>
       </section>
 
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 max-w-3xl">
+        <AdSlot placement="circulars-banner" />
+      </div>
+
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-4 max-w-3xl">
           {filtered.length === 0 ? (
