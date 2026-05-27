@@ -372,7 +372,12 @@ const AdminModeration = () => {
                         <option value="homepage-banner">Homepage Banner</option>
                         <option value="directory-banner">Directory Banner</option>
                         <option value="products-banner">Products Banner</option>
+                        <option value="circulars-banner">Circulars Banner</option>
                       </select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Priority (higher shows first)</Label>
+                      <Input type="number" value={adForm.priority} onChange={(e) => setAdForm({ ...adForm, priority: Number(e.target.value) || 0 })} />
                     </div>
                     <div className="space-y-1.5"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setAdForm({ ...adForm, file: e.target.files?.[0] ?? null })} /></div>
                     <Button onClick={saveAd} disabled={savingAd} variant="accent">
@@ -382,11 +387,23 @@ const AdminModeration = () => {
                 </Card>
                 {ads.map((a) => (
                   <Card key={a.id}>
-                    <CardContent className="p-3 flex items-center gap-3">
+                    <CardContent className="p-3 flex items-center gap-3 flex-wrap">
                       <img src={a.image_url} alt={a.title} className="h-12 w-20 object-cover rounded" />
                       <div className="flex-1 min-w-0">
                         <p className="font-medium truncate">{a.title}</p>
-                        <p className="text-xs text-muted-foreground">{a.placement} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                        <p className="text-xs text-muted-foreground">{a.placement} · priority {a.priority} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Label className="text-xs text-muted-foreground">Priority</Label>
+                        <Input
+                          type="number"
+                          defaultValue={a.priority}
+                          className="h-8 w-20"
+                          onBlur={(e) => {
+                            const v = Number(e.target.value) || 0;
+                            if (v !== a.priority) updateAdPriority(a.id, v);
+                          }}
+                        />
                       </div>
                       {a.is_active ? <Badge className="bg-accent text-accent-foreground">Active</Badge> : <Badge variant="outline">Paused</Badge>}
                       <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>
