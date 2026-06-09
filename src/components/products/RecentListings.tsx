@@ -1,7 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import type { ProductEntry } from "@/lib/dataSource";
@@ -9,10 +7,9 @@ import type { ProductEntry } from "@/lib/dataSource";
 interface Props {
   listings: ProductEntry[];
   limit?: number;
-  onRequestQuote: (productName: string) => void;
 }
 
-export function RecentListings({ listings, limit = 8, onRequestQuote }: Props) {
+export function RecentListings({ listings, limit = 8 }: Props) {
   const items = [...listings]
     .sort((a, b) => (b.listingDate ?? "").localeCompare(a.listingDate ?? ""))
     .slice(0, limit);
@@ -59,15 +56,6 @@ export function RecentListings({ listings, limit = 8, onRequestQuote }: Props) {
                     <p className="text-xs text-muted-foreground truncate">{listing.variant}</p>
                   </div>
                   <GuardedPrice listing={listing} />
-                </div>
-                <div className="mt-auto pt-3 border-t border-border">
-                  <Button
-                    size="sm"
-                    variant="accent" className="w-full"
-                    onClick={() => onRequestQuote(`${listing.commodity} — ${listing.variant}`)}
-                  >
-                    <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
-                  </Button>
                 </div>
               </CardContent>
             </Card>

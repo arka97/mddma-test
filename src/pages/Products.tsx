@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, Send, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,6 @@ import { AdSlot } from "@/components/home/today/AdSlot";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 
-import { RFQModal } from "@/components/RFQModal";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import { useProducts } from "@/hooks/queries/useProducts";
@@ -27,7 +26,6 @@ const Products = () => {
 
   const [searchTerm, setSearchTerm] = useState(params.get("q") ?? "");
   const [originFilter, setOriginFilter] = useState<string>(params.get("origin") ?? "all");
-  const [rfqProduct, setRfqProduct] = useState<string | null>(null);
   const mode = (params.get("mode") ?? "all") as "all" | "bulk" | "branded";
 
   const { data: listingsData, isLoading } = useProducts();
@@ -84,15 +82,9 @@ const Products = () => {
         ) : (
           <>
             <CategoryGrid listings={listings} />
-            <RecentListings
-              listings={listings}
-              limit={8}
-              onRequestQuote={(name) => setRfqProduct(name)}
-            />
+            <RecentListings listings={listings} limit={8} />
           </>
         )}
-
-        {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
       </Layout>
     );
   }
@@ -119,7 +111,7 @@ const Products = () => {
 
   return (
     <Layout>
-      <Seo title='Member Product Catalogue — MDDMA' description='Member product catalogue and RFQ. Members-only.' path='/products' noindex />
+      <Seo title='Member Product Catalogue — MDDMA' description='Member product catalogue. Members-only.' path='/products' noindex />
       <section className="border-b border-border bg-muted/30 py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
