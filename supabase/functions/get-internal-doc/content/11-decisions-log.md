@@ -1,5 +1,11 @@
 # Decisions Log
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 Every locked product, technical, UX, governance, data, and role decision — with a permanent ID, the reason, and where it is enforced. **Do not re-litigate these without writing a new entry that supersedes the previous one.**
 
 ## Index

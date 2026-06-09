@@ -1,5 +1,11 @@
 # KYC & Verification Policy
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 The Platform's single biggest trust claim — a *locked KYC-maximalist* product decision (memory). This doc is the **policy** behind the mechanics already described in docs 12 and 16: what we collect, how we collect it, who can see it, how long we keep it, and how a member is promoted, demoted or rejected.
 
 ## 1. Verification tiers (recap)

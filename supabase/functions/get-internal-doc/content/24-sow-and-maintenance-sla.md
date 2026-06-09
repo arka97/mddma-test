@@ -1,5 +1,11 @@
 # Statement of Work & Maintenance SLA
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 **Parties:** MDDMA ("Client") and the solo developer ("Contractor"). This document scopes the build phase and the ongoing maintenance phase, and protects the Contractor from indefinite, unbilled work.
 
 > **Status:** Draft template. Both parties sign a printed copy before any further deliverables; this doc is the canonical reference inside the codebase.

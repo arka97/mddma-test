@@ -1,5 +1,11 @@
 # Database Reference
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 The exhaustive ground-truth schema. Every table, every column, every RLS policy, every function, every enum. If the database vanished tomorrow, this doc plus the migrations folder is enough to rebuild it.
 
 > **Backend** Lovable Cloud (Postgres + Auth + Storage + Edge Functions). All access is gated by Row-Level Security. There are no public tables — every read is filtered by an RLS policy.
