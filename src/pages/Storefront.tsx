@@ -14,12 +14,10 @@ import { liveCompanyToEntry, type DirectoryEntry } from "@/lib/dataSource";
 import type { CompanyRow } from "@/repositories/companies";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
-  ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye, Loader2,
+  ArrowLeft, Globe, Calendar, Package, Pencil, Eye, Loader2,
 } from "lucide-react";
 
-import { RFQModal } from "@/components/RFQModal";
 import { GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
-import { useCart } from "@/contexts/CartContext";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useBrandsByCompany } from "@/hooks/queries/useBrands";
@@ -44,8 +42,6 @@ const Storefront = () => {
   const { slug } = useParams();
   const { canAccess } = useRole();
   const { company: ownCompany, hasRole } = useAuth();
-  const { addItem } = useCart();
-  const [rfqProduct, setRfqProduct] = useState<{ name: string; productId?: string; companyId?: string } | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
   const [liveCompanyId, setLiveCompanyId] = useState<string | null>(null);
@@ -65,8 +61,9 @@ const Storefront = () => {
       .then(async ({ data }) => {
         if (!alive) return;
         if (data) {
-          // Contact info (email/phone/gstin) is intentionally not exposed via
-          // direct table reads. Members initiate contact through the RFQ flow.
+          // Contact info (email/phone/gstin) is fetched server-side via the
+          // admin RPC for moderators. Buyers see the public contact buttons
+          // (WhatsApp / Phone / Email) populated from the directory entry.
           const contact = { email: null, phone: null, gstin: null };
           const merged = { ...data, ...contact } as unknown as CompanyRow;
           setLiveMember(liveCompanyToEntry(merged));
