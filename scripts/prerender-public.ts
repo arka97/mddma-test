@@ -119,7 +119,7 @@ const ROUTES: PrerenderRoute[] = [
             name: "How can I become a member of MDDMA?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "There are two membership options: a free tier for buyers (basic directory listing and ability to submit RFQs) and a paid tier at ₹10,000 per year for verified seller storefronts, RFQ inbox, priority directory placement and market intelligence. Apply at https://mddma.org/apply.",
+              text: "There are two membership options: a free tier for buyers (basic directory listing and browse access) and a paid tier at ₹10,000 per year for verified seller storefronts, priority directory placement and market intelligence. Apply at https://mddma.org/apply.",
             },
           },
           {
@@ -148,13 +148,13 @@ const ROUTES: PrerenderRoute[] = [
           <li>Arbitrates trade disputes between members.</li>
           <li>Liaises with APMC, FSSAI, Customs and policy bodies.</li>
           <li>Publishes circulars, market intelligence and trade signals.</li>
-          <li>Runs the structured RFQ engine connecting verified buyers and sellers.</li>
+          <li>Connects verified buyers and sellers through a controlled-transparency catalogue.</li>
           <li>Advocates on import policy for dates, nuts and dry fruits.</li>
         </ul>
         <h2>Membership</h2>
         <p>
-          <strong>Free</strong> — basic directory listing and ability to submit RFQs.
-          <strong>Paid (₹10,000/year)</strong> — verified seller storefront, RFQ inbox, priority
+          <strong>Free</strong> — basic directory listing and browse access.
+          <strong>Paid (₹10,000/year)</strong> — verified seller storefront, priority
           directory placement, market intelligence reports and trust badge.
           <a href="/apply">Apply for membership</a>.
         </p>
@@ -210,7 +210,7 @@ const ROUTES: PrerenderRoute[] = [
           <li><strong>1975</strong> — Reconstituted as “The Bombay Kharek Bazar &amp; Mewa Merchants Association”.</li>
           <li><strong>1990s</strong> — Agri-markets shifted from Masjid Bunder to APMC Market, Navi Mumbai.</li>
           <li><strong>1998</strong> — Renamed “The Bombay Dry Fruits &amp; Dates Association” via Govt. Order NTC 1596/463(92), 4 May 1998.</li>
-          <li><strong>2020s</strong> — Launch of MDDMA's digital trade hub — verified directory, controlled-transparency catalogue, structured RFQ engine.</li>
+          <li><strong>2020s</strong> — Launch of MDDMA's digital trade hub — verified directory, controlled-transparency catalogue, discovery tools.</li>
         </ul>
         <h2>What we do</h2>
         <ul>
@@ -240,7 +240,7 @@ const ROUTES: PrerenderRoute[] = [
     path: "/membership",
     title: "MDDMA Membership — Free & Paid (₹10,000/year) Plans",
     description:
-      "Join MDDMA. Free tier for buyers (directory listing + RFQs) or Paid at ₹10,000/year for verified seller storefront, RFQ inbox, priority placement and market intelligence.",
+      "Join MDDMA. Free tier for buyers (directory listing + browsing) or Paid at ₹10,000/year for verified seller storefront, priority placement and market intelligence.",
     jsonLd: [
       {
         "@context": "https://schema.org",
@@ -286,7 +286,7 @@ const ROUTES: PrerenderRoute[] = [
           <li>Basic directory listing</li>
           <li>Browse verified members</li>
           <li>View public circulars and news</li>
-          <li>Submit RFQs as a buyer</li>
+          <li>Direct contact with sellers</li>
         </ul>
         <h2>Paid — ₹10,000 per year</h2>
         <ul>
@@ -347,7 +347,7 @@ const ROUTES: PrerenderRoute[] = [
     path: "/install",
     title: "Install the MDDMA App — Progressive Web App",
     description:
-      "Install MDDMA as a Progressive Web App on Android, iOS or desktop for one-tap access to the directory, RFQs and market signals. Works offline-friendly on market-day connections.",
+      "Install MDDMA as a Progressive Web App on Android, iOS or desktop for one-tap access to the directory, circulars and market signals. Works offline-friendly on market-day connections.",
     jsonLd: {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
@@ -362,7 +362,7 @@ const ROUTES: PrerenderRoute[] = [
         <h1>Install MDDMA Trade Hub</h1>
         <p>
           Add the MDDMA trade hub to your phone's home screen for instant, app-like access to the
-          directory, RFQs and market signals — fast on spotty market-day connections, with no
+          directory, circulars and market signals — fast on spotty market-day connections, with no
           browser bars or distractions.
         </p>
         <h2>Android (Chrome)</h2>
