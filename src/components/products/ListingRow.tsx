@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import { Send } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { PriceBand } from "@/components/commodity/PriceBand";
 
 const EMOJI: Record<string, string> = {
@@ -78,11 +76,6 @@ export function ListingRow({
           />
         </div>
       </div>
-      {onRequestQuote && (
-        <Button size="sm" variant="outline" className="h-8 shrink-0 self-center text-xs" onClick={onRequestQuote}>
-          <Send className="mr-1 h-3 w-3" /> RFQ
-        </Button>
-      )}
     </article>
   );
 }
