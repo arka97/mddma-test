@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ShieldCheck, Megaphone, Mail } from "lucide-react";
+import { Megaphone, Mail } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
 
 const Forms = () => {
@@ -45,55 +45,11 @@ const Forms = () => {
 
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-2xl">
-          <Tabs defaultValue="verification" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="verification" className="text-xs sm:text-sm">Verification</TabsTrigger>
+          <Tabs defaultValue="advertise" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="advertise" className="text-xs sm:text-sm">Advertise</TabsTrigger>
               <TabsTrigger value="contact" className="text-xs sm:text-sm">Contact</TabsTrigger>
             </TabsList>
-
-            {/* Verification Request */}
-            <TabsContent value="verification">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <ShieldCheck className="h-5 w-5 text-accent" /> Verification Request
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit("Verification Request")} className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label>Company Name</Label><Input required placeholder="Your firm name" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Member ID</Label><Input required placeholder="e.g. M001" />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>GST Number</Label><Input required placeholder="27AAAAA0000A1Z5" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>FSSAI License (optional)</Label><Input placeholder="License number" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Verification Level</Label>
-                      <Select>
-                        <SelectTrigger><SelectValue placeholder="Select level" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="basic">Basic</SelectItem>
-                          <SelectItem value="business">Business</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Additional Notes</Label><Textarea placeholder="Any additional information..." rows={3} />
-                    </div>
-                    <Button type="submit" variant="accent" className="w-full">Submit Verification Request</Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
 
             {/* Advertise */}
             <TabsContent value="advertise">
