@@ -44,7 +44,7 @@ export function MembershipStatusCard() {
               <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">Active</Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
-              Verified storefront, RFQ inbox, and priority placement unlocked.
+              Verified storefront and priority placement unlocked.
             </div>
           </div>
         </CardContent>
@@ -60,7 +60,7 @@ export function MembershipStatusCard() {
           <div>
             <div className="font-semibold">Become a Paid Member</div>
             <div className="text-xs text-muted-foreground">
-              ₹10,000/yr — verified storefront, RFQ inbox, priority placement.
+              ₹10,000/yr — verified storefront and priority placement.
             </div>
           </div>
         </div>

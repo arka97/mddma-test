@@ -16,7 +16,7 @@ export function MembershipCTA() {
         Become a Paid Member
       </h3>
       <p className="mt-1 text-xs text-muted-foreground">
-        ₹{tierPriceInr("paid").toLocaleString()}/yr — verified storefront, RFQ inbox, priority placement.
+        ₹{tierPriceInr("paid").toLocaleString()}/yr — verified storefront and priority placement.
       </p>
       <div className="mt-3 flex items-center gap-2">
         <Link

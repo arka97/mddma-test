@@ -14,8 +14,8 @@ export function AuthorityBlurb() {
       </p>
       <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
         This portal is the association's digital trade hub — a verified directory of member firms,
-        a live RFQ pipeline between buyers and sellers, official trade circulars, and a transparent
-        view of APMC market signals for everyone in the supply chain.
+        a transparent catalogue of products and brands, official trade circulars, and live
+        APMC market signals for everyone in the supply chain.
       </p>
     </section>
   );
