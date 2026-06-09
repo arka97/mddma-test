@@ -16,7 +16,7 @@ const baseTabs: Tab[] = [
   { label: "Members", href: "/directory", icon: Users, match: (p) => p.startsWith("/directory") || p.startsWith("/store") },
   { label: "Brands", href: "/brands", icon: Sparkles, match: (p) => p.startsWith("/brands") },
   { label: "Circulars", href: "/circulars", icon: Megaphone, match: (p) => p.startsWith("/circulars") },
-  { label: "Account", href: "/account/profile", icon: User, match: (p) => p.startsWith("/account"), requireAuth: true },
+  { label: "Account", href: "/dashboard", icon: User, match: (p) => p.startsWith("/account") || p.startsWith("/dashboard"), requireAuth: true },
 ];
 
 export function MobileBottomTabBar() {
