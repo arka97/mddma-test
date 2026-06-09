@@ -392,15 +392,6 @@ const Storefront = () => {
           </div>
         </div>
       </section>
-
-      {rfqProduct && (
-        <RFQModal
-          productName={rfqProduct.name}
-          productId={rfqProduct.productId}
-          companyId={rfqProduct.companyId}
-          onClose={() => setRfqProduct(null)}
-        />
-      )}
     </Layout>
   );
 };
