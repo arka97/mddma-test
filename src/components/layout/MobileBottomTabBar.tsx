@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Users, Inbox, Megaphone, User } from "lucide-react";
+import { Home, Users, Sparkles, Megaphone, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -14,9 +14,9 @@ interface Tab {
 const baseTabs: Tab[] = [
   { label: "Today", href: "/", icon: Home, match: (p) => p === "/" },
   { label: "Members", href: "/directory", icon: Users, match: (p) => p.startsWith("/directory") || p.startsWith("/store") },
-  { label: "RFQs", href: "/account/rfqs", icon: Inbox, match: (p) => p.startsWith("/account/rfqs"), requireAuth: true },
+  { label: "Brands", href: "/brands", icon: Sparkles, match: (p) => p.startsWith("/brands") },
   { label: "Circulars", href: "/circulars", icon: Megaphone, match: (p) => p.startsWith("/circulars") },
-  { label: "Account", href: "/account/profile", icon: User, match: (p) => p.startsWith("/account") && !p.startsWith("/account/rfqs"), requireAuth: true },
+  { label: "Account", href: "/account/profile", icon: User, match: (p) => p.startsWith("/account"), requireAuth: true },
 ];
 
 export function MobileBottomTabBar() {

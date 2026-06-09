@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogIn, User, LogOut, Building2, Inbox, Package, ShieldCheck, Store, Search, Sparkles, MapPin } from "lucide-react";
+import { LogIn, User, LogOut, Building2, Package, ShieldCheck, Store, Search, Sparkles, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -71,7 +71,7 @@ export function Header() {
         {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="mr-2 h-4 w-4" /> View My Storefront</Link></DropdownMenuItem>}
         <DropdownMenuItem asChild><Link to="/account/products"><Package className="mr-2 h-4 w-4" /> My Products</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/brands"><Sparkles className="mr-2 h-4 w-4" /> My Brands</Link></DropdownMenuItem>
-        <DropdownMenuItem asChild><Link to="/account/rfqs"><Inbox className="mr-2 h-4 w-4" /> RFQ Center</Link></DropdownMenuItem>
+        
         {hasRole("admin") && <DropdownMenuItem asChild><Link to="/account/moderation"><ShieldCheck className="mr-2 h-4 w-4" /> Moderation</Link></DropdownMenuItem>}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" /> Sign out</DropdownMenuItem>
