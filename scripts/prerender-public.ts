@@ -247,7 +247,7 @@ const ROUTES: PrerenderRoute[] = [
         "@type": "Product",
         name: "MDDMA Paid Membership",
         description:
-          "Verified seller storefront, RFQ inbox, priority directory placement, market intelligence reports and trust badge.",
+          "Verified seller storefront, priority directory placement, market intelligence reports and trust badge.",
         brand: ORG_REF,
         offers: {
           "@type": "Offer",
@@ -263,7 +263,7 @@ const ROUTES: PrerenderRoute[] = [
         "@type": "Product",
         name: "MDDMA Free Membership",
         description:
-          "Basic directory listing, browse verified members, view public circulars and submit RFQs as a buyer.",
+          "Basic directory listing, browse verified members and view public circulars.",
         brand: ORG_REF,
         offers: {
           "@type": "Offer",
@@ -293,7 +293,7 @@ const ROUTES: PrerenderRoute[] = [
           <li>Verified seller storefront</li>
           <li>Product listings with controlled-transparency pricing</li>
           <li>Priority placement in directory</li>
-          <li>RFQ inbox &amp; CRM</li>
+          
           <li>Market intelligence reports</li>
           <li>Trust seal &amp; verification badge</li>
         </ul>
@@ -327,14 +327,14 @@ const ROUTES: PrerenderRoute[] = [
         <h2>Paid Membership — ₹10,000 / year</h2>
         <ul>
           <li>Verified storefront on the MDDMA trade hub</li>
-          <li>RFQ inbox &amp; CRM — direct buyer enquiries, no broker tax</li>
+          <li>Direct buyer enquiries via WhatsApp, phone and email — no broker tax</li>
           <li>Priority placement in directory and product search</li>
           <li>Multi-product catalogue with controlled-transparency pricing</li>
           <li>Market intelligence reports and trade signals</li>
           <li>Trust seal · founding-member badge · rate locked 24 months</li>
         </ul>
         <p>
-          The free tier (basic directory listing + RFQ submission) requires no application —
+          The free tier (basic directory listing) requires no application —
           just <a href="/login">create an account</a>.
         </p>
         <p>
