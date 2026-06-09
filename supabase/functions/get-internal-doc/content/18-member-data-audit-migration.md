@@ -1,5 +1,11 @@
 # Member Data Audit & Migration Plan
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 Closes the long-standing "Task 1" (memory): how 350+ legacy MDDMA members move from WhatsApp groups, spreadsheets and the office register into the Lovable Cloud database, without losing data, duplicating people, or violating consent.
 
 > **Owner:** Aditya Parmar (Grievance & Data Protection Officer)

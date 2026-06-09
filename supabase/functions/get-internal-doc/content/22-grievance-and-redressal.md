@@ -1,5 +1,11 @@
 # Grievance & Redressal Mechanism
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 Required by **IT (Intermediary Guidelines) Rules 2021, Rule 3(11)** and **DPDP Act 2023, §8(9)**. This is the operational SOP that backs the Grievance Officer notice in the Privacy Policy.
 
 ## 1. Officer

@@ -1,5 +1,11 @@
 # Operations Runbook
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 The day-to-day playbook. Skim the table of contents; jump to the recipe you need.
 
 > **For the committee:** this doc is SQL-heavy and for the developer. If you're an office-staff or committee member, start with **doc 25 (Committee Operator Guide)** — every common task (approve a company, publish a circular, run an ad, pin a post) has a zero-SQL version there. Per OPS-001 (doc 11), committee members never run SQL.

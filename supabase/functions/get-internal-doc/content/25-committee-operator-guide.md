@@ -1,5 +1,11 @@
 # Committee Operator Guide (Non-technical)
 
+
+> **v3.1.3 Removal Notice (June 2026)** — The **RFQ engine, multi-item RFQ cart, `rfqs` / `inquiry_products` tables, /account/rfqs inbox, RFQ-related edge functions, and the /forms Verification Request** flow have all been **removed from the product**. Any section below that references RFQs, RFQ cart, RFQ inbox, `rfqs` / `inquiry_products`, or the /forms verification form is **historical only** and does not reflect the live app. The mobile bottom tab now opens the Member Dashboard from the Account tab, and Circulars / Members positions in the bottom tab bar have been swapped.
+
+---
+
+
 For the 5 committee members and 2 office staff. **Zero SQL.** Everything here is done from a normal browser using the admin UI at `/account/moderation`. If a task requires SQL, it belongs in doc 17 (Owner Quickstart), not here, and must be requested from the developer.
 
 > **Sign in once:** go to `mddma.org`, click **Sign in** (top-right), use the email and password provided to you on onboarding. If you forget your password, use **Forgot password** on the sign-in screen. Never share your password.
