@@ -295,33 +295,6 @@ const Storefront = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="mt-3 grid grid-cols-2 gap-2">
-                              <Button
-                                size="sm"
-                                className="text-accent-foreground text-xs"
-                                onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
-                              >
-                                <Send className="h-3 w-3 mr-1" /> Request Price
-                              </Button>
-                              {liveCompanyId && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs"
-                                  onClick={() => addItem({
-                                    productId: p.id,
-                                    productName: p.name,
-                                    companyId: liveCompanyId,
-                                    companyName: member.firmName,
-                                    companySlug: slug,
-                                    imageUrl: p.image_url,
-                                    quantity: "",
-                                  })}
-                                >
-                                  + Cart
-                                </Button>
-                              )}
-                            </div>
                           </li>
                         ))}
                       </ul>
@@ -333,7 +306,7 @@ const Storefront = () => {
                               <th className="py-2 px-2 text-muted-foreground font-medium w-20">Media</th>
                               <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
                               <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
-                              <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
+                              
                             </tr>
                           </thead>
                           <tbody>
@@ -360,35 +333,6 @@ const Storefront = () => {
                                     priceMax: p.price_max,
                                     priceUnit: `₹/${p.unit ?? "kg"}`,
                                   }} />
-                                </td>
-                                <td className="py-2.5 px-2">
-                                  <div className="flex gap-1">
-                                    <Button
-                                      size="sm"
-                                      className="text-accent-foreground text-xs"
-                                      onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
-                                    >
-                                      <Send className="h-3 w-3 mr-1" /> Request Price
-                                    </Button>
-                                    {liveCompanyId && (
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="text-xs"
-                                        onClick={() => addItem({
-                                          productId: p.id,
-                                          productName: p.name,
-                                          companyId: liveCompanyId,
-                                          companyName: member.firmName,
-                                          companySlug: slug,
-                                          imageUrl: p.image_url,
-                                          quantity: "",
-                                        })}
-                                      >
-                                        + Cart
-                                      </Button>
-                                    )}
-                                  </div>
                                 </td>
                               </tr>
                             ))}
