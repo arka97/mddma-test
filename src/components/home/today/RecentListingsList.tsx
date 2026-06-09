@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ListingRow } from "@/components/products/ListingRow";
-import { useAuth } from "@/contexts/AuthContext";
-import { useCart } from "@/contexts/CartContext";
 
 interface Row {
   id: string;
@@ -22,9 +20,6 @@ interface Row {
 
 export function RecentListingsList() {
   const [rows, setRows] = useState<Row[] | null>(null);
-  const { user } = useAuth();
-  const { addItem } = useCart();
-  const navigate = useNavigate();
 
   useEffect(() => {
     let alive = true;
@@ -37,21 +32,6 @@ export function RecentListingsList() {
       .then(({ data }) => { if (alive) setRows((data ?? []) as unknown as Row[]); });
     return () => { alive = false; };
   }, []);
-
-  const handleQuote = (r: Row) => {
-    if (!user) { navigate(`/login?next=/products/${r.slug}`); return; }
-    if (r.companies) {
-      addItem({
-        productId: r.id,
-        productName: r.name,
-        companyId: r.companies.id,
-        companyName: r.companies.name,
-        companySlug: r.companies.slug,
-        imageUrl: r.image_url,
-        quantity: "",
-      });
-    }
-  };
 
   return (
     <section>
@@ -86,7 +66,6 @@ export function RecentListingsList() {
                 priceMin={r.price_min}
                 priceMax={r.price_max}
                 unit={r.unit}
-                onRequestQuote={() => handleQuote(r)}
               />
             </li>
           ))}

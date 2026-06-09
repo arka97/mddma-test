@@ -16,7 +16,7 @@ interface Profile {
   gstin?: string | null;
   verification_tier?: "unverified" | "email" | "company" | "gst";
   buyer_reputation_score?: number;
-  rfq_count?: number;
+  
   is_broker?: boolean;
   email_verified_at?: string | null;
   company_verified_at?: string | null;

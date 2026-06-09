@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 interface MembershipTier { name: string; price: string; period: string; features: string[]; badge: string; sponsoredEligible: boolean; highlighted: boolean }
 const membershipTiers: MembershipTier[] = [
-  { name: "Free", price: "₹0", period: "forever", features: ["Basic directory listing", "Browse verified members", "View public circulars & news", "Submit RFQs as a buyer"], badge: "Free", sponsoredEligible: false, highlighted: false },
-  { name: "Paid", price: "₹10,000", period: "per year", features: ["Verified seller storefront", "Product listings with controlled pricing", "Priority placement in directory", "RFQ inbox & CRM", "Market intelligence reports", "Trust seal & verification badge"], badge: "Paid Member", sponsoredEligible: true, highlighted: true },
+  { name: "Free", price: "₹0", period: "forever", features: ["Basic directory listing", "Browse verified members", "View public circulars & news", "Direct contact with verified sellers"], badge: "Free", sponsoredEligible: false, highlighted: false },
+  { name: "Paid", price: "₹10,000", period: "per year", features: ["Verified seller storefront", "Product listings with controlled pricing", "Priority placement in directory", "Direct buyer enquiries via WhatsApp/Phone/Email", "Market intelligence reports", "Trust seal & verification badge"], badge: "Paid Member", sponsoredEligible: true, highlighted: true },
 ];
 import { CheckCircle2, ShieldCheck, Star, Crown } from "lucide-react";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -17,7 +17,7 @@ const tierIcons = [ShieldCheck, Star, Crown];
 const MembershipPlans = () => {
   return (
     <Layout>
-      <Seo title='MDDMA Membership Plans — Free & Paid (₹10,000/year)' description='Join MDDMA. Choose Free for buyers or Paid (₹10,000/year) for verified seller storefront, RFQ inbox and trust badges.' path='/membership' />
+      <Seo title='MDDMA Membership Plans — Free & Paid (₹10,000/year)' description='Join MDDMA. Choose Free for buyers or Paid (₹10,000/year) for verified seller storefront, priority placement and trust badges.' path='/membership' />
       <PageHeader
         title="Membership Plans"
         subtitle="Choose the right plan for your business. All plans include directory listing and association membership."

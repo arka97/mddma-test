@@ -27,7 +27,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const ProfilePage = lazy(() => import("./pages/account/ProfilePage"));
 const CompanyPage = lazy(() => import("./pages/account/CompanyPage"));
 const ProductsPage = lazy(() => import("./pages/account/ProductsPage"));
-const RFQInbox = lazy(() => import("./pages/account/RFQInbox"));
+
 const AdminModeration = lazy(() => import("./pages/account/AdminModeration"));
 const Brands = lazy(() => import("./pages/Brands"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
@@ -77,7 +77,7 @@ export function AppRoutes() {
         <Route path="/account/company" element={protect(<CompanyPage />)} />
         <Route path="/account/products" element={protect(<ProductsPage />)} />
         <Route path="/account/brands" element={protect(<AccountBrandsPage />)} />
-        <Route path="/account/rfqs" element={protect(<RFQInbox />)} />
+        
         
         <Route path="/account/moderation" element={protect(<AdminModeration />, "admin")} />
 

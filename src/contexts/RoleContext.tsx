@@ -16,9 +16,9 @@ interface RoleContextType {
 const rolePermissions: Record<UserRole, string[]> = {
   guest: ["browse_directory", "view_commodities", "view_products"],
   free_member: ["browse_directory", "view_commodities", "view_products", "storefront", "product_listings", "crm_dashboard", "community"],
-  paid_member: ["browse_directory", "view_commodities", "view_products", "storefront", "product_listings", "crm_dashboard", "community", "rfq_mode", "hide_price", "priority_listing", "advanced_crm", "market_intelligence"],
+  paid_member: ["browse_directory", "view_commodities", "view_products", "storefront", "product_listings", "crm_dashboard", "community", "hide_price", "priority_listing", "advanced_crm", "market_intelligence"],
   broker: ["browse_directory", "view_commodities", "view_products", "storefront", "product_listings", "crm_dashboard", "community", "broker_marketplace", "market_intelligence"],
-  admin: ["browse_directory", "view_commodities", "view_products", "storefront", "product_listings", "crm_dashboard", "community", "rfq_mode", "hide_price", "priority_listing", "advanced_crm", "market_intelligence", "broker_marketplace", "member_approvals", "product_moderation", "circular_announcements", "admin_panel"],
+  admin: ["browse_directory", "view_commodities", "view_products", "storefront", "product_listings", "crm_dashboard", "community", "hide_price", "priority_listing", "advanced_crm", "market_intelligence", "broker_marketplace", "member_approvals", "product_moderation", "circular_announcements", "admin_panel"],
 };
 
 // Invariant: paid_member must be a strict superset of free_member permissions.

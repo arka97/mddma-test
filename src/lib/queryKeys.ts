@@ -22,11 +22,6 @@ export const qk = {
     list: (filters?: Record<string, unknown>) =>
       [...qk.productCategories.all, "list", filters ?? {}] as const,
   },
-  rfqs: {
-    all: ["rfqs"] as const,
-    inbox: (companyId: string) => [...qk.rfqs.all, "inbox", companyId] as const,
-    sent: (buyerId: string) => [...qk.rfqs.all, "sent", buyerId] as const,
-  },
   circulars: {
     all: ["circulars"] as const,
     list: (publishedOnly = true) =>

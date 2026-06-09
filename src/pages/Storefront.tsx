@@ -14,12 +14,10 @@ import { liveCompanyToEntry, type DirectoryEntry } from "@/lib/dataSource";
 import type { CompanyRow } from "@/repositories/companies";
 import {
   MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
-  ArrowLeft, Globe, Calendar, Package, Send, Pencil, Eye, Loader2,
+  ArrowLeft, Globe, Calendar, Package, Pencil, Eye, Loader2,
 } from "lucide-react";
 
-import { RFQModal } from "@/components/RFQModal";
 import { GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
-import { useCart } from "@/contexts/CartContext";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useBrandsByCompany } from "@/hooks/queries/useBrands";
@@ -44,8 +42,6 @@ const Storefront = () => {
   const { slug } = useParams();
   const { canAccess } = useRole();
   const { company: ownCompany, hasRole } = useAuth();
-  const { addItem } = useCart();
-  const [rfqProduct, setRfqProduct] = useState<{ name: string; productId?: string; companyId?: string } | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
   const [liveCompanyId, setLiveCompanyId] = useState<string | null>(null);
@@ -65,8 +61,9 @@ const Storefront = () => {
       .then(async ({ data }) => {
         if (!alive) return;
         if (data) {
-          // Contact info (email/phone/gstin) is intentionally not exposed via
-          // direct table reads. Members initiate contact through the RFQ flow.
+          // Contact info (email/phone/gstin) is fetched server-side via the
+          // admin RPC for moderators. Buyers see the public contact buttons
+          // (WhatsApp / Phone / Email) populated from the directory entry.
           const contact = { email: null, phone: null, gstin: null };
           const merged = { ...data, ...contact } as unknown as CompanyRow;
           setLiveMember(liveCompanyToEntry(merged));
@@ -298,33 +295,6 @@ const Storefront = () => {
                                 </div>
                               </div>
                             </div>
-                            <div className="mt-3 grid grid-cols-2 gap-2">
-                              <Button
-                                size="sm"
-                                className="text-accent-foreground text-xs"
-                                onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
-                              >
-                                <Send className="h-3 w-3 mr-1" /> Request Price
-                              </Button>
-                              {liveCompanyId && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-xs"
-                                  onClick={() => addItem({
-                                    productId: p.id,
-                                    productName: p.name,
-                                    companyId: liveCompanyId,
-                                    companyName: member.firmName,
-                                    companySlug: slug,
-                                    imageUrl: p.image_url,
-                                    quantity: "",
-                                  })}
-                                >
-                                  + Cart
-                                </Button>
-                              )}
-                            </div>
                           </li>
                         ))}
                       </ul>
@@ -336,7 +306,7 @@ const Storefront = () => {
                               <th className="py-2 px-2 text-muted-foreground font-medium w-20">Media</th>
                               <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
                               <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
-                              <th className="py-2 px-2 text-muted-foreground font-medium">Action</th>
+                              
                             </tr>
                           </thead>
                           <tbody>
@@ -363,35 +333,6 @@ const Storefront = () => {
                                     priceMax: p.price_max,
                                     priceUnit: `₹/${p.unit ?? "kg"}`,
                                   }} />
-                                </td>
-                                <td className="py-2.5 px-2">
-                                  <div className="flex gap-1">
-                                    <Button
-                                      size="sm"
-                                      className="text-accent-foreground text-xs"
-                                      onClick={() => setRfqProduct({ name: p.name, productId: p.id, companyId: liveCompanyId ?? undefined })}
-                                    >
-                                      <Send className="h-3 w-3 mr-1" /> Request Price
-                                    </Button>
-                                    {liveCompanyId && (
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="text-xs"
-                                        onClick={() => addItem({
-                                          productId: p.id,
-                                          productName: p.name,
-                                          companyId: liveCompanyId,
-                                          companyName: member.firmName,
-                                          companySlug: slug,
-                                          imageUrl: p.image_url,
-                                          quantity: "",
-                                        })}
-                                      >
-                                        + Cart
-                                      </Button>
-                                    )}
-                                  </div>
                                 </td>
                               </tr>
                             ))}
@@ -451,15 +392,6 @@ const Storefront = () => {
           </div>
         </div>
       </section>
-
-      {rfqProduct && (
-        <RFQModal
-          productName={rfqProduct.name}
-          productId={rfqProduct.productId}
-          companyId={rfqProduct.companyId}
-          onClose={() => setRfqProduct(null)}
-        />
-      )}
     </Layout>
   );
 };

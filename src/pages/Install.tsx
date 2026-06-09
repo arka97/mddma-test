@@ -22,7 +22,7 @@ export default function Install() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Install MDDMA Trade Hub</h1>
           <p className="text-primary-foreground/80 text-lg mb-8">
-            Add the trade hub to your phone's home screen for instant, app-like access to the directory, RFQs, and market signals.
+            Add the trade hub to your phone's home screen for instant, app-like access to the directory, circulars, and market signals.
           </p>
           <InstallAppButton size="lg" showAlways className="h-12 px-6 text-base" />
         </div>

@@ -62,7 +62,7 @@ const milestones = [
   { year: "1975", title: "Reconstruction", description: "The Association was reconstituted and renamed “The Bombay Kharek Bazar & Mewa Merchants Association”." },
   { year: "1990s", title: "APMC Shift to Vashi", description: "Per State Government notification, all agri-markets relocated from Masjid Bunder, Mumbai to APMC Market, Navi Mumbai — easing congestion in South Mumbai." },
   { year: "1998", title: "Renaming", description: "Renamed “The Bombay Dry Fruits & Dates Association” via Govt. Order No. NTC 1596/463(92), dated 4 May 1998." },
-  { year: "2020s", title: "Digital Transformation", description: "Launch of MDDMA's digital trade hub — verified directory, controlled-transparency catalogue and structured RFQ engine." },
+  { year: "2020s", title: "Digital Transformation", description: "Launch of MDDMA's digital trade hub — verified directory, controlled-transparency catalogue and discovery tools." },
 ];
 
 const officeBearers = [

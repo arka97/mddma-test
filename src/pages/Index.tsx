@@ -16,7 +16,7 @@ const Index = () => (
   <Layout>
     <Seo
       title="MDDMA — Verified B2B Dry Fruits & Dates Trade Network"
-      description="Official MDDMA member portal — verified dry fruits, dates and nuts merchants of Mumbai. Member directory, RFQs, circulars and trade knowledge base."
+      description="Official MDDMA member portal — verified dry fruits, dates and nuts merchants of Mumbai. Member directory, circulars, circulars and trade knowledge base."
       path="/"
     />
 

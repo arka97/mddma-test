@@ -20,7 +20,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 
 const PAID_PERKS = [
   "Verified storefront on mddma.in/s/<your-slug>",
-  "RFQ inbox & CRM — direct buyer enquiries, no broker tax",
+  "Priority placement in directory + product search — direct buyer enquiries, no broker tax",
   "Priority placement in directory + product search",
   "Multi-product catalog with controlled-transparency pricing",
   "Market intelligence reports & trade signals",
@@ -124,7 +124,7 @@ const Apply = () => {
                 ))}
               </ul>
               <div className="mt-4 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
-                The free tier (basic directory listing + RFQ submission) requires no application — just create an account.
+                The free tier (basic directory listing + browsing) requires no application — just create an account.
               </div>
             </CardContent>
           </Card>

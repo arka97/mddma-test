@@ -1,20 +1,17 @@
-import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Package, Send, Loader2 } from "lucide-react";
+import { ArrowLeft, Package, Loader2, Store } from "lucide-react";
 
-import { RFQModal } from "@/components/RFQModal";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { useProductBySlug } from "@/hooks/queries/useProducts";
 
 const ProductPage = () => {
   const { slug } = useParams();
-  const [rfqProduct, setRfqProduct] = useState<string | null>(null);
   const { data: product, isLoading } = useProductBySlug(slug);
 
   if (isLoading) {
@@ -42,7 +39,7 @@ const ProductPage = () => {
     <Layout>
       <Seo
         title={`${product.name} — Member Catalogue · MDDMA`}
-        description={`View specifications and request a quote for ${product.name} from a verified MDDMA member merchant. Members-only product page.`}
+        description={`View specifications for ${product.name} from a verified MDDMA member merchant. Members-only product page.`}
         path={`/products/${product.slug}`}
         ogType="product"
         noindex
@@ -125,15 +122,14 @@ const ProductPage = () => {
             <div className="space-y-6">
               <Card className="bg-accent/10 border-accent/30 ring-2 ring-accent/20">
                 <CardContent className="p-5 text-center">
-                  <h3 className="font-bold text-foreground mb-1 text-lg">Request Best Price</h3>
+                  <h3 className="font-bold text-foreground mb-1 text-lg">Visit the seller</h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Get a competitive quote from the verified seller
+                    Find verified contact details on the seller's storefront.
                   </p>
-                  <Button
-                    className="w-full text-accent-foreground font-bold text-base h-12"
-                    onClick={() => setRfqProduct(product.name)}
-                  >
-                    <Send className="mr-2 h-5 w-5" /> Request Best Price
+                  <Button className="w-full text-accent-foreground font-bold text-base h-12" asChild>
+                    <Link to="/directory">
+                      <Store className="mr-2 h-5 w-5" /> Browse Directory
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -153,17 +149,6 @@ const ProductPage = () => {
           </div>
         </div>
       </section>
-
-      <div className="fixed bottom-0 left-0 right-0 bg-primary/95 backdrop-blur border-t border-accent/30 p-3 z-40 lg:hidden">
-        <Button
-          className="w-full text-accent-foreground font-bold text-sm h-11"
-          onClick={() => setRfqProduct(product.name)}
-        >
-          <Send className="h-4 w-4 mr-1.5" /> Request Quote — {product.name}
-        </Button>
-      </div>
-
-      {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
     </Layout>
   );
 };
