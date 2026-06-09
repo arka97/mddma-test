@@ -13,9 +13,9 @@ interface Tab {
 
 const baseTabs: Tab[] = [
   { label: "Today", href: "/", icon: Home, match: (p) => p === "/" },
-  { label: "Members", href: "/directory", icon: Users, match: (p) => p.startsWith("/directory") || p.startsWith("/store") },
-  { label: "Brands", href: "/brands", icon: Sparkles, match: (p) => p.startsWith("/brands") },
   { label: "Circulars", href: "/circulars", icon: Megaphone, match: (p) => p.startsWith("/circulars") },
+  { label: "Brands", href: "/brands", icon: Sparkles, match: (p) => p.startsWith("/brands") },
+  { label: "Members", href: "/directory", icon: Users, match: (p) => p.startsWith("/directory") || p.startsWith("/store") },
   { label: "Account", href: "/dashboard", icon: User, match: (p) => p.startsWith("/account") || p.startsWith("/dashboard"), requireAuth: true },
 ];
 
