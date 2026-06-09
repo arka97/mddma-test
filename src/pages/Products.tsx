@@ -245,25 +245,15 @@ const Products = () => {
                       )}
                     </div>
 
-                    <div className="mt-auto pt-3 border-t border-border space-y-2">
-                      {listing.isBranded && listing.b2cUrl ? (
+                    {listing.isBranded && listing.b2cUrl && (
+                      <div className="mt-auto pt-3 border-t border-border space-y-2">
                         <Button size="sm" className="w-full" asChild>
                           <a href={listing.b2cUrl} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Buy retail
                           </a>
                         </Button>
-                      ) : (
-                        <Button
-                          size="sm"
-                          className="w-full text-accent-foreground"
-                          onClick={() =>
-                            setRfqProduct(`${listing.commodity} — ${listing.variant}`)
-                          }
-                        >
-                          <Send className="h-3.5 w-3.5 mr-1.5" /> Request Quote
-                        </Button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -272,7 +262,7 @@ const Products = () => {
         </div>
       </section>
 
-      {rfqProduct && <RFQModal productName={rfqProduct} onClose={() => setRfqProduct(null)} />}
+      
     </Layout>
   );
 };
