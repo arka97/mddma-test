@@ -66,6 +66,7 @@ export function Header() {
           <div className="truncate text-xs text-muted-foreground">{user?.email}</div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild><Link to="/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/profile"><User className="mr-2 h-4 w-4" /> My Profile</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/company"><Building2 className="mr-2 h-4 w-4" /> {company ? "My Company" : "Create Company"}</Link></DropdownMenuItem>
         {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="mr-2 h-4 w-4" /> My Storefront</Link></DropdownMenuItem>}
