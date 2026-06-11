@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload, Newspaper, Smile } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { listCategories, createCategory, updateCategory, deleteCategory, countProductsForCategory, type ProductCategoryRow } from "@/repositories/productCategories";
 import { slugify } from "@/lib/storage";
@@ -38,6 +38,21 @@ const AdminModeration = () => {
   const [catForm, setCatForm] = useState<typeof emptyCatForm>(emptyCatForm);
   const [savingCat, setSavingCat] = useState(false);
   const [uploadingCatImg, setUploadingCatImg] = useState(false);
+
+  // Market News
+  const [marketNews, setMarketNews] = useState<{ id: string; title: string; summary: string | null; is_published: boolean; created_at: string; image_url: string | null; source_name: string | null }[]>([]);
+  const emptyNewsForm = { title: "", summary: "", body: "", source_name: "", source_url: "", category: "", image_url: "", sort_order: 0 };
+  const [newsForm, setNewsForm] = useState(emptyNewsForm);
+  const [savingNews, setSavingNews] = useState(false);
+  const [uploadingNewsImg, setUploadingNewsImg] = useState(false);
+
+  // Humor
+  const [humorPosts, setHumorPosts] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string; image_url: string | null; attribution: string | null }[]>([]);
+  const emptyHumorForm = { title: "", body: "", image_url: "", attribution: "", sort_order: 0 };
+  const [humorForm, setHumorForm] = useState(emptyHumorForm);
+  const [savingHumor, setSavingHumor] = useState(false);
+  const [uploadingHumorImg, setUploadingHumorImg] = useState(false);
+
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
