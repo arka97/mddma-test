@@ -244,6 +244,83 @@ const AdminModeration = () => {
     }
   };
 
+  // Market News
+  const uploadNewsImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploadingNewsImg(true);
+    const url = await uploadFile("ad-assets", user.id, file);
+    setUploadingNewsImg(false);
+    if (url) setNewsForm((f) => ({ ...f, image_url: url }));
+    else toast({ title: "Upload failed", variant: "destructive" });
+  };
+  const saveNews = async () => {
+    if (!user || !newsForm.title.trim()) { toast({ title: "Title required", variant: "destructive" }); return; }
+    setSavingNews(true);
+    const { error } = await (supabase as any).from("market_news").insert({
+      title: newsForm.title.trim(),
+      summary: newsForm.summary.trim() || null,
+      body: newsForm.body.trim() || null,
+      source_name: newsForm.source_name.trim() || null,
+      source_url: newsForm.source_url.trim() || null,
+      category: newsForm.category.trim() || null,
+      image_url: newsForm.image_url || null,
+      sort_order: Number(newsForm.sort_order) || 0,
+      is_published: true,
+      published_at: new Date().toISOString(),
+      created_by: user.id,
+    });
+    setSavingNews(false);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+    else { toast({ title: "News published" }); setNewsForm(emptyNewsForm); load(); }
+  };
+  const toggleNewsPublished = async (id: string, val: boolean) => {
+    const { error } = await (supabase as any).from("market_news").update({ is_published: val, published_at: val ? new Date().toISOString() : null }).eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const deleteNews = async (id: string) => {
+    if (!confirm("Delete this news item?")) return;
+    const { error } = await (supabase as any).from("market_news").delete().eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+
+  // Humor
+  const uploadHumorImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploadingHumorImg(true);
+    const url = await uploadFile("ad-assets", user.id, file);
+    setUploadingHumorImg(false);
+    if (url) setHumorForm((f) => ({ ...f, image_url: url }));
+    else toast({ title: "Upload failed", variant: "destructive" });
+  };
+  const saveHumor = async () => {
+    if (!user || !humorForm.title.trim() || !humorForm.body.trim()) { toast({ title: "Title and body required", variant: "destructive" }); return; }
+    setSavingHumor(true);
+    const { error } = await (supabase as any).from("humor_posts").insert({
+      title: humorForm.title.trim(),
+      body: humorForm.body.trim(),
+      image_url: humorForm.image_url || null,
+      attribution: humorForm.attribution.trim() || null,
+      sort_order: Number(humorForm.sort_order) || 0,
+      is_published: true,
+      published_at: new Date().toISOString(),
+      created_by: user.id,
+    });
+    setSavingHumor(false);
+    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+    else { toast({ title: "Humor published" }); setHumorForm(emptyHumorForm); load(); }
+  };
+  const toggleHumorPublished = async (id: string, val: boolean) => {
+    const { error } = await (supabase as any).from("humor_posts").update({ is_published: val, published_at: val ? new Date().toISOString() : null }).eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+  const deleteHumor = async (id: string) => {
+    if (!confirm("Delete this humor post?")) return;
+    const { error } = await (supabase as any).from("humor_posts").delete().eq("id", id);
+    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
+  };
+
 
   return (
     <Layout>
