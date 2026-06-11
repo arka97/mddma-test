@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadFile, slugify } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
+import { AddressAutocomplete } from "@/components/ui/AddressAutocomplete";
 
 interface CompanyForm {
   name: string;
@@ -211,9 +212,25 @@ const CompanyPage = () => {
                     <Label htmlFor="description">About</Label>
                     <Textarea id="description" value={form.description} maxLength={2000} rows={5} onChange={(e) => setForm({ ...form, description: e.target.value })} />
                   </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="address">Address</Label>
+                    <AddressAutocomplete
+                      id="address"
+                      value={form.address}
+                      countries={["in"]}
+                      onChange={(v) => setForm({ ...form, address: v })}
+                      onSelect={(p) => setForm((f) => ({
+                        ...f,
+                        address: p.address || p.formatted,
+                        city: p.city || f.city,
+                        state: p.state || f.state,
+                        country: p.country || f.country,
+                      }))}
+                    />
+                  </div>
                   <div className="space-y-2"><Label>City</Label><Input value={form.city} maxLength={60} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
                   <div className="space-y-2"><Label>State</Label><Input value={form.state} maxLength={60} onChange={(e) => setForm({ ...form, state: e.target.value })} /></div>
-                  <div className="space-y-2 sm:col-span-2"><Label>Address</Label><Input value={form.address} maxLength={200} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>Country</Label><Input value={form.country} maxLength={60} onChange={(e) => setForm({ ...form, country: e.target.value })} /></div>
                   <div className="space-y-2"><Label>Public email</Label><Input type="email" value={form.email} maxLength={120} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
                   <div className="space-y-2"><Label>Phone</Label><Input value={form.phone} maxLength={20} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
                   <div className="space-y-2"><Label>Website</Label><Input value={form.website} maxLength={160} onChange={(e) => setForm({ ...form, website: e.target.value })} /></div>
