@@ -217,23 +217,48 @@ const CompanyPage = () => {
                     <Input id="slug" value={form.slug} maxLength={60} onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })} placeholder="auto-generated" />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="tagline">Tagline</Label>
-                    <Input id="tagline" value={form.tagline} maxLength={140} onChange={(e) => setForm({ ...form, tagline: e.target.value })} />
+                    <Label htmlFor="tagline">Tagline *</Label>
+                    <Input id="tagline" value={form.tagline} maxLength={140} required onChange={(e) => setForm({ ...form, tagline: e.target.value })} />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="description">About</Label>
-                    <Textarea id="description" value={form.description} maxLength={2000} rows={5} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                    <Label htmlFor="description">About *</Label>
+                    <Textarea id="description" value={form.description} maxLength={2000} rows={5} required onChange={(e) => setForm({ ...form, description: e.target.value })} />
                   </div>
-                  <div className="space-y-2"><Label>City</Label><Input value={form.city} maxLength={60} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>State</Label><Input value={form.state} maxLength={60} onChange={(e) => setForm({ ...form, state: e.target.value })} /></div>
-                  <div className="space-y-2 sm:col-span-2"><Label>Address</Label><Input value={form.address} maxLength={200} onChange={(e) => setForm({ ...form, address: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Public email</Label><Input type="email" value={form.email} maxLength={120} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Phone</Label><Input value={form.phone} maxLength={20} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Website</Label><Input value={form.website} maxLength={160} onChange={(e) => setForm({ ...form, website: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>GSTIN</Label><Input value={form.gstin} maxLength={15} onChange={(e) => setForm({ ...form, gstin: e.target.value.toUpperCase() })} /></div>
-                  <div className="space-y-2"><Label>Established year</Label><Input type="number" value={form.established_year} onChange={(e) => setForm({ ...form, established_year: e.target.value })} /></div>
-                  <div className="space-y-2 sm:col-span-2"><Label>Categories (comma separated)</Label><Input value={form.categories} onChange={(e) => setForm({ ...form, categories: e.target.value })} placeholder="Almonds, Cashews, Dates" /></div>
-                  <div className="space-y-2 sm:col-span-2"><Label>Certifications (comma separated)</Label><Input value={form.certifications} onChange={(e) => setForm({ ...form, certifications: e.target.value })} placeholder="FSSAI, ISO 22000, Organic India" /></div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="address">Address * <span className="text-xs text-muted-foreground font-normal">(powered by Google Maps)</span></Label>
+                    <GooglePlacesAutocomplete
+                      id="address"
+                      value={form.address}
+                      required
+                      maxLength={200}
+                      onChange={(v) => setForm((f) => ({ ...f, address: v }))}
+                      onPlaceSelected={(p) => setForm((f) => ({
+                        ...f,
+                        address: p.address || f.address,
+                        city: p.city || f.city,
+                        state: p.state || f.state,
+                        country: p.country || f.country,
+                        pincode: p.pincode || f.pincode,
+                        latitude: p.latitude,
+                        longitude: p.longitude,
+                        place_id: p.place_id,
+                      }))}
+                    />
+                  </div>
+                  <div className="space-y-2"><Label>City *</Label><Input value={form.city} maxLength={60} required onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>State *</Label><Input value={form.state} maxLength={60} required onChange={(e) => setForm({ ...form, state: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>Country *</Label><Input value={form.country} maxLength={60} required onChange={(e) => setForm({ ...form, country: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>Pincode *</Label><Input value={form.pincode} maxLength={10} required inputMode="numeric" onChange={(e) => setForm({ ...form, pincode: e.target.value })} /></div>
+
+                  <div className="space-y-2"><Label>Email *</Label><Input type="email" value={form.email} maxLength={120} required onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>Phone * <span className="text-xs text-muted-foreground font-normal">(with country code, e.g. +91)</span></Label><Input value={form.phone} maxLength={20} required placeholder="+91 98765 43210" onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>Website *</Label><Input type="url" value={form.website} maxLength={160} required placeholder="https://" onChange={(e) => setForm({ ...form, website: e.target.value })} /></div>
+                  <div className="space-y-2"><Label>GSTIN *</Label><Input value={form.gstin} maxLength={15} required onChange={(e) => setForm({ ...form, gstin: e.target.value.toUpperCase() })} /></div>
+                  <div className="space-y-2"><Label>FSSAI *</Label><Input value={form.fssai} maxLength={20} required onChange={(e) => setForm({ ...form, fssai: e.target.value })} /></div>
+
+                  <div className="space-y-2 sm:col-span-2"><Label>Categories Specialty <span className="text-xs text-muted-foreground font-normal">(comma separated)</span></Label><Input value={form.categories} onChange={(e) => setForm({ ...form, categories: e.target.value })} placeholder="Almonds, Cashews, Dates" /></div>
+                  <div className="space-y-2 sm:col-span-2"><Label>Certifications <span className="text-xs text-muted-foreground font-normal">(comma separated)</span></Label><Input value={form.certifications} onChange={(e) => setForm({ ...form, certifications: e.target.value })} placeholder="ISO 22000, Organic India" /></div>
                 </div>
               </CardContent>
             </Card>
