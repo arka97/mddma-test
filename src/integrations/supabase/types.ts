@@ -887,7 +887,6 @@ export type Database = {
     Views: {
       companies_public: {
         Row: {
-          address: string | null
           categories: string[] | null
           certifications: string[] | null
           city: string | null
@@ -896,28 +895,27 @@ export type Database = {
           created_at: string | null
           description: string | null
           established_year: number | null
-          fssai: string | null
+          hours: string | null
           id: string | null
           is_hidden: boolean | null
+          is_sponsored: boolean | null
           is_verified: boolean | null
-          latitude: number | null
+          languages: string[] | null
           logo_url: string | null
-          longitude: number | null
+          markets: string[] | null
           membership_tier: string | null
           name: string | null
           owner_id: string | null
-          pincode: string | null
-          place_id: string | null
           review_status: Database["public"]["Enums"]["review_status"] | null
           slug: string | null
           social_links: Json | null
           state: string | null
           tagline: string | null
           updated_at: string | null
+          verification_tier_label: string | null
           website: string | null
         }
         Insert: {
-          address?: string | null
           categories?: string[] | null
           certifications?: string[] | null
           city?: string | null
@@ -926,28 +924,27 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           established_year?: number | null
-          fssai?: string | null
+          hours?: string | null
           id?: string | null
           is_hidden?: boolean | null
+          is_sponsored?: boolean | null
           is_verified?: boolean | null
-          latitude?: number | null
+          languages?: string[] | null
           logo_url?: string | null
-          longitude?: number | null
+          markets?: string[] | null
           membership_tier?: string | null
           name?: string | null
           owner_id?: string | null
-          pincode?: string | null
-          place_id?: string | null
           review_status?: Database["public"]["Enums"]["review_status"] | null
           slug?: string | null
           social_links?: Json | null
           state?: string | null
           tagline?: string | null
           updated_at?: string | null
+          verification_tier_label?: string | null
           website?: string | null
         }
         Update: {
-          address?: string | null
           categories?: string[] | null
           certifications?: string[] | null
           city?: string | null
@@ -956,61 +953,25 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           established_year?: number | null
-          fssai?: string | null
+          hours?: string | null
           id?: string | null
           is_hidden?: boolean | null
+          is_sponsored?: boolean | null
           is_verified?: boolean | null
-          latitude?: number | null
+          languages?: string[] | null
           logo_url?: string | null
-          longitude?: number | null
+          markets?: string[] | null
           membership_tier?: string | null
           name?: string | null
           owner_id?: string | null
-          pincode?: string | null
-          place_id?: string | null
           review_status?: Database["public"]["Enums"]["review_status"] | null
           slug?: string | null
           social_links?: Json | null
           state?: string | null
           tagline?: string | null
           updated_at?: string | null
+          verification_tier_label?: string | null
           website?: string | null
-        }
-        Relationships: []
-      }
-      public_profiles: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          designation: string | null
-          full_name: string | null
-          id: string | null
-          verification_tier:
-            | Database["public"]["Enums"]["verification_tier"]
-            | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          designation?: string | null
-          full_name?: string | null
-          id?: string | null
-          verification_tier?:
-            | Database["public"]["Enums"]["verification_tier"]
-            | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          designation?: string | null
-          full_name?: string | null
-          id?: string | null
-          verification_tier?:
-            | Database["public"]["Enums"]["verification_tier"]
-            | null
         }
         Relationships: []
       }
