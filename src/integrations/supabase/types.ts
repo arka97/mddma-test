@@ -1026,6 +1026,7 @@ export type Database = {
           phone: string
         }[]
       }
+      get_company_whatsapp: { Args: { _company_id: string }; Returns: string }
       get_my_company: {
         Args: never
         Returns: {

@@ -1,26 +1,51 @@
-## Problem
-List rows across every Admin Moderation tab use a single horizontal `flex items-center gap-3` row holding image + text + badges + multiple buttons. On 390px viewports, the controls take so much fixed width that the title column collapses to a few characters and text wraps one letter per line (the vertical "S.." / "directory-banner" you saw on Ads — same pattern affects Products, Users, Circulars, Categories, News, Humor).
+## Floating WhatsApp button on seller pages
 
-## Fix — `src/pages/account/AdminModeration.tsx`, presentation only
+A circular WhatsApp FAB appears on `/products/:slug`, `/store/:slug`, and `/brands/:slug`. On mobile it sits at bottom-right, just above the Account tab in the bottom nav. On desktop it sits at the bottom-right corner. Tap behavior depends on membership:
 
-Apply the same responsive row pattern to every list-item Card:
+- **Paid member / broker / admin** → opens `https://wa.me/<seller-number>?text=...` in a new tab with a prefilled "Hi, I saw this on MDDMA…" message.
+- **Free member / guest** → routes to `/membership` (CTA toast: "Unlock direct contact — upgrade to a Paid membership").
 
-- Outer `CardContent`: `flex flex-col sm:flex-row sm:items-center gap-3` (drop `flex-wrap`; for Circulars keep `sm:items-start`).
-- Media + text block wrapped in `flex items-start gap-3 min-w-0 flex-1 w-full` so the thumbnail and title share the first row on mobile and the title gets real width.
-- Controls (badges + action buttons + priority input) wrapped in a trailing `flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0` block so they drop to a second row on mobile and right-align on desktop.
-- Long meta lines (`placement · priority · dates`, category slugs, etc.) get `truncate` / `line-clamp-1` so they never force vertical wrapping.
-- Ads tab: hide the inline "Priority" label on mobile via `sr-only sm:not-sr-only` to keep the input usable without eating row width.
+If a seller has no number on file, the button is hidden entirely.
 
-Tabs touched (rows only, forms unchanged):
-1. Products list row — lines ~401–431
-2. Users list row — lines ~438–457
-3. Circulars list row — lines ~505–521
-4. Ads list row — lines ~551–574
-5. Categories list row — lines ~646–664
-6. News list row — lines ~705–716
-7. Humor list row — lines ~751–762
+### What gets built
 
-## Out of scope
-- Form cards above each list (already stack correctly).
-- No data, repo, route, or logic changes.
-- No other pages.
+1. **Backend — paid-only contact RPC**
+   - New SECURITY DEFINER function `public.get_company_whatsapp(_company_id uuid)` returning `text` (the phone). Returns the company's `phone` only when `auth.uid()` has role `paid_member`, `broker`, or `admin`; otherwise returns `NULL`. Grants `EXECUTE` to `authenticated`. No new tables, no schema changes to `companies`.
+
+2. **Frontend — shared component**
+   - `src/components/seller/WhatsappFab.tsx` — fixed-position round button using the existing accent token. Props: `companyId`, `companySlug`, `contextLabel` (e.g. product name, brand name, firm name).
+   - Internal hook `useSellerWhatsapp(companyId)` wraps the RPC via React Query, paid-gated client-side (skips the RPC entirely for guests/free).
+   - Positioning: `fixed right-4 z-40`, `bottom-[calc(env(safe-area-inset-bottom)+72px)] lg:bottom-6` so it clears the 64px mobile tab bar plus a small gap, and sits clean on desktop. Hides itself when the existing `StickyContactBar` is visible on Storefront to avoid stacking — Storefront mounts the FAB above the sticky bar by adjusting its bottom offset there only.
+   - Click handler: if paid → `window.open(wa.me link)`; otherwise → `navigate('/membership')` and a sonner toast.
+
+3. **Page integration (presentational only)**
+   - `src/pages/ProductPage.tsx` → mount `<WhatsappFab companyId={product.company_id} contextLabel={product.name} />`.
+   - `src/pages/Storefront.tsx` → mount `<WhatsappFab companyId={company.id} contextLabel={member.firmName} />` with the storefront-specific stacked offset.
+   - `src/pages/BrandPage.tsx` → mount `<WhatsappFab companyId={brand.company_id} contextLabel={brand.name} />`.
+
+### Out of scope
+
+- No changes to existing in-page "WhatsApp / Call / Email" buttons on Storefront.
+- No new public exposure of `companies.phone` — masking via `companies_public` view stays.
+- No analytics/event tracking added in this pass.
+
+### Technical details
+
+- RPC signature:
+  ```sql
+  create or replace function public.get_company_whatsapp(_company_id uuid)
+  returns text language sql stable security definer set search_path = public as $$
+    select c.phone
+    from public.companies c
+    where c.id = _company_id
+      and (
+        public.has_role(auth.uid(), 'paid_member')
+        or public.has_role(auth.uid(), 'broker')
+        or public.has_role(auth.uid(), 'admin')
+      );
+  $$;
+  grant execute on function public.get_company_whatsapp(uuid) to authenticated;
+  ```
+- Client: `supabase.rpc('get_company_whatsapp', { _company_id })`, cached under `['seller-whatsapp', companyId]`, only enabled when `effectiveRole` is paid/broker/admin.
+- Link builder: strip non-digits, prepend `91` if length is 10 and no country code, then `https://wa.me/<digits>?text=<encoded message>`.
+- Z-index `z-40` to match the bottom tab bar and stay below dialogs (`z-50`).
