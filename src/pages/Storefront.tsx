@@ -393,6 +393,7 @@ const Storefront = () => {
           </div>
         </div>
       </section>
+      <WhatsappFab companyId={liveCompanyId} contextLabel={member.firmName} />
     </Layout>
   );
 };
