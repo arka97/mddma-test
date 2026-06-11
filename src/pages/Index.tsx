@@ -3,6 +3,7 @@ import { Seo } from "@/components/Seo";
 import { TodayHeader } from "@/components/home/today/TodayHeader";
 import { LiveRatesTicker } from "@/components/home/today/LiveRatesTicker";
 import { AdSlot } from "@/components/home/today/AdSlot";
+import { QuickActionsGrid } from "@/components/home/today/QuickActionsGrid";
 import { MarketSnapshot } from "@/components/home/today/MarketSnapshot";
 import { MarketNewsSection } from "@/components/home/today/MarketNewsSection";
 import { HumorSection } from "@/components/home/today/HumorSection";
@@ -27,6 +28,9 @@ const Index = () => (
       <div className="space-y-5">
         <TodayHeader />
         <LiveRatesTicker />
+
+        {/* Quick actions */}
+        <QuickActionsGrid />
 
         {/* 1. Market */}
         <MarketSnapshot />
