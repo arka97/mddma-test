@@ -1,22 +1,26 @@
-# Fix: typed fields disappear on /account/company
+## Problem
+List rows across every Admin Moderation tab use a single horizontal `flex items-center gap-3` row holding image + text + badges + multiple buttons. On 390px viewports, the controls take so much fixed width that the title column collapses to a few characters and text wraps one letter per line (the vertical "S.." / "directory-banner" you saw on Ads — same pattern affects Products, Users, Circulars, Categories, News, Humor).
 
-## Root cause
+## Fix — `src/pages/account/AdminModeration.tsx`, presentation only
 
-`CompanyPage.tsx` loads the company row inside a `useEffect` whose dependency array is `[user]`. The `user` value comes from `AuthContext`, where `setUser(sess?.user ?? null)` runs on every Supabase auth state event (TOKEN_REFRESHED, USER_UPDATED, focus-driven re-checks). Each event creates a brand-new `user` object reference, so React re-runs the effect, re-fetches the company row, and calls `setForm(...)` — overwriting whatever the user has typed.
+Apply the same responsive row pattern to every list-item Card:
 
-The Google Maps autocomplete is not the culprit; any field on the page is affected.
+- Outer `CardContent`: `flex flex-col sm:flex-row sm:items-center gap-3` (drop `flex-wrap`; for Circulars keep `sm:items-start`).
+- Media + text block wrapped in `flex items-start gap-3 min-w-0 flex-1 w-full` so the thumbnail and title share the first row on mobile and the title gets real width.
+- Controls (badges + action buttons + priority input) wrapped in a trailing `flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0` block so they drop to a second row on mobile and right-align on desktop.
+- Long meta lines (`placement · priority · dates`, category slugs, etc.) get `truncate` / `line-clamp-1` so they never force vertical wrapping.
+- Ads tab: hide the inline "Priority" label on mobile via `sr-only sm:not-sr-only` to keep the input usable without eating row width.
 
-## Fix
-
-In `src/pages/account/CompanyPage.tsx`:
-
-1. Change the effect dependency from `[user]` to `[user?.id]` so reloads only happen when the actual signed-in user changes.
-2. Add a `loadedRef` (or simple boolean state) guard so the company row is fetched only once per user id, even if the effect re-runs for any other reason. After the first successful load, skip subsequent loads for the same id.
-3. Keep the existing post-save behavior (`await refresh()` + `navigate(0)` on first create) untouched — saving still re-syncs from the server.
-
-No other files change. No backend, schema, or autocomplete changes.
+Tabs touched (rows only, forms unchanged):
+1. Products list row — lines ~401–431
+2. Users list row — lines ~438–457
+3. Circulars list row — lines ~505–521
+4. Ads list row — lines ~551–574
+5. Categories list row — lines ~646–664
+6. News list row — lines ~705–716
+7. Humor list row — lines ~751–762
 
 ## Out of scope
-
-- AuthContext behavior (it's reasonable for `user` to update on auth events; the page just shouldn't treat every update as a reason to reset the form).
-- The Google Places component.
+- Form cards above each list (already stack correctly).
+- No data, repo, route, or logic changes.
+- No other pages.
