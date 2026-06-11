@@ -8,7 +8,7 @@ import { friendlyErrorMessage } from "@/lib/errors";
 // for anonymous viewers). Owner/admin reads of contact info go through getCompanyByOwner
 // or admin-only paths against the base table.
 const COMPANY_PUBLIC_COLUMNS =
-  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,address,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
+  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
 
 const COMPANY_FULL_COLUMNS =
   "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
