@@ -43,7 +43,6 @@ export function Header() {
 
   const isActive = (href: string) => location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
-  const locationLabel = company?.name ? company.name : "Pydhonie, Mumbai";
 
   const handleSignOut = async () => {
     await signOut();
