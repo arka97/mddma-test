@@ -6,7 +6,7 @@ import { AdSlot } from "@/components/home/today/AdSlot";
 import { QuickActionsGrid } from "@/components/home/today/QuickActionsGrid";
 import { CategoryGrid } from "@/components/home/today/CategoryGrid";
 import { RecentListingsList } from "@/components/home/today/RecentListingsList";
-import { ActionRequiredCircular } from "@/components/home/today/ActionRequiredCircular";
+
 import { MembershipCTA } from "@/components/home/today/MembershipCTA";
 import { PartnersStrip } from "@/components/home/today/PartnersStrip";
 import { AuthorityBlurb } from "@/components/home/today/AuthorityBlurb";
@@ -30,7 +30,7 @@ const Index = () => (
         <QuickActionsGrid />
         <CategoryGrid />
         <RecentListingsList />
-        <ActionRequiredCircular />
+        
         <MembershipCTA />
         <PartnersStrip />
         <AuthorityBlurb />
