@@ -69,22 +69,35 @@ export function WhatsappFab({ companyId, contextLabel, mobileBottomOffset = 0, c
   const mobileBottom = 72 + mobileBottomOffset; // 64px tab bar + 8px gap (+ optional sticky bar)
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      aria-label="Chat with seller on WhatsApp"
+    <div
       className={cn(
-        "fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg ring-2 ring-background transition-transform hover:scale-105 active:scale-95",
-        "bottom-[var(--fab-bottom)] lg:bottom-6 lg:right-6",
+        "fixed right-4 z-40 h-14 w-14 lg:right-6",
+        "bottom-[var(--fab-bottom)] lg:bottom-6",
         className,
       )}
       style={{
         ["--fab-bottom" as never]: `calc(env(safe-area-inset-bottom) + ${mobileBottom}px)`,
-        backgroundColor: "#25D366",
-        color: "#ffffff",
       }}
     >
-      <MessageCircle className="h-7 w-7" strokeWidth={2.25} />
-    </button>
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 animate-ping rounded-full opacity-60"
+        style={{ backgroundColor: "#25D366" }}
+      />
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 rounded-full opacity-25"
+        style={{ backgroundColor: "#25D366" }}
+      />
+      <button
+        type="button"
+        onClick={handleClick}
+        aria-label="Chat with seller on WhatsApp"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full shadow-lg ring-2 ring-background transition-transform hover:scale-105 active:scale-95"
+        style={{ backgroundColor: "#25D366", color: "#ffffff" }}
+      >
+        <MessageCircle className="h-7 w-7" strokeWidth={2.25} />
+      </button>
+    </div>
   );
 }
