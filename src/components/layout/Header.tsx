@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogIn, User, LogOut, Building2, Package, ShieldCheck, Store, Search, Sparkles, MapPin, LayoutDashboard } from "lucide-react";
+import { LogIn, User, LogOut, Building2, Package, ShieldCheck, Store, Search, Sparkles, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,6 @@ export function Header() {
 
   const isActive = (href: string) => location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
-  const locationLabel = company?.name ? company.name : "Pydhonie, Mumbai";
 
   const handleSignOut = async () => {
     await signOut();
@@ -95,20 +94,17 @@ export function Header() {
         >
 
           <div className="flex min-w-0 items-center gap-2">
-            <Link to="/" className="flex items-center gap-2 lg:py-1" aria-label="MDDMA — Home">
-              <Logo variant="mark" className="h-8 w-8 lg:h-9 lg:w-9" />
-              <span className="hidden font-bold tracking-tight text-foreground sm:inline">MDDMA</span>
+            <Link to="/" className="flex min-w-0 items-center gap-2 lg:py-1" aria-label="MDDMA — Mumbai Dryfruits and Dates Merchants Association">
+              <Logo variant="mark" className="h-8 w-8 shrink-0 lg:h-9 lg:w-9" />
+              <span className="flex min-w-0 flex-col leading-tight">
+                <span className="text-sm font-bold tracking-tight text-foreground lg:text-base">MDDMA</span>
+                <span className="truncate text-[10px] font-medium text-muted-foreground lg:text-xs">
+                  Mumbai Dryfruits &amp; Dates Merchants Association
+                </span>
+              </span>
             </Link>
-            <button
-              type="button"
-              onClick={() => navigate("/account/profile")}
-              className="ml-1 inline-flex min-w-0 max-w-[55vw] items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground lg:hidden"
-              aria-label="Your location"
-            >
-              <MapPin className="h-3 w-3 shrink-0 text-accent" />
-              <span className="truncate font-medium text-foreground">{locationLabel}</span>
-            </button>
           </div>
+
 
           <div className="hidden lg:flex lg:items-center lg:gap-0.5">
             {desktopNav.map((item) => (
