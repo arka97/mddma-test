@@ -28,15 +28,25 @@ const Index = () => (
         <TodayHeader />
         <LiveRatesTicker />
 
-        {/* 2 × 3 inner grid: Market, Market News, Humor, Circulars, Brands, Members */}
-        <div className="grid gap-5 lg:grid-cols-2">
-          <MarketSnapshot />
-          <MarketNewsSection />
-          <HumorSection />
-          <CircularsSection />
+        {/* 1. Market */}
+        <MarketSnapshot />
+
+        {/* 2. Market News */}
+        <MarketNewsSection />
+
+        {/* 3. Humor */}
+        <HumorSection />
+
+        {/* 4. Circulars & Notices */}
+        <CircularsSection />
+
+        {/* 5. Brands */}
+        <div className="-mx-4 sm:-mx-6 lg:-mx-8">
           <FeaturedBrandsStrip />
-          <FeaturedMembers />
         </div>
+
+        {/* 6. Member Directory */}
+        <FeaturedMembers />
       </div>
     </div>
   </Layout>
