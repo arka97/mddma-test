@@ -1,51 +1,22 @@
-## Floating WhatsApp button on seller pages
+# Plan: Polish the floating WhatsApp button
 
-A circular WhatsApp FAB appears on `/products/:slug`, `/store/:slug`, and `/brands/:slug`. On mobile it sits at bottom-right, just above the Account tab in the bottom nav. On desktop it sits at the bottom-right corner. Tap behavior depends on membership:
+Update `src/components/seller/WhatsappFab.tsx` only. No backend, RPC, gating, positioning, or page-integration changes — paid gating, route handling, and mount points on Product / Storefront / Brand stay exactly as they are today.
 
-- **Paid member / broker / admin** → opens `https://wa.me/<seller-number>?text=...` in a new tab with a prefilled "Hi, I saw this on MDDMA…" message.
-- **Free member / guest** → routes to `/membership` (CTA toast: "Unlock direct contact — upgrade to a Paid membership").
+## Visual changes
 
-If a seller has no number on file, the button is hidden entirely.
+1. **Replace icon** — swap the lucide `MessageCircle` for the official WhatsApp glyph as an inline SVG (same path as the snippet), `w-7 h-7`, `fill="currentColor"`, white. Drop the `MessageCircle` import.
+2. **Button surface** — keep the 56px (`w-14 h-14`) circle but use the inspiration's brand colors via arbitrary Tailwind values so styling lives with the component (no token churn):
+   - base: `bg-[#25D366]`
+   - hover: `hover:bg-[#1ebe57]`
+   - glow: `shadow-[0_8px_24px_rgba(37,211,102,0.45)]`
+   - keep `ring-2 ring-background` and the existing `hover:scale-105 active:scale-95`.
+3. **Ping halo** — replace the two static green overlays with a single `absolute inset-0 rounded-full bg-[#25D366]/40 animate-ping` span (matches snippet, less visual noise than two layers).
+4. **Markup shape** — keep the outer wrapper that holds the `--fab-bottom` CSS var and `right-4 / lg:right-6` positioning so mobile/desktop placement and the `mobileBottomOffset` prop continue to work. The `<button>` stays the click target (we keep the paid-gated `handleClick`, not an `<a href>` like the snippet, because guests must be routed to `/membership` instead of `wa.me`).
+5. **Accessibility** — keep `aria-label="Chat with seller on WhatsApp"` on the button; mark the halo and SVG `aria-hidden`.
 
-### What gets built
+## Out of scope
 
-1. **Backend — paid-only contact RPC**
-   - New SECURITY DEFINER function `public.get_company_whatsapp(_company_id uuid)` returning `text` (the phone). Returns the company's `phone` only when `auth.uid()` has role `paid_member`, `broker`, or `admin`; otherwise returns `NULL`. Grants `EXECUTE` to `authenticated`. No new tables, no schema changes to `companies`.
-
-2. **Frontend — shared component**
-   - `src/components/seller/WhatsappFab.tsx` — fixed-position round button using the existing accent token. Props: `companyId`, `companySlug`, `contextLabel` (e.g. product name, brand name, firm name).
-   - Internal hook `useSellerWhatsapp(companyId)` wraps the RPC via React Query, paid-gated client-side (skips the RPC entirely for guests/free).
-   - Positioning: `fixed right-4 z-40`, `bottom-[calc(env(safe-area-inset-bottom)+72px)] lg:bottom-6` so it clears the 64px mobile tab bar plus a small gap, and sits clean on desktop. Hides itself when the existing `StickyContactBar` is visible on Storefront to avoid stacking — Storefront mounts the FAB above the sticky bar by adjusting its bottom offset there only.
-   - Click handler: if paid → `window.open(wa.me link)`; otherwise → `navigate('/membership')` and a sonner toast.
-
-3. **Page integration (presentational only)**
-   - `src/pages/ProductPage.tsx` → mount `<WhatsappFab companyId={product.company_id} contextLabel={product.name} />`.
-   - `src/pages/Storefront.tsx` → mount `<WhatsappFab companyId={company.id} contextLabel={member.firmName} />` with the storefront-specific stacked offset.
-   - `src/pages/BrandPage.tsx` → mount `<WhatsappFab companyId={brand.company_id} contextLabel={brand.name} />`.
-
-### Out of scope
-
-- No changes to existing in-page "WhatsApp / Call / Email" buttons on Storefront.
-- No new public exposure of `companies.phone` — masking via `companies_public` view stays.
-- No analytics/event tracking added in this pass.
-
-### Technical details
-
-- RPC signature:
-  ```sql
-  create or replace function public.get_company_whatsapp(_company_id uuid)
-  returns text language sql stable security definer set search_path = public as $$
-    select c.phone
-    from public.companies c
-    where c.id = _company_id
-      and (
-        public.has_role(auth.uid(), 'paid_member')
-        or public.has_role(auth.uid(), 'broker')
-        or public.has_role(auth.uid(), 'admin')
-      );
-  $$;
-  grant execute on function public.get_company_whatsapp(uuid) to authenticated;
-  ```
-- Client: `supabase.rpc('get_company_whatsapp', { _company_id })`, cached under `['seller-whatsapp', companyId]`, only enabled when `effectiveRole` is paid/broker/admin.
-- Link builder: strip non-digits, prepend `91` if length is 10 and no country code, then `https://wa.me/<digits>?text=<encoded message>`.
-- Z-index `z-40` to match the bottom tab bar and stay below dialogs (`z-50`).
+- `get_company_whatsapp` RPC and paid-member gating
+- `useRole` / `useAuth` / `useQuery` logic and the upgrade-nudge toast
+- Positioning offsets, z-index, safe-area handling
+- Any change to `ProductPage.tsx`, `Storefront.tsx`, `BrandPage.tsx`
