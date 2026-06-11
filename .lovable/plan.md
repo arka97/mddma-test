@@ -1,24 +1,27 @@
 ## Goal
+Remove the 6 duplicate full-width section rows from the homepage (they duplicate the tile grid) and restore the previously-removed sections below the grid.
 
-Place the original tile grid (the one in the screenshot) directly below the LiveRatesTicker on the homepage, expanded from 4 tiles to 6 tiles matching the new section order.
+## Change
 
-## Changes
+### `src/pages/Index.tsx` — replace contents
 
-### 1. `src/components/home/today/QuickActionsGrid.tsx`
-Update tile list to 6 entries in this order, reusing the existing card styling and tone system:
+Top-to-bottom order:
 
-1. **Market** → `/market` · icon `LineChart` · tone `primary` · meta "APMC rates & trends"
-2. **Market News** → `/market-news` · icon `Newspaper` · tone `accent` · meta "Latest from the trade"
-3. **Humor** → `/humor` · icon `Smile` · tone `gold` · meta "A lighter side"
-4. **Circulars & Notices** → `/circulars` · icon `Megaphone` · tone `warning` · meta dynamic (`{n} new` in last 14 days, fallback "Trade notices")
-5. **Brands** → `/brands` · icon `Sparkles` · tone `gold` · meta dynamic (`{n}+ brands`, fallback "House brands")
-6. **Member Directory** → `/directory` · icon `Users` · tone `accent` · meta "Browse verified traders"
+1. `AdSlot` (homepage banner)
+2. `TodayHeader`
+3. `LiveRatesTicker`
+4. `QuickActionsGrid` (6 tiles, unchanged)
+5. `CategoryGrid` — Browse categories
+6. `RecentListingsList` — Recent listings
+7. `ActionRequiredCircular` — most recent circular needing attention
+8. `MembershipCTA` — upgrade prompt for free/guest
+9. `PartnersStrip` — partner/sponsor logos
+10. `AuthorityBlurb` — "Why MDDMA" trust paragraph
 
-Grid: change `grid-cols-2` → `grid-cols-2 md:grid-cols-3` so 6 tiles render as 2×3 on mobile and 3×2 on desktop. Keep all existing card styling (rounded-2xl, tone chip, label, meta).
+**Remove from homepage imports & render:** `MarketSnapshot`, `MarketNewsSection`, `HumorSection`, `CircularsSection`, `FeaturedBrandsStrip`, `FeaturedMembers`. The tile grid already links to `/market`, `/market-news`, `/humor`, `/circulars`, `/brands`, `/directory`.
 
-### 2. `src/pages/Index.tsx`
-Add `import { QuickActionsGrid } from "@/components/home/today/QuickActionsGrid";` and render `<QuickActionsGrid />` between `<LiveRatesTicker />` and `<MarketSnapshot />`. No other changes — the 6 full sections below remain as-is.
-
-## Out of scope
-- No changes to existing tile component visual design beyond the tile list and grid column count.
-- No DB, route, or section-content changes.
+## Not touched
+- Component files for the 6 removed sections stay on disk (still used by their dedicated pages).
+- `/market-news`, `/humor` pages, routes, admin CMS, DB tables, repos, hooks — all unchanged.
+- `QuickActionsGrid.tsx` — unchanged.
+- Verified `RecentListingsList`, `CategoryGrid`, `MembershipCTA`, `ActionRequiredCircular`, `PartnersStrip`, `AuthorityBlurb` contain no RFQ references, so no v3.1.3 cleanup needed.
