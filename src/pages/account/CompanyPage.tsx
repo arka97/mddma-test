@@ -59,9 +59,12 @@ const CompanyPage = () => {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
+  const loadedForUserRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
+    if (loadedForUserRef.current === user.id) return;
+    loadedForUserRef.current = user.id;
     (async () => {
       const { data: rpcData } = await (supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown }>)("get_my_company");
       const rows = Array.isArray(rpcData) ? rpcData : rpcData ? [rpcData] : [];
@@ -84,7 +87,7 @@ const CompanyPage = () => {
       }
       setLoading(false);
     })();
-  }, [user]);
+  }, [user?.id]);
 
   if (!user) return null;
 
