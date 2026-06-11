@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Package, Loader2, Store } from "lucide-react";
+import { WhatsappFab } from "@/components/seller/WhatsappFab";
 
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
@@ -149,6 +150,7 @@ const ProductPage = () => {
           </div>
         </div>
       </section>
+      <WhatsappFab companyId={product.company_id} contextLabel={product.name} />
     </Layout>
   );
 };

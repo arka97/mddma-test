@@ -22,6 +22,7 @@ import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarouse
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useBrandsByCompany } from "@/hooks/queries/useBrands";
 import { BrandStrip } from "@/components/brands/BrandStrip";
+import { WhatsappFab } from "@/components/seller/WhatsappFab";
 
 interface LiveProduct {
   id: string;
@@ -392,6 +393,7 @@ const Storefront = () => {
           </div>
         </div>
       </section>
+      <WhatsappFab companyId={liveCompanyId} contextLabel={member.firmName} />
     </Layout>
   );
 };
