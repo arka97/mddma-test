@@ -399,33 +399,37 @@ const AdminModeration = () => {
                   const owner = companies.find((c) => c.id === p.company_id);
                   return (
                     <Card key={p.id}>
-                      <CardContent className="p-3 flex items-center gap-3 flex-wrap">
-                        <div className="h-10 w-10 rounded bg-muted overflow-hidden flex-shrink-0">
-                          {p.image_url && <img src={p.image_url} alt="" className="h-full w-full object-cover" />}
+                      <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                        <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
+                          <div className="h-10 w-10 rounded bg-muted overflow-hidden flex-shrink-0">
+                            {p.image_url && <img src={p.image_url} alt="" className="h-full w-full object-cover" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{p.name}</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {owner ? `Seller: ${owner.name}` : "Unknown seller"} · /{p.slug}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{p.name}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {owner ? `Seller: ${owner.name}` : "Unknown seller"} · /{p.slug}
-                          </p>
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {p.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
-                          {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
-                        </div>
-                        <div className="flex gap-1">
-                          <Button size="sm" variant="outline" asChild title="View on site">
-                            <Link to={`/products/${p.slug}`}><Eye className="h-3 w-3" /></Link>
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => toggleProductFeatured(p.id, !p.is_featured)} title={p.is_featured ? "Unfeature" : "Feature"}>
-                            <Star className={`h-3 w-3 ${p.is_featured ? "fill-current" : ""}`} />
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => toggleProductHidden(p.id, !p.is_hidden)} title={p.is_hidden ? "Unhide" : "Hide"}>
-                            {p.is_hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => deleteProduct(p.id)} title="Delete">
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
+                          <div className="flex flex-wrap gap-1">
+                            {p.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
+                            {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
+                          </div>
+                          <div className="flex gap-1">
+                            <Button size="sm" variant="outline" asChild title="View on site">
+                              <Link to={`/products/${p.slug}`}><Eye className="h-3 w-3" /></Link>
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => toggleProductFeatured(p.id, !p.is_featured)} title={p.is_featured ? "Unfeature" : "Feature"}>
+                              <Star className={`h-3 w-3 ${p.is_featured ? "fill-current" : ""}`} />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => toggleProductHidden(p.id, !p.is_hidden)} title={p.is_hidden ? "Unhide" : "Hide"}>
+                              {p.is_hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => deleteProduct(p.id)} title="Delete">
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -436,19 +440,22 @@ const AdminModeration = () => {
               <TabsContent value="users" className="space-y-2 mt-4">
                 {users.map((u) => (
                   <Card key={u.id}>
-                    <CardContent className="p-3 flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-muted overflow-hidden">
-                        {u.avatar_url && <img src={u.avatar_url} alt="" className="h-full w-full object-cover" />}
-                      </div>
-                      <div className="flex-1"><p className="font-medium">{u.full_name ?? "Unnamed"}</p>
-                        <div className="flex gap-1 mt-1">
-                          {(u.roles.includes("paid_member") || u.roles.includes("broker")
-                            ? u.roles.filter((r) => r !== "free_member")
-                            : u.roles
-                          ).map((r) => <Badge key={r} variant="secondary" className="text-xs">{r}</Badge>)}
+                    <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
+                        <div className="h-10 w-10 rounded-full bg-muted overflow-hidden flex-shrink-0">
+                          {u.avatar_url && <img src={u.avatar_url} alt="" className="h-full w-full object-cover" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{u.full_name ?? "Unnamed"}</p>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {(u.roles.includes("paid_member") || u.roles.includes("broker")
+                              ? u.roles.filter((r) => r !== "free_member")
+                              : u.roles
+                            ).map((r) => <Badge key={r} variant="secondary" className="text-xs">{r}</Badge>)}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1 sm:flex-nowrap sm:ml-auto sm:shrink-0">
                         {(["admin", "paid_member", "broker"] as const).map((r) => (
                           <Button key={r} size="sm" variant={u.roles.includes(r) ? "default" : "outline"} onClick={() => setRole(u.id, r, !u.roles.includes(r))}>{r}</Button>
                         ))}
@@ -503,8 +510,8 @@ const AdminModeration = () => {
                 </Card>
                 {circulars.map((c) => (
                   <Card key={c.id}>
-                    <CardContent className="p-3 flex items-start gap-3">
-                      <div className="flex-1 min-w-0">
+                    <CardContent className="p-3 flex flex-col sm:flex-row sm:items-start gap-3">
+                      <div className="flex-1 min-w-0 w-full">
                         <p className="font-medium">{c.title}</p>
                         <p className="text-xs text-muted-foreground line-clamp-2">{c.body}</p>
                         <p className="text-xs text-muted-foreground mt-1">
@@ -514,9 +521,11 @@ const AdminModeration = () => {
                           )}
                         </p>
                       </div>
-                      {c.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
-                      <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>
-                      <Button size="sm" variant="outline" onClick={() => deleteCircular(c.id)}><Trash2 className="h-3 w-3" /></Button>
+                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
+                        {c.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
+                        <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteCircular(c.id)}><Trash2 className="h-3 w-3" /></Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -549,27 +558,32 @@ const AdminModeration = () => {
                 </Card>
                 {ads.map((a) => (
                   <Card key={a.id}>
-                    <CardContent className="p-3 flex items-center gap-3 flex-wrap">
-                      <img src={a.image_url} alt={a.title} className="h-12 w-20 object-cover rounded" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{a.title}</p>
-                        <p className="text-xs text-muted-foreground">{a.placement} · priority {a.priority} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                    <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
+                        <img src={a.image_url} alt={a.title} className="h-12 w-20 object-cover rounded flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{a.title}</p>
+                          <p className="text-xs text-muted-foreground truncate">{a.placement} · priority {a.priority} · {a.start_date}{a.end_date ? ` → ${a.end_date}` : ""}</p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Label className="text-xs text-muted-foreground">Priority</Label>
-                        <Input
-                          type="number"
-                          defaultValue={a.priority}
-                          className="h-8 w-20"
-                          onBlur={(e) => {
-                            const v = Number(e.target.value) || 0;
-                            if (v !== a.priority) updateAdPriority(a.id, v);
-                          }}
-                        />
+                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
+                        <div className="flex items-center gap-1.5">
+                          <Label className="sr-only sm:not-sr-only text-xs text-muted-foreground">Priority</Label>
+                          <Input
+                            type="number"
+                            defaultValue={a.priority}
+                            aria-label="Priority"
+                            className="h-8 w-16 sm:w-20"
+                            onBlur={(e) => {
+                              const v = Number(e.target.value) || 0;
+                              if (v !== a.priority) updateAdPriority(a.id, v);
+                            }}
+                          />
+                        </div>
+                        {a.is_active ? <Badge className="bg-accent text-accent-foreground">Active</Badge> : <Badge variant="outline">Paused</Badge>}
+                        <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteAd(a.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
-                      {a.is_active ? <Badge className="bg-accent text-accent-foreground">Active</Badge> : <Badge variant="outline">Paused</Badge>}
-                      <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>
-                      <Button size="sm" variant="outline" onClick={() => deleteAd(a.id)}><Trash2 className="h-3 w-3" /></Button>
                     </CardContent>
                   </Card>
                 ))}
@@ -644,21 +658,25 @@ const AdminModeration = () => {
                   <div className="space-y-2">
                     {categories.map((c) => (
                       <Card key={c.id} className={!c.is_active ? "opacity-60" : ""}>
-                        <CardContent className="p-3 flex items-center gap-3 flex-wrap">
-                          <div className="h-12 w-12 rounded bg-muted overflow-hidden flex-shrink-0">
-                            {c.image_url && <img src={c.image_url} alt="" className="h-full w-full object-cover" />}
+                        <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                          <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
+                            <div className="h-12 w-12 rounded bg-muted overflow-hidden flex-shrink-0">
+                              {c.image_url && <img src={c.image_url} alt="" className="h-full w-full object-cover" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium truncate">{c.name}</p>
+                              <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}{c.aliases?.length ? ` · aka ${c.aliases.join(", ")}` : ""}</p>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">{c.name}</p>
-                            <p className="text-xs text-muted-foreground truncate">/{c.slug} · order {c.sort_order}{c.aliases?.length ? ` · aka ${c.aliases.join(", ")}` : ""}</p>
-                          </div>
-                          <div className="flex flex-wrap gap-1">
-                            {c.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
-                            {!c.is_active && <Badge variant="outline">Inactive</Badge>}
-                          </div>
-                          <div className="flex gap-1">
-                            <Button size="sm" variant="outline" onClick={() => startEditCat(c)}><Pencil className="h-3 w-3" /></Button>
-                            <Button size="sm" variant="outline" onClick={() => removeCategory(c)}><Trash2 className="h-3 w-3" /></Button>
+                          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
+                            <div className="flex flex-wrap gap-1">
+                              {c.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
+                              {!c.is_active && <Badge variant="outline">Inactive</Badge>}
+                            </div>
+                            <div className="flex gap-1">
+                              <Button size="sm" variant="outline" onClick={() => startEditCat(c)}><Pencil className="h-3 w-3" /></Button>
+                              <Button size="sm" variant="outline" onClick={() => removeCategory(c)}><Trash2 className="h-3 w-3" /></Button>
+                            </div>
                           </div>
                         </CardContent>
                       </Card>
@@ -703,15 +721,19 @@ const AdminModeration = () => {
                 </Card>
                 {marketNews.map((n) => (
                   <Card key={n.id}>
-                    <CardContent className="p-3 flex items-center gap-3">
-                      {n.image_url && <img src={n.image_url} alt="" className="h-12 w-16 rounded object-cover" />}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{n.title}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-1">{n.summary ?? n.source_name ?? ""}</p>
+                    <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
+                        {n.image_url && <img src={n.image_url} alt="" className="h-12 w-16 rounded object-cover flex-shrink-0" />}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{n.title}</p>
+                          <p className="text-xs text-muted-foreground line-clamp-1">{n.summary ?? n.source_name ?? ""}</p>
+                        </div>
                       </div>
-                      {n.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
-                      <Button size="sm" variant="outline" onClick={() => toggleNewsPublished(n.id, !n.is_published)}>{n.is_published ? "Unpublish" : "Publish"}</Button>
-                      <Button size="sm" variant="outline" onClick={() => deleteNews(n.id)}><Trash2 className="h-3 w-3" /></Button>
+                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
+                        {n.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
+                        <Button size="sm" variant="outline" onClick={() => toggleNewsPublished(n.id, !n.is_published)}>{n.is_published ? "Unpublish" : "Publish"}</Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteNews(n.id)}><Trash2 className="h-3 w-3" /></Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -749,15 +771,19 @@ const AdminModeration = () => {
                 </Card>
                 {humorPosts.map((h) => (
                   <Card key={h.id}>
-                    <CardContent className="p-3 flex items-center gap-3">
-                      {h.image_url && <img src={h.image_url} alt="" className="h-12 w-16 rounded object-cover" />}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{h.title}</p>
-                        <p className="text-xs text-muted-foreground line-clamp-1">{h.body}</p>
+                    <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
+                        {h.image_url && <img src={h.image_url} alt="" className="h-12 w-16 rounded object-cover flex-shrink-0" />}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{h.title}</p>
+                          <p className="text-xs text-muted-foreground line-clamp-1">{h.body}</p>
+                        </div>
                       </div>
-                      {h.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
-                      <Button size="sm" variant="outline" onClick={() => toggleHumorPublished(h.id, !h.is_published)}>{h.is_published ? "Unpublish" : "Publish"}</Button>
-                      <Button size="sm" variant="outline" onClick={() => deleteHumor(h.id)}><Trash2 className="h-3 w-3" /></Button>
+                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
+                        {h.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
+                        <Button size="sm" variant="outline" onClick={() => toggleHumorPublished(h.id, !h.is_published)}>{h.is_published ? "Unpublish" : "Publish"}</Button>
+                        <Button size="sm" variant="outline" onClick={() => deleteHumor(h.id)}><Trash2 className="h-3 w-3" /></Button>
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
