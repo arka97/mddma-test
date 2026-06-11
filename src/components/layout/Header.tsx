@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogIn, User, LogOut, Building2, Package, ShieldCheck, Store, Search, Sparkles, MapPin } from "lucide-react";
+import { LogIn, User, LogOut, Building2, Package, ShieldCheck, Store, Search, Sparkles, MapPin, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
