@@ -56,7 +56,7 @@ const Storefront = () => {
     setLoading(true);
     supabase
       .from("companies_public")
-      .select("id,owner_id,slug,name,tagline,description,logo_url,city,state,address,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
+      .select("id,owner_id,slug,name,tagline,description,logo_url,city,state,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
       .eq("slug", slug)
       .maybeSingle()
       .then(async ({ data }) => {
