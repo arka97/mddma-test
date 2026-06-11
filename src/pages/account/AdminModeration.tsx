@@ -18,7 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Link, Navigate } from "react-router-dom";
 
-import { uploadFile } from "@/lib/storage";
+import { uploadFile, validateFile, UploadValidationError } from "@/lib/storage";
 import { tierLabel } from "@/lib/membership";
 
 const AdminModeration = () => {
@@ -27,8 +27,9 @@ const AdminModeration = () => {
   const [companies, setCompanies] = useState<{ id: string; name: string; slug: string; is_verified: boolean; is_hidden: boolean; city: string | null; logo_url: string | null; review_status?: string }[]>([]);
   const [products, setProducts] = useState<{ id: string; name: string; slug: string; is_hidden: boolean; is_featured: boolean; company_id: string; image_url: string | null }[]>([]);
   const [users, setUsers] = useState<{ id: string; full_name: string | null; avatar_url: string | null; roles: string[] }[]>([]);
-  const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string }[]>([]);
-  const [circularForm, setCircularForm] = useState({ title: "", body: "", category: "general" });
+  type CircularAttachment = { url: string; name: string; type: "pdf" | "image"; mime: string; size: number };
+  const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string; attachments: CircularAttachment[] }[]>([]);
+  const [circularForm, setCircularForm] = useState<{ title: string; body: string; category: string; files: File[] }>({ title: "", body: "", category: "general", files: [] });
   const [savingCircular, setSavingCircular] = useState(false);
   const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null; priority: number }[]>([]);
   const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null });
@@ -62,7 +63,7 @@ const AdminModeration = () => {
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
-      supabase.from("circulars").select("id,title,body,is_published,created_at").order("created_at", { ascending: false }),
+      supabase.from("circulars").select("id,title,body,is_published,created_at,attachments").order("created_at", { ascending: false }),
       supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date,priority").order("priority", { ascending: false }).order("created_at", { ascending: false }),
       listCategories().catch(() => [] as ProductCategoryRow[]),
       (supabase as any).from("market_news").select("id,title,summary,is_published,created_at,image_url,source_name").order("sort_order", { ascending: false }).order("created_at", { ascending: false }),
@@ -70,7 +71,7 @@ const AdminModeration = () => {
     ]);
     setCompanies((c ?? []) as typeof companies);
     setProducts(p ?? []);
-    setCirculars((circ ?? []) as typeof circulars);
+    setCirculars(((circ ?? []) as unknown) as typeof circulars);
     setAds((adRows ?? []) as typeof ads);
     setCategories(cats);
     setMarketNews((mn ?? []) as typeof marketNews);
@@ -129,7 +130,33 @@ const AdminModeration = () => {
   // Circulars
   const saveCircular = async () => {
     if (!user || !circularForm.title.trim() || !circularForm.body.trim()) return;
+    if (circularForm.files.length > 5) {
+      toast({ title: "Max 5 attachments", variant: "destructive" });
+      return;
+    }
     setSavingCircular(true);
+    const attachments: CircularAttachment[] = [];
+    for (const f of circularForm.files) {
+      try {
+        validateFile(f, { allowPdf: true });
+      } catch (e) {
+        const msg = e instanceof UploadValidationError ? e.message : "Invalid file";
+        toast({ title: `Skipped ${f.name}`, description: msg, variant: "destructive" });
+        continue;
+      }
+      const url = await uploadFile("circular-assets", user.id, f);
+      if (!url) {
+        toast({ title: `Upload failed: ${f.name}`, variant: "destructive" });
+        continue;
+      }
+      attachments.push({
+        url,
+        name: f.name,
+        type: f.type === "application/pdf" ? "pdf" : "image",
+        mime: f.type,
+        size: f.size,
+      });
+    }
     const { error } = await supabase.from("circulars").insert({
       title: circularForm.title,
       body: circularForm.body,
@@ -137,10 +164,11 @@ const AdminModeration = () => {
       created_by: user.id,
       is_published: true,
       published_at: new Date().toISOString(),
+      attachments: attachments as unknown as never,
     });
     setSavingCircular(false);
     if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else { toast({ title: "Circular published" }); setCircularForm({ title: "", body: "", category: "general" }); load(); }
+    else { toast({ title: "Circular published" }); setCircularForm({ title: "", body: "", category: "general", files: [] }); load(); }
   };
   const togglePublishCircular = async (id: string, val: boolean) => {
     const { error } = await supabase.from("circulars").update({ is_published: val, published_at: val ? new Date().toISOString() : null }).eq("id", id);
@@ -437,6 +465,37 @@ const AdminModeration = () => {
                     <div className="space-y-1.5"><Label>Title</Label><Input maxLength={200} value={circularForm.title} onChange={(e) => setCircularForm({ ...circularForm, title: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Body</Label><Textarea rows={4} maxLength={4000} value={circularForm.body} onChange={(e) => setCircularForm({ ...circularForm, body: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Category</Label><Input maxLength={50} value={circularForm.category} onChange={(e) => setCircularForm({ ...circularForm, category: e.target.value })} /></div>
+                    <div className="space-y-1.5">
+                      <Label>Attachments (up to 5 — PDF / JPG / PNG / WEBP)</Label>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="application/pdf,image/jpeg,image/png,image/webp"
+                        onChange={(e) => {
+                          const picked = Array.from(e.target.files ?? []);
+                          const combined = [...circularForm.files, ...picked].slice(0, 5);
+                          setCircularForm({ ...circularForm, files: combined });
+                          e.target.value = "";
+                        }}
+                      />
+                      {circularForm.files.length > 0 && (
+                        <ul className="space-y-1 mt-2">
+                          {circularForm.files.map((f, i) => (
+                            <li key={i} className="flex items-center gap-2 text-xs bg-muted/40 rounded px-2 py-1">
+                              <span className="flex-1 truncate">{f.name} <span className="text-muted-foreground">({Math.round(f.size / 1024)} KB)</span></span>
+                              <button
+                                type="button"
+                                className="text-destructive hover:underline"
+                                onClick={() => setCircularForm({ ...circularForm, files: circularForm.files.filter((_, j) => j !== i) })}
+                              >
+                                Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <p className="text-[11px] text-muted-foreground">Max 25 MB per PDF, 10 MB per image. No SVG.</p>
+                    </div>
                     <Button onClick={saveCircular} disabled={savingCircular} variant="accent">
                       {savingCircular ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Publish</>}
                     </Button>
@@ -448,7 +507,12 @@ const AdminModeration = () => {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium">{c.title}</p>
                         <p className="text-xs text-muted-foreground line-clamp-2">{c.body}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{new Date(c.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(c.created_at).toLocaleDateString()}
+                          {Array.isArray(c.attachments) && c.attachments.length > 0 && (
+                            <> · {c.attachments.length} attachment{c.attachments.length === 1 ? "" : "s"}</>
+                          )}
+                        </p>
                       </div>
                       {c.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
                       <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>

@@ -175,6 +175,7 @@ export type Database = {
       }
       circulars: {
         Row: {
+          attachments: Json
           body: string
           category: string | null
           created_at: string
@@ -187,6 +188,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          attachments?: Json
           body: string
           category?: string | null
           created_at?: string
@@ -199,6 +201,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          attachments?: Json
           body?: string
           category?: string | null
           created_at?: string
