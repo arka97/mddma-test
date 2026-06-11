@@ -1,6 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
 
+export interface CircularAttachment {
+  url: string;
+  name: string;
+  type: "pdf" | "image";
+  mime: string;
+  size: number;
+}
+
 export interface CircularRow {
   id: string;
   title: string;
@@ -11,6 +19,7 @@ export interface CircularRow {
   created_by: string;
   created_at: string;
   updated_at: string;
+  attachments: CircularAttachment[];
 }
 
 export async function listCirculars(opts: { publishedOnly?: boolean } = { publishedOnly: true }) {
