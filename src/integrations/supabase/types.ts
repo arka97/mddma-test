@@ -259,6 +259,7 @@ export type Database = {
           description: string | null
           email: string | null
           established_year: number | null
+          fssai: string | null
           gstin: string | null
           hours: string | null
           id: string
@@ -267,12 +268,16 @@ export type Database = {
           is_sponsored: boolean
           is_verified: boolean
           languages: string[]
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           markets: string[]
           membership_tier: string | null
           name: string
           owner_id: string
           phone: string | null
+          pincode: string | null
+          place_id: string | null
           rejection_reason: string | null
           review_status: Database["public"]["Enums"]["review_status"]
           slug: string
@@ -294,6 +299,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           established_year?: number | null
+          fssai?: string | null
           gstin?: string | null
           hours?: string | null
           id?: string
@@ -302,12 +308,16 @@ export type Database = {
           is_sponsored?: boolean
           is_verified?: boolean
           languages?: string[]
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           markets?: string[]
           membership_tier?: string | null
           name: string
           owner_id: string
           phone?: string | null
+          pincode?: string | null
+          place_id?: string | null
           rejection_reason?: string | null
           review_status?: Database["public"]["Enums"]["review_status"]
           slug: string
@@ -329,6 +339,7 @@ export type Database = {
           description?: string | null
           email?: string | null
           established_year?: number | null
+          fssai?: string | null
           gstin?: string | null
           hours?: string | null
           id?: string
@@ -337,12 +348,16 @@ export type Database = {
           is_sponsored?: boolean
           is_verified?: boolean
           languages?: string[]
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           markets?: string[]
           membership_tier?: string | null
           name?: string
           owner_id?: string
           phone?: string | null
+          pincode?: string | null
+          place_id?: string | null
           rejection_reason?: string | null
           review_status?: Database["public"]["Enums"]["review_status"]
           slug?: string
@@ -881,13 +896,18 @@ export type Database = {
           created_at: string | null
           description: string | null
           established_year: number | null
+          fssai: string | null
           id: string | null
           is_hidden: boolean | null
           is_verified: boolean | null
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           membership_tier: string | null
           name: string | null
           owner_id: string | null
+          pincode: string | null
+          place_id: string | null
           review_status: Database["public"]["Enums"]["review_status"] | null
           slug: string | null
           social_links: Json | null
@@ -906,13 +926,18 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           established_year?: number | null
+          fssai?: string | null
           id?: string | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           membership_tier?: string | null
           name?: string | null
           owner_id?: string | null
+          pincode?: string | null
+          place_id?: string | null
           review_status?: Database["public"]["Enums"]["review_status"] | null
           slug?: string | null
           social_links?: Json | null
@@ -931,13 +956,18 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           established_year?: number | null
+          fssai?: string | null
           id?: string | null
           is_hidden?: boolean | null
           is_verified?: boolean | null
+          latitude?: number | null
           logo_url?: string | null
+          longitude?: number | null
           membership_tier?: string | null
           name?: string | null
           owner_id?: string | null
+          pincode?: string | null
+          place_id?: string | null
           review_status?: Database["public"]["Enums"]["review_status"] | null
           slug?: string | null
           social_links?: Json | null
@@ -1009,6 +1039,7 @@ export type Database = {
           description: string | null
           email: string | null
           established_year: number | null
+          fssai: string | null
           gstin: string | null
           hours: string | null
           id: string
@@ -1017,12 +1048,16 @@ export type Database = {
           is_sponsored: boolean
           is_verified: boolean
           languages: string[]
+          latitude: number | null
           logo_url: string | null
+          longitude: number | null
           markets: string[]
           membership_tier: string | null
           name: string
           owner_id: string
           phone: string | null
+          pincode: string | null
+          place_id: string | null
           rejection_reason: string | null
           review_status: Database["public"]["Enums"]["review_status"]
           slug: string
