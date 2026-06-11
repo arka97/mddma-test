@@ -68,7 +68,7 @@ export function Header() {
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild><Link to="/account/profile"><User className="mr-2 h-4 w-4" /> My Profile</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/company"><Building2 className="mr-2 h-4 w-4" /> {company ? "My Company" : "Create Company"}</Link></DropdownMenuItem>
-        {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="mr-2 h-4 w-4" /> View My Storefront</Link></DropdownMenuItem>}
+        {company && <DropdownMenuItem asChild><Link to={`/store/${company.slug}`}><Store className="mr-2 h-4 w-4" /> My Storefront</Link></DropdownMenuItem>}
         <DropdownMenuItem asChild><Link to="/account/products"><Package className="mr-2 h-4 w-4" /> My Products</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link to="/account/brands"><Sparkles className="mr-2 h-4 w-4" /> My Brands</Link></DropdownMenuItem>
         
