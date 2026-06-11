@@ -338,6 +338,8 @@ const AdminModeration = () => {
                 <TabsTrigger value="circulars"><Megaphone className="h-3 w-3 mr-1" /> Circulars ({circulars.length})</TabsTrigger>
                 <TabsTrigger value="ads"><Star className="h-3 w-3 mr-1" /> Ads ({ads.length})</TabsTrigger>
                 <TabsTrigger value="categories"><Layers className="h-3 w-3 mr-1" /> Categories ({categories.length})</TabsTrigger>
+                <TabsTrigger value="news"><Newspaper className="h-3 w-3 mr-1" /> Market News ({marketNews.length})</TabsTrigger>
+                <TabsTrigger value="humor"><Smile className="h-3 w-3 mr-1" /> Humor ({humorPosts.length})</TabsTrigger>
               </TabsList>
 
               <TabsContent value="companies" className="space-y-2 mt-4">
