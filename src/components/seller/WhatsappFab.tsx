@@ -74,11 +74,12 @@ export function WhatsappFab({ companyId, contextLabel, mobileBottomOffset = 0, c
       onClick={handleClick}
       aria-label="Chat with seller on WhatsApp"
       className={cn(
-        "fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg ring-2 ring-background transition-transform hover:scale-105 active:scale-95 lg:right-6 lg:!bottom-6",
+        "fixed right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg ring-2 ring-background transition-transform hover:scale-105 active:scale-95",
+        "bottom-[var(--fab-bottom)] lg:bottom-6 lg:right-6",
         className,
       )}
       style={{
-        bottom: `calc(env(safe-area-inset-bottom) + ${mobileBottom}px)`,
+        ["--fab-bottom" as never]: `calc(env(safe-area-inset-bottom) + ${mobileBottom}px)`,
         backgroundColor: "#25D366",
         color: "#ffffff",
       }}
