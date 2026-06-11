@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadFile, slugify } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
+import { GooglePlacesAutocomplete, type PlaceDetails } from "@/components/maps/GooglePlacesAutocomplete";
 
 interface CompanyForm {
   name: string;
@@ -25,20 +26,26 @@ interface CompanyForm {
   city: string;
   state: string;
   country: string;
+  pincode: string;
   address: string;
+  latitude: number | null;
+  longitude: number | null;
+  place_id: string;
   email: string;
   phone: string;
   website: string;
   gstin: string;
-  established_year: string;
+  fssai: string;
   categories: string;
   certifications: string;
 }
 
 const empty: CompanyForm = {
   name: "", slug: "", tagline: "", description: "", logo_url: "", cover_url: "",
-  city: "", state: "", country: "India", address: "", email: "", phone: "", website: "",
-  gstin: "", established_year: "", categories: "", certifications: "",
+  city: "", state: "", country: "India", pincode: "", address: "",
+  latitude: null, longitude: null, place_id: "",
+  email: "", phone: "", website: "", gstin: "", fssai: "",
+  categories: "", certifications: "",
 };
 
 const CompanyPage = () => {
