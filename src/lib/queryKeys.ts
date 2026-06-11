@@ -27,6 +27,16 @@ export const qk = {
     list: (publishedOnly = true) =>
       [...qk.circulars.all, "list", publishedOnly] as const,
   },
+  marketNews: {
+    all: ["marketNews"] as const,
+    list: (publishedOnly = true) =>
+      [...qk.marketNews.all, "list", publishedOnly] as const,
+  },
+  humor: {
+    all: ["humor"] as const,
+    list: (publishedOnly = true) =>
+      [...qk.humor.all, "list", publishedOnly] as const,
+  },
   ads: {
     all: ["ads"] as const,
     byPlacement: (placement: string) =>

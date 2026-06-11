@@ -32,6 +32,8 @@ const AdminModeration = lazy(() => import("./pages/account/AdminModeration"));
 const Brands = lazy(() => import("./pages/Brands"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
 const AccountBrandsPage = lazy(() => import("./pages/account/BrandsPage"));
+const MarketNews = lazy(() => import("./pages/MarketNews"));
+const Humor = lazy(() => import("./pages/Humor"));
 
 function RouteFallback() {
   return (
@@ -66,6 +68,8 @@ export function AppRoutes() {
         <Route path="/community" element={<Community />} />
         <Route path="/membership" element={<MembershipPlans />} />
         <Route path="/circulars" element={<Circulars />} />
+        <Route path="/market-news" element={<MarketNews />} />
+        <Route path="/humor" element={<Humor />} />
         <Route path="/forms" element={<Forms />} />
         <Route path="/contact" element={<Forms />} />
         <Route path="/login" element={<Login />} />
