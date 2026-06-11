@@ -1,44 +1,62 @@
-# Fix Google Maps Address Autocomplete
+# Custom Inline Address Autocomplete (Zepto/Blinkit style)
 
 ## Problem
 
-The address field on `/account/company` throws:
+The current `GooglePlacesAutocomplete` uses Google's `PlaceAutocompleteElement` custom element. On mobile it:
+- Renders as a dark/unstyled element (doesn't inherit our Tailwind input styles)
+- Opens a full-screen native picker when tapped, breaking the form flow
 
-> Cannot read properties of undefined (reading 'Autocomplete')
-
-Root cause: `GooglePlacesAutocomplete.tsx` uses the **legacy** `google.maps.places.Autocomplete` class. The managed Google Maps browser key is only authorized for the **Maps JavaScript API + Places API (New)**, and the legacy Places classes (`Autocomplete`, `SearchBox`, `PlacesService`) are no longer available on the script we load. The library loads, but `google.maps.places.Autocomplete` is `undefined`, hence the crash.
-
-We also load the script without the recommended `loading=async` + `callback` pattern and without the usage-tracking `channel` parameter.
+User wants an inline experience: a normal-looking text input that drops a list of address suggestions directly below it, like Zepto / Blinkit / Swiggy "Select your Location".
 
 ## Fix
 
-Rewrite `src/components/maps/GooglePlacesAutocomplete.tsx` to use the **Places API (New)** browser surface — `PlaceAutocompleteElement` (a custom element `<gmp-place-autocomplete>`) — which is the supported replacement.
+Rewrite `src/components/maps/GooglePlacesAutocomplete.tsx` to drive the **Places API (New)** programmatically and render our own UI — no Google-provided element.
 
 ### Approach
 
-1. Load the Maps JS API with the documented pattern:
-   - `loading=async`
-   - `&libraries=places`
-   - `&channel=${VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID}`
-   - Init via a global `callback` so `google.maps` is guaranteed ready.
-2. Use `google.maps.importLibrary('places')` to get `PlaceAutocompleteElement`.
-3. Mount the `PlaceAutocompleteElement` inside our wrapper div (replacing the plain `<Input>` element for the suggestion box). Keep the leading `MapPin` icon and loading spinner styling consistent with the rest of the form.
-4. Listen to the element's `gmp-select` event → call `place.fetchFields({ fields: ['addressComponents','location','formattedAddress','id'] })` → parse into our existing `PlaceDetails` shape (address, city, state, country, pincode, lat/lng, place_id) → fire `onPlaceSelected` and `onChange`.
-5. Keep the same component props (`value`, `onChange`, `onPlaceSelected`, `id`, `required`, `maxLength`, `placeholder`) so `CompanyPage.tsx` does not need to change.
-6. Keep manual typing working: the autocomplete element has its own input; mirror its text via the `input` event so the parent's `form.address` stays in sync (covers the case where a user types but never picks a suggestion).
-7. Preserve the singleton script-loader promise so the script is only injected once across mounts.
+1. Use a regular shadcn `<Input>` (with `MapPin` left icon) so it matches every other field on the form.
+2. Load Maps JS with the async + callback pattern (already in place) and `importLibrary('places')` to get `AutocompleteSuggestion`, `AutocompleteSessionToken`, and `Place`.
+3. Create one `AutocompleteSessionToken` per typing session (reset after a selection — Google billing best practice).
+4. As the user types, debounce 200ms, then call `AutocompleteSuggestion.fetchAutocompleteSuggestions({ input, sessionToken, includedRegionCodes: ['in'] })`.
+5. Render results in a custom dropdown anchored below the input:
+   - Absolutely positioned `div` with `bg-popover`, border, shadow, rounded, max-height + scroll
+   - Each row: `MapPin` icon + primary text (place main text) + secondary muted text (formatted address)
+   - Keyboard support: ArrowUp / ArrowDown / Enter / Escape
+   - Click/tap selects
+   - Closes on outside click and on blur (with small delay so click registers)
+6. On select: call `suggestion.placePrediction.toPlace()` → `place.fetchFields({ fields: ['addressComponents','location','formattedAddress','id'] })` → parse via existing `parseComponents` helper → fire `onChange(address)` + `onPlaceSelected(details)` → reset session token.
+7. Keep the same component props/signature so `CompanyPage.tsx` doesn't change.
+8. Inline only — no full-screen modal, no portal. Dropdown sits inside the field's relative wrapper so it flows with the form on mobile and desktop.
+
+### Visual spec (mobile-first, matches reference image)
+
+- Input: same height/border/radius as other form fields (`h-10`, `rounded-md`, `border-input`, `bg-background`).
+- Left icon: `MapPin` (muted-foreground, 16px), input left padding `pl-9`.
+- Right: small spinner while a request is in-flight.
+- Dropdown:
+  - `absolute left-0 right-0 top-full mt-1 z-50`
+  - `rounded-md border bg-popover shadow-lg overflow-hidden`
+  - Max-height ~ `max-h-72 overflow-auto`
+  - Row: `flex items-start gap-3 px-3 py-2.5 cursor-pointer hover:bg-accent`
+  - Active (keyboard) row gets `bg-accent`
+  - Divider via `border-b border-border/60` between rows
+  - Primary text: `text-sm font-medium text-foreground`
+  - Secondary text: `text-xs text-muted-foreground line-clamp-2`
+- Empty state (after a query with no results): subtle muted "No matches" row.
 
 ### Technical details
 
-- File touched: `src/components/maps/GooglePlacesAutocomplete.tsx` (rewrite only — no other files change).
-- API key source unchanged: `import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY`.
-- Script URL:
-  ```
-  https://maps.googleapis.com/maps/api/js?key=KEY&libraries=places&v=weekly&loading=async&callback=__lovableInitMaps&channel=TRACKING_ID
-  ```
-- Address parsing helper stays the same; it just reads `place.addressComponents` (new API field names: `longText`, `shortText`, `types`) instead of legacy `address_components`.
-- No DB / form / route changes.
+- File touched: `src/components/maps/GooglePlacesAutocomplete.tsx` (rewrite only).
+- No DB / `CompanyPage.tsx` / env changes.
+- Suggestion data shape used (per Places API New):
+  - `suggestion.placePrediction.text.text` → full label
+  - `suggestion.placePrediction.structuredFormat.mainText.text` → primary
+  - `suggestion.placePrediction.structuredFormat.secondaryText.text` → secondary
+- Region biased to India (`includedRegionCodes: ['in']`) to match audience; can be removed later if needed.
+- Debounce implemented with a ref-stored timeout; latest-request guard prevents stale results overwriting newer ones.
+- Cleanup: clear debounce + outside-click listener on unmount.
 
 ## Out of scope
 
-- No changes to `CompanyPage.tsx`, env vars, or other map usages.
+- City/State/Country/Pincode inputs (still auto-filled by the same `onPlaceSelected` callback — unchanged).
+- "Use current location" button shown in the Blinkit reference (can be added later if requested).
