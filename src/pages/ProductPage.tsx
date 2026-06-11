@@ -149,6 +149,7 @@ const ProductPage = () => {
           </div>
         </div>
       </section>
+      <WhatsappFab companyId={product.company_id} contextLabel={product.name} />
     </Layout>
   );
 };
