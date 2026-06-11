@@ -31,5 +31,5 @@ export async function listCirculars(opts: { publishedOnly?: boolean } = { publis
   if (opts.publishedOnly) q = q.eq("is_published", true);
   const { data, error } = await q;
   if (error) throw new Error(friendlyErrorMessage(error));
-  return (data ?? []) as CircularRow[];
+  return ((data ?? []) as unknown) as CircularRow[];
 }
