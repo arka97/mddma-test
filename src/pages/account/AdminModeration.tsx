@@ -465,6 +465,37 @@ const AdminModeration = () => {
                     <div className="space-y-1.5"><Label>Title</Label><Input maxLength={200} value={circularForm.title} onChange={(e) => setCircularForm({ ...circularForm, title: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Body</Label><Textarea rows={4} maxLength={4000} value={circularForm.body} onChange={(e) => setCircularForm({ ...circularForm, body: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Category</Label><Input maxLength={50} value={circularForm.category} onChange={(e) => setCircularForm({ ...circularForm, category: e.target.value })} /></div>
+                    <div className="space-y-1.5">
+                      <Label>Attachments (up to 5 — PDF / JPG / PNG / WEBP)</Label>
+                      <Input
+                        type="file"
+                        multiple
+                        accept="application/pdf,image/jpeg,image/png,image/webp"
+                        onChange={(e) => {
+                          const picked = Array.from(e.target.files ?? []);
+                          const combined = [...circularForm.files, ...picked].slice(0, 5);
+                          setCircularForm({ ...circularForm, files: combined });
+                          e.target.value = "";
+                        }}
+                      />
+                      {circularForm.files.length > 0 && (
+                        <ul className="space-y-1 mt-2">
+                          {circularForm.files.map((f, i) => (
+                            <li key={i} className="flex items-center gap-2 text-xs bg-muted/40 rounded px-2 py-1">
+                              <span className="flex-1 truncate">{f.name} <span className="text-muted-foreground">({Math.round(f.size / 1024)} KB)</span></span>
+                              <button
+                                type="button"
+                                className="text-destructive hover:underline"
+                                onClick={() => setCircularForm({ ...circularForm, files: circularForm.files.filter((_, j) => j !== i) })}
+                              >
+                                Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                      <p className="text-[11px] text-muted-foreground">Max 25 MB per PDF, 10 MB per image. No SVG.</p>
+                    </div>
                     <Button onClick={saveCircular} disabled={savingCircular} variant="accent">
                       {savingCircular ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Publish</>}
                     </Button>
@@ -476,7 +507,12 @@ const AdminModeration = () => {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium">{c.title}</p>
                         <p className="text-xs text-muted-foreground line-clamp-2">{c.body}</p>
-                        <p className="text-xs text-muted-foreground mt-1">{new Date(c.created_at).toLocaleDateString()}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {new Date(c.created_at).toLocaleDateString()}
+                          {Array.isArray(c.attachments) && c.attachments.length > 0 && (
+                            <> · {c.attachments.length} attachment{c.attachments.length === 1 ? "" : "s"}</>
+                          )}
+                        </p>
                       </div>
                       {c.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
                       <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>
