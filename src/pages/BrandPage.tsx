@@ -11,6 +11,7 @@ import { useCompanyBySlug } from "@/hooks/queries/useCompanies";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
+import { WhatsappFab } from "@/components/seller/WhatsappFab";
 
 interface CompanyMini {
   id: string;
