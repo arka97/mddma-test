@@ -230,6 +230,7 @@ const BrandPage = () => {
           </aside>
         </div>
       </section>
+      <WhatsappFab companyId={brand.company_id} contextLabel={brand.name} />
     </Layout>
   );
 };
