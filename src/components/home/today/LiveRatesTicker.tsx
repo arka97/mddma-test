@@ -59,7 +59,7 @@ export function LiveRatesTicker() {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-foreground/95 text-background">
       <div className="flex items-center">
-        <div className="flex shrink-0 items-center gap-1.5 border-r border-background/15 px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest text-success">
+        <div className="flex shrink-0 items-center gap-1.5 border-r border-background/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-success">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success/70" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
@@ -69,7 +69,7 @@ export function LiveRatesTicker() {
         <div className="flex-1 overflow-hidden" style={{ maskImage: "linear-gradient(to right, transparent, #000 8%, #000 92%, transparent)" }}>
           <div className="flex whitespace-nowrap motion-reduce:animate-none" style={{ animation: "ticker-scroll 60s linear infinite" }}>
             {loop.map((item, i) => (
-              <div key={`${item.id}-${i}`} className="inline-flex items-center gap-2 px-4 py-2.5 text-xs">
+              <div key={`${item.id}-${i}`} className="inline-flex items-center gap-2 px-4 py-1.5 text-xs">
                 <span className="font-medium text-background/95">{item.name}</span>
                 {item.origin && <span className="text-background/60">· {item.origin}</span>}
                 <span className="font-mono tabular-nums text-background/90">{item.range}</span>
