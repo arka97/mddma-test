@@ -74,7 +74,7 @@ export function CategoryGrid({ heading = "Browse categories", subtitle = "Pick a
   };
 
   const scrollerClass =
-    "-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden";
+    "flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden";
 
   return (
     <section>
