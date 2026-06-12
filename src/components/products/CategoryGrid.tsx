@@ -66,7 +66,7 @@ export function CategoryGrid({ listings }: Props) {
             <p className="text-muted-foreground text-sm">No categories match your search.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
             {filtered.map((cat) => {
               const count = counts.get(cat.name) ?? 0;
               return (
@@ -89,9 +89,9 @@ export function CategoryGrid({ listings }: Props) {
                     ) : (
                       <CommodityImage commodity={cat.name} aspect="1/1" rounded={false} />
                     )}
-                    <div className="p-3 text-center">
-                      <h3 className="font-semibold text-foreground text-sm truncate">{cat.name}</h3>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <div className="p-2 text-center">
+                      <h3 className="font-semibold text-foreground text-xs truncate">{cat.name}</h3>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
                         {count} {count === 1 ? "listing" : "listings"}
                       </p>
                     </div>
