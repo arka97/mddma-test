@@ -6,6 +6,7 @@ import { AdSlot } from "@/components/home/today/AdSlot";
 import { QuickActionsGrid } from "@/components/home/today/QuickActionsGrid";
 import { CategoryGrid } from "@/components/home/today/CategoryGrid";
 import { RecentListingsList } from "@/components/home/today/RecentListingsList";
+import { NewMembersList } from "@/components/home/today/NewMembersList";
 
 import { MembershipCTA } from "@/components/home/today/MembershipCTA";
 import { PartnersStrip } from "@/components/home/today/PartnersStrip";
@@ -30,6 +31,7 @@ const Index = () => (
         <QuickActionsGrid />
         <CategoryGrid />
         <RecentListingsList />
+        <NewMembersList />
         
         <MembershipCTA />
         <PartnersStrip />
