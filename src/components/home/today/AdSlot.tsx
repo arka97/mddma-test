@@ -83,7 +83,7 @@ function AdCarousel({ ads }: { ads: AdRow[] }) {
           ))}
         </div>
       </div>
-      <div className="mt-2 flex justify-center gap-1.5">
+      <div className="mt-1.5 flex justify-center gap-1">
         {ads.map((_, i) => (
           <button
             key={i}
@@ -91,8 +91,8 @@ function AdCarousel({ ads }: { ads: AdRow[] }) {
             aria-label={`Go to ad ${i + 1}`}
             onClick={() => emblaApi?.scrollTo(i)}
             className={cn(
-              "h-1.5 rounded-full transition-all",
-              i === selected ? "w-5 bg-accent" : "w-1.5 bg-muted-foreground/30 hover:bg-muted-foreground/60",
+              "h-1 rounded-full transition-all",
+              i === selected ? "w-3 bg-accent" : "w-1 bg-muted-foreground/30 hover:bg-muted-foreground/60",
             )}
           />
         ))}
