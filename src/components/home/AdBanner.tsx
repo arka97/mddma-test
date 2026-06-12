@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink } from "lucide-react";
+
 import { supabase } from "@/integrations/supabase/client";
 
 interface AdBannerProps {
@@ -45,10 +45,6 @@ export function AdBanner({ placement }: AdBannerProps) {
               <img src={ad.image_url} alt={ad.title} className="h-full w-full object-cover" loading="lazy" />
             </div>
           )}
-          <div className="p-2 flex items-center justify-between gap-3">
-            <p className="text-xs font-medium text-foreground line-clamp-1">{ad.title}</p>
-            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
-          </div>
         </a>
       ))}
     </div>
