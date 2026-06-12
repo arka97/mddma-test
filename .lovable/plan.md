@@ -1,32 +1,26 @@
 ## Goal
 
-Reduce ad banner height across the app to standard IAB leaderboard ratios:
-- **Mobile:** 320×50 (ratio 32:5 ≈ 6.4:1)
-- **Desktop:** 728×90 (ratio 728:90 ≈ 8.09:1)
+Make "Browse categories" a horizontally scrollable strip showing ALL active categories (not just 6), with featured/hot ones appearing first.
 
 ## Changes
 
-### 1. `src/components/home/today/AdSlot.tsx` (homepage top banner)
-- Replace `aspect-[16/7]` on the image wrapper with responsive aspect ratios:
-  - Mobile: `aspect-[32/5]`
-  - Desktop (`md:`): `aspect-[728/90]`
-- Cap max width at 728px and center, so the banner doesn't stretch wider than a real leaderboard on large screens.
-- Tighten card padding (`p-3` → `p-2`) and shrink the title to `text-xs` so the footer row matches the slimmer image.
-- Keep "Ad" chip, carousel dots, and autoplay behavior unchanged.
+**File: `src/components/home/today/CategoryGrid.tsx`**
 
-### 2. `src/components/home/AdBanner.tsx` (category/sidebar placements)
-- Currently renders the image at its natural height. Wrap the `<img>` in a fixed-ratio container:
-  - Mobile: `aspect-[32/5]`
-  - Desktop: `aspect-[728/90]` with `max-w-[728px] mx-auto`
-- Use `object-cover` so existing uploaded creatives crop cleanly into the leaderboard strip.
-- Reduce caption row padding to `p-2` and title to `text-xs`.
+1. **Show all categories, sorted by featured-first**
+   - Remove the `.slice(0, 6)` cap so every active category is rendered.
+   - Keep the existing sort: `is_hot || is_featured` first, others after (stable order preserved for the rest).
 
-### 3. No other files touched
-- `SponsorsSection.tsx` and `PartnersStrip.tsx` are text-only logo strips (no banner image), so they're out of scope.
-- No DB, repository, or admin-CMS changes — image uploads remain as-is and are simply cropped via CSS.
+2. **Replace the grid with a horizontal scroller**
+   - Swap the `grid grid-cols-3 sm:grid-cols-6` container for a single-row flex scroller:
+     - `flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4` (negative margin lets the strip bleed to viewport edges on mobile so the last card can scroll fully into view; safe on desktop too since parent has padding).
+     - Hide the scrollbar with the existing `scrollbar-hide` utility if present, otherwise add inline `[&::-webkit-scrollbar]:hidden` style.
+   - Each card becomes a fixed-width snap item: `snap-start shrink-0 w-28 sm:w-32` so 3–4 fit on mobile and 6+ on desktop, matching today's visual density.
+   - Loading skeletons mirror the same layout (row of 6 fixed-width skeletons in an overflow-x container).
 
-## Technical notes
+3. **No data, query, or routing changes.** Links, badges, counts, and image rendering stay identical.
 
-- Aspect ratio approach (rather than fixed `h-[50px] / h-[90px]`) keeps the strip crisp at all viewport widths while respecting the IAB proportions.
-- `max-w-[728px] mx-auto` prevents the desktop banner from ballooning on wide screens where the page container is wider than 728px.
-- Existing creatives that were authored at 16:7 will be center-cropped. Admins can re-upload true 728×90 / 320×50 artwork later; no schema change needed.
+## Out of scope
+
+- No DB or `useProductCategories` hook changes.
+- No edits to other home sections or the `/products` page.
+- No new arrows/controls — native touch + trackpad scroll only (matches existing horizontal strips in the app).
