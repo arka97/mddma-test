@@ -1,16 +1,19 @@
-## Goal
+## Changes on Home (`/`)
 
-Strip the bottom text bar ("Regency Snacks / Bhuta brothers" + "Learn more") from ad cards so the banner is image-only. The whole card stays clickable and the "Ad" badge stays.
+### 1. Rename "Recent listings" → "New Products"
+File: `src/components/home/today/RecentListingsList.tsx`
+- Heading text: `Recent listings` → `New Products`
+- Keep subtitle and "View all" link unchanged (or update subtitle to "Latest commodities from verified sellers" — already fits).
 
-## Changes
+### 2. Add a "New Members" section below it
+New file: `src/components/home/today/NewMembersList.tsx`
+- Fetches latest 5 companies from `companies` table via Supabase, ordered by `created_at desc`.
+- Renders a compact list (avatar initials + firm name + city/category + Verified badge), styled like `RecentListingsList` for visual consistency.
+- Header: **New Members** with subtitle "Recently joined verified traders" and a "Directory →" link to `/directory`.
+- Loading skeletons; empty state mirrors recent listings.
 
-**`src/components/home/today/AdSlot.tsx`** (the ad shown on Home "Today" and `/products`)
-- In `AdCard`, delete the bottom `<div className="flex items-center justify-between gap-3 p-2">…</div>` block (title + Learn more).
-- Remove the now-unused `ExternalLink` import.
+### 3. Wire it into the home page
+File: `src/pages/Index.tsx`
+- Import `NewMembersList` and render it immediately after `<RecentListingsList />` inside the existing `space-y-5` stack.
 
-**`src/components/home/AdBanner.tsx`** (same pattern, used elsewhere)
-- Apply the same removal: drop the title/ExternalLink footer `<div className="p-2 …">…</div>`, remove `ExternalLink` import.
-
-## Out of scope
-- No changes to ad data, placements, carousel behavior, or the "Ad" badge.
-- No layout/aspect-ratio changes — image keeps `aspect-[32/5]` / `md:aspect-[728/90]`.
+No backend/schema/business-logic changes. Pure presentation additions.
