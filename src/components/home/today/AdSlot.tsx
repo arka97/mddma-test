@@ -17,7 +17,7 @@ function AdCard({ ad }: { ad: AdRow }) {
       rel="noopener noreferrer"
       className="group relative mx-auto block w-full max-w-[728px] overflow-hidden rounded-xl border border-border bg-muted/40 shadow-sm transition-shadow hover:shadow-md"
     >
-      <span className="absolute right-2 top-2 z-10 rounded bg-background/90 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+      <span className="absolute right-1.5 top-1.5 z-10 rounded-sm bg-background/80 px-1 py-px text-[8px] font-semibold uppercase tracking-wider text-muted-foreground leading-none">
         Ad
       </span>
       {ad.image_url && (
