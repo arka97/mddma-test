@@ -9,7 +9,7 @@ import { RecentListingsList } from "@/components/home/today/RecentListingsList";
 
 import { MembershipCTA } from "@/components/home/today/MembershipCTA";
 import { PartnersStrip } from "@/components/home/today/PartnersStrip";
-import { AuthorityBlurb } from "@/components/home/today/AuthorityBlurb";
+
 
 const Index = () => (
   <Layout>
@@ -33,7 +33,6 @@ const Index = () => (
         
         <MembershipCTA />
         <PartnersStrip />
-        <AuthorityBlurb />
       </div>
     </div>
   </Layout>
