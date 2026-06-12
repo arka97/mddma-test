@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Search, Loader2, Star } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import type { ProductEntry } from "@/lib/dataSource";
@@ -13,7 +12,6 @@ interface Props {
 
 export function CategoryGrid({ listings }: Props) {
   const { data: cats = [], isLoading } = useProductCategories({ activeOnly: true });
-  const [search, setSearch] = useState("");
 
   const counts = useMemo(() => {
     const map = new Map<string, number>();
@@ -25,36 +23,19 @@ export function CategoryGrid({ listings }: Props) {
     return map;
   }, [listings]);
 
-  const filtered = useMemo(() => {
-    const s = search.trim().toLowerCase();
-    const sorted = [...cats].sort((a, b) => Number(b.is_featured) - Number(a.is_featured));
-    if (!s) return sorted;
-    return sorted.filter(
-      (c) =>
-        c.name.toLowerCase().includes(s) ||
-        (c.aliases ?? []).some((a) => a.toLowerCase().includes(s)),
-    );
-  }, [cats, search]);
+  const filtered = useMemo(
+    () => [...cats].sort((a, b) => Number(b.is_featured) - Number(a.is_featured)),
+    [cats],
+  );
 
   return (
     <section className="py-8">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-primary">Browse Categories</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Pick a category to explore its listings
-            </p>
-          </div>
-          <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search category (e.g. Kaju, Anjeer)…"
-              className="pl-10"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-3xl font-bold text-primary">Browse Categories</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Pick a category to explore its listings
+          </p>
         </div>
 
         {isLoading ? (
@@ -63,8 +44,9 @@ export function CategoryGrid({ listings }: Props) {
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 border border-dashed border-border rounded-lg">
-            <p className="text-muted-foreground text-sm">No categories match your search.</p>
+            <p className="text-muted-foreground text-sm">No categories yet.</p>
           </div>
+
         ) : (
           <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
             {filtered.map((cat) => {
