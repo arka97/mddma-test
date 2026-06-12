@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink } from "lucide-react";
+
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { listAdsByPlacement, type AdRow } from "@/repositories/advertisements";
@@ -25,12 +25,6 @@ function AdCard({ ad }: { ad: AdRow }) {
           <img src={ad.image_url} alt={ad.title} className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]" loading="lazy" />
         </div>
       )}
-      <div className="flex items-center justify-between gap-3 p-2">
-        <p className="line-clamp-1 text-xs font-medium text-foreground">{ad.title}</p>
-        <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-accent">
-          Learn more <ExternalLink className="h-3 w-3" />
-        </span>
-      </div>
     </a>
   );
 }
