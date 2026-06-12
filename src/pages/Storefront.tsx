@@ -17,8 +17,7 @@ import {
   ArrowLeft, Globe, Calendar, Package, Pencil, Eye, Loader2,
 } from "lucide-react";
 
-import { GuardedPublicPriceLine } from "@/components/commodity/GuardedPrice";
-import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
+import { ProductTile } from "@/components/products/ProductTile";
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useBrandsByCompany } from "@/hooks/queries/useBrands";
 import { BrandStrip } from "@/components/brands/BrandStrip";
@@ -267,80 +266,37 @@ const Storefront = () => {
                 </CardHeader>
                 <CardContent>
                   {liveMember && liveProducts.length > 0 ? (
-                    <>
-                      {/* Mobile: card list */}
-                      <ul className="space-y-3 sm:hidden">
-                        {liveProducts.map((p) => (
-                          <li key={p.id} className="min-w-0 overflow-hidden rounded-lg border border-border p-3">
-                            <div className="flex min-w-0 gap-3">
-                              <div className="w-20 flex-shrink-0">
-                                <ProductMediaCarousel
-                                  commodity={p.name}
-                                  images={[p.image_url, ...(p.gallery ?? [])]}
-                                  videoUrl={p.video_url}
-                                  aspect="1/1"
-                                  rounded
-                                />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div className="truncate break-words text-sm font-medium text-foreground">{p.name}</div>
-                                <div className="truncate text-xs text-muted-foreground">
-                                  {p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}
-                                </div>
-                                <div className="mt-1 text-xs">
-                                  <GuardedPublicPriceLine listing={{
-                                    priceMin: p.price_min,
-                                    priceMax: p.price_max,
-                                    priceUnit: `₹/${p.unit ?? "kg"}`,
-                                  }} />
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                      {/* Desktop / tablet: table */}
-                      <div className="hidden sm:block overflow-x-auto">
-                        <table className="w-full text-sm">
-                          <thead>
-                            <tr className="border-b border-border text-left">
-                              <th className="py-2 px-2 text-muted-foreground font-medium w-20">Media</th>
-                              <th className="py-2 px-2 text-muted-foreground font-medium">Product</th>
-                              <th className="py-2 px-2 text-muted-foreground font-medium">Price Range</th>
-                              
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {liveProducts.map((p) => (
-                              <tr key={p.id} className="border-b border-border/50">
-                                <td className="py-2.5 px-2">
-                                  <div className="w-16">
-                                    <ProductMediaCarousel
-                                      commodity={p.name}
-                                      images={[p.image_url, ...(p.gallery ?? [])]}
-                                      videoUrl={p.video_url}
-                                      aspect="1/1"
-                                      rounded
-                                    />
-                                  </div>
-                                </td>
-                                <td className="py-2.5 px-2">
-                                  <div className="font-medium text-foreground">{p.name}</div>
-                                  <div className="text-xs text-muted-foreground">{p.category ?? "—"}{p.origin ? ` · ${p.origin}` : ""}</div>
-                                </td>
-                                <td className="py-2.5 px-2 text-xs">
-                                  <GuardedPublicPriceLine listing={{
-                                    priceMin: p.price_min,
-                                    priceMax: p.price_max,
-                                    priceUnit: `₹/${p.unit ?? "kg"}`,
-                                  }} />
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+                      {liveProducts.map((p) => {
+                        const entry = {
+                          id: p.id,
+                          slug: p.slug,
+                          sellerId: liveCompanyId ?? "",
+                          sellerName: liveMember.firmName,
+                          sellerSlug: liveMember.slug,
+                          commodityId: p.id,
+                          commodity: p.name,
+                          variant: p.category ?? "",
+                          origin: p.origin ?? "",
+                          packaging: "",
+                          moq: "",
+                          priceMin: p.price_min,
+                          priceMax: p.price_max,
+                          priceUnit: `₹/${p.unit ?? "kg"}`,
+                          location: "",
+                          listingDate: "",
+                          imageUrl: p.image_url,
+                          gallery: p.gallery,
+                          videoUrl: p.video_url,
+                          isFeatured: false,
+                          isBranded: false,
+                          brandId: null,
+                          retailPackSize: null,
+                          b2cUrl: null,
+                        };
+                        return <ProductTile key={p.id} listing={entry} hideSeller />;
+                      })}
+                    </div>
                   ) : (
                     <p className="text-muted-foreground text-center py-6">No active listings yet.</p>
                   )}

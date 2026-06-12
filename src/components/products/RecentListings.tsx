@@ -1,7 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
-import { GuardedPrice } from "@/components/commodity/GuardedPrice";
+import { ProductTile } from "@/components/products/ProductTile";
 import type { ProductEntry } from "@/lib/dataSource";
 
 interface Props {
@@ -26,39 +23,9 @@ export function RecentListings({ listings, limit = 8 }: Props) {
           </p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
           {items.map((listing) => (
-            <Card
-              key={listing.id}
-              className="bg-card border-border hover:border-accent/50 card-hover h-full overflow-hidden flex flex-col"
-            >
-              <div className="relative">
-                <ProductMediaCarousel
-                  commodity={listing.commodity}
-                  alt={`${listing.commodity} ${listing.variant}`}
-                  images={[listing.imageUrl, ...(listing.gallery ?? [])]}
-                  videoUrl={listing.videoUrl}
-                  aspect="16/10"
-                  rounded={false}
-                />
-                {listing.origin && (
-                  <div className="absolute top-2 left-2 z-10">
-                    <Badge variant="outline" className="bg-background/95 text-[10px]">
-                      {listing.origin}
-                    </Badge>
-                  </div>
-                )}
-              </div>
-              <CardContent className="p-4 flex flex-col flex-1">
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <div className="min-w-0">
-                    <h3 className="font-semibold text-foreground truncate">{listing.commodity}</h3>
-                    <p className="text-xs text-muted-foreground truncate">{listing.variant}</p>
-                  </div>
-                  <GuardedPrice listing={listing} />
-                </div>
-              </CardContent>
-            </Card>
+            <ProductTile key={listing.id} listing={listing} />
           ))}
         </div>
       </div>
