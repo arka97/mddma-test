@@ -38,14 +38,16 @@ export function AdBanner({ placement }: AdBannerProps) {
           href={ad.link_url ?? "#"}
           target="_blank"
           rel="noopener noreferrer"
-          className="block rounded-lg border border-accent/30 bg-accent/5 hover:bg-accent/10 transition-colors overflow-hidden"
+          className="mx-auto block w-full max-w-[728px] rounded-lg border border-accent/30 bg-accent/5 hover:bg-accent/10 transition-colors overflow-hidden"
         >
           {ad.image_url && (
-            <img src={ad.image_url} alt={ad.title} className="w-full h-auto object-cover" loading="lazy" />
+            <div className="aspect-[32/5] w-full overflow-hidden bg-muted md:aspect-[728/90]">
+              <img src={ad.image_url} alt={ad.title} className="h-full w-full object-cover" loading="lazy" />
+            </div>
           )}
-          <div className="p-3 flex items-center justify-between gap-3">
-            <p className="text-sm font-medium text-foreground">{ad.title}</p>
-            <ExternalLink className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <div className="p-2 flex items-center justify-between gap-3">
+            <p className="text-xs font-medium text-foreground line-clamp-1">{ad.title}</p>
+            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
           </div>
         </a>
       ))}
