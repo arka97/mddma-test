@@ -13,12 +13,11 @@ import { AdSlot } from "@/components/home/today/AdSlot";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 
-import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
-import { GuardedPrice } from "@/components/commodity/GuardedPrice";
 import { useProducts } from "@/hooks/queries/useProducts";
 import { useProductCategories } from "@/hooks/queries/useProductCategories";
 import { CategoryGrid } from "@/components/products/CategoryGrid";
 import { RecentListings } from "@/components/products/RecentListings";
+import { ProductTile } from "@/components/products/ProductTile";
 
 const Products = () => {
   const [params, setParams] = useSearchParams();
