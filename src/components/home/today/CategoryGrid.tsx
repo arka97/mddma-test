@@ -38,15 +38,18 @@ export function CategoryGrid({ heading = "Browse categories", subtitle = "Pick a
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-2xl" />)}
+        <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: "none" }}>
+          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-36 w-28 shrink-0 rounded-2xl sm:w-32" />)}
         </div>
       ) : items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border bg-card p-6 text-center text-xs text-muted-foreground">
           Categories will appear here once curated.
         </div>
       ) : (
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+        <div
+          className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden"
+          style={{ scrollbarWidth: "none" }}
+        >
           {items.map((cat) => {
             const count = counts.get(cat.name) ?? 0;
             const hot = cat.is_hot || cat.is_featured;
@@ -54,7 +57,7 @@ export function CategoryGrid({ heading = "Browse categories", subtitle = "Pick a
               <Link
                 key={cat.id}
                 to={`/products?cat=${encodeURIComponent(cat.name)}`}
-                className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                className="group relative flex w-28 shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md sm:w-32"
               >
                 {hot && (
                   <span className="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded bg-accent px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wider text-accent-foreground shadow">
