@@ -59,7 +59,7 @@ export function LiveRatesTicker() {
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-foreground/95 text-background">
       <div className="flex items-center">
-        <div className="flex shrink-0 items-center gap-1.5 border-r border-background/15 px-3 py-2.5 text-[10px] font-bold uppercase tracking-widest text-success">
+        <div className="flex shrink-0 items-center gap-1.5 border-r border-background/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-success">
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success/70" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
