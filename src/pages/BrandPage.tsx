@@ -155,38 +155,36 @@ const BrandPage = () => {
                   No branded SKUs listed yet.
                 </CardContent></Card>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
                   {brandedProducts.map((p) => {
                     const url = buyUrl(p.b2c_url);
-                    return (
-                      <Card key={p.id} className="overflow-hidden card-hover">
-                        <ProductMediaCarousel
-                          commodity={p.name}
-                          alt={p.name}
-                          images={[p.image_url, ...(p.gallery ?? [])]}
-                          videoUrl={p.video_url}
-                          aspect="4/3"
-                          rounded={false}
-                        />
-                        <CardContent className="p-4">
-                          <h3 className="font-semibold text-foreground">{p.name}</h3>
-                          {p.retail_pack_size && (
-                            <p className="text-xs text-muted-foreground mt-0.5">{p.retail_pack_size}</p>
-                          )}
-                          {url ? (
-                            <Button size="sm" className="w-full mt-3" asChild>
-                              <a href={url} target="_blank" rel="noopener noreferrer">
-                                Buy retail <ExternalLink className="h-3 w-3 ml-1" />
-                              </a>
-                            </Button>
-                          ) : company ? (
-                            <Button size="sm" variant="outline" className="w-full mt-3" asChild>
-                              <Link to={`/store/${company.slug}`}>Inquire on storefront</Link>
-                            </Button>
-                          ) : null}
-                        </CardContent>
-                      </Card>
-                    );
+                    const entry = {
+                      id: p.id,
+                      slug: p.slug,
+                      sellerId: brand.company_id ?? "",
+                      sellerName: company?.name,
+                      sellerSlug: company?.slug,
+                      commodityId: p.id,
+                      commodity: p.name,
+                      variant: p.category ?? "",
+                      origin: "",
+                      packaging: "",
+                      moq: "",
+                      priceMin: null,
+                      priceMax: null,
+                      priceUnit: "",
+                      location: "",
+                      listingDate: "",
+                      imageUrl: p.image_url,
+                      gallery: p.gallery,
+                      videoUrl: p.video_url,
+                      isFeatured: false,
+                      isBranded: true,
+                      brandId: brand.id,
+                      retailPackSize: p.retail_pack_size,
+                      b2cUrl: url,
+                    };
+                    return <ProductTile key={p.id} listing={entry} hideSeller />;
                   })}
                 </div>
               )}
