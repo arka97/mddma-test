@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { Search, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { ORIGIN_COUNTRIES } from "@/lib/originCountries";
