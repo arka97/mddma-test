@@ -17,7 +17,6 @@ import {
   ArrowLeft, Globe, Calendar, Package, Pencil, Eye, Loader2,
 } from "lucide-react";
 
-import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
 import { ProductTile } from "@/components/products/ProductTile";
 import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useBrandsByCompany } from "@/hooks/queries/useBrands";
