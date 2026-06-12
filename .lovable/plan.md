@@ -1,26 +1,28 @@
 ## Goal
 
-Make "Browse categories" a horizontally scrollable strip showing ALL active categories (not just 6), with featured/hot ones appearing first.
+On the homepage "Browse categories" section, show **two** horizontally scrollable strips instead of one. Each strip holds 16 categories: the first 4 are featured/hot, the remaining 12 are non-featured. On mobile, 4 cards must be visible without horizontal scrolling.
 
-## Changes
+## Changes — `src/components/home/today/CategoryGrid.tsx`
 
-**File: `src/components/home/today/CategoryGrid.tsx`**
+1. **Split the sorted list into two strips**
+   - Partition `cats` into `featured` (`is_hot || is_featured`) and `rest` (everything else, original order preserved).
+   - Strip 1 = `featured.slice(0, 4)` + `rest.slice(0, 12)` → up to 16 items.
+   - Strip 2 = `featured.slice(4, 8)` + `rest.slice(12, 24)` → up to 16 items.
+   - If Strip 2 ends up empty, render only Strip 1 (no empty row).
 
-1. **Show all categories, sorted by featured-first**
-   - Remove the `.slice(0, 6)` cap so every active category is rendered.
-   - Keep the existing sort: `is_hot || is_featured` first, others after (stable order preserved for the rest).
+2. **Card width so 4 fit on mobile without scrolling**
+   - Current `w-28` (112px) + `gap-3` (12px) overflows a ~358px content area (4×112 + 3×12 = 484px).
+   - New card width: `w-[calc((100%-36px)/4)]` (accounts for 3 × 12px gaps) on mobile, `sm:w-32` on desktop.
+   - Keep `snap-start shrink-0`, rounded card, badge, image, label, count — no visual changes per card.
 
-2. **Replace the grid with a horizontal scroller**
-   - Swap the `grid grid-cols-3 sm:grid-cols-6` container for a single-row flex scroller:
-     - `flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 -mx-4 px-4` (negative margin lets the strip bleed to viewport edges on mobile so the last card can scroll fully into view; safe on desktop too since parent has padding).
-     - Hide the scrollbar with the existing `scrollbar-hide` utility if present, otherwise add inline `[&::-webkit-scrollbar]:hidden` style.
-   - Each card becomes a fixed-width snap item: `snap-start shrink-0 w-28 sm:w-32` so 3–4 fit on mobile and 6+ on desktop, matching today's visual density.
-   - Loading skeletons mirror the same layout (row of 6 fixed-width skeletons in an overflow-x container).
-
-3. **No data, query, or routing changes.** Links, badges, counts, and image rendering stay identical.
+3. **Layout**
+   - Render two `<div>` scrollers stacked with `space-y-3` (or `mt-3` on the second), each using the existing classes:
+     `-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden`.
+   - Loading skeleton: render two rows of 4 skeleton cards using the same width formula.
+   - Empty state unchanged.
 
 ## Out of scope
 
-- No DB or `useProductCategories` hook changes.
-- No edits to other home sections or the `/products` page.
-- No new arrows/controls — native touch + trackpad scroll only (matches existing horizontal strips in the app).
+- No DB, hook, routing, sort logic, or other home-section changes.
+- No arrows/pagination — native swipe/trackpad scroll only.
+- `/products` page and `src/components/products/CategoryGrid.tsx` unchanged.
