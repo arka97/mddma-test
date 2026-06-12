@@ -21,7 +21,7 @@ export function CategoryGrid({ heading = "Browse categories", subtitle = "Pick a
   }, [products]);
 
   const items = useMemo(
-    () => [...cats].sort((a, b) => Number(b.is_hot || b.is_featured) - Number(a.is_hot || a.is_featured)).slice(0, 6),
+    () => [...cats].sort((a, b) => Number(b.is_hot || b.is_featured) - Number(a.is_hot || a.is_featured)),
     [cats],
   );
 
