@@ -83,7 +83,10 @@ export function mergeDirectory(live: CompanyRow[]): DirectoryEntry[] {
 // ---------------------------------------------------------------------------
 export interface ProductEntry {
   id: string;
+  slug: string;
   sellerId: string;
+  sellerName?: string;
+  sellerSlug?: string;
   commodityId: string;
   commodity: string;
   variant: string;
@@ -98,6 +101,7 @@ export interface ProductEntry {
   imageUrl?: string | null;
   gallery?: string[] | null;
   videoUrl?: string | null;
+  isFeatured?: boolean;
   isBranded?: boolean;
   brandId?: string | null;
   retailPackSize?: string | null;
@@ -114,6 +118,7 @@ export function liveProductToEntry(p: ProductRow): ProductEntry {
   };
   return {
     id: p.id,
+    slug: p.slug,
     sellerId: p.company_id,
     commodityId: p.id,
     commodity: p.name,
@@ -129,6 +134,7 @@ export function liveProductToEntry(p: ProductRow): ProductEntry {
     imageUrl: p.image_url,
     gallery: p.gallery,
     videoUrl: extras.video_url ?? null,
+    isFeatured: !!p.is_featured,
     isBranded: !!extras.is_branded,
     brandId: extras.brand_id ?? null,
     retailPackSize: extras.retail_pack_size ?? null,
