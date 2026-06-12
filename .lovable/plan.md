@@ -1,18 +1,19 @@
 ## Goal
-On the /products page, the "Browse Categories" grid should show 4 categories per row on mobile and 8 per row on desktop (instead of current 2 → 6).
+Fix the "Featured" badge on category tiles in /products Browse Categories — currently overflows/clips on mobile (4 cols, ~80px tiles).
 
 ## Change
-File: `src/components/products/CategoryGrid.tsx` (line ~76)
+File: `src/components/products/CategoryGrid.tsx` (lines 57-61)
 
-Replace the grid classes:
-- From: `grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4`
-- To: `grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3`
+Make the badge compact: on mobile show just the star icon in a small chip; on `sm+` show the full "Featured" label.
 
-Also tighten card inner content for the smaller mobile tiles:
-- Card padding `p-3` → `p-2`
-- Title text `text-sm` → `text-xs`
-- Featured badge stays top-right but with slightly smaller offset
+```tsx
+{cat.is_featured && (
+  <span className="absolute top-1 right-1 z-10 inline-flex items-center gap-0.5 rounded bg-accent px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-accent-foreground shadow sm:top-2 sm:right-2 sm:px-1.5 sm:text-[10px]">
+    <Star className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
+    <span className="hidden sm:inline">Featured</span>
+  </span>
+)}
+```
 
 ## Out of scope
-- No changes to the home page `CategoryGrid` (src/components/home/today/CategoryGrid.tsx) — that one keeps its two horizontal strips.
-- No data/sort/filter logic changes.
+- Grid columns, card layout, data, other tiles/sections.
