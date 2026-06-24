@@ -12,12 +12,13 @@ The implementation reference: stack, layering, data model, auth model, the Behav
 
 | Layer | Choice | Why |
 |---|---|---|
-| Frontend | React 18 + Vite + TypeScript | Lovable native, fast HMR |
-| Styling | Tailwind 3 + shadcn/ui + HSL semantic tokens | Brand-locked Royal Heritage palette (navy, burgundy, gold, ivory) |
+| Frontend | React 18 + Vite 5 + TypeScript 5 | Lovable native, fast HMR |
+| Styling | Tailwind 3 + shadcn/ui + HSL semantic tokens | Navy + gold corporate palette; dark-mode safe |
 | Routing | React Router v6 (`BrowserRouter`) | SPA fallback handled by Lovable hosting |
 | Data | TanStack Query (`@tanstack/react-query`) | Caching + invalidation over the repository layer |
 | Backend | **Lovable Cloud** (Auth, Postgres, Storage, Edge Functions) | Single managed surface, no external accounts |
-| Payments | Razorpay (single Paid plan, broker is a flag) | India-first, UPI native |
+| Payments | Razorpay (single Paid plan, broker is a flag) | India-first, UPI native; **test-mode only** until LEGAL-001 |
+| Forum | Discourse embed (primary) + native archive tables | Lower moderation burden, richer threading |
 | Behavioral Intelligence Layer | **External API service** (TECH-001) | Compute-heavy; lives outside edge functions |
 
 ## System architecture
@@ -41,10 +42,12 @@ graph TD
   subgraph External
     BIL[Behavioral Intelligence API]
     RP[Razorpay]
+    DC[Discourse embed]
   end
   UI --> Hooks --> Repos --> DB
   Repos --> Storage
   UI --> Auth
+  UI --> DC
   EF --> RP
   EF --> Auth
   UI -.signals.-> BIL
@@ -64,27 +67,29 @@ This split is what stopped the "KGVPL invisible" class of bugs: there is exactly
 ```mermaid
 erDiagram
   companies ||--o{ products : has
+  companies ||--o{ brands : has
+  brands ||--o{ products : groups
   products ||--o{ product_variants : has
-  companies ||--o{ rfqs : receives
-  rfqs ||--o{ inquiry_products : contains
-  product_variants ||--o{ inquiry_products : referenced_by
   auth_users ||--o{ companies : owns
   auth_users ||--o{ user_roles : has
   auth_users ||--o{ posts : authors
   posts ||--o{ comments : has
   admins ||--o{ circulars : publishes
   admins ||--o{ ads : publishes
+  admins ||--o{ market_news : publishes
   companies ||--o{ kyc_documents : submits
 ```
 
 Key tables:
 
-- `companies` — one per Paid member; carries `is_broker`, `is_verified`, slug, categories.
+- `companies` — one per Paid member; carries `is_broker`, `is_verified`, slug, categories, `review_status`, `is_hidden`. Read by the public via the `companies_public` view (security_invoker, safe-column SELECT grants only).
+- `brands` — house brands per company; powers `/brands`, `/brands/:slug` and the storefront brand strip.
 - `products` + `product_variants` — variant-level pricing input (never rendered exactly).
-- `rfqs` + `inquiry_products` — the multi-item RFQ as two normalised tables.
-- `posts` + `comments` — native forum.
-- `circulars`, `ads` — admin CMS content.
+- `posts` + `comments` — native forum (read-only archive; Discourse is primary).
+- `circulars`, `ads`, `market_news` — admin CMS content.
 - `user_roles` — **separate table**, never a column on `companies`. Roles are checked via a `SECURITY DEFINER` `has_role(uid, role)` function used inside RLS policies.
+
+The `rfqs` and `inquiry_products` tables and their RLS policies have been **dropped** (v3.1.3). Do not reintroduce.
 
 ## Auth & RLS
 
@@ -107,22 +112,24 @@ Rules:
 
 - **Roles live in `user_roles`**, never on profiles or companies. Storing roles on a profile is a privilege-escalation risk.
 - Every table that holds member data has RLS enabled and policies that call `public.has_role(auth.uid(), 'admin'::app_role)` or check `auth.uid() = owner_id`.
+- Every public-schema table has explicit `GRANT` statements alongside its policies — RLS alone is not enough on Lovable Cloud.
+- `companies_public` is a `security_invoker=true` view. `anon` and `authenticated` are granted column-level SELECT on the **safe** columns of `public.companies` only (id, owner_id, slug, name, tagline, description, logo_url, cover_url, city, state, country, website, established_year, categories, certifications, social_links, is_verified, is_hidden, membership_tier, review_status, is_sponsored, verification_tier_label, languages, hours, markets, timestamps). Sensitive columns (`email`, `phone`, `gstin`, `address`) are not granted to public roles.
 - The `ad-assets` storage bucket is admin-only write, public read.
 
 ## Behavioral Intelligence Layer
 
-The BIL is **external**, not an edge function. It receives anonymised signal events (search, RFQ submission, quote turnaround) and serves back demand-trend chips and ranking weights consumed by `Products` and `Storefront`.
+The BIL is **external**, not an edge function. It receives anonymised signal events (search, contact-reveal, page view) and serves back demand-trend chips and ranking weights consumed by `Products`, `Storefront` and `Brands`.
 
 | Direction | Endpoint shape | Consumer |
 |---|---|---|
 | **Inbound (events)** | `POST /events` `{ type, payload, ts }` | Frontend fires on key interactions |
-| **Outbound (signals)** | `GET /signals?scope=...` | `useContent` hook merges into product cards |
+| **Outbound (signals)** | `GET /signals?scope=...` | `useContent` hook merges into product / brand cards |
 
-The frontend treats BIL as best-effort: if the API is down, components fall back to a local trend computed from recent RFQ activity.
+The frontend treats BIL as best-effort: if the API is down, components fall back to a local trend computed from recent listing activity.
 
 ## Edge functions
 
-Four functions deploy from `supabase/functions/<name>/index.ts`. Detail in **08 · Edge Functions Reference**.
+Functions deploy from `supabase/functions/<name>/index.ts`. Detail in **08 · Edge Functions Reference**.
 
 | Function | Purpose | Auth model |
 |---|---|---|
@@ -131,9 +138,9 @@ Four functions deploy from `supabase/functions/<name>/index.ts`. Detail in **08 
 | `razorpay-create-payment-link` | Generates a Razorpay payment link for a pending membership | JWT bearer; verified to be admin via `user_roles` |
 | `razorpay-webhook` | Receives `payment_link.paid` and activates the membership + role grant | None at JWT layer; HMAC signature verified via `RAZORPAY_WEBHOOK_SECRET` |
 
-Internal-doc bodies live as loose markdown in `supabase/functions/get-internal-doc/content/*.md` and are bundled into `content.ts` (regenerated whenever a file is added). The edge function imports the bundle and resolves a slug → file mapping; there are no filesystem reads at runtime.
+Internal-doc bodies live as loose markdown in `supabase/functions/get-internal-doc/content/*.md` and are bundled into `content.ts` (regenerated via `bunx tsx scripts/build-internal-docs-bundle.ts` whenever a file is added). The edge function imports the bundle and resolves a slug → file mapping; there are no filesystem reads at runtime.
 
-There is **no** `promote-verification` edge function in the current build. KYC tier promotion is performed by admins directly (via service-role writes from `/account/moderation`) — the `prevent_profile_privilege_escalation` trigger blocks any other path.
+There is **no** `promote-verification` edge function and **no** RFQ-related edge function in the current build. KYC tier promotion is performed by admins directly (via service-role writes from `/account/moderation`) — the `prevent_profile_privilege_escalation` trigger blocks any other path.
 
 ## Storage buckets
 
@@ -148,7 +155,7 @@ Size limits and validation live in `src/lib/storage.ts` — 10 MB for images, 10
 
 ## Frontend conventions
 
-- HSL semantic tokens only — no `text-white`, no hardcoded hex.
+- HSL semantic tokens only — no `text-white`, no hardcoded hex, no inline color utilities.
 - shadcn components customised via `class-variance-authority` variants, never inline overrides.
 - Multi-step forms use react-hook-form + zod.
 - All async UI returns explicit `{ data, loading, error }` from hooks.

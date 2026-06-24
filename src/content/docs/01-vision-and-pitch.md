@@ -6,18 +6,18 @@
 ---
 
 
-> **Thesis.** MDDMA does not expose the dry-fruits and dates market — it **structures and controls** it. The platform is a Behavioral Trade Operating System for the Mumbai Dry Fruits & Dates Merchants Association: a verified directory, a controlled-transparency catalogue, and a structured negotiation engine designed to keep pricing power inside the association.
+> **Thesis.** MDDMA does not expose the dry-fruits and dates market — it **structures and controls** it. The platform is a Behavioral Trade Operating System for the Mumbai Dry Fruits & Dates Merchants Association: a verified directory, a controlled-transparency catalogue, seller storefronts and brands, and a published authority layer (knowledge, circulars, market news) designed to keep pricing power inside the association.
 
-> **Where this doc sits.** This is doc **01 of 17** — the start of the canonical reading order. Public spec runs **01 → 06**; owner-only deep reference runs **07 → 17**. Read in order on first pass; later, jump by topic. Authoritative invariants live in **11 · Decisions Log** — when narratives in earlier docs conflict with a decision entry, the decision entry wins.
+> **Where this doc sits.** This is doc **01 of 29** — the start of the canonical reading order. Public spec runs **00 → 06**; owner-only deep reference runs **07 → 28**. Read in order on first pass; later, jump by topic. Authoritative invariants live in **11 · Decisions Log** — when narratives in earlier docs conflict with a decision entry, the decision entry wins.
 
-> **Last verified** May 2026 against the live database (`public` schema), the four deployed edge functions, and `src/routes.tsx`.
+> **Last verified** June 2026 against the live database (`public` schema), the deployed edge functions, and `src/routes.tsx`.
 
 ## The problem
 
 Mumbai's dry-fruits and dates trade runs on phone calls, WhatsApp screenshots, and broker memory. Three things are broken:
 
 1. **Price leakage.** Public marketplaces broadcast exact prices and stock, eroding member margins and exposing the trade to price-shoppers.
-2. **Trust asymmetry.** Buyers cannot tell a verified Association member from a stranger; sellers waste time on unqualified RFQs.
+2. **Trust asymmetry.** Buyers cannot tell a verified Association member from a stranger; sellers waste time on unqualified enquiries.
 3. **Fragmented signals.** Demand spikes, festival cycles, port arrivals, and rate movements live in private chats — not in any single source the Association can govern.
 
 ## The solution — Controlled Transparency
@@ -29,16 +29,15 @@ sequenceDiagram
     participant B as Buyer
     participant P as MDDMA Platform
     participant S as Verified Seller
-    B->>P: Browse a product
+    B->>P: Browse a product or storefront
     P-->>B: Range price + stock band (High/Med/Low) + demand trend
-    B->>P: Send RFQ (login required)
-    P->>S: Qualified inquiry with buyer reputation score
-    S-->>P: Private quote
-    P-->>B: Quote in negotiation thread
+    B->>P: Tap "Contact seller" (login required)
+    P-->>B: Reveals phone / wa.me deeplink
+    B->>S: Direct WhatsApp / call (off-platform)
     Note over P: Exact price & exact stock<br/>never leave the platform
 ```
 
-The platform never shows exact prices or exact stock to anyone. Buyers see ranges and bands; sellers see qualified, reputation-scored inquiries; the Association sees the entire flow.
+The platform never shows exact prices or exact stock to anyone. Buyers see ranges and bands; sellers see verified contact requests; the Association sees the full directory, catalogue and content flow. Negotiations happen off-platform via `wa.me` deeplinks — there is **no in-app RFQ engine** (removed v3.1.3, see decision RFQ-001 in doc 11).
 
 ## Lean canvas
 
@@ -52,8 +51,9 @@ flowchart LR
   subgraph Solution
     S1[Verified directory]
     S2[Controlled-transparency catalogue]
-    S3[Structured RFQ engine]
-    S4[Behavioral Intelligence Layer]
+    S3[Storefronts + brands]
+    S4[Authority layer: knowledge, circulars, market news]
+    S5[Behavioral Intelligence Layer]
   end
   subgraph Channels
     C1[Association onboarding]
@@ -72,7 +72,7 @@ flowchart LR
 |---|---|
 | **Customer segments** | Verified Association members; institutional buyers; brokers |
 | **Unfair advantage** | Association-controlled trust + behavioral signal layer no public marketplace can replicate |
-| **Key metrics** | Verified members, qualified RFQs/month, RFQ→quote rate, buyer-reputation distribution |
+| **Key metrics** | Verified members, contact reveals/month, storefront views, circular reach, buyer-reputation distribution |
 | **Cost structure** | Hosting + Lovable Cloud, BIL API compute, light human moderation |
 
 ## ROI for the committee
@@ -90,13 +90,15 @@ Brokers are not a separate SKU — `profiles.is_broker = true` flips a flag on t
 ## What we are explicitly **not** building
 
 - A public, price-comparison marketplace.
+- An in-app RFQ / multi-item cart engine (removed v3.1.3).
 - A WhatsApp Business API integration (`wa.me` deeplinks only).
 - Lead Packs or pay-per-lead monetisation (rejected — undermines membership value).
 - Tiered Silver / Gold / Platinum plans (collapsed into one Paid tier for clarity).
+- Native mobile apps (PWA covers the use case).
 
 These omissions are not gaps; they are the design.
 
-> **Suite update (May 2026):** the documentation has grown from 6 to **28 docs** (6 public 01–06 + 22 internal 07–28). The new pack 18–28 adds the legal, operator, and pilot policies — Privacy, Terms, Refund, Grievance, KYC, SOW & SLA, Committee Guide, Retention, Pilot Plan, GTM playbook, and the Member-Data Migration plan.
+> **Suite update (June 2026):** the documentation runs to **29 docs** — 7 public (00–06, including the Start Here orientation) and 22 internal (07–28). The pack 18–28 covers the legal, operator, and pilot policies — Privacy, Terms, Refund, Grievance, KYC, SOW & SLA, Committee Guide, Retention, Pilot Plan, GTM playbook, and the Member-Data Migration plan.
 
 ## Read next
 

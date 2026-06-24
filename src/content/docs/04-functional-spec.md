@@ -12,25 +12,29 @@ Module-by-module specification with acceptance criteria. Each module names its d
 
 ```mermaid
 flowchart LR
-  Home[Home] --> Dir[Directory]
+  Home[Home /] --> Dir[Directory]
   Home --> Prod[Products]
+  Home --> Brands[Brands]
   Home --> Circ[Circulars]
-  Home --> Forum[Community Forum]
+  Home --> News[Market News]
+  Home --> Forum[Community]
   Dir --> Mem[Member Profile]
   Mem --> Store[Storefront]
   Prod --> PP[Product Page]
   Store --> PP
-  PP --> Cart[RFQ Cart FAB]
-  Cart --> Submit[Submit RFQ]
-  Submit --> Inbox[RFQ Inbox /account]
-  Account[Account Hub] --> Profile
+  Brands --> BP[Brand Page]
+  PP --> Contact[Contact CTA<br/>wa.me / tel]
+  Account[Account Hub /dashboard] --> Profile
   Account --> Company
   Account --> ProductsMgr[Products + Variants]
-  Account --> Inbox
-  Account --> Verify[Verification Center]
-  Admin[Admin] --> CMS[Circulars + Ads CRUD]
-  Admin --> Mod[Moderation]
+  Account --> BrandsMgr[Brands]
+  Admin[Admin /account/moderation] --> CMS[Circulars + Ads + News CRUD]
+  Admin --> Mod[Member + Forum moderation]
 ```
+
+## Home modules
+
+Home (`/`) renders, in order: Homepage banner ad → `TodayHeader` → `LiveRatesTicker` (compact vertical padding) → `QuickActionsGrid` → `CategoryGrid` → **`RecentListingsList` (New Products)** → **`NewMembersList`** → `MembershipCTA` → `PartnersStrip`. Live ticker and ad slots are admin-managed; never render exact prices.
 
 ## Discovery modules
 
@@ -41,11 +45,12 @@ flowchart LR
 - **Acceptance:** new member added in admin appears in the list within one cache cycle; non-Paid users see "Become a member to view contact" instead of phone numbers.
 
 ### Member Profile `/directory/:slug`
-- Public summary; storefront link; "Send RFQ" CTA (auth-gated).
-- **Acceptance:** an unauthenticated visitor clicking RFQ is sent to login then back to the same profile.
+- Public summary; storefront link; "Contact seller" CTA (auth-gated reveal).
+- **Acceptance:** an unauthenticated visitor clicking Contact is sent to login then back to the same profile.
 
 ### Storefront `/store/:slug`
 - A single member's curated product showcase with brand strip, featured products, and category tabs.
+- Backed by the `companies_public` view; reads only the safe column set (no `email`, `phone`, `gstin`, `address` exposed to anon).
 - **Acceptance:** only Paid members can have a storefront; URL for non-Paid resolves to a 404-style empty state.
 
 ### Products `/products` and `/products/:slug`
@@ -53,45 +58,34 @@ flowchart LR
 - Price shown as a range; stock as a band; demand trend rendered from BIL signal (or local fallback).
 - **Acceptance:** no price field in the rendered HTML matches an exact rupee value from the database.
 
-## RFQ Engine
+### Brands `/brands` and `/brands/:slug`
+- Cross-company house-brand discovery. Brand page links to the brand's products and to the owning company's storefront. Branded SKUs may link out to an external B2C URL.
+- **Acceptance:** brands without active products are still listed but show an empty state on the brand page.
 
-### Cart (global FAB + drawer)
-- Multi-item: add variants from any product page across sessions.
-- Drafts persist per browser; on login, drafts merge to the user's account.
-- Submit requires Paid status; Free users are prompted to upgrade.
+### Broker board `/broker`
+- Filters companies where `is_broker = true`. Same ₹10K paid tier — broker is a flag, not a separate SKU.
 
-```mermaid
-sequenceDiagram
-  participant U as User
-  participant Cart as Cart Drawer
-  participant DB as Lovable Cloud
-  participant S as Seller Inbox
-  U->>Cart: Add variant + quantity + notes
-  Cart->>Cart: Auto-save draft (localStorage)
-  U->>Cart: Submit
-  Cart->>DB: insert into rfqs + inquiry_products
-  DB-->>S: New RFQ row visible (RLS: seller is recipient)
-  S->>DB: insert quote message
-  DB-->>U: Quote thread updates
-```
-
-### Inbox `/account/rfqs`
-- Two tabs: **Sent** (as buyer) and **Received** (as seller).
-- Each row shows status badge (Submitted / Quoted / Negotiating / Closed / Expired) and last-activity timestamp.
-- **Acceptance:** RLS guarantees a user only ever sees rows where they are buyer or seller.
+### Market & Market News `/market`, `/market-news`
+- Curated market signals (port arrivals, festival cycles, broad rate movements). Admin-published; never carries an exact price.
 
 ## Community
 
 ### Forum `/community`
-- Native posts + comments table; create post requires Free or higher; read is public.
-- Categories: Market chatter, Help, Announcements (admin-only post).
-- **Acceptance:** a new post by a Free member appears in the list immediately and persists across reload.
+- Discourse embed is the primary live forum.
+- Native posts + comments table remains as a **read-only archive** (no new posts via native UI in production).
+- **Acceptance:** the embedded forum loads; native archive posts are visible but locked.
 
-### Circulars `/circulars`
-- Admin-managed announcements with title, body, optional attachment URL, published_at.
-- **Acceptance:** drafts are not visible to non-admins.
+### Circulars `/circulars` and `/circulars/:slug`
+- Admin-managed announcements with title, slug, body, optional attachment URL, `published_at`.
+- **Acceptance:** drafts are not visible to non-admins; published circulars are reachable by slug.
 
-## Account hub `/account/*`
+## Forms `/forms` (also `/contact`)
+
+Two tabs only (v3.1.3): **Advertise** and **Submit Circular**. The previous **Verification Request** tab has been removed — verification is admin-driven through `/account/moderation`.
+
+## Account hub `/dashboard`, `/account/*`
+
+The mobile bottom tab "Account" opens `/dashboard`. From there, members reach:
 
 | Route | Purpose |
 |---|---|
@@ -99,16 +93,15 @@ sequenceDiagram
 | `/account/company` | Edit company name, GST, address, categories, branding |
 | `/account/products` | CRUD products and variants (with image + video upload) |
 | `/account/brands` | CRUD brands belonging to the user's company |
-| `/account/rfqs` | RFQ inbox — **Sent** (as buyer) and **Received** (as seller) tabs |
-| `/account/moderation` | Admin only: approve companies, manage circulars, manage ads, member moderation |
+| `/account/moderation` | Admin only: approve companies, manage circulars, ads, market news, member moderation |
 
-There is **no `/account/verify`** route. KYC tier promotion happens through admin moderation (`profiles.verification_tier`, `*_verified_at` timestamps) — the trigger `prevent_profile_privilege_escalation` blocks any non-admin write to those fields.
+There is **no `/account/rfqs`** and **no `/account/verify`** route. KYC tier promotion happens through admin moderation (`profiles.verification_tier`, `*_verified_at` timestamps) — the trigger `prevent_profile_privilege_escalation` blocks any non-admin write to those fields.
 
 ## Admin CMS `/account/moderation`
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Pending: Member submits KYC
+  [*] --> Pending: Member submits KYC during onboarding
   Pending --> UnderReview: Admin opens record
   UnderReview --> Verified: Docs approved
   UnderReview --> Rejected: Docs rejected with reason
@@ -116,14 +109,19 @@ stateDiagram-v2
   Verified --> [*]
 ```
 
-- **Circulars CRUD:** title, body, publish toggle, attachment.
+- **Circulars CRUD:** title, slug, body, publish toggle, attachment.
 - **Ads CRUD:** placement (home / category / directory), image (uploaded to `ad-assets` bucket, admin-only write), link, active window.
-- **Member moderation:** approve verification, toggle broker flag, suspend.
-- **Forum moderation:** soft-delete posts and comments.
+- **Market News CRUD:** admin-curated entries surfaced on `/market-news` and home.
+- **Member moderation:** approve verification, toggle broker flag, suspend, set `review_status` and `is_hidden`.
+- **Forum moderation:** soft-delete posts and comments in the native archive.
 
 ## Live market ticker
 
-A global scrolling ticker (top of every page) renders curated market signals — port arrivals, festival cycles, broad rate movements. Sourced from circulars marked as "ticker eligible" and admin-curated entries. Never carries an exact price.
+A global, vertically-compact scrolling ticker (top of home) renders curated market signals — port arrivals, festival cycles, broad rate movements. Sourced from circulars marked as "ticker eligible" and admin-curated entries. Never carries an exact price.
+
+## Knowledge & SEO surfaces
+
+The public-authority routes — `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/circulars/:slug`, `/knowledge`, `/knowledge/:slug`, `/faq`, `/contact` — are prerendered, AI-crawler-friendly (GPTBot / ClaudeBot / PerplexityBot / Google-Extended allowed), and listed in `sitemap.xml`. The transactional core — `/directory`, `/products`, `/store/:slug`, `/brands`, `/brands/:slug`, `/broker`, `/market`, `/community`, `/dashboard`, `/account/*`, `/documents`, `/login`, `/forms` — is `noindex` and contains no price / stock / contact in indexable HTML (GTM-001).
 
 ## Acceptance principle
 
