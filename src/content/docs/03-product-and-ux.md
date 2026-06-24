@@ -6,19 +6,23 @@
 ---
 
 
-How real members experience MDDMA — personas, what each role can see, the controlled-transparency rules that govern every screen, and how an RFQ moves from intent to negotiation.
+How real members experience MDDMA — personas, what each role can see, the controlled-transparency rules that govern every screen, and how a buyer moves from discovery to contact.
 
 ## Personas
 
 | Persona | Role enum | Primary goal |
 |---|---|---|
-| **Trader Buyer** | `paid_member` | Source verified supply at fair ranges; negotiate in private |
-| **Trader Seller** | `paid_member` | Receive qualified RFQs; protect price discovery |
+| **Trader Buyer** | `paid_member` | Source verified supply at fair ranges; negotiate via WhatsApp |
+| **Trader Seller** | `paid_member` | Get discovered in directory, storefront and brand pages; protect price discovery |
 | **Broker** | `broker` (paid + `is_broker`) | Match supply and demand across members |
 | **Visitor / Free member** | `free_member` | Establish trust before paying; browse circulars and directory |
-| **Association admin** | `admin` | Verify members, publish circulars, moderate forum, manage ads |
+| **Association admin** | `admin` | Verify members, publish circulars and market news, moderate forum, manage ads |
 
 A header **role simulator** lets the committee experience the site as any role during demos and reviews.
+
+## Home shell
+
+The home page (`/`) stacks: Homepage banner ad → Today header → Live Rates Ticker → Quick Actions → Category Grid → **New Products** (recent listings) → **New Members** → Membership CTA → Partners Strip. The bottom mobile tab bar order is **Today · Brands · Circulars · Members · Account**, where Account opens `/dashboard`.
 
 ## Role-based access
 
@@ -29,23 +33,22 @@ flowchart TD
   P -->|is_broker flag, same fee| B[Broker]
   P -->|appointed by Association| A[Admin]
 
-  G -.can see.-> Public[Directory list, Circulars, Forum read]
-  F -.+can.-> FreeAdds[Forum post, Apply for verification]
-  P -.+can.-> PaidAdds[Send RFQ, Storefront, Products, Variants, Account hub]
+  G -.can see.-> Public[Directory list, Circulars, Forum read, Knowledge, Market News]
+  F -.+can.-> FreeAdds[Forum post, Apply for paid membership]
+  P -.+can.-> PaidAdds[Storefront, Products, Variants, Brands, Full contact reveal, Account hub]
   B -.+can.-> BrokerAdds[Broker board listing]
-  A -.+can.-> AdminAdds[CMS: circulars, ads, members, moderation]
+  A -.+can.-> AdminAdds[CMS: circulars, ads, market news, members, moderation]
 ```
 
 | Capability | Guest | Free | Paid | Broker | Admin |
 |---|:-:|:-:|:-:|:-:|:-:|
 | Browse directory | ✓ | ✓ | ✓ | ✓ | ✓ |
-| See full member contact | — | — | ✓ | ✓ | ✓ |
-| Read forum | ✓ | ✓ | ✓ | ✓ | ✓ |
+| See full member contact / wa.me reveal | — | — | ✓ | ✓ | ✓ |
+| Read forum / knowledge / market news | ✓ | ✓ | ✓ | ✓ | ✓ |
 | Post in forum | — | ✓ | ✓ | ✓ | ✓ |
-| Send RFQ | — | — | ✓ | ✓ | ✓ |
-| Storefront + products | — | — | ✓ | ✓ | ✓ |
+| Storefront + products + brands | — | — | ✓ | ✓ | ✓ |
 | Listed on Broker board | — | — | — | ✓ | — |
-| Publish circulars / ads | — | — | — | — | ✓ |
+| Publish circulars / ads / market news | — | — | — | — | ✓ |
 | Verify members | — | — | — | — | ✓ |
 
 ## The controlled-transparency rules
@@ -60,37 +63,32 @@ These rules are non-negotiable and enforced in components, not policy:
 
 The `<GuardedPrice>` and stock-band components are the single point of enforcement — UI cannot accidentally leak raw values.
 
-## RFQ lifecycle
+## Discovery → Contact flow
 
-RFQs are the platform's core artifact. They are **persistent database entities**, not emails. Sending one **requires authentication** — anonymous RFQs are rejected because reputation-without-identity is meaningless.
+Negotiations happen off-platform. The journey ends in a `wa.me` deeplink or a revealed phone number — there is no in-app RFQ, cart, or inbox (RFQ-001 removed v3.1.3).
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Draft: Buyer adds item to cart
-  Draft --> Draft: Auto-save (multi-item cart)
-  Draft --> Submitted: Buyer signs in & submits
-  Submitted --> Quoted: Seller responds with private quote
-  Quoted --> Negotiating: Counter-offers / clarifications
-  Negotiating --> Closed: Deal agreed off-platform
-  Negotiating --> Expired: 14 days no activity
-  Submitted --> Expired: 7 days no seller response
-  Closed --> [*]
-  Expired --> [*]
+  [*] --> Browse: Buyer lands on home / directory / products / brands
+  Browse --> Detail: Open storefront, product or brand page
+  Detail --> Gate: Tap "Contact seller"
+  Gate --> Reveal: Authenticated as Paid member
+  Gate --> Upgrade: Free / guest -> /membership
+  Reveal --> Off: Opens wa.me / tel: link
+  Off --> [*]
 ```
-
-Drafts auto-save so a buyer can build a multi-item RFQ across browsing sessions. The cart FAB and drawer are global UI.
 
 ## Buyer reputation, not seller reputation
 
 Public marketplaces rate sellers and let buyers hide. MDDMA inverts this:
 
-- **Buyers carry a reputation score** visible to sellers reviewing inbound RFQs.
+- **Buyers will carry a reputation score** (planned, GOV-001) visible to sellers reviewing inbound enquiries.
 - Sellers' reputations are implicit in their verified-member status — that's what the Association badge means.
-- This shifts power back to suppliers and discourages price-shoppers from polluting the RFQ inbox.
+- This shifts power back to suppliers and discourages price-shoppers.
 
 ## Verification & badges
 
-A **Verified** badge appears next to a member when KYC documents (GST, business registration, identity) have been reviewed and approved by an admin. Verification is a one-time gate, not a recurring re-check, and the badge is the single visual proof of trust on the platform. The full policy — what we check, who can see KYC documents, how long they are retained, and the revocation path — lives in **doc 23 (KYC & Verification Policy)**.
+A **Verified** badge appears next to a member when KYC documents (GST, business registration, identity) have been reviewed and approved by an admin via `/account/moderation`. Verification is a one-time gate, not a recurring re-check, and the badge is the single visual proof of trust on the platform. The **/forms Verification Request** flow has been removed (v3.1.3) — members are verified during admin onboarding, not via a self-serve form. The full policy lives in **doc 23 (KYC & Verification Policy)**.
 
 ## Member-facing policies
 
