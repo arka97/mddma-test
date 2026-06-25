@@ -1,7 +1,7 @@
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { TodayHeader } from "@/components/home/today/TodayHeader";
-import { LiveRatesTicker } from "@/components/home/today/LiveRatesTicker";
+
 import { AdSlot } from "@/components/home/today/AdSlot";
 import { QuickActionsGrid } from "@/components/home/today/QuickActionsGrid";
 import { CategoryGrid } from "@/components/home/today/CategoryGrid";
@@ -27,7 +27,6 @@ const Index = () => (
     <div className="container mx-auto max-w-6xl px-4 py-3 sm:px-6 sm:py-5 lg:px-8">
       <div className="space-y-5">
         <TodayHeader />
-        <LiveRatesTicker />
         <QuickActionsGrid />
         <CategoryGrid />
         <RecentListingsList />

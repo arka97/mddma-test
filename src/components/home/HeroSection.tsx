@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowRight } from "lucide-react";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
-import { MarketTicker } from "@/components/layout/MarketTicker";
+
 
 const HOT_CATEGORIES = ["Almonds", "Cashews", "Dates", "Pistachios", "Walnuts", "Raisins"];
 
@@ -56,9 +56,6 @@ export function HeroSection() {
             </Button>
           </form>
 
-          <div className="mx-auto mt-4 max-w-3xl">
-            <MarketTicker />
-          </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
             <span className="text-xs text-muted-foreground">Popular:</span>
