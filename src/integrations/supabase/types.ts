@@ -98,6 +98,35 @@ export type Database = {
         }
         Relationships: []
       }
+      anonymous_identity_log: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          real_author_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          real_author_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          real_author_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anonymous_identity_log_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       brands: {
         Row: {
           b2c_url: string | null
@@ -246,6 +275,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      community_posts: {
+        Row: {
+          anonymous_expires_at: string | null
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          is_anonymous: boolean
+          is_hidden: boolean
+          is_pinned: boolean
+          post_type: string
+          structured_data: Json | null
+          topic_tag: string | null
+          updated_at: string
+        }
+        Insert: {
+          anonymous_expires_at?: string | null
+          author_id: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          is_hidden?: boolean
+          is_pinned?: boolean
+          post_type?: string
+          structured_data?: Json | null
+          topic_tag?: string | null
+          updated_at?: string
+        }
+        Update: {
+          anonymous_expires_at?: string | null
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_anonymous?: boolean
+          is_hidden?: boolean
+          is_pinned?: boolean
+          post_type?: string
+          structured_data?: Json | null
+          topic_tag?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       companies: {
         Row: {
@@ -522,6 +596,99 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      post_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          id: string
+          is_hidden: boolean
+          post_id: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          post_id: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_hidden?: boolean
+          post_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_views: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          user_id: string
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          user_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_views_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       posts: {
         Row: {
@@ -814,6 +981,7 @@ export type Database = {
           gstin: string | null
           id: string
           is_broker: boolean
+          is_muted: boolean
           phone: string | null
           rfq_count: number
           rfq_response_rate: number
@@ -834,6 +1002,7 @@ export type Database = {
           gstin?: string | null
           id: string
           is_broker?: boolean
+          is_muted?: boolean
           phone?: string | null
           rfq_count?: number
           rfq_response_rate?: number
@@ -854,6 +1023,7 @@ export type Database = {
           gstin?: string | null
           id?: string
           is_broker?: boolean
+          is_muted?: boolean
           phone?: string | null
           rfq_count?: number
           rfq_response_rate?: number
@@ -861,6 +1031,113 @@ export type Database = {
           verification_tier?: Database["public"]["Enums"]["verification_tier"]
         }
         Relationships: []
+      }
+      rfq_contact_reveals: {
+        Row: {
+          id: string
+          revealed_at: string
+          rfq_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          revealed_at?: string
+          rfq_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          revealed_at?: string
+          rfq_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfq_contact_reveals_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfq_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfq_listings: {
+        Row: {
+          commodity: string
+          company_id: string | null
+          created_at: string
+          delivery_location: string | null
+          grade_variety: string | null
+          id: string
+          is_hidden: boolean
+          listing_type: string
+          origin_country: string | null
+          posted_by: string
+          price_max: number
+          price_min: number
+          price_unit: string
+          quantity_max: number
+          quantity_min: number
+          quantity_unit: string
+          updated_at: string
+          valid_until: string
+        }
+        Insert: {
+          commodity: string
+          company_id?: string | null
+          created_at?: string
+          delivery_location?: string | null
+          grade_variety?: string | null
+          id?: string
+          is_hidden?: boolean
+          listing_type: string
+          origin_country?: string | null
+          posted_by: string
+          price_max: number
+          price_min: number
+          price_unit: string
+          quantity_max: number
+          quantity_min: number
+          quantity_unit: string
+          updated_at?: string
+          valid_until: string
+        }
+        Update: {
+          commodity?: string
+          company_id?: string | null
+          created_at?: string
+          delivery_location?: string | null
+          grade_variety?: string | null
+          id?: string
+          is_hidden?: boolean
+          listing_type?: string
+          origin_country?: string | null
+          posted_by?: string
+          price_max?: number
+          price_min?: number
+          price_unit?: string
+          quantity_max?: number
+          quantity_min?: number
+          quantity_unit?: string
+          updated_at?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfq_listings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_listings_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -1044,6 +1321,9 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_free_within_grace: { Args: { _uid: string }; Returns: boolean }
+      is_muted: { Args: { _uid: string }; Returns: boolean }
+      is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
       slugify: { Args: { _title: string }; Returns: string }
     }
     Enums: {

@@ -13,6 +13,7 @@ const Products = lazy(() => import("./pages/Products"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const Broker = lazy(() => import("./pages/Broker"));
 const Market = lazy(() => import("./pages/Market"));
+const Rfq = lazy(() => import("./pages/Rfq"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Community = lazy(() => import("./pages/Community"));
 const MembershipPlans = lazy(() => import("./pages/MembershipPlans"));
@@ -62,6 +63,7 @@ export function AppRoutes() {
         <Route path="/brands/:slug" element={<BrandPage />} />
         <Route path="/broker" element={<Broker />} />
         <Route path="/market" element={<Market />} />
+        <Route path="/rfq" element={<Rfq />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/community" element={<Community />} />
         <Route path="/membership" element={<MembershipPlans />} />
