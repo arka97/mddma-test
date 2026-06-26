@@ -5,7 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Skeleton } from "@/components/ui/skeletons";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { listActiveRfqs, type RfqListingRow, type RfqType } from "@/repositories/rfqListings";
