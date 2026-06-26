@@ -6,7 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload, MessageSquare, FileText, UserX } from "lucide-react";
+import { CommunityModerationTab } from "@/components/admin/CommunityModerationTab";
+import { AnonymousLogTab } from "@/components/admin/AnonymousLogTab";
+import { RfqModerationTab } from "@/components/admin/RfqModerationTab";
 import { Switch } from "@/components/ui/switch";
 import { listCategories, createCategory, updateCategory, deleteCategory, countProductsForCategory, type ProductCategoryRow } from "@/repositories/productCategories";
 import { slugify } from "@/lib/storage";
@@ -273,7 +276,15 @@ const AdminModeration = () => {
                 <TabsTrigger value="circulars"><Megaphone className="h-3 w-3 mr-1" /> Circulars ({circulars.length})</TabsTrigger>
                 <TabsTrigger value="ads"><Star className="h-3 w-3 mr-1" /> Ads ({ads.length})</TabsTrigger>
                 <TabsTrigger value="categories"><Layers className="h-3 w-3 mr-1" /> Categories ({categories.length})</TabsTrigger>
+                <TabsTrigger value="community"><MessageSquare className="h-3 w-3 mr-1" /> Community</TabsTrigger>
+                <TabsTrigger value="anon-log"><UserX className="h-3 w-3 mr-1" /> Anon Log</TabsTrigger>
+                <TabsTrigger value="rfq"><FileText className="h-3 w-3 mr-1" /> RFQs</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="community" className="mt-4"><CommunityModerationTab /></TabsContent>
+              <TabsContent value="anon-log" className="mt-4"><AnonymousLogTab /></TabsContent>
+              <TabsContent value="rfq" className="mt-4"><RfqModerationTab /></TabsContent>
+
 
               <TabsContent value="companies" className="space-y-2 mt-4">
                 {companies.map((c) => (
