@@ -26,6 +26,7 @@ const Index = () => (
         <TodayHeader />
         <QuickActionsGrid />
         <CategoryGrid />
+        <AdSlot placement="home-midway" />
         <RecentListingsList />
         <NewMembersList />
       </div>
