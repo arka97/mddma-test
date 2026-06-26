@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload, Newspaper, Smile } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { listCategories, createCategory, updateCategory, deleteCategory, countProductsForCategory, type ProductCategoryRow } from "@/repositories/productCategories";
 import { slugify } from "@/lib/storage";
@@ -40,25 +40,12 @@ const AdminModeration = () => {
   const [savingCat, setSavingCat] = useState(false);
   const [uploadingCatImg, setUploadingCatImg] = useState(false);
 
-  // Market News
-  const [marketNews, setMarketNews] = useState<{ id: string; title: string; summary: string | null; is_published: boolean; created_at: string; image_url: string | null; source_name: string | null }[]>([]);
-  const emptyNewsForm = { title: "", summary: "", body: "", source_name: "", source_url: "", category: "", image_url: "", sort_order: 0 };
-  const [newsForm, setNewsForm] = useState(emptyNewsForm);
-  const [savingNews, setSavingNews] = useState(false);
-  const [uploadingNewsImg, setUploadingNewsImg] = useState(false);
-
-  // Humor
-  const [humorPosts, setHumorPosts] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string; image_url: string | null; attribution: string | null }[]>([]);
-  const emptyHumorForm = { title: "", body: "", image_url: "", attribution: "", sort_order: 0 };
-  const [humorForm, setHumorForm] = useState(emptyHumorForm);
-  const [savingHumor, setSavingHumor] = useState(false);
-  const [uploadingHumorImg, setUploadingHumorImg] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, cats, { data: mn }, { data: hp }] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, cats] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
@@ -66,16 +53,12 @@ const AdminModeration = () => {
       supabase.from("circulars").select("id,title,body,is_published,created_at,attachments").order("created_at", { ascending: false }),
       supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date,priority").order("priority", { ascending: false }).order("created_at", { ascending: false }),
       listCategories().catch(() => [] as ProductCategoryRow[]),
-      (supabase as any).from("market_news").select("id,title,summary,is_published,created_at,image_url,source_name").order("sort_order", { ascending: false }).order("created_at", { ascending: false }),
-      (supabase as any).from("humor_posts").select("id,title,body,is_published,created_at,image_url,attribution").order("sort_order", { ascending: false }).order("created_at", { ascending: false }),
     ]);
     setCompanies((c ?? []) as typeof companies);
     setProducts(p ?? []);
     setCirculars(((circ ?? []) as unknown) as typeof circulars);
     setAds((adRows ?? []) as typeof ads);
     setCategories(cats);
-    setMarketNews((mn ?? []) as typeof marketNews);
-    setHumorPosts((hp ?? []) as typeof humorPosts);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
     setUsers((prof ?? []).map((u) => ({ ...u, roles: rolesByUser[u.id] ?? [] })));
