@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Users, Megaphone, LineChart, Sparkles, Newspaper, Smile } from "lucide-react";
+import { Users, Megaphone, LineChart, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -41,10 +41,8 @@ export function QuickActionsGrid() {
 
   const tiles: Tile[] = [
     { label: "Market", meta: "APMC rates & trends", href: "/market", icon: LineChart, tone: "primary" },
-    { label: "Market News", meta: "Latest from the trade", href: "/market-news", icon: Newspaper, tone: "accent" },
-    { label: "Humor", meta: "A lighter side", href: "/humor", icon: Smile, tone: "gold" },
     {
-      label: "Circulars & Notices",
+      label: "Bulletin",
       meta: circularCount == null ? "Trade notices" : `${circularCount} new`,
       href: "/circulars",
       icon: Megaphone,
@@ -57,7 +55,7 @@ export function QuickActionsGrid() {
       icon: Sparkles,
       tone: "gold",
     },
-    { label: "Member Directory", meta: "Browse verified traders", href: "/directory", icon: Users, tone: "accent" },
+    { label: "Members", meta: "Browse verified traders", href: "/directory", icon: Users, tone: "accent" },
   ];
 
   return (

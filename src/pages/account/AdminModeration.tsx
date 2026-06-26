@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload, Newspaper, Smile } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { listCategories, createCategory, updateCategory, deleteCategory, countProductsForCategory, type ProductCategoryRow } from "@/repositories/productCategories";
 import { slugify } from "@/lib/storage";
@@ -40,25 +40,12 @@ const AdminModeration = () => {
   const [savingCat, setSavingCat] = useState(false);
   const [uploadingCatImg, setUploadingCatImg] = useState(false);
 
-  // Market News
-  const [marketNews, setMarketNews] = useState<{ id: string; title: string; summary: string | null; is_published: boolean; created_at: string; image_url: string | null; source_name: string | null }[]>([]);
-  const emptyNewsForm = { title: "", summary: "", body: "", source_name: "", source_url: "", category: "", image_url: "", sort_order: 0 };
-  const [newsForm, setNewsForm] = useState(emptyNewsForm);
-  const [savingNews, setSavingNews] = useState(false);
-  const [uploadingNewsImg, setUploadingNewsImg] = useState(false);
-
-  // Humor
-  const [humorPosts, setHumorPosts] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string; image_url: string | null; attribution: string | null }[]>([]);
-  const emptyHumorForm = { title: "", body: "", image_url: "", attribution: "", sort_order: 0 };
-  const [humorForm, setHumorForm] = useState(emptyHumorForm);
-  const [savingHumor, setSavingHumor] = useState(false);
-  const [uploadingHumorImg, setUploadingHumorImg] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
-    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, cats, { data: mn }, { data: hp }] = await Promise.all([
+    const [{ data: c }, { data: p }, { data: prof }, { data: r }, { data: circ }, { data: adRows }, cats] = await Promise.all([
       supabase.from("companies").select("id,name,slug,is_verified,is_hidden,city,logo_url,review_status").order("created_at", { ascending: false }),
       supabase.from("products").select("id,name,slug,is_hidden,is_featured,company_id,image_url").order("created_at", { ascending: false }),
       supabase.from("profiles").select("id,full_name,avatar_url"),
@@ -66,16 +53,12 @@ const AdminModeration = () => {
       supabase.from("circulars").select("id,title,body,is_published,created_at,attachments").order("created_at", { ascending: false }),
       supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date,priority").order("priority", { ascending: false }).order("created_at", { ascending: false }),
       listCategories().catch(() => [] as ProductCategoryRow[]),
-      (supabase as any).from("market_news").select("id,title,summary,is_published,created_at,image_url,source_name").order("sort_order", { ascending: false }).order("created_at", { ascending: false }),
-      (supabase as any).from("humor_posts").select("id,title,body,is_published,created_at,image_url,attribution").order("sort_order", { ascending: false }).order("created_at", { ascending: false }),
     ]);
     setCompanies((c ?? []) as typeof companies);
     setProducts(p ?? []);
     setCirculars(((circ ?? []) as unknown) as typeof circulars);
     setAds((adRows ?? []) as typeof ads);
     setCategories(cats);
-    setMarketNews((mn ?? []) as typeof marketNews);
-    setHumorPosts((hp ?? []) as typeof humorPosts);
     const rolesByUser: Record<string, string[]> = {};
     (r ?? []).forEach((x: { user_id: string; role: string }) => { (rolesByUser[x.user_id] ||= []).push(x.role); });
     setUsers((prof ?? []).map((u) => ({ ...u, roles: rolesByUser[u.id] ?? [] })));
@@ -272,82 +255,6 @@ const AdminModeration = () => {
     }
   };
 
-  // Market News
-  const uploadNewsImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    setUploadingNewsImg(true);
-    const url = await uploadFile("ad-assets", user.id, file);
-    setUploadingNewsImg(false);
-    if (url) setNewsForm((f) => ({ ...f, image_url: url }));
-    else toast({ title: "Upload failed", variant: "destructive" });
-  };
-  const saveNews = async () => {
-    if (!user || !newsForm.title.trim()) { toast({ title: "Title required", variant: "destructive" }); return; }
-    setSavingNews(true);
-    const { error } = await (supabase as any).from("market_news").insert({
-      title: newsForm.title.trim(),
-      summary: newsForm.summary.trim() || null,
-      body: newsForm.body.trim() || null,
-      source_name: newsForm.source_name.trim() || null,
-      source_url: newsForm.source_url.trim() || null,
-      category: newsForm.category.trim() || null,
-      image_url: newsForm.image_url || null,
-      sort_order: Number(newsForm.sort_order) || 0,
-      is_published: true,
-      published_at: new Date().toISOString(),
-      created_by: user.id,
-    });
-    setSavingNews(false);
-    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else { toast({ title: "News published" }); setNewsForm(emptyNewsForm); load(); }
-  };
-  const toggleNewsPublished = async (id: string, val: boolean) => {
-    const { error } = await (supabase as any).from("market_news").update({ is_published: val, published_at: val ? new Date().toISOString() : null }).eq("id", id);
-    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
-  };
-  const deleteNews = async (id: string) => {
-    if (!confirm("Delete this news item?")) return;
-    const { error } = await (supabase as any).from("market_news").delete().eq("id", id);
-    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
-  };
-
-  // Humor
-  const uploadHumorImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file || !user) return;
-    setUploadingHumorImg(true);
-    const url = await uploadFile("ad-assets", user.id, file);
-    setUploadingHumorImg(false);
-    if (url) setHumorForm((f) => ({ ...f, image_url: url }));
-    else toast({ title: "Upload failed", variant: "destructive" });
-  };
-  const saveHumor = async () => {
-    if (!user || !humorForm.title.trim() || !humorForm.body.trim()) { toast({ title: "Title and body required", variant: "destructive" }); return; }
-    setSavingHumor(true);
-    const { error } = await (supabase as any).from("humor_posts").insert({
-      title: humorForm.title.trim(),
-      body: humorForm.body.trim(),
-      image_url: humorForm.image_url || null,
-      attribution: humorForm.attribution.trim() || null,
-      sort_order: Number(humorForm.sort_order) || 0,
-      is_published: true,
-      published_at: new Date().toISOString(),
-      created_by: user.id,
-    });
-    setSavingHumor(false);
-    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else { toast({ title: "Humor published" }); setHumorForm(emptyHumorForm); load(); }
-  };
-  const toggleHumorPublished = async (id: string, val: boolean) => {
-    const { error } = await (supabase as any).from("humor_posts").update({ is_published: val, published_at: val ? new Date().toISOString() : null }).eq("id", id);
-    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
-  };
-  const deleteHumor = async (id: string) => {
-    if (!confirm("Delete this humor post?")) return;
-    const { error } = await (supabase as any).from("humor_posts").delete().eq("id", id);
-    if (error) toast({ title: "Failed", variant: "destructive" }); else load();
-  };
 
 
   return (
@@ -366,8 +273,6 @@ const AdminModeration = () => {
                 <TabsTrigger value="circulars"><Megaphone className="h-3 w-3 mr-1" /> Circulars ({circulars.length})</TabsTrigger>
                 <TabsTrigger value="ads"><Star className="h-3 w-3 mr-1" /> Ads ({ads.length})</TabsTrigger>
                 <TabsTrigger value="categories"><Layers className="h-3 w-3 mr-1" /> Categories ({categories.length})</TabsTrigger>
-                <TabsTrigger value="news"><Newspaper className="h-3 w-3 mr-1" /> Market News ({marketNews.length})</TabsTrigger>
-                <TabsTrigger value="humor"><Smile className="h-3 w-3 mr-1" /> Humor ({humorPosts.length})</TabsTrigger>
               </TabsList>
 
               <TabsContent value="companies" className="space-y-2 mt-4">
@@ -683,110 +588,6 @@ const AdminModeration = () => {
                     ))}
                   </div>
                 )}
-              </TabsContent>
-              <TabsContent value="news" className="space-y-4 mt-4">
-                <Card>
-                  <CardHeader><CardTitle className="text-base">Add Market News</CardTitle></CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-1.5"><Label>Title *</Label><Input maxLength={200} value={newsForm.title} onChange={(e) => setNewsForm({ ...newsForm, title: e.target.value })} /></div>
-                    <div className="space-y-1.5"><Label>Summary</Label><Textarea rows={2} maxLength={500} value={newsForm.summary} onChange={(e) => setNewsForm({ ...newsForm, summary: e.target.value })} /></div>
-                    <div className="space-y-1.5"><Label>Full body (optional)</Label><Textarea rows={4} maxLength={4000} value={newsForm.body} onChange={(e) => setNewsForm({ ...newsForm, body: e.target.value })} /></div>
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      <div className="space-y-1.5"><Label>Source name</Label><Input maxLength={120} value={newsForm.source_name} onChange={(e) => setNewsForm({ ...newsForm, source_name: e.target.value })} placeholder="e.g. Mint" /></div>
-                      <div className="space-y-1.5"><Label>Source URL</Label><Input maxLength={500} value={newsForm.source_url} onChange={(e) => setNewsForm({ ...newsForm, source_url: e.target.value })} placeholder="https://..." /></div>
-                    </div>
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      <div className="space-y-1.5"><Label>Category</Label><Input maxLength={50} value={newsForm.category} onChange={(e) => setNewsForm({ ...newsForm, category: e.target.value })} placeholder="policy / supply / price" /></div>
-                      <div className="space-y-1.5"><Label>Sort order</Label><Input type="number" value={newsForm.sort_order} onChange={(e) => setNewsForm({ ...newsForm, sort_order: Number(e.target.value) || 0 })} /></div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label>Image</Label>
-                      <div className="flex items-center gap-3">
-                        <div className="h-16 w-16 rounded border bg-muted overflow-hidden flex-shrink-0">
-                          {newsForm.image_url && <img src={newsForm.image_url} alt="" className="h-full w-full object-cover" />}
-                        </div>
-                        <label className="cursor-pointer">
-                          <input type="file" accept="image/*" className="hidden" onChange={uploadNewsImage} disabled={uploadingNewsImg} />
-                          <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
-                            {uploadingNewsImg ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload
-                          </span>
-                        </label>
-                        <Input className="flex-1" placeholder="or paste image URL" value={newsForm.image_url} onChange={(e) => setNewsForm({ ...newsForm, image_url: e.target.value })} />
-                      </div>
-                    </div>
-                    <Button onClick={saveNews} disabled={savingNews} variant="accent">
-                      {savingNews ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Publish</>}
-                    </Button>
-                  </CardContent>
-                </Card>
-                {marketNews.map((n) => (
-                  <Card key={n.id}>
-                    <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
-                      <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
-                        {n.image_url && <img src={n.image_url} alt="" className="h-12 w-16 rounded object-cover flex-shrink-0" />}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{n.title}</p>
-                          <p className="text-xs text-muted-foreground line-clamp-1">{n.summary ?? n.source_name ?? ""}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
-                        {n.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
-                        <Button size="sm" variant="outline" onClick={() => toggleNewsPublished(n.id, !n.is_published)}>{n.is_published ? "Unpublish" : "Publish"}</Button>
-                        <Button size="sm" variant="outline" onClick={() => deleteNews(n.id)}><Trash2 className="h-3 w-3" /></Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </TabsContent>
-
-              <TabsContent value="humor" className="space-y-4 mt-4">
-                <Card>
-                  <CardHeader><CardTitle className="text-base">Add Humor Post</CardTitle></CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="space-y-1.5"><Label>Title *</Label><Input maxLength={200} value={humorForm.title} onChange={(e) => setHumorForm({ ...humorForm, title: e.target.value })} /></div>
-                    <div className="space-y-1.5"><Label>Body *</Label><Textarea rows={4} maxLength={2000} value={humorForm.body} onChange={(e) => setHumorForm({ ...humorForm, body: e.target.value })} /></div>
-                    <div className="grid sm:grid-cols-2 gap-3">
-                      <div className="space-y-1.5"><Label>Attribution</Label><Input maxLength={120} value={humorForm.attribution} onChange={(e) => setHumorForm({ ...humorForm, attribution: e.target.value })} placeholder="e.g. Old market saying" /></div>
-                      <div className="space-y-1.5"><Label>Sort order</Label><Input type="number" value={humorForm.sort_order} onChange={(e) => setHumorForm({ ...humorForm, sort_order: Number(e.target.value) || 0 })} /></div>
-                    </div>
-                    <div className="space-y-1.5">
-                      <Label>Image</Label>
-                      <div className="flex items-center gap-3">
-                        <div className="h-16 w-16 rounded border bg-muted overflow-hidden flex-shrink-0">
-                          {humorForm.image_url && <img src={humorForm.image_url} alt="" className="h-full w-full object-cover" />}
-                        </div>
-                        <label className="cursor-pointer">
-                          <input type="file" accept="image/*" className="hidden" onChange={uploadHumorImage} disabled={uploadingHumorImg} />
-                          <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
-                            {uploadingHumorImg ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload
-                          </span>
-                        </label>
-                        <Input className="flex-1" placeholder="or paste image URL" value={humorForm.image_url} onChange={(e) => setHumorForm({ ...humorForm, image_url: e.target.value })} />
-                      </div>
-                    </div>
-                    <Button onClick={saveHumor} disabled={savingHumor} variant="accent">
-                      {savingHumor ? <Loader2 className="h-3 w-3 animate-spin" /> : <><Send className="h-3 w-3 mr-1" /> Publish</>}
-                    </Button>
-                  </CardContent>
-                </Card>
-                {humorPosts.map((h) => (
-                  <Card key={h.id}>
-                    <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
-                      <div className="flex items-start gap-3 min-w-0 flex-1 w-full">
-                        {h.image_url && <img src={h.image_url} alt="" className="h-12 w-16 rounded object-cover flex-shrink-0" />}
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">{h.title}</p>
-                          <p className="text-xs text-muted-foreground line-clamp-1">{h.body}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
-                        {h.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
-                        <Button size="sm" variant="outline" onClick={() => toggleHumorPublished(h.id, !h.is_published)}>{h.is_published ? "Unpublish" : "Publish"}</Button>
-                        <Button size="sm" variant="outline" onClick={() => deleteHumor(h.id)}><Trash2 className="h-3 w-3" /></Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
               </TabsContent>
             </Tabs>
           )}
