@@ -67,22 +67,23 @@ const milestones = [
 
 const officeBearers = [
   { name: "Shri Vijay Bhuta", role: "President" },
-  { name: "Shri Chandan Mehta", role: "President" },
-  { name: "Shri Girish Bhandary", role: "Hon. Gen. Secretary" },
-  { name: "Shri Manesh Lund", role: "Hon. Jt. Secretary" },
-  { name: "Shri Suresh Dama", role: "Hon. Treasurer" },
-  { name: "Shri Rajendra Shah", role: "Hon. Jt. Treasurer" },
+  { name: "Shri Darshan Kapadia", role: "Vice President" },
+  { name: "Shri Mukesh Dattani", role: "Hon. Gen. Secretary" },
+  { name: "Shri Dinesh Dang", role: "Hon. Jt. Secretary" },
+  { name: "Shri Rajendra Shah", role: "Hon. Treasurer" },
+  { name: "Shri Gautam Jain", role: "Hon. Jt. Treasurer" },
 ];
 
 const committeeMembers = [
-  "Shri Chandrashi Jesrani",
-  "Shri Mukesh Dattani",
-  "Shri Mahesh Jothawani",
-  "Shri Arjan Khatri",
-  "Shri Ramesh Soni",
-  "Shri Jatin Ashar",
-  "Shri Darshan Kapadia",
-  "Shri Dilip Jain",
+  "Shri Chetan Mehta",
+  "Shri Ajit Joshi",
+  "Shri Girish Bhandary",
+  "Shri Vishal Chhabria",
+  "Shri Rajendra Bhatija",
+  "Shri Mahendra Parmar",
+  "Shri Gulam Godil",
+  "Shri Shewak Makhija",
+  "Shri Hemal Davda",
 ];
 
 function initialsOf(name: string) {
