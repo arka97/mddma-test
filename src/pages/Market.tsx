@@ -1,159 +1,153 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { Crown, Lock, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeletons";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
-import { useAnalystReports, useMarketSignals } from "@/hooks/queries/useMarketSignals";
-import { SignalCard } from "@/components/market/SignalCard";
-import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
-
-type Filter = "all" | "high_demand" | "tight_supply" | "rising";
-
-const FILTERS: { id: Filter; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "high_demand", label: "High demand" },
-  { id: "tight_supply", label: "Tight supply" },
-  { id: "rising", label: "Rising" },
-];
+import { TopicChips } from "@/components/market/TopicChips";
+import { PostCard } from "@/components/market/PostCard";
+import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
+import { ComposeSheet } from "@/components/market/ComposeSheet";
+import { PaywallOverlay, GuestTeaser } from "@/components/market/PaywallOverlay";
+import { CircularsSection } from "@/components/home/today/CircularsSection";
+import { listFeedPosts, type CommunityPostRow, type TopicTag } from "@/repositories/communityPosts";
+import { listLikes } from "@/repositories/postLikes";
+import { commentCounts } from "@/repositories/postComments";
+import { viewCounts } from "@/repositories/postViews";
+import { supabase } from "@/integrations/supabase/client";
 
 const Market = () => {
-  const { canAccess } = useRole();
-  const isPaid = canAccess("market_intelligence");
-  const { data: signals, isLoading } = useMarketSignals();
-  const { data: reports } = useAnalystReports();
-  const [filter, setFilter] = useState<Filter>("all");
+  const { user, profile, loading: authLoading } = useAuth();
+  const { role } = useRole();
+  const [topic, setTopic] = useState<TopicTag | "all">("all");
+  const [posts, setPosts] = useState<CommunityPostRow[]>([]);
+  const [authors, setAuthors] = useState<Record<string, { id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>>({});
+  const [likes, setLikes] = useState<{ counts: Record<string, number>; mine: Set<string> }>({ counts: {}, mine: new Set() });
+  const [comments, setComments] = useState<Record<string, number>>({});
+  const [views, setViews] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [composeOpen, setComposeOpen] = useState(false);
 
-  const filtered = useMemo(() => {
-    if (!signals) return [];
-    return signals.filter((s) => {
-      if (filter === "high_demand") return s.demand === "high";
-      if (filter === "tight_supply") return s.supply === "tight" || s.supply === "tightening";
-      if (filter === "rising") return s.trend === "up";
-      return true;
-    });
-  }, [signals, filter]);
+  const isPaid = role === "paid_member" || role === "broker" || role === "admin";
+  const isAdmin = role === "admin";
+  const isGuest = !user && !authLoading;
+
+  const freeInGrace = useMemo(() => {
+    if (!profile || role !== "free_member") return false;
+    const created = (profile as unknown as { created_at?: string }).created_at;
+    if (!created) return true; // optimistic; RLS will gate
+    return Date.now() - new Date(created).getTime() < 7 * 86400000;
+  }, [profile, role]);
+
+  const canRead = isPaid || freeInGrace;
+  const canEngage = isPaid;
+
+  const load = async () => {
+    setLoading(true);
+    try {
+      const data = await listFeedPosts(topic === "all" ? undefined : topic);
+      setPosts(data);
+      const ids = data.map((p) => p.id);
+      const aIds = Array.from(new Set(data.filter((p) => !p.is_anonymous).map((p) => p.author_id)));
+      const [l, c, v, profs] = await Promise.all([
+        listLikes(ids),
+        commentCounts(ids),
+        viewCounts(ids),
+        aIds.length ? supabase.from("profiles").select("id,full_name,avatar_url,company_name").in("id", aIds) : Promise.resolve({ data: [] }),
+      ]);
+      setLikes(l);
+      setComments(c);
+      setViews(v);
+      const map: typeof authors = {};
+      ((profs.data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>).forEach((p) => { map[p.id] = p; });
+      setAuthors(map);
+    } catch {
+      setPosts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { if (canRead) load(); else setLoading(false); /* eslint-disable-next-line */ }, [topic, canRead]);
+
+  const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
+  const rest = posts.filter((p) => !pinned.includes(p));
 
   return (
     <Layout>
-      <Seo title="Market Intelligence — MDDMA" description="Signal-based market intelligence for MDDMA members." path="/market" noindex />
+      <Seo title="Market — MDDMA Community" description="MDDMA member community: market signals, alerts, sourcing asks, and rates." path="/market" noindex />
 
-      <div className="container mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
-        {/* Hero */}
-        <header className="mb-5">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">Market Intelligence</h1>
-          <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-            Signal-based market intel — price ranges, demand indicators, and supply signals from the MDDMA committee.
-          </p>
-        </header>
+      <div className="container mx-auto max-w-3xl px-4 pb-24 pt-3 sm:px-6 sm:pt-4 lg:px-8">
+        <div className="sticky top-0 z-10 -mx-4 bg-background px-4 py-2 sm:-mx-6 sm:px-6">
+          <TopicChips active={topic} onChange={setTopic} />
+        </div>
 
-        {!isPaid && (
-          <article className="mb-5 flex flex-col items-start gap-3 rounded-2xl border border-accent/40 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-start gap-3">
-              <Crown className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
-              <div>
-                <div className="text-sm font-semibold text-foreground">Unlock full Market Intelligence</div>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  Committee analyst reasoning + weekly supply alerts.
-                </p>
-              </div>
+        <div className="mt-4 space-y-4">
+          <CircularsSection />
+
+          {!canRead && !isGuest && (
+            <div className="rounded-md border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
+              Free trial expired. Upgrade to access the market feed.
             </div>
-            <Button asChild variant="accent" size="sm" className="w-full sm:w-auto">
-              <Link to="/membership">View plans</Link>
-            </Button>
-          </article>
-        )}
+          )}
 
-        {/* Filter chips */}
-        <div className="-mx-1 mb-4 flex items-center gap-2 overflow-x-auto px-1 pb-1">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              type="button"
-              onClick={() => setFilter(f.id)}
-              className={cn(
-                "shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
-                filter === f.id
-                  ? "border-foreground bg-foreground text-background"
-                  : "border-border bg-card text-muted-foreground hover:text-foreground",
+          {canRead && (
+            <>
+              {pinned.map((p) => (
+                <PinnedRatesCard
+                  key={p.id}
+                  post={p}
+                  likeCount={likes.counts[p.id] ?? 0}
+                  commentCount={comments[p.id] ?? 0}
+                  viewCount={views[p.id] ?? 0}
+                />
+              ))}
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-md" />)
+              ) : rest.length === 0 ? (
+                <p className="py-10 text-center text-sm text-muted-foreground">No posts yet — be the first to share.</p>
+              ) : (
+                rest.map((p) => (
+                  <PostCard
+                    key={p.id}
+                    post={p}
+                    author={authors[p.author_id]}
+                    liked={likes.mine.has(p.id)}
+                    likeCount={likes.counts[p.id] ?? 0}
+                    commentCount={comments[p.id] ?? 0}
+                    viewCount={views[p.id] ?? 0}
+                    canEngage={canEngage}
+                    isAdmin={isAdmin}
+                  />
+                ))
               )}
+            </>
+          )}
+        </div>
+
+        {canEngage && (
+          <>
+            <Button
+              onClick={() => setComposeOpen(true)}
+              className="fixed bottom-20 right-4 z-30 h-14 w-14 rounded-full shadow-lg lg:bottom-6"
+              size="icon"
+              variant="accent"
             >
-              {f.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Section header */}
-        <div className="mb-3 flex items-end justify-between">
-          <div>
-            <h2 className="text-base font-semibold text-foreground">Live signals</h2>
-            <p className="text-xs text-muted-foreground">
-              {signals ? `${filtered.length} commodit${filtered.length === 1 ? "y" : "ies"} tracked` : "Loading…"}
-            </p>
-          </div>
-        </div>
-
-        {isLoading ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-2xl" />)}
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">
-            <Sparkles className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
-            {signals && signals.length === 0
-              ? "No active market signals yet — committee analysts will publish soon."
-              : "No signals match the selected filter."}
-          </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {filtered.map((s) => (
-              <SignalCard key={s.id} signal={s} canSeeAnalyst={isPaid} />
-            ))}
-          </div>
-        )}
-
-        {/* Weekly insights */}
-        {reports && reports.length > 0 && (
-          <section className="mt-8">
-            <div className="mb-3 flex items-end justify-between">
-              <div>
-                <h2 className="text-base font-semibold text-foreground">Weekly insights</h2>
-                <p className="text-xs text-muted-foreground">Committee analyst reports</p>
-              </div>
-              {!isPaid && (
-                <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
-                  <Lock className="h-3 w-3 text-accent" /> Paid-member feed
-                </span>
-              )}
-            </div>
-            <ul className="grid gap-3 sm:grid-cols-2">
-              {reports.map((r) => {
-                const locked = r.requires_paid && !isPaid;
-                return (
-                  <li key={r.id} className="relative overflow-hidden rounded-2xl border border-border bg-card p-4 shadow-sm">
-                    <div className="text-[10px] font-bold uppercase tracking-widest text-accent">{r.kind}</div>
-                    <h3 className={cn("mt-1 text-sm font-semibold text-foreground", locked && "blur-[2px]")}>{r.title}</h3>
-                    {r.body && (
-                      <p className={cn("mt-1 line-clamp-2 text-xs text-muted-foreground", locked && "blur-[3px] select-none")}>
-                        {r.body}
-                      </p>
-                    )}
-                    {locked && (
-                      <div className="absolute inset-0 flex items-end justify-center bg-gradient-to-t from-background via-background/60 to-transparent p-3">
-                        <Button asChild variant="accent" size="sm">
-                          <Link to="/membership"><Lock className="mr-1 h-3 w-3" /> Unlock</Link>
-                        </Button>
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+              <Plus className="h-6 w-6" />
+            </Button>
+            <ComposeSheet
+              open={composeOpen}
+              onOpenChange={(v) => { setComposeOpen(v); if (!v) load(); }}
+              canPostAnonymous={role === "paid_member" || role === "broker"}
+            />
+          </>
         )}
       </div>
+
+      {isGuest && <GuestTeaser />}
+      {!isGuest && !canRead && <PaywallOverlay />}
     </Layout>
   );
 };

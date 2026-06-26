@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Users, Sparkles, Megaphone, User } from "lucide-react";
+import { Home, Users, MessageSquare, FileText, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -12,9 +12,9 @@ interface Tab {
 }
 
 const baseTabs: Tab[] = [
-  { label: "Today", href: "/", icon: Home, match: (p) => p === "/" },
-  { label: "Circulars", href: "/circulars", icon: Megaphone, match: (p) => p.startsWith("/circulars") },
-  { label: "Brands", href: "/brands", icon: Sparkles, match: (p) => p.startsWith("/brands") },
+  { label: "Home", href: "/", icon: Home, match: (p) => p === "/" },
+  { label: "Market", href: "/market", icon: MessageSquare, match: (p) => p.startsWith("/market") },
+  { label: "RFQ", href: "/rfq", icon: FileText, match: (p) => p.startsWith("/rfq") },
   { label: "Members", href: "/directory", icon: Users, match: (p) => p.startsWith("/directory") || p.startsWith("/store") },
   { label: "Account", href: "/dashboard", icon: User, match: (p) => p.startsWith("/account") || p.startsWith("/dashboard"), requireAuth: true },
 ];
