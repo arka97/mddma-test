@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,6 +11,8 @@ import { createPost, type PostType, type TopicTag } from "@/repositories/communi
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { extractFirstUrl, fetchLinkPreview, type LinkPreview } from "@/lib/linkPreview";
+import { LinkPreviewCard } from "./LinkPreviewCard";
 
 interface Props {
   open: boolean;
