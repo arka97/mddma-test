@@ -80,7 +80,7 @@ const Market = () => {
       <Seo title="Market — MDDMA Community" description="MDDMA member community: market signals, alerts, sourcing asks, and rates." path="/market" noindex />
 
       <div className="container mx-auto max-w-3xl px-4 pb-24 pt-3 sm:px-6 sm:pt-4 lg:px-8">
-        <div className="sticky top-0 z-10 -mx-4 bg-background px-4 py-2 sm:-mx-6 sm:px-6">
+        <div className="sticky top-0 z-10 -mx-4 bg-background/95 backdrop-blur px-4 py-2 sm:-mx-6 sm:px-6">
           <TopicChips active={topic} onChange={setTopic} />
         </div>
 
