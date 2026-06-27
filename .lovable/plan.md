@@ -1,53 +1,68 @@
-# Link Previews in Community Posts
 
-When a user pastes a URL into the post body (or any text field that supports it), automatically fetch the link's Open Graph metadata and render a rich preview card (image + title + site name) inside the post — matching the Twitter behavior shown in your reference.
+# GoKwik Aesthetic Reskin
 
-## Scope
+Goal: shift the whole app from the current slate/emerald/navy theme to the GoKwik "Warm Commerce" look — cream surfaces, warm gold primary (#d8a86a), midnight navy ink, pill buttons, hairline navy borders, 16px radius. No business-logic changes — purely tokens, shell chrome, and shared components.
 
-- Applies to the `/market` Compose sheet — all post types (General, Price Signal, Market Alert, Sourcing Ask, Member News).
-- One preview per post (the first detected URL in the content). Member News already has a dedicated link field; if filled, that link is used instead.
-- Preview is fetched once at compose time, stored with the post, and rendered on every view (no per-view re-fetching).
+## Design tokens (single source of truth)
 
-## User experience
+Update `src/index.css` `:root` to:
 
-1. User types or pastes a message containing a URL.
-2. On paste (or 600 ms after typing stops), the URL is detected and a small "Loading preview…" card appears below the textarea in the compose sheet.
-3. Once metadata loads, the card shows image, title, and source domain — with an × to remove it if unwanted.
-4. After posting, the same card renders inside the post in the feed, clickable and opening in a new tab.
+- `--background` → `#FFF7EC` (warm cream)
+- `--foreground` → `#000428` (midnight navy)
+- `--card` → `#FFFFFF`
+- `--primary` → `#d8a86a` (warm gold) · `--primary-foreground` → `#000428`
+- `--secondary` → `#FEF1DE` (primary-soft) on navy text
+- `--muted` → `#F2F1EA` · `--muted-foreground` → `#000428` @ 60%
+- `--accent` → `#F79D1D` (vivid warm orange, used sparingly)
+- `--border` → `rgba(0,4,40,0.10)` (hairline navy)
+- `--input` → same hairline
+- `--ring` → `#d8a86a`
+- `--success` → `#22C55E` (kept for rates hero / KYC tick)
+- `--warning` → `#F79D1D` · `--destructive` → `#E5484D`
+- `--radius` → `1rem` (16px)
+- Brand aliases (`--gold*`, `--navy*`, `--burgundy*`, `--cream`) remapped to the new palette so legacy callers don't break.
+- Dark mode block updated to the inverse (navy surface, cream ink, same gold).
 
-## Technical plan
+Tailwind config already consumes these via `hsl(var(--*))`, so no `tailwind.config.ts` structural change — only HSL values flip. Confirm Inter stays (BDO Grotesk isn't shipped; Inter is the closest available and already loaded).
 
-**1. New edge function `fetch-link-preview`** (public, no auth required since it's read-only metadata):
-- Input: `{ url: string }`
-- Validates `http/https` only, blocks private IP ranges.
-- Fetches HTML with a 5 s timeout and 1 MB cap, parses `<meta property="og:*">`, `<meta name="twitter:*">`, `<title>`, and `<link rel="icon">`.
-- Returns `{ url, title, description, image, site_name }` or `{ error }`.
-- 10 s in-memory cache per URL to avoid hammering external sites.
+## Shared component polish
 
-**2. Store preview in `structured_data.link_preview`** on `community_posts` — no schema migration needed; the column is already `jsonb`.
+- `src/components/ui/button.tsx` — make `default`, `secondary`, `destructive`, `accent` variants pill-shaped (`rounded-full`), add warm gold shadow on `default` (`shadow-[0_8px_20px_-8px_hsl(var(--primary)/0.55)]`), keep `outline`/`ghost`/`link` square-ish at `rounded-md`. Bump default height to 44px to match GoKwik's airy buttons.
+- `src/components/ui/card.tsx` — 16px radius (already `rounded-lg` = var radius), swap shadow to navy-tinted (`shadow-[0_2px_12px_-4px_rgba(0,4,40,0.08)]`), keep hairline border.
+- `src/components/ui/badge.tsx` — pill by default, add soft variants (`amber-soft`, `blue-soft`, `red-soft`, `green-soft`) backed by tokenized light backgrounds with strong-colored text so chip tags read as light pills, not solid dark fills.
+- `src/components/ui/input.tsx`, `textarea.tsx`, `select.tsx` — radius bumped to match (already inherits), border = hairline navy.
 
-**3. ComposeSheet additions**:
-- URL detection regex on content change (debounced) and paste event.
-- Calls the edge function and shows a `LinkPreviewCard` component.
-- On submit, merges `link_preview` into `structured_data`.
-- Member News `link` field reuses the same flow against `sd.link`.
+## Shell chrome
 
-**4. PostCard rendering**:
-- New `LinkPreviewCard` component (image left/top, title + domain right/bottom, bordered, rounded).
-- Rendered after `post.content` and after `StructuredBody`, only when `structured_data.link_preview` exists.
-- Also auto-linkifies any plain URLs in `content` (clickable, opens in new tab) so the raw URL above the card behaves like Twitter's.
+- `src/components/layout/Header.tsx` — white bar, navy icons, gold `Logo` mark already; tighten to "airy not heavy" (remove backdrop-blur tint shift, replace `bg-background/90` with `bg-card`, hairline border-bottom). Login CTA → pill gold.
+- `src/components/layout/MobileBottomTabBar.tsx` — white bg, gold active state with a small rounded top indicator bar, circular hover/press background on each icon.
+- `src/components/market/ComposeSheet.tsx` — confirm bottom-sheet handle, pill "Post" button using new primary; no structural change needed beyond button variant.
+- FAB (post composer trigger on `/market`) — convert from circular `+` to pill with "Post" label + plus icon.
 
-**5. Security**:
-- Edge function rejects non-http(s), localhost, and RFC1918 addresses to prevent SSRF.
-- Rendered preview image uses `referrerPolicy="no-referrer"` and `loading="lazy"`.
-- Title/description are rendered as plain text (no HTML injection).
+## Targeted screen sweeps (token-only, no layout changes)
 
-## Files
+These pages have hard-coded color utilities or gradients that won't auto-pick up the token flip and need a quick pass:
 
-- `supabase/functions/fetch-link-preview/index.ts` — new
-- `src/lib/linkPreview.ts` — client helper (URL detection + fetch wrapper)
-- `src/components/market/LinkPreviewCard.tsx` — new shared card
-- `src/components/market/ComposeSheet.tsx` — wire detection + preview state
-- `src/components/market/PostCard.tsx` — render preview card + linkify content
+- `src/pages/Index.tsx`, `Market.tsx`, `Rfq.tsx`, `Directory.tsx`, `DirectoryList.tsx`, `About.tsx`, `MembershipPlans.tsx`, `Apply.tsx`, `Dashboard.tsx`, `Login.tsx`
+- `src/components/home/today/*` (TodayHeader, CategoryGrid, QuickActionsGrid, NewMembersList, RecentListingsList, AdSlot, MembershipCTA, FeaturedMembers, CircularsSection)
+- `src/components/market/*` (PostCard, EngagementBar, TopicChips, PinnedRatesCard, SignalCard, PaywallOverlay)
+- `src/components/rfq/RfqCard.tsx`, `CreateRfqSheet.tsx`
+- `src/components/directory/MemberCard.tsx`, `products/ProductTile.tsx`, `products/CategoryGrid.tsx`
 
-No database migration, no RLS changes.
+Sweep rules:
+- Replace `bg-navy*`, `text-navy*`, `border-navy*`, `bg-burgundy*`, `bg-gold*` literals with `bg-primary/foreground/secondary/muted/accent` tokens. Most already use tokens; this is cleanup for the few stragglers.
+- Replace dark gradient hero panels (e.g. KYC success) with cream layout + emerald check.
+- Topic chips & filter chips → `rounded-full`, gold active with warm shadow, muted inactive.
+- Pinned rates card on `/market` stays emerald (signature element) — only refresh the inner decorative circles and pill badge per the brief.
+- RFQ buy/sell toggle → muted container with pill active.
+
+## Out of scope
+
+- No copy/content changes.
+- No route, schema, RLS, or repository changes.
+- No new fonts (Inter stays — BDO Grotesk not licensed in repo).
+- Logo asset untouched.
+
+## Verification
+
+After edits: run typecheck/build, then capture mobile (390×844) screenshots of `/`, `/market`, `/rfq`, `/directorylist`, `/membership`, `/login` via Playwright to confirm the cream surface + gold primary + pill buttons render correctly and no contrast regressions on text.
