@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { AdSlot } from "@/components/home/today/AdSlot";
+import { signPrivatePath } from "@/lib/storage";
 
 interface CircularAttachment {
   url: string;
@@ -46,10 +47,18 @@ const Circulars = () => {
       .eq("is_published", true)
       .order("published_at", { ascending: false, nullsFirst: false })
       .order("created_at", { ascending: false })
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (!alive) return;
         const rows = ((data ?? []) as unknown) as Circular[];
-        setItems(rows.map((r) => ({ ...r, attachments: Array.isArray(r.attachments) ? r.attachments : [] })));
+        const resolved = await Promise.all(rows.map(async (r) => {
+          const attachments = Array.isArray(r.attachments) ? r.attachments : [];
+          const signed = await Promise.all(attachments.map(async (a) => ({
+            ...a,
+            url: (await signPrivatePath(a.url)) ?? a.url,
+          })));
+          return { ...r, attachments: signed };
+        }));
+        if (alive) setItems(resolved);
       });
     return () => { alive = false; };
   }, []);
