@@ -7,6 +7,7 @@ import { PasswordGate } from "@/components/PasswordGate";
 const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
 const Directory = lazy(() => import("./pages/Directory"));
+const DirectoryList = lazy(() => import("./pages/DirectoryList"));
 const MemberProfile = lazy(() => import("./pages/MemberProfile"));
 const Storefront = lazy(() => import("./pages/Storefront"));
 const Products = lazy(() => import("./pages/Products"));
