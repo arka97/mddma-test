@@ -661,6 +661,103 @@ export type Database = {
           },
         ]
       }
+      post_poll_options: {
+        Row: {
+          id: string
+          idx: number
+          label: string
+          poll_id: string
+        }
+        Insert: {
+          id?: string
+          idx: number
+          label: string
+          poll_id: string
+        }
+        Update: {
+          id?: string
+          idx?: number
+          label?: string
+          poll_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_poll_options_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "post_polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_poll_votes: {
+        Row: {
+          created_at: string
+          option_id: string
+          poll_id: string
+          voter_id: string
+        }
+        Insert: {
+          created_at?: string
+          option_id: string
+          poll_id: string
+          voter_id: string
+        }
+        Update: {
+          created_at?: string
+          option_id?: string
+          poll_id?: string
+          voter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_poll_votes_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "post_poll_options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_poll_votes_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "post_polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_polls: {
+        Row: {
+          closes_at: string
+          created_at: string
+          id: string
+          post_id: string
+          question: string
+        }
+        Insert: {
+          closes_at: string
+          created_at?: string
+          id?: string
+          post_id: string
+          question: string
+        }
+        Update: {
+          closes_at?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_polls_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: true
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_views: {
         Row: {
           id: string
