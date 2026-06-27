@@ -18,7 +18,7 @@ export function Footer() {
   const { isInstalled } = useInstallPrompt();
   return (
     <footer className="bg-primary text-primary-foreground pb-safe">
-      <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-5 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="mb-4 inline-flex items-center gap-2">
@@ -94,7 +94,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-primary-foreground/15">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-4 py-4 text-xs text-primary-foreground/60 sm:flex-row sm:px-6 lg:px-8">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-5 py-4 text-xs text-primary-foreground/60 sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} Mumbai Dry Fruits & Dates Merchants Association. All rights reserved.</p>
           <p>India's Digital Trade Hub · Serving Since 1930</p>
         </div>
