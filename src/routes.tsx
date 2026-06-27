@@ -56,6 +56,7 @@ export function AppRoutes() {
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
         <Route path="/directory" element={<Directory />} />
+        <Route path="/directorylist" element={<DirectoryList />} />
         <Route path="/directory/:slug" element={<MemberProfile />} />
         <Route path="/store/:slug" element={<Storefront />} />
         <Route path="/products" element={<Products />} />
