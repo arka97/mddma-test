@@ -93,8 +93,8 @@ function StructuredBody({ post }: { post: CommunityPostRow }) {
       <div className="mt-2 rounded-md border border-border/60 bg-muted/30 px-3 py-2 text-xs">
         {sd.headline && <div className="font-semibold text-foreground">{sd.headline}</div>}
         {sd.description && <p className="mt-1 text-muted-foreground">{sd.description}</p>}
-        {sd.link && (
-          <a href={String(sd.link)} target="_blank" rel="noreferrer" className="mt-1 inline-block text-accent hover:underline">
+        {sd.link && /^https?:\/\//i.test(String(sd.link)) && (
+          <a href={String(sd.link)} target="_blank" rel="noreferrer noopener" className="mt-1 inline-block text-accent hover:underline">
             {String(sd.link)}
           </a>
         )}

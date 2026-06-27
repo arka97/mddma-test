@@ -3,18 +3,16 @@ import { friendlyErrorMessage } from "@/lib/errors";
 
 export async function listLikes(postIds: string[]) {
   if (postIds.length === 0) return { counts: {}, mine: new Set<string>() };
-  const { data, error } = await supabase
-    .from("post_likes")
-    .select("post_id, user_id")
-    .in("post_id", postIds);
-  if (error) throw new Error(friendlyErrorMessage(error));
+  const { data, error } = await (supabase.rpc as unknown as (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: unknown }>)("get_post_like_summary", { _ids: postIds });
+  if (error) throw new Error(friendlyErrorMessage(error as never));
   const counts: Record<string, number> = {};
-  const { data: userData } = await supabase.auth.getUser();
-  const me = userData.user?.id;
   const mine = new Set<string>();
-  (data ?? []).forEach((r: { post_id: string; user_id: string }) => {
-    counts[r.post_id] = (counts[r.post_id] ?? 0) + 1;
-    if (r.user_id === me) mine.add(r.post_id);
+  ((data ?? []) as Array<{ post_id: string; like_count: number; liked: boolean }>).forEach((r) => {
+    counts[r.post_id] = Number(r.like_count) || 0;
+    if (r.liked) mine.add(r.post_id);
   });
   return { counts, mine };
 }

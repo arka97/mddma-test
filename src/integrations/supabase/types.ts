@@ -1314,6 +1314,21 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_post_like_summary: {
+        Args: { _ids: string[] }
+        Returns: {
+          like_count: number
+          liked: boolean
+          post_id: string
+        }[]
+      }
+      get_post_view_summary: {
+        Args: { _ids: string[] }
+        Returns: {
+          post_id: string
+          view_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
