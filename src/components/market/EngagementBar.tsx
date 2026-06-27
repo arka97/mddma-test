@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Eye } from "lucide-react";
+import { ThumbsUp, MessageCircle, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -23,7 +23,7 @@ export function EngagementBar({ liked, likeCount, commentCount, viewCount, onLik
           liked ? "text-accent" : "hover:text-foreground",
         )}
       >
-        <Heart className={cn("h-4 w-4", liked && "fill-current")} />
+        <ThumbsUp className={cn("h-4 w-4", liked && "fill-current")} />
         <span className="tabular-nums">{likeCount}</span>
       </button>
       <button
