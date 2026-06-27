@@ -1,11 +1,18 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export type LinkPreviewKind = "link" | "video" | "image" | "pdf";
+
 export interface LinkPreview {
   url: string;
   title: string | null;
   description: string | null;
   image: string | null;
   site_name: string | null;
+  kind?: LinkPreviewKind;
+  provider?: "youtube" | "vimeo" | null;
+  video_id?: string | null;
+  embed_url?: string | null;
+  video_url?: string | null;
 }
 
 const URL_RE = /\bhttps?:\/\/[^\s<>"']+/i;
@@ -13,7 +20,6 @@ const URL_RE = /\bhttps?:\/\/[^\s<>"']+/i;
 export function extractFirstUrl(text: string): string | null {
   const m = text.match(URL_RE);
   if (!m) return null;
-  // Trim trailing punctuation
   return m[0].replace(/[.,;:!?)\]}'"]+$/, "");
 }
 
@@ -25,13 +31,18 @@ export async function fetchLinkPreview(url: string): Promise<LinkPreview | null>
     if (error) return null;
     const d = data as Partial<LinkPreview> & { error?: string };
     if (!d || d.error) return null;
-    if (!d.title && !d.image && !d.description) return null;
+    if (!d.title && !d.image && !d.description && !d.video_url) return null;
     return {
       url: d.url ?? url,
       title: d.title ?? null,
       description: d.description ?? null,
       image: d.image ?? null,
       site_name: d.site_name ?? null,
+      kind: d.kind ?? "link",
+      provider: d.provider ?? null,
+      video_id: d.video_id ?? null,
+      embed_url: d.embed_url ?? null,
+      video_url: d.video_url ?? null,
     };
   } catch {
     return null;
