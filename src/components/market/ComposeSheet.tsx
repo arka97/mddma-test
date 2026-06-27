@@ -38,13 +38,50 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const [isAnon, setIsAnon] = useState(false);
   const [sd, setSd] = useState<Record<string, string | number>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [preview, setPreview] = useState<LinkPreview | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewDismissed, setPreviewDismissed] = useState<Set<string>>(new Set());
+  const previewSeqRef = useRef(0);
 
   const reset = () => {
     setPostType("general");
     setContent("");
     setIsAnon(false);
     setSd({});
+    setPreview(null);
+    setPreviewLoading(false);
+    setPreviewDismissed(new Set());
   };
+
+  // Detect URL in content (general/member_news note) and fetch preview.
+  // For member_news, the explicit `link` field is preferred.
+  useEffect(() => {
+    const explicit = postType === "member_news" ? String(sd.link ?? "") : "";
+    const candidate = explicit && /^https?:\/\//i.test(explicit)
+      ? explicit
+      : extractFirstUrl(content) ?? "";
+    if (!candidate) {
+      setPreview(null);
+      setPreviewLoading(false);
+      return;
+    }
+    if (previewDismissed.has(candidate)) {
+      setPreview(null);
+      setPreviewLoading(false);
+      return;
+    }
+    if (preview && preview.url === candidate) return;
+    const seq = ++previewSeqRef.current;
+    setPreviewLoading(true);
+    const t = setTimeout(async () => {
+      const data = await fetchLinkPreview(candidate);
+      if (seq !== previewSeqRef.current) return;
+      setPreview(data ? { ...data, url: candidate } : null);
+      setPreviewLoading(false);
+    }, 500);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content, sd.link, postType]);
 
   const submit = async () => {
     if (!user) return;
@@ -55,12 +92,14 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
     setSubmitting(true);
     try {
       const opt = TYPE_OPTIONS.find((o) => o.value === postType);
+      const merged: Record<string, unknown> = { ...sd };
+      if (preview) merged.link_preview = preview;
       await createPost({
         author_id: user.id,
         post_type: postType,
         content: content.trim(),
         topic_tag: opt?.topic ?? null,
-        structured_data: Object.keys(sd).length ? sd : null,
+        structured_data: Object.keys(merged).length ? (merged as Record<string, string | number>) : null,
         is_anonymous: isAnon,
       });
       toast({ title: "Posted" });
@@ -75,6 +114,14 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   };
 
   const update = (k: string, v: string) => setSd((s) => ({ ...s, [k]: v }));
+
+  const dismissPreview = () => {
+    if (preview) {
+      setPreviewDismissed((s) => new Set(s).add(preview.url));
+    }
+    setPreview(null);
+  };
+
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
