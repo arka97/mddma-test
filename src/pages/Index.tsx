@@ -17,11 +17,11 @@ const Index = () => (
       path="/"
     />
 
-    <div className="container mx-auto max-w-6xl px-4 pt-3 sm:px-6 sm:pt-4 lg:px-8">
+    <div className="container mx-auto max-w-6xl px-5 pt-3 sm:px-6 sm:pt-4 lg:px-8">
       <AdSlot placement="homepage-banner" />
     </div>
 
-    <div className="container mx-auto max-w-6xl px-4 py-3 sm:px-6 sm:py-5 lg:px-8">
+    <div className="container mx-auto max-w-6xl px-5 py-3 sm:px-6 sm:py-5 lg:px-8">
       <div className="space-y-5">
         <TodayHeader />
         <QuickActionsGrid />
