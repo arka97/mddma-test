@@ -131,11 +131,10 @@ const Market = () => {
           <>
             <Button
               onClick={() => setComposeOpen(true)}
-              className="fixed bottom-20 right-4 z-30 h-14 w-14 rounded-full shadow-lg lg:bottom-6"
-              size="icon"
-              variant="accent"
+              className="fixed bottom-20 right-4 z-30 h-12 px-5 shadow-[0_10px_28px_-8px_hsl(var(--primary)/0.65)] lg:bottom-6"
             >
-              <Plus className="h-6 w-6" />
+              <Plus className="h-5 w-5" />
+              <span>Post</span>
             </Button>
             <ComposeSheet
               open={composeOpen}
