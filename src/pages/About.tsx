@@ -110,7 +110,7 @@ const About = () => {
           name: "Mumbai Dryfruits & Dates Merchants Association",
           alternateName: "MDDMA",
           url: "https://mddma.org/about",
-          telephone: "+91-22-27650827",
+          telephone: "+91-9820069545",
           email: "vijaybhuta@gmail.com",
           foundingDate: "1930",
           address: {

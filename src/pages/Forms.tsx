@@ -31,7 +31,7 @@ const Forms = () => {
       {isContact ? (
         <Seo
           title="Contact MDDMA — Mumbai Dry-fruits & Dates Association"
-          description="Contact the Mumbai Dry-fruits & Dates Merchants Association. Office at APMC Vashi, Navi Mumbai. Phone +91-22-27650827. Email grievance@mddma.org."
+          description="Contact the Mumbai Dry-fruits & Dates Merchants Association. Office at APMC Vashi, Navi Mumbai. Phone +91-9820069545. Email grievance@mddma.org."
           path="/contact"
         />
       ) : (
