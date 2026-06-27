@@ -7,10 +7,14 @@ export async function recordView(postId: string, userId: string) {
 
 export async function viewCounts(postIds: string[]) {
   if (postIds.length === 0) return {} as Record<string, number>;
-  const { data } = await supabase.from("post_views").select("post_id").in("post_id", postIds);
+  const { data, error } = await (supabase.rpc as unknown as (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: unknown }>)("get_post_view_summary", { _ids: postIds });
+  if (error) return {};
   const counts: Record<string, number> = {};
-  (data ?? []).forEach((r: { post_id: string }) => {
-    counts[r.post_id] = (counts[r.post_id] ?? 0) + 1;
+  ((data ?? []) as Array<{ post_id: string; view_count: number }>).forEach((r) => {
+    counts[r.post_id] = Number(r.view_count) || 0;
   });
   return counts;
 }
