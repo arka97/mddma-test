@@ -229,10 +229,19 @@ export function PostCard({ post, author, liked: initialLiked, likeCount: initial
         )}
 
         {post.content && (
-          <p className="mt-2 whitespace-pre-wrap text-sm text-foreground">{post.content}</p>
+          <p className="mt-2 whitespace-pre-wrap break-words text-sm text-foreground">
+            <LinkifiedText text={post.content} />
+          </p>
         )}
 
         <StructuredBody post={post} />
+
+        {(() => {
+          const sd = (post.structured_data ?? {}) as Record<string, unknown>;
+          const lp = sd.link_preview as LinkPreview | undefined;
+          if (!lp || typeof lp !== "object" || !lp.url) return null;
+          return <LinkPreviewCard preview={lp} />;
+        })()}
 
         {post.is_anonymous && (
           <p className="mt-2 text-[10px] italic text-muted-foreground">Identity protected by MDDMA</p>
