@@ -1,39 +1,43 @@
-## Goal
-Add a new `/directorylist` route that shows the 211-member association roster from the uploaded Excel as a searchable, filterable, fully client-side list.
+## GBAUG Rebrand — Scope
 
-## Scope
-- Public route — no auth, no Controlled-Transparency masking.
-- Separate from `/directory` (which stays as the verified storefront cards page).
-- Data bundled as static JSON; no DB changes.
+Per your earlier guidance ("just logos"), this rebrand swaps the **app-shell brand identity** (header wordmark, favicon, PWA icons, social preview) from MDDMA to **GBAUG**. All in-page content keeps mentioning MDDMA as the parent association.
 
-## Steps
+## What changes
 
-1. **Parse the Excel into JSON**
-   - Read sheet 4 of `webside list (1).xlsx` (211 rows).
-   - Generate `src/data/memberRoster.json` with fields:
-     `{ srNo, companyName, memberName, address, mobile, fssai, gst, email }`
-   - Trim whitespace, normalize empty cells to `null`.
+### 1. Logo assets (public/brand + public/)
+Replace the MDDMA logo files used app-wide with the GBAUG logo previously shared:
+- `public/favicon.ico` → GBAUG icon
+- `public/icon-192.png`, `public/icon-512.png`, `public/icon-512-maskable.png`, `public/apple-touch-icon.png` → GBAUG
+- `public/og-image.png` → GBAUG-branded social card
+- `public/brand/MDDMA_logomark.svg` and `MDDMA_Royal_Heritage_Logo.svg` → add new `public/brand/gbaug-logo.svg` (keep MDDMA files unreferenced or remove)
 
-2. **Create `src/pages/DirectoryList.tsx`**
-   - `Layout` + `Seo` (noindex, since it contains member contact data).
-   - `PageHeader` titled "Association Member List" with the total count subtitle.
-   - **Search**: single `Input` that matches across company, member, address, mobile, GST, FSSAI, email (case-insensitive substring).
-   - **Filters** (Selects):
-     - Verification toggle: *All / Has GST / Has FSSAI / Has Email* (derived flags).
-     - Alphabet quick-jump: A–Z chips that scroll/filter by company-name initial.
-   - **Sort**: Company name A→Z (default), or Sr. No.
-   - **Table view (desktop ≥ md)**: sticky-header table — Sr.No | Company | Member | Address | Mobile (tel: link) | FSSAI | GST | Email (mailto: link).
-   - **Card view (mobile)**: stacked cards with the same fields, tap-to-call / tap-to-email.
-   - Result counter ("Showing X of 211").
-   - Empty state when filters yield 0.
+### 2. Header (`src/components/layout/Header.tsx`)
+- Swap logo image source to GBAUG mark
+- Replace stacked label "MDDMA / Mumbai Dryfruits & Dates Merchants Association" with stacked label "**GBAUG** / by MDDMA"
+- Update `aria-label` to "GBAUG — by MDDMA"
 
-3. **Register the route**
-   - Add lazy import + `<Route path="/directorylist" element={<DirectoryList />} />` in `src/routes.tsx`.
-   - No navbar/footer link changes unless requested later — page is reachable by URL.
+### 3. Brand component (`src/components/brand/Logo.tsx`)
+- Point to new GBAUG SVG; keep size/variants
 
-## Technical notes
-- Pure client-side filter/sort with `useMemo`; 211 rows is trivially fast — no virtualization needed.
-- Reuse shadcn `Input`, `Select`, `Table`, `Card`, `Badge`.
-- All contact fields shown to everyone (per user's answer); page marked `noindex` regardless so PII isn't crawled.
-- Phone numbers rendered as `tel:+91…`, emails as `mailto:…`, with basic sanitization (skip if empty).
-- No changes to `/directory`, DB, RLS, or any existing component.
+### 4. PWA & SEO shell
+- `public/manifest.json`: `name`, `short_name` → "GBAUG"; description → "GBAUG — by MDDMA"
+- `index.html`: `<title>`, `og:title`, `og:site_name`, Organization JSON-LD `name` → "GBAUG" (legalName → "Mumbai Dryfruits & Dates Merchants Association")
+- `src/components/Seo.tsx`: default site name → "GBAUG"
+- `public/llms.txt`: first-line brand → GBAUG (by MDDMA)
+
+### 5. Install prompt
+- `src/components/pwa/InstallAppButton.tsx` + `src/pages/Install.tsx`: install copy uses "GBAUG"
+
+## What does NOT change
+
+- All in-page content, doc body text, About page, Footer association line, emails, edge functions, DB schema, route paths, or any other "MDDMA" mention inside the app remains untouched.
+- No color, font, or layout changes.
+- No edits to `/documents` markdown.
+
+## Asset I'll use
+
+The GBAUG logo image you previously uploaded in this project. I will convert it to the favicon + PWA sizes (192, 512, 512 maskable, 180 apple-touch, .ico) at build time using a one-off script, then upload the binaries via `lovable-assets` / commit to `public/`.
+
+## Open confirmation
+
+Could you confirm the exact filename of the GBAUG logo in your uploads so I pick the right one? If you'd rather I auto-detect the most recent logo-looking upload, say "auto-pick" and I'll proceed.
