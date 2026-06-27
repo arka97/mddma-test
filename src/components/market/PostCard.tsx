@@ -14,6 +14,8 @@ import {
 import { EngagementBar } from "./EngagementBar";
 import { CommentsSheet } from "./CommentsSheet";
 import { LinkPreviewCard } from "./LinkPreviewCard";
+import { PostImages, PostFileChip } from "./PostMedia";
+import { PollWidget } from "./PollWidget";
 import type { CommunityPostRow } from "@/repositories/communityPosts";
 import { recordView } from "@/repositories/postViews";
 import { likePost, unlikePost } from "@/repositories/postLikes";
@@ -235,6 +237,22 @@ export function PostCard({ post, author, liked: initialLiked, likeCount: initial
         )}
 
         <StructuredBody post={post} />
+
+        {(() => {
+          const sd = (post.structured_data ?? {}) as Record<string, unknown>;
+          const images = Array.isArray(sd.images) ? (sd.images as string[]).filter((s) => typeof s === "string") : [];
+          const file = sd.file as { path: string; name: string; size: number } | undefined;
+          return (
+            <>
+              {images.length > 0 && <PostImages paths={images} />}
+              {file && typeof file === "object" && file.path && <PostFileChip file={file} />}
+            </>
+          );
+        })()}
+
+        {post.post_type === "poll" && (
+          <PollWidget postId={post.id} canVote={canEngage} />
+        )}
 
         {(() => {
           const sd = (post.structured_data ?? {}) as Record<string, unknown>;
