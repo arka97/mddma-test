@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { EngagementBar } from "./EngagementBar";
 import { CommentsSheet } from "./CommentsSheet";
+import { LinkPreviewCard } from "./LinkPreviewCard";
 import type { CommunityPostRow } from "@/repositories/communityPosts";
 import { recordView } from "@/repositories/postViews";
 import { likePost, unlikePost } from "@/repositories/postLikes";
@@ -20,6 +21,31 @@ import { setPostHidden, deletePost, muteAuthor } from "@/repositories/communityP
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { linkifyText, type LinkPreview } from "@/lib/linkPreview";
+
+function LinkifiedText({ text }: { text: string }) {
+  const parts = linkifyText(text);
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.type === "link" ? (
+          <a
+            key={i}
+            href={p.value}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="text-accent break-all hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {p.value}
+          </a>
+        ) : (
+          <span key={i}>{p.value}</span>
+        ),
+      )}
+    </>
+  );
+}
 
 interface Author {
   id: string;
