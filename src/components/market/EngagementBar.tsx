@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, Eye } from "lucide-react";
+import { ThumbsUp, MessageCircle, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
