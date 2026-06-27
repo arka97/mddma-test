@@ -335,8 +335,7 @@ const About = () => {
                     <Phone className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" aria-hidden />
                     <div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Phone</div>
-                      <a href="tel:+912227650827" className="text-sm text-foreground mt-1 hover:text-primary block">022-27650827</a>
-                      <a href="tel:+912227666501" className="text-sm text-foreground hover:text-primary block">022-27666501</a>
+                      <a href="tel:+919820069545" className="text-sm text-foreground mt-1 hover:text-primary block">+91 98200 69545</a>
                     </div>
                   </div>
 
