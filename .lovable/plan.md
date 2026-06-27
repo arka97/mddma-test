@@ -1,58 +1,45 @@
+Wire up the four currently-stubbed compose actions in `/market` so members can attach photos, share PDFs, run polls, and post price ranges from the same New Post sheet.
 
-# Rework `/market` Compose Sheet
+## What changes
 
-Replace the form-heavy bottom sheet with a Twitter-style composer matching the reference image. Same backing data (`createPost`, `structured_data`, link preview), no schema changes.
+**1. Photo (paste + pick)**
+- Multi-image upload (jpg/png/webp, ≤5 MB each, up to 4 per post) to a new public `community-media` storage bucket, path `posts/{user_id}/{uuid}.{ext}`.
+- Support: file picker, drag-drop into textarea, and **clipboard paste** (Ctrl/Cmd-V of an image).
+- Thumbnails render inside the compose sheet with a remove (×) button per image; URLs saved to `structured_data.images: string[]`.
+- `PostCard` renders an image grid (1 / 2 / 2×2) under the text.
 
-## New layout (`src/components/market/ComposeSheet.tsx`)
+**2. File (PDF)**
+- Single PDF upload (≤10 MB) to the same bucket under `posts/{user_id}/files/{uuid}.pdf`.
+- Compose shows a pill chip with filename + size + remove button.
+- Stored as `structured_data.file: { url, name, size }`; `PostCard` renders a download chip.
 
-```
-┌──────── handle ────────┐
-│ (X)   New Post   [Post]│ ← header row
-├────────────────────────┤
-│ Post anonymously  [⌾] │ ← only if canPostAnonymous; muted helper text
-├────────────────────────┤
-│ (RS)  What's happening │ ← avatar + borderless textarea
-│       in the market?   │
-│                        │
-│  [LinkPreviewCard]     │ ← auto-fetched, dismissible
-├────────────────────────┤
-│ 🖼 Photo  📄 File  🔗 Link  📊 Poll   ⚡ Signal │ ← bottom action row
-└────────────────────────┘
-```
+**3. Poll**
+- Tapping **Poll** opens an inline poll editor inside the sheet (question, 2–4 options, duration 1/3/7 days).
+- New `post_type = "poll"` + new topic chip "Polls" already exists in the UI — wire it up.
+- New tables:
+  - `post_polls (id, post_id unique, question, closes_at, created_at)`
+  - `post_poll_options (id, poll_id, idx, label)`
+  - `post_poll_votes (poll_id, option_id, voter_id, created_at, PK(poll_id, voter_id))`
+- RLS: read open to whoever can read the parent post; vote insert restricted to paid/admin via `auth.uid() = voter_id`; one vote per user (PK).
+- `PostCard` renders results bar chart after vote / after close; live counts via aggregated select.
 
-### Header
-- Close `X` button (ghost, circle) on the left.
-- Centered "New Post" title.
-- Pill `Post` button on the right (uses default `Button` variant — gold pill, warm shadow). Disabled when empty/submitting; shows spinner while submitting.
+**4. Price range (quick action)**
+- Replace the **Signal** pill behavior so price posting is one tap: tapping **Signal** still opens the existing signal editor, but we add a dedicated **"Price"** quick-entry on the bottom row that jumps straight to the Price Signal form (commodity + min/max + unit) — the slowest existing flow becomes a single tap.
+- Keep existing `price_signal` schema in `structured_data`; no DB change.
 
-### Anonymous row
-- Only rendered when `canPostAnonymous`.
-- Compact row directly under header: bold "Post anonymously" + muted "Your identity will be hidden" + `Switch`. No card border — just a hairline divider below.
+## Files
 
-### Body
-- User avatar (28–32px circle, initials from profile/email) on the left.
-- Borderless, auto-grow `Textarea` filling the rest. Placeholder: "What's happening in the market?". No label.
-- `LinkPreviewCard` renders below the textarea when a URL is detected (existing fetch/dismiss logic stays).
+- `supabase/migrations/*` — create `community-media` bucket (public read, authenticated write own folder), poll tables + RLS + grants.
+- `src/lib/uploads.ts` *(new)* — `uploadPostImage`, `uploadPostFile`, MIME/size validation.
+- `src/components/market/ComposeSheet.tsx` — paste/drop handlers, image strip, file chip, inline poll editor, "Price" quick pill, send `images/file/poll` in `structured_data`.
+- `src/components/market/PostCard.tsx` — render image grid, PDF chip, poll widget.
+- `src/components/market/PollWidget.tsx` *(new)* — vote UI + results bar.
+- `src/repositories/communityPosts.ts` — extend `PostType` with `"poll"`; helpers `castPollVote`, `getPollWithVotes`.
+- `src/repositories/postPolls.ts` *(new)* — poll CRUD/vote queries.
 
-### Bottom action row (sticky to the sheet bottom, above safe area)
-Pill buttons / icon+label tap targets:
-- **Photo** (`ImageIcon`) — placeholder, shows toast "Photos coming soon" for now.
-- **File** (`FileText`) — placeholder toast.
-- **Link** (`LinkIcon`) — focuses textarea and inserts `https://` so the auto-preview fires; no dialog needed.
-- **Poll** (`BarChart3`) — placeholder toast.
-- **Signal** (`Zap`, gold pill, slightly emphasized like the reference) — opens an inline "Structured signal" panel that swaps the textarea area for the existing Price Signal / Market Alert / Sourcing Ask / Member News forms (kept verbatim from current sheet, just relocated into a collapsible panel). Selecting a type sets `postType`; tapping the active Signal pill again collapses back to general.
+## Behavior notes
 
-### State changes
-- `postType` defaults to `"general"`; structured forms only render when the Signal panel is open.
-- Drop the standalone `<Select>` for post type — replaced by the Signal pill + inline type tabs.
-- Keep `createPost` payload, link preview effect, anonymous flag, and toast/invalidate logic exactly as today.
-
-### Styling
-- `SheetContent side="bottom"` with `rounded-t-2xl`, white bg, drag handle (already provided by Sheet), height auto-fits content with `max-h-[90vh]`.
-- Hairline `border-border/60` dividers between header / anon / body / actions.
-- Action pills: `rounded-full bg-muted/60 px-3 py-2 text-xs` with icon + label; Signal pill uses `bg-primary/15 text-primary-foreground` to echo the reference.
-
-## Out of scope
-- No backend changes. Photo/File/Poll are visual affordances only (toast stubs) so the surface matches the reference without partial implementations.
-- No changes to `PostCard`, feed, or RLS.
-- No AI Elements work — this is a domain compose sheet, not a chat surface.
+- Only paid members + admins can attach media, files, or create polls (matches existing post permissions).
+- Anonymous posts still allowed for media/poll; uploader user_id stored in storage path is server-only and not exposed via the post payload.
+- All uploads happen on **Post** click (not on select) so cancelling the sheet uploads nothing; show inline progress.
+- Post button stays disabled until at least one of: text, image, file, or valid poll is present.
