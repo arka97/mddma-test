@@ -48,6 +48,8 @@ export function QuickActionsGrid() {
       icon: Megaphone,
       tone: "warning",
     },
+    { label: "About Us", meta: "Our story & team", href: "/about", icon: Info, tone: "accent" },
+    { label: "Directory List", meta: "All members A–Z", href: "/directorylist", icon: List, tone: "primary" },
     {
       label: "Brands",
       meta: brandCount == null ? "House brands" : `${brandCount}+ brands`,
