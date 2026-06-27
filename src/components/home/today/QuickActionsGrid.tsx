@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Users, Megaphone, LineChart, Sparkles } from "lucide-react";
+import { Users, Megaphone, LineChart, Sparkles, Info, List } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
