@@ -77,20 +77,34 @@ export async function uploadFile(
     console.error("upload error", error);
     return null;
   }
-  // For private buckets (circular-assets), mint a long-lived signed URL.
+  // For private buckets (circular-assets), store only the path; callers mint
+  // short-lived signed URLs on demand via signPrivatePath().
   if (bucket === "circular-assets") {
-    const FIVE_YEARS = 60 * 60 * 24 * 365 * 5;
-    const { data: signed, error: signErr } = await supabase.storage
-      .from(bucket)
-      .createSignedUrl(path, FIVE_YEARS);
-    if (signErr || !signed?.signedUrl) {
-      console.error("sign url error", signErr);
-      return null;
-    }
-    return signed.signedUrl;
+    return `private://${bucket}/${path}`;
   }
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl;
+}
+
+const SIGN_TTL_SECONDS = 60 * 60; // 1 hour
+const signedUrlCache = new Map<string, { url: string; expires: number }>();
+
+export async function signPrivatePath(stored: string | null | undefined): Promise<string | null> {
+  if (!stored) return null;
+  // Legacy: long-lived signed URLs already stored in the DB — return as-is.
+  if (!stored.startsWith("private://")) return stored;
+  const rest = stored.slice("private://".length);
+  const slash = rest.indexOf("/");
+  if (slash < 0) return null;
+  const bucket = rest.slice(0, slash);
+  const path = rest.slice(slash + 1);
+  const cacheKey = `${bucket}/${path}`;
+  const cached = signedUrlCache.get(cacheKey);
+  if (cached && cached.expires > Date.now() + 60_000) return cached.url;
+  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(path, SIGN_TTL_SECONDS);
+  if (error || !data?.signedUrl) return null;
+  signedUrlCache.set(cacheKey, { url: data.signedUrl, expires: Date.now() + SIGN_TTL_SECONDS * 1000 });
+  return data.signedUrl;
 }
 
 export function slugify(input: string): string {
