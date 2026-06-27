@@ -1,7 +1,7 @@
 {
-  "name": "MDDMA Digital Trade Hub",
-  "short_name": "MDDMA",
-  "description": "B2B trade platform for the Mumbai Dry Fruits & Dates Merchants Association — directory, circulars, market signals.",
+  "name": "GBAUG — by MDDMA",
+  "short_name": "GBAUG",
+  "description": "GBAUG — B2B trade platform by the Mumbai Dry Fruits & Dates Merchants Association (MDDMA). Directory, circulars, market signals.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
