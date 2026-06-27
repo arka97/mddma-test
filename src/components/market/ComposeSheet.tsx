@@ -221,6 +221,15 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
+            {(preview || previewLoading) && (
+              preview ? (
+                <LinkPreviewCard preview={preview} loading={previewLoading} onRemove={dismissPreview} asLink={false} />
+              ) : (
+                <div className="mt-2 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+                  Loading preview…
+                </div>
+              )
+            )}
           </div>
 
           {canPostAnonymous && (
