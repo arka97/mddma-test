@@ -7,75 +7,74 @@
 
 @layer base {
   :root {
-    --background: 210 20% 99%;
-    --foreground: 222 25% 12%;
+    /* GoKwik Warm Commerce — cream surface, midnight navy ink, warm gold primary */
+    --background: 36 100% 96%;        /* #FFF7EC */
+    --foreground: 231 100% 8%;        /* #000428 */
 
     --card: 0 0% 100%;
-    --card-foreground: 222 25% 12%;
+    --card-foreground: 231 100% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 25% 12%;
+    --popover-foreground: 231 100% 8%;
 
-    --primary: 222 47% 18%;
-    --primary-foreground: 210 20% 99%;
+    --primary: 33 56% 63%;            /* #d8a86a */
+    --primary-foreground: 231 100% 8%;
 
-    --secondary: 220 14% 94%;
-    --secondary-foreground: 222 25% 18%;
+    --secondary: 36 92% 93%;          /* #FEF1DE — primary soft */
+    --secondary-foreground: 231 100% 8%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 42%;
+    --muted: 48 18% 93%;              /* #F2F1EA */
+    --muted-foreground: 231 30% 35%;
 
-    --accent: 158 64% 38%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 33 93% 54%;             /* #F79D1D — vivid warm orange, sparing */
+    --accent-foreground: 231 100% 8%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 358 75% 59%;       /* #E5484D */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 88%;
-    --ring: 158 64% 38%;
+    --border: 231 50% 88%;            /* hairline navy-tinted */
+    --input: 231 50% 88%;
+    --ring: 33 56% 63%;
 
-    --radius: 0.625rem;
+    --radius: 1rem;
 
-    /* Status palette — used by Badge variants and data widgets */
-    --success: 158 64% 38%;
+    /* Status palette */
+    --success: 142 71% 45%;           /* #22C55E */
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 48%;
-    --warning-foreground: 222 25% 12%;
-    --info: 217 91% 55%;
+    --warning: 33 93% 54%;
+    --warning-foreground: 231 100% 8%;
+    --info: 213 100% 51%;             /* #0779ff */
     --info-foreground: 0 0% 100%;
-    --danger: 0 72% 51%;
+    --danger: 358 75% 59%;
     --danger-foreground: 0 0% 100%;
-    --up: 158 64% 38%;
-    --down: 0 72% 51%;
+    --up: 142 71% 45%;
+    --down: 358 75% 59%;
 
-    /* Logo/brand-only static color (NOT a theme accent) */
-    --brand-gold: 38 55% 54%;
+    /* Logo/brand-only static color */
+    --brand-gold: 33 56% 63%;
 
-    /* One-cycle aliases — let unmigrated callers (account/admin pages,
-       hard-coded utility classes) resolve to the new theme until they
-       are swept in commit 3. Drop in a follow-up PR. */
-    --navy: 222 47% 18%;
-    --navy-light: 222 35% 30%;
-    --navy-dark: 222 50% 12%;
-    --burgundy: 0 72% 51%;
-    --burgundy-light: 0 60% 60%;
-    --burgundy-dark: 0 75% 40%;
-    --gold: 38 55% 54%;
-    --gold-light: 45 75% 65%;
-    --gold-dark: 35 60% 38%;
-    --cream: 210 20% 99%;
-    --warm-gray: 220 10% 42%;
+    /* Legacy aliases — remapped onto GoKwik palette so older callers don't break */
+    --navy: 231 100% 8%;
+    --navy-light: 231 60% 25%;
+    --navy-dark: 231 100% 6%;
+    --burgundy: 358 75% 59%;
+    --burgundy-light: 358 70% 70%;
+    --burgundy-dark: 358 80% 45%;
+    --gold: 33 56% 63%;
+    --gold-light: 36 92% 80%;
+    --gold-dark: 33 65% 48%;
+    --cream: 36 100% 96%;
+    --warm-gray: 231 20% 45%;
 
-    /* Sidebar — collapsed onto primary/secondary for now */
-    --sidebar-background: 222 47% 18%;
-    --sidebar-foreground: 210 20% 99%;
-    --sidebar-primary: 158 64% 38%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 222 35% 30%;
-    --sidebar-accent-foreground: 210 20% 99%;
-    --sidebar-border: 222 30% 25%;
-    --sidebar-ring: 158 64% 38%;
+    /* Sidebar */
+    --sidebar-background: 231 100% 8%;
+    --sidebar-foreground: 36 100% 96%;
+    --sidebar-primary: 33 56% 63%;
+    --sidebar-primary-foreground: 231 100% 8%;
+    --sidebar-accent: 231 60% 18%;
+    --sidebar-accent-foreground: 36 100% 96%;
+    --sidebar-border: 231 50% 20%;
+    --sidebar-ring: 33 56% 63%;
   }
 
   .dark {

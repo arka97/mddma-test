@@ -80,7 +80,7 @@ const Market = () => {
       <Seo title="Market — MDDMA Community" description="MDDMA member community: market signals, alerts, sourcing asks, and rates." path="/market" noindex />
 
       <div className="container mx-auto max-w-3xl px-4 pb-24 pt-3 sm:px-6 sm:pt-4 lg:px-8">
-        <div className="sticky top-0 z-10 -mx-4 bg-background px-4 py-2 sm:-mx-6 sm:px-6">
+        <div className="sticky top-0 z-10 -mx-4 bg-background/95 backdrop-blur px-4 py-2 sm:-mx-6 sm:px-6">
           <TopicChips active={topic} onChange={setTopic} />
         </div>
 
@@ -131,11 +131,10 @@ const Market = () => {
           <>
             <Button
               onClick={() => setComposeOpen(true)}
-              className="fixed bottom-20 right-4 z-30 h-14 w-14 rounded-full shadow-lg lg:bottom-6"
-              size="icon"
-              variant="accent"
+              className="fixed bottom-20 right-4 z-30 h-12 px-5 shadow-[0_10px_28px_-8px_hsl(var(--primary)/0.65)] lg:bottom-6"
             >
-              <Plus className="h-6 w-6" />
+              <Plus className="h-5 w-5" />
+              <span>Post</span>
             </Button>
             <ComposeSheet
               open={composeOpen}

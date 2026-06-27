@@ -25,7 +25,7 @@ export function MobileBottomTabBar() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 lg:hidden pb-safe"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card lg:hidden pb-safe shadow-[0_-4px_16px_-8px_rgba(0,4,40,0.08)]"
       aria-label="Primary"
     >
       <ul className="grid grid-cols-5">
@@ -36,16 +36,26 @@ export function MobileBottomTabBar() {
             ? `/login?next=${encodeURIComponent(tab.href)}`
             : tab.href;
           return (
-            <li key={tab.label}>
+            <li key={tab.label} className="relative">
               <Link
                 to={target}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 px-1 py-2 text-[10px] font-medium transition-colors",
+                  "relative flex flex-col items-center justify-center gap-0.5 px-1 pb-2 pt-3 text-[10px] font-medium transition-colors",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <Icon className={cn("h-5 w-5", active && "text-primary")} strokeWidth={active ? 2.5 : 2} />
+                {active && (
+                  <span className="absolute inset-x-6 top-0 h-1 rounded-b-full bg-primary" aria-hidden="true" />
+                )}
+                <span
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
+                    active ? "bg-primary/15" : "hover:bg-muted",
+                  )}
+                >
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                </span>
                 <span>{tab.label}</span>
               </Link>
             </li>
