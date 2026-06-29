@@ -1454,6 +1454,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_features_open: { Args: never; Returns: boolean }
       is_free_within_grace: { Args: { _uid: string }; Returns: boolean }
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
