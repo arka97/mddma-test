@@ -97,7 +97,7 @@ export function Header() {
             <Link to="/" className="flex min-w-0 items-center gap-2 lg:py-1" aria-label="GBAUG — by MDDMA">
               <Logo variant="mark" className="h-8 w-8 shrink-0 lg:h-9 lg:w-9" />
               <span className="flex min-w-0 flex-col leading-tight">
-                <span className="text-sm font-bold tracking-tight text-foreground lg:text-base">GBAUG</span>
+                <span className="text-sm font-bold tracking-tight text-foreground lg:text-base">G.BAU.G</span>
                 <span className="whitespace-pre-line text-[10px] font-medium text-muted-foreground lg:text-xs">
                   {`by Mumbai Dryfruits &\nDates Merchants Association\u00a0`}
                 </span>
