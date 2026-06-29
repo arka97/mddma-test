@@ -127,6 +127,27 @@ export type Database = {
           },
         ]
       }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
+      }
       brands: {
         Row: {
           b2c_url: string | null
@@ -1433,6 +1454,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_features_open: { Args: never; Returns: boolean }
       is_free_within_grace: { Args: { _uid: string }; Returns: boolean }
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }

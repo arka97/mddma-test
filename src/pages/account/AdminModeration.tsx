@@ -6,10 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload, MessageSquare, FileText, UserX } from "lucide-react";
+import { Loader2, ShieldCheck, EyeOff, Eye, Building2, Package, UserCog, Star, Trash2, Megaphone, Send, Crown, FileCheck2, Link as LinkIcon, CircleX, CircleCheck, ExternalLink, Layers, Pencil, Plus, Upload, MessageSquare, FileText, UserX, Unlock } from "lucide-react";
 import { CommunityModerationTab } from "@/components/admin/CommunityModerationTab";
 import { AnonymousLogTab } from "@/components/admin/AnonymousLogTab";
 import { RfqModerationTab } from "@/components/admin/RfqModerationTab";
+import { FeatureAccessTab } from "@/components/admin/FeatureAccessTab";
 import { Switch } from "@/components/ui/switch";
 import { listCategories, createCategory, updateCategory, deleteCategory, countProductsForCategory, type ProductCategoryRow } from "@/repositories/productCategories";
 import { slugify } from "@/lib/storage";
@@ -268,8 +269,9 @@ const AdminModeration = () => {
           <h1 className="text-3xl font-bold mb-6 flex items-center gap-2"><ShieldCheck /> Admin Moderation</h1>
 
           {loading ? <div className="py-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div> : (
-            <Tabs defaultValue="companies">
+            <Tabs defaultValue="access">
               <TabsList className="flex-wrap h-auto">
+                <TabsTrigger value="access"><Unlock className="h-3 w-3 mr-1" /> Access</TabsTrigger>
                 <TabsTrigger value="companies"><Building2 className="h-3 w-3 mr-1" /> Companies ({companies.length})</TabsTrigger>
                 <TabsTrigger value="products"><Package className="h-3 w-3 mr-1" /> Products ({products.length})</TabsTrigger>
                 <TabsTrigger value="users"><UserCog className="h-3 w-3 mr-1" /> Users ({users.length})</TabsTrigger>
@@ -281,6 +283,7 @@ const AdminModeration = () => {
                 <TabsTrigger value="rfq"><FileText className="h-3 w-3 mr-1" /> RFQs</TabsTrigger>
               </TabsList>
 
+              <TabsContent value="access" className="mt-4"><FeatureAccessTab /></TabsContent>
               <TabsContent value="community" className="mt-4"><CommunityModerationTab /></TabsContent>
               <TabsContent value="anon-log" className="mt-4"><AnonymousLogTab /></TabsContent>
               <TabsContent value="rfq" className="mt-4"><RfqModerationTab /></TabsContent>

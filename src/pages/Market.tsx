@@ -20,7 +20,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Market = () => {
   const { user, profile, loading: authLoading } = useAuth();
-  const { role } = useRole();
+  const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<TopicTag | "all">("all");
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, { id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>>({});
@@ -30,9 +30,9 @@ const Market = () => {
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
 
-  const isPaid = role === "paid_member" || role === "broker" || role === "admin";
+  const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
-  const isGuest = !user && !authLoading;
+  const isGuest = !user && !authLoading && !featuresOpen;
 
   const freeInGrace = useMemo(() => {
     if (!profile || role !== "free_member") return false;
@@ -41,8 +41,8 @@ const Market = () => {
     return Date.now() - new Date(created).getTime() < 7 * 86400000;
   }, [profile, role]);
 
-  const canRead = isPaid || freeInGrace;
-  const canEngage = isPaid;
+  const canRead = isPaid || freeInGrace || featuresOpen;
+  const canEngage = isPaid && !!user;
 
   const load = async () => {
     setLoading(true);

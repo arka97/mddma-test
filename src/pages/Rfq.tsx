@@ -16,14 +16,14 @@ import { cn } from "@/lib/utils";
 
 const Rfq = () => {
   const { user, loading: authLoading } = useAuth();
-  const { role } = useRole();
+  const { isEffectivePaid } = useRole();
   const [type, setType] = useState<RfqType>("buy");
   const [rows, setRows] = useState<RfqListingRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
   const [companies, setCompanies] = useState<Record<string, { name: string; is_verified: boolean }>>({});
 
-  const isPaid = role === "paid_member" || role === "broker" || role === "admin";
+  const isPaid = isEffectivePaid;
 
   const load = async () => {
     setLoading(true);
