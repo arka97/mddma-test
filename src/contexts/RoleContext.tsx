@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, ReactNode } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFeaturesOpenFlag } from "@/hooks/useAppSettings";
 
 export type UserRole = "guest" | "free_member" | "paid_member" | "broker" | "admin";
 
@@ -11,6 +12,11 @@ interface RoleContextType {
   // Demo override — only honored while user is signed out.
   setRole: (role: UserRole) => void;
   canAccess: (feature: string) => boolean;
+  // Admin-controlled global flag — when true, every paid gate in the UI
+  // should behave as if the user has paid access (guests included).
+  featuresOpen: boolean;
+  // Convenience: paid OR admin override is on.
+  isEffectivePaid: boolean;
 }
 
 const rolePermissions: Record<UserRole, string[]> = {
@@ -35,6 +41,7 @@ const RoleContext = createContext<RoleContextType | undefined>(undefined);
 export function RoleProvider({ children }: { children: ReactNode }) {
   const { user, hasRole } = useAuth();
   const [demoRole, setDemoRole] = useState<UserRole>("guest");
+  const { openToAll } = useFeaturesOpenFlag();
 
   const effectiveRole = useMemo<UserRole>(() => {
     if (!user) return demoRole;
@@ -46,9 +53,16 @@ export function RoleProvider({ children }: { children: ReactNode }) {
   }, [user, hasRole, demoRole]);
 
   const canAccess = (feature: string) => rolePermissions[effectiveRole]?.includes(feature) ?? false;
+  const isEffectivePaid =
+    openToAll ||
+    effectiveRole === "paid_member" ||
+    effectiveRole === "broker" ||
+    effectiveRole === "admin";
 
   return (
-    <RoleContext.Provider value={{ role: effectiveRole, setRole: setDemoRole, canAccess }}>
+    <RoleContext.Provider
+      value={{ role: effectiveRole, setRole: setDemoRole, canAccess, featuresOpen: openToAll, isEffectivePaid }}
+    >
       {children}
     </RoleContext.Provider>
   );

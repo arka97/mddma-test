@@ -23,7 +23,9 @@ const Rfq = () => {
   const [composeOpen, setComposeOpen] = useState(false);
   const [companies, setCompanies] = useState<Record<string, { name: string; is_verified: boolean }>>({});
 
-  const isPaid = role === "paid_member" || role === "broker" || role === "admin";
+  const { isEffectivePaid } = useRole();
+  const isPaid = isEffectivePaid;
+  void role;
 
   const load = async () => {
     setLoading(true);
