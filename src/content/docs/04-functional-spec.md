@@ -72,15 +72,24 @@ Home (`/`) renders, in order: Homepage banner ad → `TodayHeader` → `LiveRate
 ### Broker board `/broker`
 - Filters companies where `is_broker = true`. Same ₹10K paid tier — broker is a flag, not a separate SKU.
 
-### Market & Market News `/market`, `/market-news`
-- Curated market signals (port arrivals, festival cycles, broad rate movements). Admin-published; never carries an exact price.
+### Community Feed `/market` (v3.2)
+- The `/market` route is the **Community Feed** — the live posting surface for members. It replaces the older "Market News" page.
+- Backed by `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS).
+- Access tiers: **paid + admin** can post and comment; **free members** are read-only for their first 7 days; **guests** see a teaser overlay; **anonymous posting** is paid-only, with the real identity stored in `anonymous_identity_log` for admin audit.
+- When the admin **Feature Access** toggle (`app_settings.features_open_to_all = true`) is on, guests and free members can read the full feed and RFQ listings without upgrading.
+- **Acceptance:** paid users can post/like/comment; free users past 7 days see the paywall overlay; anonymous posts hide the author name from other members but remain visible to admins via the log.
+
+### RFQ board `/rfq` (v3.2)
+- The `/rfq` route is the reintroduced RFQ surface. Paid members and admins can create and browse RFQ listings; contact reveal is gated and logged in `rfq_contact_reveals` via the `get_company_whatsapp` RPC.
+- Backed by `rfq_listings` (1–90 day expiry) and `rfq_contact_reveals`. The old `rfqs` / `inquiry_products` / `rfq_responses` cart-based schema remains dropped.
+- **Acceptance:** a paid member can create a listing with expiry; another paid member can reveal contact once, with the reveal logged.
 
 ## Community
 
 ### Forum `/community`
-- Discourse embed is the primary live forum.
-- Native posts + comments table remains as a **read-only archive** (no new posts via native UI in production).
-- **Acceptance:** the embedded forum loads; native archive posts are visible but locked.
+- Discourse embed remains available as the long-form discussion surface.
+- The v3.2 Community Feed at `/market` is the day-to-day posting surface; `/community` is for threaded discussion.
+- **Acceptance:** the embedded forum loads.
 
 ### Circulars `/circulars` and `/circulars/:slug`
 - Admin-managed announcements with title, slug, body, optional attachment URL, `published_at`.
