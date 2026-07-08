@@ -41,7 +41,7 @@ export function MobileBottomTabBar() {
                 to={target}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex flex-col items-center justify-center gap-0.5 px-1 pb-2 pt-3 text-[10px] font-medium transition-colors",
+                  "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 pb-2 pt-2.5 text-[11px] font-medium transition-colors",
                   active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
