@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Lock, Building2, Package, Sparkles, Users, Megaphone } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MembershipStatusCard } from "@/components/account/MembershipStatusCard";
+import { OnboardingChecklist } from "@/components/account/OnboardingChecklist";
+import { InstallAppNudge } from "@/components/account/InstallAppNudge";
 
 const tiles = [
   { label: "My Company", href: "/account/company", icon: Building2, desc: "Edit your verified profile" },
@@ -59,7 +61,9 @@ const Dashboard = () => {
 
       <section className="py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-4"><InstallAppNudge /></div>
           <div className="mb-6"><MembershipStatusCard /></div>
+          <div className="mb-6"><OnboardingChecklist /></div>
 
           {!company?.id && (
             <Card className="mb-6 border-dashed border-border">
