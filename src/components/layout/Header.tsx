@@ -27,6 +27,8 @@ const desktopNav = [
 const moreNav = [
   { name: "Brands", href: "/brands" },
   { name: "Circulars", href: "/circulars" },
+  { name: "Knowledge", href: "/knowledge" },
+  { name: "FAQ", href: "/faq" },
   { name: "About", href: "/about" },
   { name: "Contact", href: "/contact" },
 ];

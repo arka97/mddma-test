@@ -16,9 +16,19 @@ const platformLinks = [
 
 const learnLinks = [
   { to: "/about", label: "About MDDMA" },
+  { to: "/knowledge", label: "Knowledge Base" },
+  { to: "/faq", label: "FAQ" },
   { to: "/apply", label: "Apply for Membership" },
   { to: "/contact", label: "Contact" },
   { to: "/install", label: "Install App" },
+];
+
+const legalLinks = [
+  { to: "/documents/19-privacy-policy", label: "Privacy Policy" },
+  { to: "/documents/20-terms-of-service", label: "Terms of Service" },
+  { to: "/documents/21-refund-and-cancellation-policy", label: "Refund & Cancellation" },
+  { to: "/documents/22-grievance-and-redressal", label: "Grievance & Redressal" },
+  { to: "/documents/23-kyc-and-verification-policy", label: "KYC & Verification" },
 ];
 
 export function Footer() {
