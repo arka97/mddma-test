@@ -16,9 +16,19 @@ const platformLinks = [
 
 const learnLinks = [
   { to: "/about", label: "About MDDMA" },
+  { to: "/knowledge", label: "Knowledge Base" },
+  { to: "/faq", label: "FAQ" },
   { to: "/apply", label: "Apply for Membership" },
   { to: "/contact", label: "Contact" },
   { to: "/install", label: "Install App" },
+];
+
+const legalLinks = [
+  { to: "/documents/19-privacy-policy", label: "Privacy Policy" },
+  { to: "/documents/20-terms-of-service", label: "Terms of Service" },
+  { to: "/documents/21-refund-and-cancellation-policy", label: "Refund & Cancellation" },
+  { to: "/documents/22-grievance-and-redressal", label: "Grievance & Redressal" },
+  { to: "/documents/23-kyc-and-verification-policy", label: "KYC & Verification" },
 ];
 
 export function Footer() {
@@ -26,7 +36,7 @@ export function Footer() {
   return (
     <footer className="bg-primary text-primary-foreground pb-safe">
       <div className="container mx-auto px-5 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div>
             <div className="mb-4 inline-flex items-center gap-2">
               <Logo variant="mark" className="h-8 w-8" />
@@ -74,6 +84,19 @@ export function Footer() {
                 </Button>
               )}
             </div>
+          </div>
+
+          <div>
+            <h3 className="t-eyebrow mb-4 text-primary-foreground/70">Legal</h3>
+            <ul className="space-y-2 text-sm">
+              {legalLinks.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="text-primary-foreground/70 transition-colors hover:text-primary-foreground">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div>

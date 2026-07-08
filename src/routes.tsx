@@ -31,6 +31,10 @@ const AdminModeration = lazy(() => import("./pages/account/AdminModeration"));
 const Brands = lazy(() => import("./pages/Brands"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
 const AccountBrandsPage = lazy(() => import("./pages/account/BrandsPage"));
+const Faq = lazy(() => import("./pages/Faq"));
+const Knowledge = lazy(() => import("./pages/Knowledge"));
+const KnowledgeArticle = lazy(() => import("./pages/KnowledgeArticle"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 function RouteFallback() {
   return (
@@ -71,8 +75,10 @@ export function AppRoutes() {
         <Route path="/membership" element={<MembershipPlans />} />
         <Route path="/circulars" element={<Circulars />} />
         <Route path="/forms" element={<Forms />} />
-        {/* /contact will get its own page in Phase 3; for now still points to Forms */}
-        <Route path="/contact" element={<Forms />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<Faq />} />
+        <Route path="/knowledge" element={<Knowledge />} />
+        <Route path="/knowledge/:slug" element={<KnowledgeArticle />} />
         <Route path="/login" element={<Login />} />
         <Route path="/apply" element={<Apply />} />
         <Route path="/install" element={<Install />} />
