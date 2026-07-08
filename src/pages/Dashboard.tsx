@@ -25,10 +25,11 @@ const Dashboard = () => {
     return (
       <Layout>
         <Seo title="Dashboard — MDDMA" description="Members-only page." path="/dashboard" noindex />
-        <section className="bg-primary py-12">
+        <section className="border-b border-border bg-card py-10">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">Member Dashboard</h1>
-            <p className="text-primary-foreground/80 max-w-2xl mx-auto">Your MDDMA workspace</p>
+            <div className="mx-auto mb-2 h-0.5 w-16 rounded-full bg-[hsl(var(--gold))]" aria-hidden="true" />
+            <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Member Dashboard</h1>
+            <p className="mt-1 text-sm text-muted-foreground">Your G-BAU-G workspace</p>
           </div>
         </section>
         <section className="py-16">
@@ -48,10 +49,11 @@ const Dashboard = () => {
   return (
     <Layout>
       <Seo title="Dashboard — MDDMA" description="Members-only page." path="/dashboard" noindex />
-      <section className="bg-primary py-8">
+      <section className="border-b border-border bg-card py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-primary-foreground mb-2">Member Dashboard</h1>
-          <p className="text-primary-foreground/70 text-sm">Your MDDMA workspace</p>
+          <div className="mb-2 h-0.5 w-12 rounded-full bg-[hsl(var(--gold))]" aria-hidden="true" />
+          <h1 className="text-2xl sm:text-3xl font-semibold text-foreground">Member Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Your G-BAU-G workspace</p>
         </div>
       </section>
 

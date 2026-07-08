@@ -1,12 +1,12 @@
 {
-  "name": "GBAUG — by MDDMA",
-  "short_name": "GBAUG",
-  "description": "GBAUG — B2B trade platform by the Mumbai Dry Fruits & Dates Merchants Association (MDDMA). Directory, circulars, market signals.",
+  "name": "G-BAU-G — by MDDMA",
+  "short_name": "G-BAU-G",
+  "description": "G-BAU-G — B2B trade platform by the Mumbai Dry Fruits & Dates Merchants Association (MDDMA). Directory, circulars, market signals.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F8F4ED",
+  "background_color": "#FFF7EC",
   "theme_color": "#1B2F5E",
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },

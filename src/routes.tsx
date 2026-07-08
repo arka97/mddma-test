@@ -7,16 +7,13 @@ import { PasswordGate } from "@/components/PasswordGate";
 const Index = lazy(() => import("./pages/Index"));
 const About = lazy(() => import("./pages/About"));
 const Directory = lazy(() => import("./pages/Directory"));
-const DirectoryList = lazy(() => import("./pages/DirectoryList"));
 const MemberProfile = lazy(() => import("./pages/MemberProfile"));
 const Storefront = lazy(() => import("./pages/Storefront"));
 const Products = lazy(() => import("./pages/Products"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
-const Broker = lazy(() => import("./pages/Broker"));
 const Market = lazy(() => import("./pages/Market"));
 const Rfq = lazy(() => import("./pages/Rfq"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Community = lazy(() => import("./pages/Community"));
 const MembershipPlans = lazy(() => import("./pages/MembershipPlans"));
 const Circulars = lazy(() => import("./pages/Circulars"));
 const Forms = lazy(() => import("./pages/Forms"));
@@ -56,21 +53,25 @@ export function AppRoutes() {
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
         <Route path="/directory" element={<Directory />} />
-        <Route path="/directorylist" element={<DirectoryList />} />
+        {/* Retired: /directorylist merged into /directory */}
+        <Route path="/directorylist" element={<Navigate to="/directory" replace />} />
         <Route path="/directory/:slug" element={<MemberProfile />} />
         <Route path="/store/:slug" element={<Storefront />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:slug" element={<ProductPage />} />
         <Route path="/brands" element={<Brands />} />
         <Route path="/brands/:slug" element={<BrandPage />} />
-        <Route path="/broker" element={<Broker />} />
+        {/* Retired: /broker removed; brokers surface via Directory ?type=Broker */}
+        <Route path="/broker" element={<Navigate to="/directory?type=Broker" replace />} />
         <Route path="/market" element={<Market />} />
+        {/* Retired: /community deprecated; feed lives at /market */}
+        <Route path="/community" element={<Navigate to="/market" replace />} />
         <Route path="/rfq" element={<Rfq />} />
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/community" element={<Community />} />
         <Route path="/membership" element={<MembershipPlans />} />
         <Route path="/circulars" element={<Circulars />} />
         <Route path="/forms" element={<Forms />} />
+        {/* /contact will get its own page in Phase 3; for now still points to Forms */}
         <Route path="/contact" element={<Forms />} />
         <Route path="/login" element={<Login />} />
         <Route path="/apply" element={<Apply />} />
@@ -81,8 +82,7 @@ export function AppRoutes() {
         <Route path="/account/company" element={protect(<CompanyPage />)} />
         <Route path="/account/products" element={protect(<ProductsPage />)} />
         <Route path="/account/brands" element={protect(<AccountBrandsPage />)} />
-        
-        
+
         <Route path="/account/moderation" element={protect(<AdminModeration />, "admin")} />
 
         <Route path="/documents" element={gate(<DocumentsHub />)} />
