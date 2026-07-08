@@ -239,12 +239,19 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         </div>
 
         {canPostAnonymous && (
-          <div className="flex items-center justify-between gap-3 border-t border-border/60 px-4 py-3">
-            <div className="min-w-0">
-              <Label className="text-sm font-semibold">Post anonymously</Label>
-              <p className="truncate text-xs text-muted-foreground">Your identity will be hidden</p>
+          <div className="border-t border-border/60 px-4 py-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <Label className="text-sm font-semibold">Post anonymously</Label>
+                <p className="truncate text-xs text-muted-foreground">Your identity will be hidden from other members</p>
+              </div>
+              <Switch checked={isAnon} onCheckedChange={setIsAnon} />
             </div>
-            <Switch checked={isAnon} onCheckedChange={setIsAnon} />
+            {isAnon && (
+              <p className="mt-2 rounded-md bg-muted/50 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                Only MDDMA admins can trace anonymous posts — a log is kept for compliance and dispute resolution.
+              </p>
+            )}
           </div>
         )}
 

@@ -20,7 +20,7 @@ export function SellerSignals({
       {verified && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="inline-flex items-center gap-0.5 font-semibold text-emerald-700">
+            <span className="inline-flex items-center gap-0.5 font-semibold text-success">
               <BadgeCheck className="h-3 w-3" /> Verified
             </span>
           </TooltipTrigger>

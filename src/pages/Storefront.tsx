@@ -309,7 +309,7 @@ const Storefront = () => {
               <Card className="bg-card border-border">
                 <CardHeader><CardTitle>Contact</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full bg-green-600 hover:bg-green-700 text-white" asChild>
+                  <Button className="w-full bg-success text-success-foreground hover:bg-success/90" asChild>
                     <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer">
                       <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
                     </a>

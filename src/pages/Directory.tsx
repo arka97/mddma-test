@@ -155,7 +155,7 @@ const Directory = () => {
                         </div>
                         {member.verificationStatus === "Verified" && (
                           <div className="absolute top-2 right-2">
-                            <Badge className="bg-emerald-600 hover:bg-emerald-600 text-white border-emerald-700 text-[10px]">
+                            <Badge className="bg-success text-success-foreground border-success hover:bg-success/90 text-[10px]">
                               <ShieldCheck className="h-3 w-3 mr-0.5" /> Verified
                             </Badge>
                           </div>
@@ -178,12 +178,12 @@ const Directory = () => {
                         <div className="flex items-center gap-1 flex-wrap mb-2">
                           <Badge variant="outline" className="text-[10px] h-5 gap-0.5">{member.memberType}</Badge>
                           {hasGst && (
-                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-emerald-200 text-emerald-700 bg-emerald-50">
+                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-success/30 text-success bg-success/10">
                               <BadgeCheck className="h-2.5 w-2.5" /> GST
                             </Badge>
                           )}
                           {hasFssai && (
-                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-emerald-200 text-emerald-700 bg-emerald-50">
+                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-success/30 text-success bg-success/10">
                               <BadgeCheck className="h-2.5 w-2.5" /> FSSAI
                             </Badge>
                           )}
