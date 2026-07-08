@@ -97,7 +97,7 @@ const MembershipPlans = () => {
                 >
                   {tier.highlighted && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-[hsl(var(--gold))] text-[hsl(var(--gold-foreground))] font-semibold">
+                      <Badge className="bg-[hsl(var(--gold))] text-primary-foreground font-semibold">
                         Recommended for sellers
                       </Badge>
                     </div>
