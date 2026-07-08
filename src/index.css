@@ -265,3 +265,14 @@
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
+
+.ticker-track {
+  animation: ticker-scroll 45s linear infinite;
+  width: max-content;
+}
+.ticker-track:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track { animation: none; }
+}
