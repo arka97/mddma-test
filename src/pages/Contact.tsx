@@ -28,7 +28,7 @@ const Contact = () => {
     <Layout>
       <Seo
         title="Contact MDDMA — Secretariat, Grievance & Trade Enquiries"
-        subtitle="Reach the Mumbai Dry Fruits & Dates Merchants Association secretariat at APMC Vashi. Phone, email, grievance officer and office hours."
+        description="Reach the Mumbai Dry Fruits & Dates Merchants Association secretariat at APMC Vashi. Phone, email, grievance officer and office hours."
         path="/contact"
       />
 

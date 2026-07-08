@@ -67,7 +67,7 @@ const Faq = () => {
     <Layout>
       <Seo
         title="MDDMA FAQ — Verified Dry Fruits & Dates Trade Network"
-        subtitle="Answers about MDDMA membership, verification, RFQs, market signals, dispute resolution and how India's 95-year-old dry-fruit trade association works."
+        description="Answers about MDDMA membership, verification, RFQs, market signals, dispute resolution and how India's 95-year-old dry-fruit trade association works."
         path="/faq"
         jsonLd={jsonLd}
       />

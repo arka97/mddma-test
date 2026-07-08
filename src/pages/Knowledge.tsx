@@ -10,7 +10,7 @@ const Knowledge = () => {
     <Layout>
       <Seo
         title="Knowledge Base — Dry Fruits, Dates & Trade Compliance"
-        subtitle="Field guides and compliance notes for India's dry-fruit trade — Mamra almond grading, Medjool storage, dry-fruit import basics and MDDMA verification."
+        description="Field guides and compliance notes for India's dry-fruit trade — Mamra almond grading, Medjool storage, dry-fruit import basics and MDDMA verification."
         path="/knowledge"
       />
 
