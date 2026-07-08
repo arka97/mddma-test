@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Users, Megaphone, LineChart, Sparkles, Info, List } from "lucide-react";
+import { Users, Megaphone, LineChart, FileSearch } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,23 +20,32 @@ const toneMap: Record<Tile["tone"], string> = {
 
 export function QuickActionsGrid() {
   const [circularCount, setCircularCount] = useState<number | null>(null);
-  const [brandCount, setBrandCount] = useState<number | null>(null);
+  const [rfqCount, setRfqCount] = useState<number | null>(null);
 
   useEffect(() => {
     let alive = true;
     const since = new Date(Date.now() - 14 * 86400_000).toISOString();
 
     (async () => {
-      const [{ count: circs }, { count: brands }] = await Promise.all([
-        supabase.from("circulars").select("id", { count: "exact", head: true }).eq("is_published", true).gte("published_at", since),
-        supabase.from("brands" as never).select("id", { count: "exact", head: true }),
+      const [{ count: circs }, { count: rfqs }] = await Promise.all([
+        supabase
+          .from("circulars")
+          .select("id", { count: "exact", head: true })
+          .eq("is_published", true)
+          .gte("published_at", since),
+        supabase
+          .from("rfq_listings" as never)
+          .select("id", { count: "exact", head: true })
+          .eq("status", "active"),
       ]);
       if (!alive) return;
       setCircularCount(circs ?? 0);
-      setBrandCount(brands ?? 0);
+      setRfqCount(rfqs ?? 0);
     })();
 
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, []);
 
   const tiles: Tile[] = [
@@ -48,20 +57,18 @@ export function QuickActionsGrid() {
       icon: Megaphone,
       tone: "warning",
     },
-    { label: "About Us", meta: "Our story & team", href: "/about", icon: Info, tone: "accent" },
-    { label: "Directory List", meta: "All members A–Z", href: "/directorylist", icon: List, tone: "primary" },
     {
-      label: "Brands",
-      meta: brandCount == null ? "House brands" : `${brandCount}+ brands`,
-      href: "/brands",
-      icon: Sparkles,
+      label: "RFQ",
+      meta: rfqCount == null ? "Buy & sell interests" : `${rfqCount} live`,
+      href: "/rfq",
+      icon: FileSearch,
       tone: "gold",
     },
     { label: "Members", meta: "Browse verified traders", href: "/directory", icon: Users, tone: "accent" },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
       {tiles.map((t) => {
         const Icon = t.icon;
         return (
