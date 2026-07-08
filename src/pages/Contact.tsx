@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { MapPin, Phone, Mail, Clock, ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,7 +28,7 @@ const Contact = () => {
     <Layout>
       <Seo
         title="Contact MDDMA — Secretariat, Grievance & Trade Enquiries"
-        description="Reach the Mumbai Dry Fruits & Dates Merchants Association secretariat at APMC Vashi. Phone, email, grievance officer and office hours."
+        subtitle="Reach the Mumbai Dry Fruits & Dates Merchants Association secretariat at APMC Vashi. Phone, email, grievance officer and office hours."
         path="/contact"
       />
 
@@ -36,7 +36,7 @@ const Contact = () => {
         <PageHeader
           eyebrow="Get in touch"
           title="Contact the association"
-          description="Secretariat enquiries, grievance and dispute redressal, membership questions and press."
+          subtitle="Secretariat enquiries, grievance and dispute redressal, membership questions and press."
         />
 
         <div className="mt-6 grid gap-6 md:grid-cols-2">

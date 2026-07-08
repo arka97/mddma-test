@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { ArrowRight, BookOpen, Clock } from "lucide-react";
 import { KNOWLEDGE } from "@/content/knowledge/_meta";
 
@@ -10,7 +10,7 @@ const Knowledge = () => {
     <Layout>
       <Seo
         title="Knowledge Base — Dry Fruits, Dates & Trade Compliance"
-        description="Field guides and compliance notes for India's dry-fruit trade — Mamra almond grading, Medjool storage, dry-fruit import basics and MDDMA verification."
+        subtitle="Field guides and compliance notes for India's dry-fruit trade — Mamra almond grading, Medjool storage, dry-fruit import basics and MDDMA verification."
         path="/knowledge"
       />
 
@@ -18,7 +18,7 @@ const Knowledge = () => {
         <PageHeader
           eyebrow="Knowledge base"
           title="Field guides for the dry-fruit trade"
-          description="Working notes from MDDMA's members on grading, storage, import paperwork and platform policy."
+          subtitle="Working notes from MDDMA's members on grading, storage, import paperwork and platform policy."
         />
 
         <ul className="mt-6 grid gap-4 sm:grid-cols-2">

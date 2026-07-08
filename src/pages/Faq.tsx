@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { PageHeader } from "@/components/PageHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 interface Qa {
@@ -67,7 +67,7 @@ const Faq = () => {
     <Layout>
       <Seo
         title="MDDMA FAQ — Verified Dry Fruits & Dates Trade Network"
-        description="Answers about MDDMA membership, verification, RFQs, market signals, dispute resolution and how India's 95-year-old dry-fruit trade association works."
+        subtitle="Answers about MDDMA membership, verification, RFQs, market signals, dispute resolution and how India's 95-year-old dry-fruit trade association works."
         path="/faq"
         jsonLd={jsonLd}
       />
@@ -76,7 +76,7 @@ const Faq = () => {
         <PageHeader
           eyebrow="Frequently asked"
           title="Answers about MDDMA & the trade network"
-          description="What the association does, how membership works, and how buyers and sellers use the platform."
+          subtitle="What the association does, how membership works, and how buyers and sellers use the platform."
         />
 
         <div className="mt-6 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
