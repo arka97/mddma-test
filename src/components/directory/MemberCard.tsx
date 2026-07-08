@@ -53,12 +53,12 @@ export function MemberCard({ m }: { m: DirMember }) {
       <div className="mt-3 flex flex-wrap items-center gap-1">
         <Badge variant="outline" className="h-5 text-[10px]">{m.memberType}</Badge>
         {hasGst && (
-          <Badge variant="outline" className="h-5 gap-0.5 border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700">
+          <Badge variant="outline" className="h-5 gap-0.5 border-success/30 bg-success/10 text-[10px] text-success">
             <BadgeCheck className="h-2.5 w-2.5" /> GST
           </Badge>
         )}
         {hasFssai && (
-          <Badge variant="outline" className="h-5 gap-0.5 border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700">
+          <Badge variant="outline" className="h-5 gap-0.5 border-success/30 bg-success/10 text-[10px] text-success">
             <BadgeCheck className="h-2.5 w-2.5" /> FSSAI
           </Badge>
         )}

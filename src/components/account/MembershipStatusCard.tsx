@@ -22,7 +22,7 @@ export function MembershipStatusCard() {
           <div className="min-w-0">
             <div className="font-semibold flex items-center gap-2">
               Founder · Lifetime access
-              <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">Admin</Badge>
+              <Badge variant="outline" className="bg-success/10 text-success border-success/30">Admin</Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
               All paid features unlocked. No fees required.
@@ -41,7 +41,7 @@ export function MembershipStatusCard() {
           <div className="min-w-0 flex-1">
             <div className="font-semibold flex items-center gap-2">
               Paid Membership
-              <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">Active</Badge>
+              <Badge variant="outline" className="bg-success/10 text-success border-success/30">Active</Badge>
             </div>
             <div className="text-xs text-muted-foreground mt-0.5">
               Verified storefront and priority placement unlocked.
