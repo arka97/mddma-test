@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { PageHeader } from "@/components/layout/PageHeader";
 import { ArrowRight, BookOpen, Clock } from "lucide-react";
 import { KNOWLEDGE } from "@/content/knowledge/_meta";
 
@@ -15,11 +14,7 @@ const Knowledge = () => {
       />
 
       <div className="container mx-auto max-w-4xl px-5 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <PageHeader
-          eyebrow="Knowledge base"
-          title="Field guides for the dry-fruit trade"
-          subtitle="Working notes from MDDMA's members on grading, storage, import paperwork and platform policy."
-        />
+        <header className="mb-2"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[hsl(var(--gold-dark))]">Knowledge base</p><h1 className="mt-2 text-2xl font-semibold leading-tight text-foreground sm:text-3xl">Field guides for the dry-fruit trade</h1><p className="mt-2 max-w-2xl text-sm text-muted-foreground">Working notes from MDDMA's members on grading, storage, import paperwork and platform policy.</p></header>
 
         <ul className="mt-6 grid gap-4 sm:grid-cols-2">
           {KNOWLEDGE.map((k) => (

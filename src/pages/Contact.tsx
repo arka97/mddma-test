@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { PageHeader } from "@/components/layout/PageHeader";
 import { MapPin, Phone, Mail, Clock, ShieldCheck, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,11 +32,7 @@ const Contact = () => {
       />
 
       <div className="container mx-auto max-w-4xl px-5 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <PageHeader
-          eyebrow="Get in touch"
-          title="Contact the association"
-          subtitle="Secretariat enquiries, grievance and dispute redressal, membership questions and press."
-        />
+        <header className="mb-2"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[hsl(var(--gold-dark))]">Get in touch</p><h1 className="mt-2 text-2xl font-semibold leading-tight text-foreground sm:text-3xl">Contact the association</h1><p className="mt-2 max-w-2xl text-sm text-muted-foreground">Secretariat enquiries, grievance and dispute redressal, membership questions and press.</p></header>
 
         <div className="mt-6 grid gap-6 md:grid-cols-2">
           <section className="rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { PageHeader } from "@/components/layout/PageHeader";
 import { ArrowRight, ChevronDown } from "lucide-react";
 
 interface Qa {
@@ -73,11 +72,7 @@ const Faq = () => {
       />
 
       <div className="container mx-auto max-w-3xl px-5 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <PageHeader
-          eyebrow="Frequently asked"
-          title="Answers about MDDMA & the trade network"
-          subtitle="What the association does, how membership works, and how buyers and sellers use the platform."
-        />
+        <header className="mb-2"><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[hsl(var(--gold-dark))]">Frequently asked</p><h1 className="mt-2 text-2xl font-semibold leading-tight text-foreground sm:text-3xl">Answers about MDDMA & the trade network</h1><p className="mt-2 max-w-2xl text-sm text-muted-foreground">What the association does, how membership works, and how buyers and sellers use the platform.</p></header>
 
         <div className="mt-6 divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
           {FAQS.map((f, i) => (
