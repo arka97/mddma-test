@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogIn, User, LogOut, Building2, Package, ShieldCheck, Store, Search, Sparkles, LayoutDashboard } from "lucide-react";
+import { LogIn, User, LogOut, Building2, Package, ShieldCheck, Store, Search, Sparkles, LayoutDashboard, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -19,10 +19,16 @@ import {
 const desktopNav = [
   { name: "Directory", href: "/directory" },
   { name: "Products", href: "/products" },
-  { name: "Brands", href: "/brands" },
   { name: "Market", href: "/market" },
-  { name: "Community", href: "/community" },
+  { name: "RFQ", href: "/rfq" },
   { name: "Membership", href: "/membership" },
+];
+
+const moreNav = [
+  { name: "Brands", href: "/brands" },
+  { name: "Circulars", href: "/circulars" },
+  { name: "About", href: "/about" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export function Header() {
@@ -94,12 +100,12 @@ export function Header() {
         >
 
           <div className="flex min-w-0 items-center gap-2">
-            <Link to="/" className="flex min-w-0 items-center gap-2 lg:py-1" aria-label="G.BAU.G — by MDDMA">
+            <Link to="/" className="flex min-w-0 items-center gap-2 lg:py-1" aria-label="G-BAU-G — by MDDMA">
               <Logo variant="mark" className="h-8 w-8 shrink-0 lg:h-9 lg:w-9" />
               <span className="flex min-w-0 flex-col leading-tight">
-                <span className="text-sm font-bold tracking-tight text-foreground lg:text-base">G.BAU.G</span>
+                <span className="text-sm font-bold tracking-tight text-foreground lg:text-base">G-BAU-G</span>
                 <span className="whitespace-pre-line text-[10px] font-medium text-muted-foreground lg:text-xs">
-                  {`by Mumbai Dryfruits &\nDates Merchants Association\u00a0`}
+                  {`by Mumbai Dry Fruits &\nDates Merchants Association`}
                 </span>
               </span>
             </Link>
@@ -121,6 +127,20 @@ export function Header() {
                 {item.name}
               </Link>
             ))}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="inline-flex items-center gap-0.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                  More <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {moreNav.map((item) => (
+                  <DropdownMenuItem key={item.name} asChild>
+                    <Link to={item.href}>{item.name}</Link>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -144,8 +164,8 @@ export function Header() {
           <Input
             value={searchQ}
             onChange={(e) => setSearchQ(e.target.value)}
-            placeholder="Search Mamra, Medjool, traders…"
-            aria-label="Search products and traders"
+            placeholder="Search Mamra, Medjool, dates…"
+            aria-label="Search products"
             className="h-10 w-full rounded-full border-border/80 bg-muted/60 pl-9 text-sm shadow-none focus-visible:bg-background"
           />
         </form>
