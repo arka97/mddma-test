@@ -1,17 +1,6 @@
 # Functional Spec
 
-
-> **v3.2 Update Notice (July 2026)** — This doc has been updated for **v3.2**. Key changes since v3.1.3:
->
-> - **RFQ is back**, under a new schema. The `/rfq` route is live, backed by the `rfq_listings` and `rfq_contact_reveals` tables. It is open to paid members and admins; contact reveal is logged. The old `rfqs` / `inquiry_products` / `rfq_responses` tables, the multi-item RFQ cart, `CartContext`, `CartFab` / `CartDrawer` / `RFQModal`, and the `/account/rfqs` inbox all remain **removed**. Any older reference below to those artifacts is historical.
-> - **`/market` is now the Community Feed**, not Market News. It uses `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS). Paid + admin can post; free members are read-only for the first 7 days; guests see a teaser; anonymous posting is paid-only.
-> - **Mobile bottom tab bar** order is now **Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`)**.
-> - **Admin Feature Access toggle** — while the pilot is running, admins can flip a global switch (`app_settings.features_open_to_all`, exposed via the `is_features_open()` SQL function) that temporarily opens Community Feed posts and RFQ listings to guests and free members. RLS on `community_posts` and `rfq_listings` reads `is_features_open()`; the frontend reads `featuresOpen` / `isEffectivePaid` from `RoleContext`. Managed from **Admin → Moderation → Feature Access**.
->
-> The **/forms Verification Request** flow remains **removed** — members are verified during admin onboarding, not via a self-serve form.
-
----
-
+> **v3.2 · Last verified July 2026** against `src/routes.tsx`, the live database, edge functions and storage buckets.
 
 Module-by-module specification with acceptance criteria. Each module names its data dependencies, the role gates that apply, and the behaviour expected on the happy path.
 
@@ -22,86 +11,102 @@ flowchart LR
   Home[Home /] --> Dir[Directory]
   Home --> Prod[Products]
   Home --> Brands[Brands]
-  Home --> Circ[Circulars]
-  Home --> News[Market News]
-  Home --> Forum[Community]
+  Home --> Bulletin[Bulletin /circulars]
+  Home --> Market[Community Feed /market]
+  Home --> RFQ[RFQ board /rfq]
   Dir --> Mem[Member Profile]
   Mem --> Store[Storefront]
   Prod --> PP[Product Page]
   Store --> PP
   Brands --> BP[Brand Page]
   PP --> Contact[Contact CTA<br/>wa.me / tel]
+  RFQ --> RC[RFQ Contact Reveal<br/>logged]
   Account[Account Hub /dashboard] --> Profile
   Account --> Company
   Account --> ProductsMgr[Products + Variants]
   Account --> BrandsMgr[Brands]
-  Admin[Admin /account/moderation] --> CMS[Circulars + Ads + News CRUD]
-  Admin --> Mod[Member + Forum moderation]
+  Admin[Admin /account/moderation] --> CMS[Bulletin + Ads CRUD]
+  Admin --> Mod[Community + RFQ moderation]
+  Admin --> Anon[Anonymous-post log]
+  Admin --> Access[Feature Access toggle]
+  Public[/faq · /knowledge · /contact · /about · /membership/] --> Home
 ```
 
 ## Home modules
 
-Home (`/`) renders, in order: Homepage banner ad → `TodayHeader` → `LiveRatesTicker` (compact vertical padding) → `QuickActionsGrid` → `CategoryGrid` → **`RecentListingsList` (New Products)** → **`NewMembersList`** → `MembershipCTA` → `PartnersStrip`. Live ticker and ad slots are admin-managed; never render exact prices.
+Home (`/`) renders, in order: **HomeHero** → Homepage banner ad → **LiveTicker** → **QuickActionsGrid** (4 tiles, live counts for Bulletin + RFQ) → **CategoryGrid** (two horizontal snap-strips: 4 mobile / 8 desktop tiles, featured first) → interstitial ad → **New Products** (`RecentListingsList`) → **New Members** (`NewMembersList`) → **MembershipCTA**. All modules obey controlled-transparency; ads live in the `ad-assets` bucket, admin-only write.
 
 ## Discovery modules
 
 ### Directory `/directory`
-- Lists verified Association members from the live database only (DATA-001). Sample arrays in `src/data/` remain as type fixtures and offline-preview material; they are not merged into production reads.
-- Public list view (name, badges, city, category chips). Full contact card requires Paid.
-- Filters: category, city, verified, broker.
-- **Acceptance:** new member added in admin appears in the list within one cache cycle; non-Paid users see "Become a member to view contact" instead of phone numbers.
+- Lists verified Association members from the live database only (DATA-001).
+- Public list (name, badges, city, category chips). Full contact card requires Paid or Feature Access ON.
+- Filters: category, city, verified, broker (accepts `?type=Broker`, which is where the retired `/broker` route now redirects).
+- **Acceptance:** a member added in admin appears within one cache cycle; non-Paid users see "Become a member to view contact" instead of phone numbers.
 
 ### Member Profile `/directory/:slug`
 - Public summary; storefront link; "Contact seller" CTA (auth-gated reveal).
-- **Acceptance:** an unauthenticated visitor clicking Contact is sent to login then back to the same profile.
+- **Acceptance:** an unauthenticated visitor tapping Contact is sent to `/login` and returned to the same profile.
 
 ### Storefront `/store/:slug`
 - A single member's curated product showcase with brand strip, featured products, and category tabs.
-- Backed by the `companies_public` view; reads only the safe column set (no `email`, `phone`, `gstin`, `address` exposed to anon).
-- **Acceptance:** only Paid members can have a storefront; URL for non-Paid resolves to a 404-style empty state.
+- Backed by the `companies_public` view (`security_invoker=true`), which grants safe columns only to `anon` / `authenticated` (no `email`, `phone`, `gstin`, `address`).
+- **Acceptance:** only Paid members can have a storefront; URL for non-Paid resolves to a 404-style empty state; sticky contact bar reveals wa.me only for Paid or Feature Access ON.
 
 ### Products `/products` and `/products/:slug`
 - Cross-member catalogue with variant-level browsing.
-- Price shown as a range; stock as a band; demand trend rendered from BIL signal (or local fallback).
-- **Acceptance:** no price field in the rendered HTML matches an exact rupee value from the database.
+- Price shown as a range; stock as a band; demand trend from BIL signal (or local fallback).
+- **Acceptance:** no rendered price matches an exact rupee value from the database.
 
 ### Brands `/brands` and `/brands/:slug`
-- Cross-company house-brand discovery. Brand page links to the brand's products and to the owning company's storefront. Branded SKUs may link out to an external B2C URL.
-- **Acceptance:** brands without active products are still listed but show an empty state on the brand page.
+- Cross-company house-brand discovery. Brand page links to the brand's products and to the owning company's storefront. Branded SKUs may link to an external B2C URL.
+- **Acceptance:** brands without active products are still listed and show an empty state on the brand page.
 
-### Broker board `/broker`
-- Filters companies where `is_broker = true`. Same ₹10K paid tier — broker is a flag, not a separate SKU.
+### Community Feed `/market`
+- The live posting surface. Replaces the older "Market News" page and the retired `/community` route (which now redirects here).
+- Tables: `community_posts`, `post_comments`, `post_likes`, `post_views`, `post_polls`, `post_poll_options`, `post_poll_votes`, `anonymous_identity_log` (admin-only RLS).
+- Compose supports **text · images (clipboard paste, up to N per post) · PDFs · polls · price ranges · anonymous toggle**. Links auto-expand into rich previews via the `fetch-link-preview` edge function (oEmbed for YouTube/Vimeo, direct-image/video/PDF detection). Pinned rate cards can be featured by admins.
+- Compose media uploads land in the `community-media` bucket. Update policy on the bucket requires `is_paid_or_admin` — losing paid status removes overwrite rights.
+- Engagement bar uses a thumbs-up icon (not a heart).
+- Access tiers: **paid + admin** can post/comment/like/poll; **free members** are read-only for 7 days then hit a paywall overlay; **guests** see a teaser; **anonymous posting** is paid-only and the real identity is written to `anonymous_identity_log` for admin audit.
+- When **Feature Access** is ON (`is_features_open() = true`), RLS opens read to guests + free members.
+- Floating "Post" FAB: `z-50`, `bottom-24` so it clears the mobile bottom tabs.
+- **Acceptance:** paid users can post/like/comment/poll; free users past 7 days see the paywall overlay; anonymous posts hide the author from other members but are visible to admins via the log; pin escalation is blocked at RLS (`WITH CHECK` prevents authors from self-pinning).
 
-### Community Feed `/market` (v3.2)
-- The `/market` route is the **Community Feed** — the live posting surface for members. It replaces the older "Market News" page.
-- Backed by `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS).
-- Access tiers: **paid + admin** can post and comment; **free members** are read-only for their first 7 days; **guests** see a teaser overlay; **anonymous posting** is paid-only, with the real identity stored in `anonymous_identity_log` for admin audit.
-- When the admin **Feature Access** toggle (`app_settings.features_open_to_all = true`) is on, guests and free members can read the full feed and RFQ listings without upgrading.
-- **Acceptance:** paid users can post/like/comment; free users past 7 days see the paywall overlay; anonymous posts hide the author name from other members but remain visible to admins via the log.
+### RFQ board `/rfq`
+- Paid members and admins create and browse RFQ listings (buy or sell intent).
+- Backed by `rfq_listings` (1–90 day expiry) and `rfq_contact_reveals`. Contact reveal is a one-tap flow gated by the `get_company_whatsapp` RPC and logged.
+- The legacy `rfqs` / `inquiry_products` / `rfq_responses` cart schema, `CartContext`, `CartFab` / `CartDrawer` / `RFQModal` and `/account/rfqs` inbox remain **removed**.
+- When Feature Access is ON, RLS opens read to guests + free members.
+- **Acceptance:** a paid member creates a listing with expiry; another paid member reveals contact once and the reveal appears in `rfq_contact_reveals`; expired listings drop from the public feed.
 
-### RFQ board `/rfq` (v3.2)
-- The `/rfq` route is the reintroduced RFQ surface. Paid members and admins can create and browse RFQ listings; contact reveal is gated and logged in `rfq_contact_reveals` via the `get_company_whatsapp` RPC.
-- Backed by `rfq_listings` (1–90 day expiry) and `rfq_contact_reveals`. The old `rfqs` / `inquiry_products` / `rfq_responses` cart-based schema remains dropped.
-- **Acceptance:** a paid member can create a listing with expiry; another paid member can reveal contact once, with the reveal logged.
+### Bulletin `/circulars` and `/circulars/:slug`
+- Admin-managed announcements with title, slug, body, optional attachment URL, `published_at`. Renamed from "Circulars & Notices" to **Bulletin** in the UI while keeping the `/circulars` URLs for continuity.
+- Attachments served via **1-hour signed URLs** (tightened from the earlier 5-year signing).
+- **Acceptance:** drafts are not visible to non-admins; published entries are reachable by slug; the home QuickActions "Bulletin" tile shows a live count of published entries.
 
-## Community
+## Public authority pages
 
-### Forum `/community`
-- Discourse embed remains available as the long-form discussion surface.
-- The v3.2 Community Feed at `/market` is the day-to-day posting surface; `/community` is for threaded discussion.
-- **Acceptance:** the embedded forum loads.
+| Route | Contents | Notes |
+|---|---|---|
+| `/` | Home shell above | Prerendered |
+| `/about` | Association history + committee members + office bearers | Prerendered |
+| `/membership` | 2-card grid (Free vs Paid) + side-by-side comparison table | Prerendered |
+| `/apply` | Single Paid plan checkout + "I operate as a broker" flag | — |
+| `/install` | PWA install guide (iOS Safari, Android Chrome) | Prerendered |
+| `/knowledge` | Article index (markdown-backed via `src/content/knowledge/*.md`, loaded through `import.meta.glob`) | Prerendered |
+| `/knowledge/:slug` | Individual article | Prerendered |
+| `/faq` | Categorised FAQs + `FAQPage` JSON-LD generated from the same source | Prerendered |
+| `/contact` | Real office address, phone, hours, Grievance Officer, mailto form | Prerendered |
+| `/circulars`, `/circulars/:slug` | Bulletin (see above) | Prerendered |
 
-### Circulars `/circulars` and `/circulars/:slug`
-- Admin-managed announcements with title, slug, body, optional attachment URL, `published_at`.
-- **Acceptance:** drafts are not visible to non-admins; published circulars are reachable by slug.
+## Forms `/forms`
 
-## Forms `/forms` (also `/contact`)
-
-Two tabs only (v3.1.3): **Advertise** and **Submit Circular**. The previous **Verification Request** tab has been removed — verification is admin-driven through `/account/moderation`.
+Two tabs only: **Advertise** and **Submit Circular**. The Verification Request tab has been removed (v3.1.3) — verification is admin-driven through `/account/moderation`. Contact phone number is **+91 98200 69545**.
 
 ## Account hub `/dashboard`, `/account/*`
 
-The mobile bottom tab "Account" opens `/dashboard`. From there, members reach:
+Mobile bottom-tab "Account" opens `/dashboard`. The dashboard shows a gold-underlined hero card, the **OnboardingChecklist** (5 live-progress steps) and the dismissible **InstallAppNudge** (dismissal persisted in `localStorage.mddma:install-nudge-dismissed`).
 
 | Route | Purpose |
 |---|---|
@@ -109,7 +114,7 @@ The mobile bottom tab "Account" opens `/dashboard`. From there, members reach:
 | `/account/company` | Edit company name, GST, address, categories, branding |
 | `/account/products` | CRUD products and variants (with image + video upload) |
 | `/account/brands` | CRUD brands belonging to the user's company |
-| `/account/moderation` | Admin only: approve companies, manage circulars, ads, market news, member moderation |
+| `/account/moderation` | Admin only: approve companies, manage Bulletin + Ads, Community + RFQ moderation, Anonymous-log tab, **Feature Access** toggle |
 
 There is **no `/account/rfqs`** and **no `/account/verify`** route. KYC tier promotion happens through admin moderation (`profiles.verification_tier`, `*_verified_at` timestamps) — the trigger `prevent_profile_privilege_escalation` blocks any non-admin write to those fields.
 
@@ -125,27 +130,29 @@ stateDiagram-v2
   Verified --> [*]
 ```
 
-- **Circulars CRUD:** title, slug, body, publish toggle, attachment.
-- **Ads CRUD:** placement (home / category / directory), image (uploaded to `ad-assets` bucket, admin-only write), link, active window.
-- **Market News CRUD:** admin-curated entries surfaced on `/market-news` and home.
+- **Bulletin CRUD:** title, slug, body, publish toggle, attachment.
+- **Ads CRUD:** placement (home / category / directory), image (uploaded to `ad-assets`, admin-only write), link, active window. Ad slots are image-only (no title/footer strip) with a compact "Ad" badge and dot indicator when carousel.
+- **Community moderation:** hide posts, soft-delete comments, pin (admin only — authors cannot self-pin).
+- **RFQ moderation:** hide listings, mark expired.
+- **Anonymous-post log:** admin-only view over `anonymous_identity_log` (RLS locked to admins).
+- **Feature Access toggle:** flips `app_settings.features_open_to_all`; `useAppSettings` hook syncs it in real time; `RoleContext.isEffectivePaid` follows.
 - **Member moderation:** approve verification, toggle broker flag, suspend, set `review_status` and `is_hidden`.
-- **Forum moderation:** soft-delete posts and comments in the native archive.
 
-## Live market ticker
+## Live ticker
 
-A global, vertically-compact scrolling ticker (top of home) renders curated market signals — port arrivals, festival cycles, broad rate movements. Sourced from circulars marked as "ticker eligible" and admin-curated entries. Never carries an exact price.
+Compact top-of-home ticker (`LiveTicker`) auto-scrolls curated APMC rate signals and admin-featured items. Never carries an exact price.
 
-## Knowledge & SEO surfaces
+## SEO surfaces (GTM-001)
 
-The public-authority routes — `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/circulars/:slug`, `/knowledge`, `/knowledge/:slug`, `/faq`, `/contact` — are prerendered, AI-crawler-friendly (GPTBot / ClaudeBot / PerplexityBot / Google-Extended allowed), and listed in `sitemap.xml`. The transactional core — `/directory`, `/products`, `/store/:slug`, `/brands`, `/brands/:slug`, `/broker`, `/market`, `/community`, `/dashboard`, `/account/*`, `/documents`, `/login`, `/forms` — is `noindex` and contains no price / stock / contact in indexable HTML (GTM-001).
+Public authority routes are prerendered, listed in `sitemap.xml`, and allowlist GPTBot / ClaudeBot / PerplexityBot / Google-Extended in `robots.txt`. `index.html` carries an Organization JSON-LD block. The transactional core (`/directory`, `/products`, `/store/:slug`, `/brands`, `/brands/:slug`, `/market`, `/rfq`, `/dashboard`, `/account/*`, `/documents`, `/login`, `/forms`) is `noindex` via `<Seo noindex />` and contains no price / stock / contact in indexable HTML.
 
 ## Acceptance principle
 
-Every module ships with a single rule: **exact prices and exact stock figures must not appear in the rendered DOM**, regardless of role. UI components (`<GuardedPrice>`, stock-band, trend chip) are the enforcement point.
+Every module ships with a single rule: **exact prices and exact stock figures must not appear in the rendered DOM**, regardless of role. UI components (`<GuardedPrice>`, `<PriceBand>`, `<StockBand>`, trend chip) are the enforcement point.
 
 ## Member-facing legal & policy pages
 
-Privacy (doc 19), Terms (doc 20), Refund (doc 21) and Grievance (doc 22) currently live behind the `/documents` password alongside the rest of the suite. Promoting them to **public routes** (`/privacy`, `/terms`, `/refund`, `/grievance`) with a footer link block is a follow-up task — required before Razorpay live mode and before any large-scale member onboarding. The markdown bodies are already counsel-ready drafts; promotion is a routes-and-layout change, not a content change.
+Privacy (doc 19), Terms (doc 20), Refund (doc 21) and Grievance (doc 22) live behind the `/documents` password today. Promoting them to public routes (`/privacy`, `/terms`, `/refund`, `/grievance`) with a footer link block is a follow-up task — required before Razorpay live mode and before any large-scale member onboarding.
 
 ## Read next
 
