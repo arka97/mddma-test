@@ -1,19 +1,8 @@
 # Build & Operations
 
+> **v3.2 · Last verified July 2026** against the deployed shell, edge functions, secrets manager and roadmap.
 
-> **v3.2 Update Notice (July 2026)** — This doc has been updated for **v3.2**. Key changes since v3.1.3:
->
-> - **RFQ is back**, under a new schema. The `/rfq` route is live, backed by the `rfq_listings` and `rfq_contact_reveals` tables. It is open to paid members and admins; contact reveal is logged. The old `rfqs` / `inquiry_products` / `rfq_responses` tables, the multi-item RFQ cart, `CartContext`, `CartFab` / `CartDrawer` / `RFQModal`, and the `/account/rfqs` inbox all remain **removed**. Any older reference below to those artifacts is historical.
-> - **`/market` is now the Community Feed**, not Market News. It uses `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS). Paid + admin can post; free members are read-only for the first 7 days; guests see a teaser; anonymous posting is paid-only.
-> - **Mobile bottom tab bar** order is now **Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`)**.
-> - **Admin Feature Access toggle** — while the pilot is running, admins can flip a global switch (`app_settings.features_open_to_all`, exposed via the `is_features_open()` SQL function) that temporarily opens Community Feed posts and RFQ listings to guests and free members. RLS on `community_posts` and `rfq_listings` reads `is_features_open()`; the frontend reads `featuresOpen` / `isEffectivePaid` from `RoleContext`. Managed from **Admin → Moderation → Feature Access**.
->
-> The **/forms Verification Request** flow remains **removed** — members are verified during admin onboarding, not via a self-serve form.
-
----
-
-
-How to set up, run, ship, and evolve MDDMA. This is the playbook — not a status report.
+How to set up, run, ship, and evolve G-BAU-G. This is the playbook — not a status report.
 
 ## Environment setup
 
@@ -34,7 +23,7 @@ The frontend reads from `.env`, which Lovable Cloud manages automatically:
 
 ## Required secrets (edge functions)
 
-Stored via the Lovable secrets manager; never committed to the repo. Inspect & rotate from **Lovable Cloud → Settings → Secrets**.
+Stored via the Lovable secrets manager; never committed. Inspect & rotate from **Lovable Cloud → Settings → Secrets**.
 
 | Secret | Used by |
 |---|---|
@@ -44,18 +33,20 @@ Stored via the Lovable secrets manager; never committed to the repo. Inspect & r
 | `RAZORPAY_WEBHOOK_SECRET` | `razorpay-webhook` |
 | `APP_URL` | `razorpay-create-payment-link` (callback redirect) |
 | `LOVABLE_API_KEY` | Reserved — Lovable AI Gateway |
+| `GOOGLE_MAPS_API_KEY` | Google Places autocomplete (custom connection, Aditya's key) |
 | `GOOGLE_SEARCH_CONSOLE_API_KEY` | Connector-managed; SEO ingest |
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `SUPABASE_JWKS`, `SUPABASE_PUBLISHABLE_KEY*`, `SUPABASE_SECRET_KEYS` | Auto-injected by Lovable Cloud — do not rotate manually |
 
 ## Seeding demo data
 
-Directory, storefront, brand and product listings render **only live database rows** (see `src/lib/dataSource.ts`). The sample arrays in `src/data/sampleData.ts` and `src/data/productListings.ts` remain in the repo as type fixtures for tests and offline previews — they are not merged into production reads.
+Directory, storefront, brand and product listings render **only live database rows** (see `src/lib/dataSource.ts`). Sample arrays in `src/data/sampleData.ts` and `src/data/productListings.ts` remain as type fixtures for tests and offline previews — never merged into production reads.
 
-To seed the database with realistic content for a pilot:
+To seed the database for a pilot:
 
 1. Sign in as an admin (`admin@mddma.org` is auto-granted `admin` by the `handle_new_user` trigger on first signup).
 2. Open `/account/moderation` → approve member companies (`review_status='approved'`, `is_hidden=false`).
-3. Publish at least 3 circulars, 1 active homepage ad, and a handful of market-news entries to populate the home shell.
+3. Publish at least 3 Bulletin entries, 1 active homepage ad, and a handful of Community Feed posts to populate the home shell.
+4. If the pilot needs all features open to everyone: **Admin → Moderation → Feature Access → toggle on**.
 
 ## Internal docs bundle
 
@@ -81,11 +72,13 @@ Run before any release. Lovable's harness runs builds automatically on every cha
 
 ## Sitemap
 
-`scripts/generate-sitemap.ts` writes `public/sitemap.xml` for the **public authority** routes only (GTM-001). Re-run after adding a new public route:
+`scripts/generate-sitemap.ts` writes `public/sitemap.xml` for the **public authority** routes only (GTM-001) — currently `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/circulars/:slug`, `/knowledge`, `/knowledge/:slug`, `/faq`, `/contact`. Re-run after adding a new public route:
 
 ```bash
 bun run scripts/generate-sitemap.ts
 ```
+
+Prerendering for the public layer runs from `scripts/prerender-public.ts`.
 
 ## Build, preview, publish
 
@@ -93,8 +86,8 @@ bun run scripts/generate-sitemap.ts
 flowchart LR
   Edit[Edit in Lovable] --> Preview[Live preview<br/>id-preview-*.lovable.app]
   Preview --> Verify[Manual QA + role simulator]
-  Verify --> Publish[Publish to mddma.lovable.app]
-  Publish --> Domain[Custom domain<br/>mddma.org / www.mddma.org]
+  Verify --> Publish[Publish to lovable.app]
+  Publish --> Domain[Custom domain<br/>mddma.org]
   Edit -.bun run build.-> Static[Static SPA bundle]
   Static --> Publish
 ```
@@ -103,35 +96,35 @@ The published site is a static SPA. Lovable hosting handles the SPA fallback aut
 
 ## PWA install
 
-`public/manifest.json` is configured for installability. On iOS Safari and Android Chrome, members get an "Add to Home Screen" prompt the second time they open the site. No native app is needed.
+`public/manifest.json` is configured for G-BAU-G branding and installability. On iOS Safari and Android Chrome, members get an "Add to Home Screen" prompt the second time they open the site. The dashboard shows a dismissible **InstallAppNudge**; dismissal is stored in `localStorage.mddma:install-nudge-dismissed`.
 
 ## Roadmap
 
 ```mermaid
 gantt
-  title MDDMA evolution
+  title G-BAU-G evolution
   dateFormat YYYY-MM-DD
   section Shipped
   Cloud + RBAC + role simulator      :done, 2026-02-01, 2w
   Directory + storefronts + products :done, 2026-02-22, 3w
   Brands module                      :done, 2026-03-15, 2w
-  Admin CMS (circulars + ads + news) :done, 2026-04-01, 2w
-  Native forum + Discourse embed     :done, 2026-04-15, 2w
+  Admin CMS (Bulletin + Ads)         :done, 2026-04-01, 2w
   Verification via admin moderation  :done, 2026-04-20, 1w
   Markdown documentation hub         :done, 2026-04-28, 1w
-  Mobile responsiveness pass         :done, 2026-05-18, 1w
   Legal & operator doc pack (18-28)  :done, 2026-05-20, 1w
-  v3.1.3 RFQ + /forms removal        :done, 2026-06-01, 1w
+  v3.1.3 RFQ + /forms cleanup        :done, 2026-06-01, 1w
+  v3.2 Community Feed + RFQ v2       :done, 2026-06-15, 3w
+  v3.2 review — brand + IA + a11y    :done, 2026-07-05, 2w
   Pilot · 8–10 two-sided (PILOT-001) :active, 2026-05-03, 12w
   section Next
-  Promote Privacy/Terms/Refund pages :2026-06-25, 1w
-  Razorpay live mode + webhooks hard :2026-07-01, 2w
-  Behavioral Intelligence Layer v1   :2026-07-15, 6w
-  Buyer reputation scoring           :2026-08-15, 4w
-  Demand-trend chips on every card   :2026-09-01, 3w
+  Promote Privacy/Terms/Refund pages :2026-07-25, 1w
+  Razorpay live mode + webhooks hard :2026-08-01, 2w
+  Behavioral Intelligence Layer v1   :2026-08-15, 6w
+  Buyer reputation scoring           :2026-09-15, 4w
+  Demand-trend chips on every card   :2026-10-01, 3w
   section Later
-  Broker matchmaking automation      :2026-10-01, 6w
-  Multi-language (Marathi, Gujarati) :2026-11-01, 4w
+  Broker matchmaking automation      :2026-11-01, 6w
+  Multi-language (Marathi, Gujarati) :2026-12-01, 4w
 ```
 
 Pilot is currently in **week 3 of 12** (per doc 27).
@@ -140,16 +133,20 @@ Pilot is currently in **week 3 of 12** (per doc 27).
 
 | Situation | Action |
 |---|---|
-| **Member can't log in** | Check `auth.users` row exists; resend confirmation from Lovable Cloud → Users panel |
-| **Verification stuck** | Open `/account/moderation` → companies tab → toggle `is_verified` or update `verification_tier` directly |
-| **Storefront 404 / "back to directory"** | Check `companies.review_status='approved'` and `is_hidden=false`; confirm `companies_public` view returns the row; confirm safe-column SELECT grants exist for `anon`/`authenticated` |
+| **Member can't log in** | Check `auth.users` row exists; resend confirmation from Cloud → Users panel |
+| **Verification stuck** | Open `/account/moderation` → companies tab → toggle `is_verified` or update `verification_tier` |
+| **Storefront 404 / "back to directory"** | Check `companies.review_status='approved'` and `is_hidden=false`; confirm `companies_public` returns the row; confirm safe-column SELECT grants |
+| **Community Feed empty for guests but pilot needs full access** | Admin → Moderation → **Feature Access → on**; RLS re-evaluates immediately |
+| **Anonymous author needs to be identified for a compliance case** | Admin → Moderation → Anonymous log tab (RLS admin-only) |
 | **Payment received but not promoted** | Re-send the webhook event from Razorpay dashboard (idempotent), or grant the role manually via `INSERT INTO user_roles` |
-| **Doc vault password lost** | Update the `DOCS_PASSWORD` secret in Cloud Settings; both `verify-doc-password` and `get-internal-doc` pick it up on next call |
+| **Doc vault password lost** | Update `DOCS_PASSWORD` in Cloud Settings; both `verify-doc-password` and `get-internal-doc` pick it up on next call |
 | **Internal doc body not updating** | Re-run `bunx tsx scripts/build-internal-docs-bundle.ts` and redeploy the edge function |
-| **Live site blank** | Run `cloud_status` (or check Cloud panel); if `ACTIVE_HEALTHY`, hard-refresh; otherwise wait for state to recover |
-| **Upload fails silently** | Check console for `UploadValidationError` — usually file size (10 MB images / 100 MB videos) or unsupported MIME (SVG blocked) |
-| **Member asks for a refund** | Forward to `grievance@mddma.org`; follow doc 21 (Refund & Cancellation) |
-| **Member asks to delete their data** | Forward to `grievance@mddma.org`; follow doc 26 §5 (erasure workflow + retention exceptions) |
+| **Google Maps autocomplete broken** | Confirm the Google Maps custom connection is linked and the domain is allowlisted on the API key |
+| **Live site blank** | Run `cloud_status`; if `ACTIVE_HEALTHY`, hard-refresh; otherwise wait for state to recover |
+| **Upload fails silently** | Check console for `UploadValidationError` — usually file size (10 MB images / 100 MB videos) or blocked MIME (SVG blocked) |
+| **Bulletin attachment link expired** | Attachments use 1-hour signed URLs — re-request from the Bulletin page |
+| **Member asks for a refund** | Forward to grievance@mddma.org; follow doc 21 |
+| **Member asks to delete their data** | Forward to grievance@mddma.org; follow doc 26 §5 |
 | **Committee member is stuck on a task** | Point them at doc 25 (zero-SQL Committee Operator Guide) before escalating |
 
 ## Backups & data ownership
