@@ -3,33 +3,34 @@ import type { TopicTag } from "@/repositories/communityPosts";
 
 const CHIPS: { id: TopicTag | "all"; label: string }[] = [
   { id: "all", label: "All" },
-  { id: "price_signals", label: "Price signals" },
-  { id: "market_alerts", label: "Market alerts" },
-  { id: "member_news", label: "Business updates" },
+  { id: "price_signals", label: "Price Signals" },
+  { id: "market_alerts", label: "Market Alerts" },
+  { id: "sourcing", label: "Sourcing" },
+  { id: "member_news", label: "Member News" },
   { id: "polls", label: "Polls" },
 ];
 
 interface Props {
   active: TopicTag | "all";
-  onChange: (topic: TopicTag | "all") => void;
+  onChange: (t: TopicTag | "all") => void;
 }
 
 export function TopicChips({ active, onChange }: Props) {
   return (
     <div className="-mx-1 flex items-center gap-2 overflow-x-auto px-1 pb-1">
-      {CHIPS.map((chip) => (
+      {CHIPS.map((c) => (
         <button
-          key={chip.id}
+          key={c.id}
           type="button"
-          onClick={() => onChange(chip.id)}
+          onClick={() => onChange(c.id)}
           className={cn(
             "shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
-            active === chip.id
+            active === c.id
               ? "border-foreground bg-foreground text-background"
               : "border-border bg-card text-muted-foreground hover:text-foreground",
           )}
         >
-          {chip.label}
+          {c.label}
         </button>
       ))}
     </div>

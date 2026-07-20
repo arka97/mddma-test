@@ -8,28 +8,16 @@ interface Props {
   viewCount: number;
   onLike: () => void;
   onCommentClick: () => void;
-  likeDisabled?: boolean;
   disabled?: boolean;
 }
 
-export function EngagementBar({
-  liked,
-  likeCount,
-  commentCount,
-  viewCount,
-  onLike,
-  onCommentClick,
-  likeDisabled,
-  disabled,
-}: Props) {
-  const reactionDisabled = likeDisabled ?? disabled ?? false;
-
+export function EngagementBar({ liked, likeCount, commentCount, viewCount, onLike, onCommentClick, disabled }: Props) {
   return (
     <div className="mt-3 flex items-center gap-5 border-t border-border/60 pt-2 text-xs text-muted-foreground">
       <button
         type="button"
         onClick={onLike}
-        disabled={reactionDisabled}
+        disabled={disabled}
         className={cn(
           "inline-flex items-center gap-1 transition-colors disabled:opacity-50",
           liked ? "text-accent" : "hover:text-foreground",
@@ -41,7 +29,8 @@ export function EngagementBar({
       <button
         type="button"
         onClick={onCommentClick}
-        className="inline-flex items-center gap-1 transition-colors hover:text-foreground"
+        disabled={disabled}
+        className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-50"
       >
         <MessageCircle className="h-4 w-4" />
         <span className="tabular-nums">{commentCount}</span>

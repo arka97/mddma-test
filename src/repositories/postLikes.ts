@@ -1,33 +1,32 @@
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
-import { getBusinessPostEngagement } from "@/repositories/communityPosts";
 
 export async function listLikes(postIds: string[]) {
-  const engagement = await getBusinessPostEngagement(postIds);
+  if (postIds.length === 0) return { counts: {}, mine: new Set<string>() };
+  const { data, error } = await (supabase.rpc as unknown as (
+    fn: string,
+    args: Record<string, unknown>,
+  ) => Promise<{ data: unknown; error: unknown }>)("get_post_like_summary", { _ids: postIds });
+  if (error) throw new Error(friendlyErrorMessage(error as never));
   const counts: Record<string, number> = {};
   const mine = new Set<string>();
-  Object.entries(engagement).forEach(([postId, metrics]) => {
-    counts[postId] = metrics.likeCount;
-    if (metrics.liked) mine.add(postId);
+  ((data ?? []) as Array<{ post_id: string; like_count: number; liked: boolean }>).forEach((r) => {
+    counts[r.post_id] = Number(r.like_count) || 0;
+    if (r.liked) mine.add(r.post_id);
   });
   return { counts, mine };
 }
 
-export async function setBusinessPostLike(postId: string, liked: boolean) {
-  const { data, error } = await supabase.rpc("set_business_post_like", {
-    _post_id: postId,
-    _liked: liked,
-  });
+export async function likePost(postId: string, userId: string) {
+  const { error } = await supabase.from("post_likes").insert({ post_id: postId, user_id: userId });
+  if (error && !/duplicate/i.test(error.message)) throw new Error(friendlyErrorMessage(error));
+}
+
+export async function unlikePost(postId: string, userId: string) {
+  const { error } = await supabase
+    .from("post_likes")
+    .delete()
+    .eq("post_id", postId)
+    .eq("user_id", userId);
   if (error) throw new Error(friendlyErrorMessage(error));
-  return Boolean(data);
-}
-
-// Compatibility wrappers for older callers. The authenticated user is always
-// derived by the database RPC; caller-provided user IDs are intentionally ignored.
-export async function likePost(postId: string, _userId?: string) {
-  return setBusinessPostLike(postId, true);
-}
-
-export async function unlikePost(postId: string, _userId?: string) {
-  return setBusinessPostLike(postId, false);
 }

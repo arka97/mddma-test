@@ -44,12 +44,6 @@ export const qk = {
     detail: (id: string) => [...qk.dealRooms.all, "detail", id] as const,
     messages: (id: string) => [...qk.dealRooms.all, "messages", id] as const,
   },
-  community: {
-    all: ["community"] as const,
-    feed: (topic = "all") => [...qk.community.all, "feed", topic] as const,
-    comments: (postId: string) => [...qk.community.all, "comments", postId] as const,
-    poll: (postId: string) => [...qk.community.all, "poll", postId] as const,
-  },
   marketNews: {
     all: ["marketNews"] as const,
     list: (publishedOnly = true) =>

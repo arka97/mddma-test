@@ -19,104 +19,72 @@ export function PollWidget({ postId, canVote }: Props) {
 
   const load = async () => {
     setLoading(true);
-    try {
-      setPoll(await getPollByPostId(postId, user?.id ?? null));
-    } catch {
-      setPoll(null);
-    } finally {
-      setLoading(false);
-    }
+    const p = await getPollByPostId(postId, user?.id ?? null);
+    setPoll(p);
+    setLoading(false);
   };
 
-  useEffect(() => {
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [postId, user?.id]);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [postId, user?.id]);
 
-  if (loading) return <div className="mt-3 h-24 animate-pulse rounded-xl border border-border/60 bg-muted/20" />;
+  if (loading) return <div className="mt-2 h-24 rounded-md border border-border/60 bg-muted/20 animate-pulse" />;
   if (!poll) return null;
 
   const closed = new Date(poll.closes_at).getTime() < Date.now();
-  const showResults = Boolean(poll.myOptionId) || closed;
+  const showResults = !!poll.myOptionId || closed;
 
   const vote = async (optionId: string) => {
-    if (!canVote || !user) {
-      toast({
-        title: "Verified business required",
-        description: "Complete business verification to vote in community polls.",
-      });
-      return;
-    }
+    if (!canVote || !user) { toast({ title: "Paid members only" }); return; }
     if (closed) return;
-
     setVoting(optionId);
     try {
-      await castPollVote(poll.id, optionId);
+      await castPollVote(poll.id, optionId, user.id);
       await load();
-    } catch (error) {
-      toast({
-        title: "Vote could not be saved",
-        description: error instanceof Error ? error.message : "Please try again.",
-        variant: "destructive",
-      });
+    } catch (e) {
+      toast({ title: "Vote failed", description: e instanceof Error ? e.message : "", variant: "destructive" });
     } finally {
       setVoting(null);
     }
   };
 
   return (
-    <div className="mt-3 rounded-xl border border-border/60 bg-card p-3">
+    <div className="mt-2 rounded-md border border-border/60 bg-card p-3">
       <div className="text-sm font-semibold text-foreground">{poll.question}</div>
       <div className="mt-2 space-y-1.5">
-        {poll.options.map((option) => {
-          const percentage = poll.totalVotes > 0 ? Math.round((option.votes / poll.totalVotes) * 100) : 0;
-          const selected = poll.myOptionId === option.id;
-
+        {poll.options.map((o) => {
+          const pct = poll.totalVotes > 0 ? Math.round((o.votes / poll.totalVotes) * 100) : 0;
+          const mine = poll.myOptionId === o.id;
           if (showResults) {
             return (
-              <button
-                key={option.id}
-                type="button"
-                onClick={() => vote(option.id)}
-                disabled={closed || voting !== null || !canVote}
-                className="relative w-full overflow-hidden rounded-lg border border-border/60 px-3 py-2 text-left text-xs disabled:cursor-default"
-              >
-                <span
-                  className={cn("absolute inset-y-0 left-0", selected ? "bg-primary/20" : "bg-muted/60")}
-                  style={{ width: `${percentage}%` }}
+              <div key={o.id} className="relative overflow-hidden rounded-md border border-border/60 px-3 py-2 text-xs">
+                <div
+                  className={cn("absolute inset-y-0 left-0", mine ? "bg-primary/20" : "bg-muted/60")}
+                  style={{ width: `${pct}%` }}
                   aria-hidden
                 />
-                <span className="relative flex items-center justify-between gap-3">
-                  <span className={cn("font-medium", selected && "text-foreground")}>
-                    {option.label}{selected ? " ✓" : ""}
-                  </span>
-                  <span className="tabular-nums text-muted-foreground">{percentage}% · {option.votes}</span>
-                </span>
-              </button>
+                <div className="relative flex items-center justify-between">
+                  <span className={cn("font-medium", mine && "text-foreground")}>{o.label}{mine && " ✓"}</span>
+                  <span className="tabular-nums text-muted-foreground">{pct}% · {o.votes}</span>
+                </div>
+              </div>
             );
           }
-
           return (
             <button
-              key={option.id}
+              key={o.id}
               type="button"
-              onClick={() => vote(option.id)}
+              onClick={() => vote(o.id)}
               disabled={voting !== null || !canVote}
-              className="w-full rounded-lg border border-border/60 px-3 py-2 text-left text-xs font-medium hover:border-primary hover:bg-primary/5 disabled:opacity-60"
+              className="w-full rounded-md border border-border/60 px-3 py-2 text-left text-xs font-medium hover:border-primary hover:bg-primary/5 disabled:opacity-60"
             >
-              {option.label}
+              {o.label}
             </button>
           );
         })}
       </div>
       <div className="mt-2 text-[11px] text-muted-foreground">
-        {poll.totalVotes} vote{poll.totalVotes === 1 ? "" : "s"} · {closed
-          ? "Closed"
-          : `Closes ${formatDistanceToNow(new Date(poll.closes_at), { addSuffix: true })}`}
+        {poll.totalVotes} vote{poll.totalVotes === 1 ? "" : "s"} ·{" "}
+        {closed ? "Closed" : `Closes ${formatDistanceToNow(new Date(poll.closes_at), { addSuffix: true })}`}
       </div>
-      {!canVote && !closed && (
-        <p className="mt-1 text-[10px] text-muted-foreground">Verified businesses can vote; voter identities are not displayed.</p>
-      )}
     </div>
   );
 }
