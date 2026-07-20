@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Users, MessageSquare, FileText, User } from "lucide-react";
+import { FileText, Home, MessageSquare, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -12,11 +12,22 @@ interface Tab {
 }
 
 const baseTabs: Tab[] = [
-  { label: "Home", href: "/", icon: Home, match: (p) => p === "/" },
-  { label: "Market", href: "/market", icon: MessageSquare, match: (p) => p.startsWith("/market") },
-  { label: "RFQ", href: "/rfq", icon: FileText, match: (p) => p.startsWith("/rfq") },
-  { label: "Members", href: "/directory", icon: Users, match: (p) => p.startsWith("/directory") || p.startsWith("/store") },
-  { label: "Account", href: "/dashboard", icon: User, match: (p) => p.startsWith("/account") || p.startsWith("/dashboard"), requireAuth: true },
+  { label: "Home", href: "/", icon: Home, match: (path) => path === "/" },
+  { label: "Market", href: "/market", icon: MessageSquare, match: (path) => path.startsWith("/market") },
+  { label: "RFQ", href: "/rfq", icon: FileText, match: (path) => path.startsWith("/rfq") },
+  {
+    label: "Firms",
+    href: "/directory",
+    icon: Users,
+    match: (path) => path.startsWith("/directory") || path.startsWith("/store"),
+  },
+  {
+    label: "Account",
+    href: "/dashboard",
+    icon: User,
+    match: (path) => path.startsWith("/account") || path.startsWith("/dashboard"),
+    requireAuth: true,
+  },
 ];
 
 export function MobileBottomTabBar() {
@@ -25,16 +36,15 @@ export function MobileBottomTabBar() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card lg:hidden pb-safe shadow-[0_-4px_16px_-8px_rgba(0,4,40,0.08)]"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-safe shadow-[0_-4px_16px_-8px_rgba(0,4,40,0.08)] lg:hidden"
       aria-label="Primary"
     >
       <ul className="grid grid-cols-5">
         {baseTabs.map((tab) => {
           const active = tab.match(location.pathname);
           const Icon = tab.icon;
-          const target = tab.requireAuth && !user
-            ? `/login?next=${encodeURIComponent(tab.href)}`
-            : tab.href;
+          const target = tab.requireAuth && !user ? `/login?next=${encodeURIComponent(tab.href)}` : tab.href;
+
           return (
             <li key={tab.label} className="relative">
               <Link
