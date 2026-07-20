@@ -173,10 +173,14 @@ export async function getReceivedQuotationBoard(companyId: string): Promise<Quot
   return { rows, ...context };
 }
 
-export async function withdrawQuotation(id: string, userId: string) {
-  const { error } = await quotationsTable()
-    .update({ status: "withdrawn", updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("sender_user_id", userId);
-  if (error) throw new Error(friendlyErrorMessage(error));
+export async function withdrawQuotation(id: string) {
+  const { data, error } = await (
+    supabase.rpc as unknown as (
+      fn: string,
+      args: { _quotation_id: string },
+    ) => Promise<{ data: boolean | null; error: unknown }>
+  )("withdraw_my_rfq_quotation", { _quotation_id: id });
+
+  if (error) throw new Error(friendlyErrorMessage(error as never));
+  if (!data) throw new Error("This quotation can no longer be withdrawn.");
 }
