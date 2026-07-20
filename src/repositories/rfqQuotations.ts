@@ -74,37 +74,46 @@ export interface QuotationBoardData {
   companies: Record<string, QuotationCompanySummary>;
 }
 
-// The migration in this branch introduces rfq_quotations. Lovable will regenerate
-// the Supabase types after applying it; this isolated escape hatch is removed once
-// the generated file includes the new table and withdrawal RPC.
-function quotationsTable() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return supabase.from("rfq_quotations" as never) as any;
+function mapQuotationRow(row: RfqQuotationDbRow): RfqQuotationRow {
+  return {
+    ...row,
+    quote_kind: row.quote_kind as QuotationKind,
+    status: row.status as QuotationStatus,
+    quantity_unit: row.quantity_unit as QtyUnit,
+    price_unit: row.price_unit as PriceUnit,
+  };
 }
 
 export async function createQuotation(input: CreateQuotationInput) {
-  const { data, error } = await quotationsTable().insert(input).select("*").single();
+  const { data, error } = await supabase
+    .from("rfq_quotations")
+    .insert(input satisfies RfqQuotationDbInsert)
+    .select("*")
+    .single();
   if (error) throw new Error(friendlyErrorMessage(error));
-  return data as RfqQuotationRow;
+  return mapQuotationRow(data);
 }
 
 export async function listSentQuotations(userId: string) {
-  const { data, error } = await quotationsTable()
+  const { data, error } = await supabase
+    .from("rfq_quotations")
     .select("*")
     .eq("sender_user_id", userId)
     .order("created_at", { ascending: false });
   if (error) throw new Error(friendlyErrorMessage(error));
-  return (data ?? []) as RfqQuotationRow[];
+  return (data ?? []).map(mapQuotationRow);
 }
 
 export async function listReceivedQuotations(companyId: string) {
-  const { data, error } = await quotationsTable()
+  const { data, error } = await supabase
+    .from("rfq_quotations")
     .select("*")
     .eq("recipient_company_id", companyId)
     .order("created_at", { ascending: false });
   if (error) throw new Error(friendlyErrorMessage(error));
-  return (data ?? []) as RfqQuotationRow[];
+  return (data ?? []).map(mapQuotationRow);
 }
+
 
 async function loadQuotationContext(rows: RfqQuotationRow[]) {
   const rfqIds = Array.from(new Set(rows.map((row) => row.rfq_id)));
