@@ -21,6 +21,8 @@ export function PollWidget({ postId, canVote }: Props) {
     setLoading(true);
     try {
       setPoll(await getPollByPostId(postId, user?.id ?? null));
+    } catch {
+      setPoll(null);
     } finally {
       setLoading(false);
     }
