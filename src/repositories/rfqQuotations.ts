@@ -1,6 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
+import type { Database } from "@/integrations/supabase/types";
 import type { PriceUnit, QtyUnit } from "@/repositories/rfqListings";
+
+type RfqQuotationDbRow = Database["public"]["Tables"]["rfq_quotations"]["Row"];
+type RfqQuotationDbInsert = Database["public"]["Tables"]["rfq_quotations"]["Insert"];
+
 
 export type QuotationKind = "indicative" | "formal";
 export type QuotationStatus = "sent" | "revised" | "withdrawn" | "rejected" | "expired";
