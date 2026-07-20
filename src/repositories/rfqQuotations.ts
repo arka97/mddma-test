@@ -70,9 +70,10 @@ export interface QuotationBoardData {
 }
 
 // The migration in this branch introduces rfq_quotations. Lovable will regenerate
-// the Supabase types after applying it; the narrow cast keeps this branch buildable
-// before that generated file is refreshed.
+// the Supabase types after applying it; this isolated escape hatch is removed once
+// the generated file includes the new table and withdrawal RPC.
 function quotationsTable() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return supabase.from("rfq_quotations" as never) as any;
 }
 
