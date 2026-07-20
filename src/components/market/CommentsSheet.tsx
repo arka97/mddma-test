@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { Building2, Loader2, Send, ShieldCheck } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -14,6 +15,7 @@ import {
 import type { CommunityBusinessSummary } from "@/repositories/communityPosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import { qk } from "@/lib/queryKeys";
 
 interface Props {
   open: boolean;
@@ -25,6 +27,7 @@ interface Props {
 export function CommentsSheet({ open, onOpenChange, postId, canComment }: Props) {
   const { user, company } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [comments, setComments] = useState<PostCommentRow[]>([]);
   const [businesses, setBusinesses] = useState<Record<string, CommunityBusinessSummary>>({});
   const [text, setText] = useState("");
@@ -77,6 +80,7 @@ export function CommentsSheet({ open, onOpenChange, postId, canComment }: Props)
         }));
       }
       setText("");
+      await queryClient.invalidateQueries({ queryKey: qk.community.all });
     } catch (error) {
       toast({
         title: "Comment could not be posted",
