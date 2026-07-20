@@ -33,7 +33,7 @@ const MyQuotations = () => {
   const withdraw = async (id: string) => {
     setWithdrawingId(id);
     try {
-      await withdrawQuotation(id, user.id);
+      await withdrawQuotation(id);
       await queryClient.invalidateQueries({ queryKey: qk.quotations.all });
       toast({ title: "Quotation withdrawn" });
     } catch (error) {
