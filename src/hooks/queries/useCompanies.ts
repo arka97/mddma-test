@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { listCompanies, getCompanyBySlug, getCompanyByOwner } from "@/repositories/companies";
+import {
+  getCompanyById,
+  getCompanyByOwner,
+  getCompanyBySlug,
+  listCompanies,
+} from "@/repositories/companies";
 import { mergeDirectory } from "@/lib/dataSource";
 import { qk } from "@/lib/queryKeys";
 
@@ -7,6 +12,14 @@ export function useDirectory() {
   return useQuery({
     queryKey: qk.companies.list(),
     queryFn: async () => mergeDirectory(await listCompanies()),
+  });
+}
+
+export function useCompanyById(id: string | undefined) {
+  return useQuery({
+    queryKey: qk.companies.byId(id ?? ""),
+    queryFn: () => getCompanyById(id as string),
+    enabled: Boolean(id),
   });
 }
 
