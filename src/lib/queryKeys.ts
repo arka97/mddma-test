@@ -6,6 +6,7 @@ export const qk = {
     all: ["companies"] as const,
     list: (filters?: Record<string, unknown>) =>
       [...qk.companies.all, "list", filters ?? {}] as const,
+    byId: (id: string) => [...qk.companies.all, "id", id] as const,
     bySlug: (slug: string) => [...qk.companies.all, "slug", slug] as const,
     byOwner: (ownerId: string) => [...qk.companies.all, "owner", ownerId] as const,
   },
