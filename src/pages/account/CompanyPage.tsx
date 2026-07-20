@@ -1,6 +1,6 @@
-import { friendlyErrorMessage } from "@/lib/errors";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Building2, ExternalLink, Loader2, ShieldCheck, Upload } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +9,16 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Building2, ExternalLink, Loader2, ShieldCheck, Upload } from "lucide-react";
+import { GooglePlacesAutocomplete } from "@/components/maps/GooglePlacesAutocomplete";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+import { friendlyErrorMessage } from "@/lib/errors";
 import { slugify, uploadFile } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { GooglePlacesAutocomplete } from "@/components/maps/GooglePlacesAutocomplete";
+
+type MyCompanyRow = Database["public"]["Functions"]["get_my_company"]["Returns"][number];
+type CompanyInsert = Database["public"]["Tables"]["companies"]["Insert"];
 
 interface CompanyForm {
   name: string;
@@ -64,6 +68,32 @@ const empty: CompanyForm = {
   certifications: "",
 };
 
+function toForm(row: MyCompanyRow): CompanyForm {
+  return {
+    name: row.name,
+    slug: row.slug,
+    tagline: row.tagline ?? "",
+    description: row.description ?? "",
+    logo_url: row.logo_url ?? "",
+    cover_url: row.cover_url ?? "",
+    city: row.city ?? "",
+    state: row.state ?? "",
+    country: row.country ?? "India",
+    pincode: row.pincode ?? "",
+    address: row.address ?? "",
+    latitude: row.latitude,
+    longitude: row.longitude,
+    place_id: row.place_id ?? "",
+    email: row.email ?? "",
+    phone: row.phone ?? "",
+    website: row.website ?? "",
+    gstin: row.gstin ?? "",
+    fssai: row.fssai ?? "",
+    categories: (row.categories ?? []).join(", "),
+    certifications: (row.certifications ?? []).join(", "),
+  };
+}
+
 const CompanyPage = () => {
   const { user, company, refresh } = useAuth();
   const { toast } = useToast();
@@ -83,43 +113,27 @@ const CompanyPage = () => {
     loadedForUserRef.current = user.id;
 
     (async () => {
-      const { data: rpcData } = await (
-        supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown }>
-      )("get_my_company");
-      const rows = Array.isArray(rpcData) ? rpcData : rpcData ? [rpcData] : [];
-      const data = (rows[0] ?? null) as Record<string, any> | null;
-
-      if (data) {
-        setCompanyId(data.id);
-        setIsVerified(Boolean(data.is_verified));
-        setReviewStatus(data.review_status ?? null);
-        setForm({
-          name: data.name ?? "",
-          slug: data.slug ?? "",
-          tagline: data.tagline ?? "",
-          description: data.description ?? "",
-          logo_url: data.logo_url ?? "",
-          cover_url: data.cover_url ?? "",
-          city: data.city ?? "",
-          state: data.state ?? "",
-          country: data.country ?? "India",
-          pincode: data.pincode ?? "",
-          address: data.address ?? "",
-          latitude: data.latitude ?? null,
-          longitude: data.longitude ?? null,
-          place_id: data.place_id ?? "",
-          email: data.email ?? "",
-          phone: data.phone ?? "",
-          website: data.website ?? "",
-          gstin: data.gstin ?? "",
-          fssai: data.fssai ?? "",
-          categories: (data.categories ?? []).join(", "),
-          certifications: (data.certifications ?? []).join(", "),
+      const { data, error } = await supabase.rpc("get_my_company");
+      if (error) {
+        toast({
+          title: "Could not load business profile",
+          description: friendlyErrorMessage(error),
+          variant: "destructive",
         });
+        setLoading(false);
+        return;
+      }
+
+      const ownedCompany = data?.[0] ?? null;
+      if (ownedCompany) {
+        setCompanyId(ownedCompany.id);
+        setIsVerified(ownedCompany.is_verified);
+        setReviewStatus(ownedCompany.review_status);
+        setForm(toForm(ownedCompany));
       }
       setLoading(false);
     })();
-  }, [user]);
+  }, [toast, user]);
 
   if (!user) return null;
 
@@ -138,23 +152,23 @@ const CompanyPage = () => {
     if (kind === "logo") setUploadingLogo(false);
     else setUploadingCover(false);
 
-    if (url) {
-      update(kind === "logo" ? "logo_url" : "cover_url", url);
-      toast({ title: `${kind === "logo" ? "Logo" : "Cover"} uploaded` });
-    } else {
+    if (!url) {
       toast({ title: "Upload failed", variant: "destructive" });
+      return;
     }
+
+    update(kind === "logo" ? "logo_url" : "cover_url", url);
+    toast({ title: `${kind === "logo" ? "Logo" : "Cover"} uploaded` });
   };
 
   const handleSave = async (event: React.FormEvent) => {
     event.preventDefault();
     setSaving(true);
 
-    const slug = form.slug.trim() || slugify(form.name);
-    const payload = {
+    const payload: CompanyInsert = {
       owner_id: user.id,
       name: form.name.trim(),
-      slug,
+      slug: form.slug.trim() || slugify(form.name),
       tagline: form.tagline.trim() || null,
       description: form.description.trim() || null,
       logo_url: form.logo_url || null,
@@ -189,7 +203,7 @@ const CompanyPage = () => {
           ...payload,
           is_hidden: true,
           review_status: "pending",
-        } as never);
+        });
 
     setSaving(false);
 
@@ -215,7 +229,7 @@ const CompanyPage = () => {
   if (loading) {
     return (
       <Layout>
-        <div className="flex py-20 justify-center">
+        <div className="flex justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
       </Layout>
@@ -248,13 +262,9 @@ const CompanyPage = () => {
                 </Badge>
               )}
               {!isVerified && reviewStatus === "pending" && (
-                <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning-foreground">
-                  Review pending
-                </Badge>
+                <Badge variant="warning">Review pending</Badge>
               )}
-              {reviewStatus === "rejected" && (
-                <Badge variant="destructive">Changes required</Badge>
-              )}
+              {reviewStatus === "rejected" && <Badge variant="destructive">Changes required</Badge>}
               {company?.slug && (
                 <Button asChild variant="outline" size="sm">
                   <Link to={`/directory/${company.slug}`}>
@@ -276,7 +286,7 @@ const CompanyPage = () => {
                 <CardTitle>Branding</CardTitle>
                 <CardDescription>Logo and cover image for the public business profile.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent>
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <Label>Logo</Label>
@@ -297,11 +307,7 @@ const CompanyPage = () => {
                           disabled={uploadingLogo}
                         />
                         <span className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted">
-                          {uploadingLogo ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Upload className="h-4 w-4" />
-                          )}
+                          {uploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                           Upload
                         </span>
                       </label>
@@ -324,11 +330,7 @@ const CompanyPage = () => {
                           disabled={uploadingCover}
                         />
                         <span className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted">
-                          {uploadingCover ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Upload className="h-4 w-4" />
-                          )}
+                          {uploadingCover ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
                           Upload
                         </span>
                       </label>
@@ -345,7 +347,7 @@ const CompanyPage = () => {
                   Use the legal or trading identity and evidence applicable in the business jurisdiction.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="name">Legal or trading name *</Label>
@@ -398,8 +400,7 @@ const CompanyPage = () => {
 
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="address">
-                      Address *{" "}
-                      <span className="text-xs font-normal text-muted-foreground">(powered by Google Maps)</span>
+                      Address * <span className="text-xs font-normal text-muted-foreground">(powered by Google Maps)</span>
                     </Label>
                     <GooglePlacesAutocomplete
                       id="address"
@@ -445,8 +446,7 @@ const CompanyPage = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone">
-                      Business phone *{" "}
-                      <span className="text-xs font-normal text-muted-foreground">(include country code)</span>
+                      Business phone * <span className="text-xs font-normal text-muted-foreground">(include country code)</span>
                     </Label>
                     <Input id="phone" value={form.phone} maxLength={30} required placeholder="+91 98765 43210" onChange={(event) => update("phone", event.target.value)} />
                   </div>
@@ -490,8 +490,7 @@ const CompanyPage = () => {
                   </div>
                   <div className="space-y-2 sm:col-span-2">
                     <Label htmlFor="certifications">
-                      Certifications{" "}
-                      <span className="text-xs font-normal text-muted-foreground">(comma separated)</span>
+                      Certifications <span className="text-xs font-normal text-muted-foreground">(comma separated)</span>
                     </Label>
                     <Input
                       id="certifications"
