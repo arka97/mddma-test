@@ -26,8 +26,12 @@ export interface CompanyRow {
   website: string | null;
   gstin: string | null;
   established_year: number | null;
-  categories: string[] | null;
-  certifications: string[] | null;
+  categories: string[];
+  certifications: string[];
+  markets: string[];
+  languages: string[];
+  hours: string | null;
+  verification_tier_label: string | null;
   is_verified: boolean;
   is_hidden: boolean;
   membership_tier: string | null;
@@ -57,8 +61,12 @@ function normalizePublicCompany(row: CompanyPublicRow): CompanyRow | null {
     website: row.website,
     gstin: null,
     established_year: row.established_year,
-    categories: row.categories,
-    certifications: row.certifications,
+    categories: row.categories ?? [],
+    certifications: row.certifications ?? [],
+    markets: row.markets ?? [],
+    languages: row.languages ?? [],
+    hours: row.hours,
+    verification_tier_label: row.verification_tier_label,
     is_verified: Boolean(row.is_verified),
     is_hidden: Boolean(row.is_hidden),
     membership_tier: row.membership_tier,
@@ -87,8 +95,12 @@ function normalizeOwnedCompany(row: MyCompanyRow): CompanyRow {
     website: row.website,
     gstin: row.gstin,
     established_year: row.established_year,
-    categories: row.categories,
-    certifications: row.certifications,
+    categories: row.categories ?? [],
+    certifications: row.certifications ?? [],
+    markets: row.markets ?? [],
+    languages: row.languages ?? [],
+    hours: row.hours,
+    verification_tier_label: row.verification_tier_label,
     is_verified: row.is_verified,
     is_hidden: row.is_hidden,
     membership_tier: row.membership_tier,
