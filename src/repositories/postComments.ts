@@ -1,7 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { friendlyErrorMessage } from "@/lib/errors";
-import { callCommunityRpc } from "@/repositories/communityRpc";
 import type { CommunityBusinessSummary } from "@/repositories/communityPosts";
 
 type PostCommentDbRow = Database["public"]["Tables"]["post_comments"]["Row"];
@@ -66,7 +65,7 @@ export async function listCommentBusinesses(authorIds: string[]) {
 }
 
 export async function addComment(postId: string, _authorId: string | undefined, content: string) {
-  const { data, error } = await callCommunityRpc<string>("add_business_comment", {
+  const { data, error } = await supabase.rpc("add_business_comment", {
     _post_id: postId,
     _content: content,
   });

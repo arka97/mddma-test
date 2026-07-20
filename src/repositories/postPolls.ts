@@ -1,5 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
-import { callCommunityRpc } from "@/repositories/communityRpc";
 
 export interface PollOption {
   id: string;
@@ -18,22 +18,8 @@ export interface PollData {
   myOptionId: string | null;
 }
 
-interface BusinessPollRpcRow {
-  poll_id: string;
-  post_id: string;
-  question: string;
-  closes_at: string;
-  option_id: string;
-  option_index: number;
-  option_label: string;
-  vote_count: number | string;
-  voted: boolean;
-}
-
 export async function getPollByPostId(postId: string, _viewerId: string | null): Promise<PollData | null> {
-  const { data, error } = await callCommunityRpc<BusinessPollRpcRow[]>("get_business_poll", {
-    _post_id: postId,
-  });
+  const { data, error } = await supabase.rpc("get_business_poll", { _post_id: postId });
   if (error) throw new Error(friendlyErrorMessage(error));
   if (!data?.length) return null;
 
@@ -58,7 +44,7 @@ export async function getPollByPostId(postId: string, _viewerId: string | null):
 }
 
 export async function castPollVote(pollId: string, optionId: string, _voterId?: string): Promise<void> {
-  const { error } = await callCommunityRpc<string>("cast_business_poll_vote", {
+  const { error } = await supabase.rpc("cast_business_poll_vote", {
     _poll_id: pollId,
     _option_id: optionId,
   });

@@ -1,8 +1,8 @@
-import { callCommunityRpc } from "@/repositories/communityRpc";
+import { supabase } from "@/integrations/supabase/client";
 import { getBusinessPostEngagement } from "@/repositories/communityPosts";
 
 export async function recordView(postId: string, _userId?: string) {
-  await callCommunityRpc<null>("record_business_post_view", { _post_id: postId });
+  await supabase.rpc("record_business_post_view", { _post_id: postId });
 }
 
 export async function viewCounts(postIds: string[]) {
