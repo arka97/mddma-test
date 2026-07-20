@@ -1,73 +1,56 @@
-# Welcome to your Lovable project
+# G-BAU-G by MDDMA
 
-## Project info
+G-BAU-G is the MDDMA-operated verified B2B network for nuts, dry fruits, dates, seeds, spices and allied food trade.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+This repository is connected to Lovable. Changes made in Lovable are committed here automatically, and changes merged into the connected branch are reflected back in the Lovable project.
 
-## How can I edit this code?
+## Product surfaces currently in the application
 
-There are several ways of editing your application.
+- Verified business directory and profiles
+- Business storefronts, products and brands
+- Market feed and official bulletins
+- RFQ board
+- Member dashboard and moderation tools
+- Public knowledge, FAQ, contact and association pages
 
-**Use Lovable**
+The product definition is evolving from an MDDMA-member portal into an open, business-verified international network. Preserve existing data and access controls while changing product language or flows.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Technology
 
-Changes made via Lovable will be committed automatically to this repo.
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS and shadcn/ui
+- TanStack Query
+- Lovable Cloud / Supabase
 
-**Use your preferred IDE**
+## Local development
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+The project uses Bun in its scripts and lockfile workflow.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```bash
+bun install
+bun run dev
 ```
 
-**Edit a file directly in GitHub**
+Useful checks:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+bun run lint
+bun run test
+bun run build
+```
 
-**Use GitHub Codespaces**
+## Lovable-safe contribution rules
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. Work on a branch and merge through a pull request.
+2. Keep pages and components free of direct `supabase.from()` calls. Put data access in `src/repositories/` and consume it through query hooks.
+3. Reuse semantic design tokens instead of hard-coded colours.
+4. Do not rename or remove database fields through UI-only refactors.
+5. Treat generated Supabase types, migrations and edge functions as coordinated backend changes.
+6. Avoid editing the same screen concurrently in Lovable and GitHub; sync first to reduce merge conflicts.
+7. Run lint, tests and a production build before merging.
 
-## What technologies are used for this project?
+## Deployment
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Publish through the connected Lovable project. Custom domains are managed from Lovable **Project Settings → Domains**.
