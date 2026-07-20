@@ -3,11 +3,18 @@ import { listProducts, getProductBySlug } from "@/repositories/products";
 import { mergeProducts } from "@/lib/dataSource";
 import { qk } from "@/lib/queryKeys";
 
-export function useProducts(opts: { companyId?: string; category?: string } = {}) {
-  const { companyId, category } = opts;
+interface ProductQueryOptions {
+  companyId?: string;
+  category?: string;
+  enabled?: boolean;
+}
+
+export function useProducts(opts: ProductQueryOptions = {}) {
+  const { companyId, category, enabled = true } = opts;
   return useQuery({
     queryKey: qk.products.list({ companyId, category }),
     queryFn: async () => mergeProducts(await listProducts({ companyId, category })),
+    enabled,
   });
 }
 
