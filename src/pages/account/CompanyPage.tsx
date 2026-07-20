@@ -3,18 +3,18 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Upload, Building2, ExternalLink, ShieldCheck } from "lucide-react";
+import { Building2, ExternalLink, Loader2, ShieldCheck, Upload } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { uploadFile, slugify } from "@/lib/storage";
+import { slugify, uploadFile } from "@/lib/storage";
 import { useToast } from "@/hooks/use-toast";
-import { GooglePlacesAutocomplete, type PlaceDetails } from "@/components/maps/GooglePlacesAutocomplete";
+import { GooglePlacesAutocomplete } from "@/components/maps/GooglePlacesAutocomplete";
 
 interface CompanyForm {
   name: string;
@@ -41,11 +41,27 @@ interface CompanyForm {
 }
 
 const empty: CompanyForm = {
-  name: "", slug: "", tagline: "", description: "", logo_url: "", cover_url: "",
-  city: "", state: "", country: "India", pincode: "", address: "",
-  latitude: null, longitude: null, place_id: "",
-  email: "", phone: "", website: "", gstin: "", fssai: "",
-  categories: "", certifications: "",
+  name: "",
+  slug: "",
+  tagline: "",
+  description: "",
+  logo_url: "",
+  cover_url: "",
+  city: "",
+  state: "",
+  country: "India",
+  pincode: "",
+  address: "",
+  latitude: null,
+  longitude: null,
+  place_id: "",
+  email: "",
+  phone: "",
+  website: "",
+  gstin: "",
+  fssai: "",
+  categories: "",
+  certifications: "",
 };
 
 const CompanyPage = () => {
@@ -59,52 +75,79 @@ const CompanyPage = () => {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [companyId, setCompanyId] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
+  const [reviewStatus, setReviewStatus] = useState<"pending" | "approved" | "rejected" | null>(null);
   const loadedForUserRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!user) return;
-    if (loadedForUserRef.current === user.id) return;
+    if (!user || loadedForUserRef.current === user.id) return;
     loadedForUserRef.current = user.id;
+
     (async () => {
-      const { data: rpcData } = await (supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown }>)("get_my_company");
+      const { data: rpcData } = await (
+        supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown }>
+      )("get_my_company");
       const rows = Array.isArray(rpcData) ? rpcData : rpcData ? [rpcData] : [];
-      const data = (rows[0] ?? null) as any;
+      const data = (rows[0] ?? null) as Record<string, any> | null;
+
       if (data) {
         setCompanyId(data.id);
-        setIsVerified(!!data.is_verified);
+        setIsVerified(Boolean(data.is_verified));
+        setReviewStatus(data.review_status ?? null);
         setForm({
-          name: data.name ?? "", slug: data.slug ?? "", tagline: data.tagline ?? "",
-          description: data.description ?? "", logo_url: data.logo_url ?? "", cover_url: data.cover_url ?? "",
-          city: data.city ?? "", state: data.state ?? "", country: data.country ?? "India",
+          name: data.name ?? "",
+          slug: data.slug ?? "",
+          tagline: data.tagline ?? "",
+          description: data.description ?? "",
+          logo_url: data.logo_url ?? "",
+          cover_url: data.cover_url ?? "",
+          city: data.city ?? "",
+          state: data.state ?? "",
+          country: data.country ?? "India",
           pincode: data.pincode ?? "",
           address: data.address ?? "",
-          latitude: data.latitude ?? null, longitude: data.longitude ?? null, place_id: data.place_id ?? "",
-          email: data.email ?? "", phone: data.phone ?? "",
-          website: data.website ?? "", gstin: data.gstin ?? "", fssai: data.fssai ?? "",
+          latitude: data.latitude ?? null,
+          longitude: data.longitude ?? null,
+          place_id: data.place_id ?? "",
+          email: data.email ?? "",
+          phone: data.phone ?? "",
+          website: data.website ?? "",
+          gstin: data.gstin ?? "",
+          fssai: data.fssai ?? "",
           categories: (data.categories ?? []).join(", "),
           certifications: (data.certifications ?? []).join(", "),
         });
       }
       setLoading(false);
     })();
-  }, [user?.id]);
+  }, [user]);
 
   if (!user) return null;
 
-  const handleImage = async (kind: "logo" | "cover", e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const update = <K extends keyof CompanyForm>(key: K, value: CompanyForm[K]) =>
+    setForm((current) => ({ ...current, [key]: value }));
+
+  const handleImage = async (kind: "logo" | "cover", event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
-    if (kind === "logo") setUploadingLogo(true); else setUploadingCover(true);
+
+    if (kind === "logo") setUploadingLogo(true);
+    else setUploadingCover(true);
+
     const url = await uploadFile("company-assets", user.id, file);
-    if (kind === "logo") setUploadingLogo(false); else setUploadingCover(false);
+
+    if (kind === "logo") setUploadingLogo(false);
+    else setUploadingCover(false);
+
     if (url) {
-      setForm((f) => kind === "logo" ? { ...f, logo_url: url } : { ...f, cover_url: url });
+      update(kind === "logo" ? "logo_url" : "cover_url", url);
       toast({ title: `${kind === "logo" ? "Logo" : "Cover"} uploaded` });
-    } else toast({ title: "Upload failed", variant: "destructive" });
+    } else {
+      toast({ title: "Upload failed", variant: "destructive" });
+    }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (event: React.FormEvent) => {
+    event.preventDefault();
     setSaving(true);
 
     const slug = form.slug.trim() || slugify(form.name);
@@ -127,64 +170,139 @@ const CompanyPage = () => {
       email: form.email.trim() || null,
       phone: form.phone.trim() || null,
       website: form.website.trim() || null,
+      // Legacy column names retained until a jurisdiction-neutral schema migration is introduced.
       gstin: form.gstin.trim() || null,
       fssai: form.fssai.trim() || null,
-      categories: form.categories.split(",").map((s) => s.trim()).filter(Boolean),
-      certifications: form.certifications.split(",").map((s) => s.trim()).filter(Boolean),
+      categories: form.categories
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean),
+      certifications: form.certifications
+        .split(",")
+        .map((value) => value.trim())
+        .filter(Boolean),
     };
 
-    let error;
-    if (companyId) {
-      ({ error } = await supabase.from("companies").update(payload).eq("id", companyId));
-    } else {
-      ({ error } = await supabase.from("companies").insert(payload));
-    }
+    const { error } = companyId
+      ? await supabase.from("companies").update(payload).eq("id", companyId)
+      : await supabase.from("companies").insert({
+          ...payload,
+          is_hidden: true,
+          review_status: "pending",
+        } as never);
+
     setSaving(false);
-    if (error) toast({ title: "Save failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else {
-      toast({ title: companyId ? "Company updated" : "Company profile created" });
-      await refresh();
-      if (!companyId) navigate(0);
+
+    if (error) {
+      toast({
+        title: "Save failed",
+        description: friendlyErrorMessage(error),
+        variant: "destructive",
+      });
+      return;
     }
+
+    toast({
+      title: companyId ? "Business profile updated" : "Business submitted for review",
+      description: companyId
+        ? undefined
+        : "The profile stays hidden until G-BAU-G staff complete the initial review.",
+    });
+    await refresh();
+    if (!companyId) navigate(0);
   };
 
-  if (loading) return <Layout><div className="py-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div></Layout>;
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex py-20 justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
-        <Seo title="My Company — MDDMA" description="Members-only page." path="/account/company" noindex />
+      <Seo
+        title="My Business Profile — G-BAU-G"
+        description="Manage your private business onboarding and public G-BAU-G profile."
+        path="/account/company"
+        noindex
+      />
       <section className="py-10">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div className="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2"><Building2 className="flex-shrink-0" /> Business Profile</h1>
-              <p className="text-muted-foreground text-sm mt-1">This is your public storefront.</p>
+              <h1 className="flex items-center gap-2 text-2xl font-bold sm:text-3xl">
+                <Building2 className="flex-shrink-0" /> Business profile
+              </h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Maintain the verified business identity that powers your directory profile and storefront.
+              </p>
             </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              {isVerified && <Badge className="bg-accent text-accent-foreground"><ShieldCheck className="h-3 w-3 mr-1" /> Verified</Badge>}
+            <div className="flex flex-wrap items-center gap-2">
+              {isVerified && (
+                <Badge className="bg-success text-success-foreground">
+                  <ShieldCheck className="mr-1 h-3 w-3" /> Business verified
+                </Badge>
+              )}
+              {!isVerified && reviewStatus === "pending" && (
+                <Badge variant="outline" className="border-warning/40 bg-warning/10 text-warning-foreground">
+                  Review pending
+                </Badge>
+              )}
+              {reviewStatus === "rejected" && (
+                <Badge variant="destructive">Changes required</Badge>
+              )}
               {company?.slug && (
                 <Button asChild variant="outline" size="sm">
-                  <Link to={`/store/${company.slug}`}><ExternalLink className="h-4 w-4 mr-1" /> View store</Link>
+                  <Link to={`/directory/${company.slug}`}>
+                    <ExternalLink className="mr-1 h-4 w-4" /> View profile
+                  </Link>
                 </Button>
               )}
             </div>
           </div>
 
+          <div className="mb-6 rounded-xl border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+            Verification confirms reviewed business evidence. It does not guarantee inventory, creditworthiness,
+            product quality or fulfilment. MDDMA affiliation is shown separately for eligible Association members.
+          </div>
+
           <form onSubmit={handleSave} className="space-y-6">
             <Card>
-              <CardHeader><CardTitle>Branding</CardTitle><CardDescription>Logo and cover image</CardDescription></CardHeader>
+              <CardHeader>
+                <CardTitle>Branding</CardTitle>
+                <CardDescription>Logo and cover image for the public business profile.</CardDescription>
+              </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid sm:grid-cols-2 gap-6">
+                <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <Label>Logo</Label>
                     <div className="mt-2 flex items-center gap-4">
-                      <div className="h-20 w-20 rounded-lg border bg-muted flex items-center justify-center overflow-hidden">
-                        {form.logo_url ? <img src={form.logo_url} alt="Logo" className="h-full w-full object-cover" /> : <Building2 className="text-muted-foreground" />}
+                      <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border bg-muted">
+                        {form.logo_url ? (
+                          <img src={form.logo_url} alt="Business logo" className="h-full w-full object-cover" />
+                        ) : (
+                          <Building2 className="text-muted-foreground" />
+                        )}
                       </div>
                       <label className="cursor-pointer">
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImage("logo", e)} disabled={uploadingLogo} />
-                        <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
-                          {uploadingLogo ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => handleImage("logo", event)}
+                          disabled={uploadingLogo}
+                        />
+                        <span className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                          {uploadingLogo ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Upload className="h-4 w-4" />
+                          )}
+                          Upload
                         </span>
                       </label>
                     </div>
@@ -192,13 +310,26 @@ const CompanyPage = () => {
                   <div>
                     <Label>Cover image</Label>
                     <div className="mt-2 space-y-2">
-                      <div className="h-24 w-full rounded-lg border bg-muted overflow-hidden">
-                        {form.cover_url && <img src={form.cover_url} alt="Cover" className="h-full w-full object-cover" />}
+                      <div className="h-24 w-full overflow-hidden rounded-lg border bg-muted">
+                        {form.cover_url && (
+                          <img src={form.cover_url} alt="Business cover" className="h-full w-full object-cover" />
+                        )}
                       </div>
-                      <label className="cursor-pointer inline-block">
-                        <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImage("cover", e)} disabled={uploadingCover} />
-                        <span className="inline-flex items-center gap-2 px-3 py-2 rounded-md border text-sm hover:bg-muted">
-                          {uploadingCover ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />} Upload
+                      <label className="inline-block cursor-pointer">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(event) => handleImage("cover", event)}
+                          disabled={uploadingCover}
+                        />
+                        <span className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm hover:bg-muted">
+                          {uploadingCover ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Upload className="h-4 w-4" />
+                          )}
+                          Upload
                         </span>
                       </label>
                     </div>
@@ -208,68 +339,177 @@ const CompanyPage = () => {
             </Card>
 
             <Card>
-              <CardHeader><CardTitle>Business Details</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Business details</CardTitle>
+                <CardDescription>
+                  Use the legal or trading identity and evidence applicable in the business jurisdiction.
+                </CardDescription>
+              </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="name">Company name *</Label>
-                    <Input id="name" value={form.name} maxLength={120} required onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} />
+                    <Label htmlFor="name">Legal or trading name *</Label>
+                    <Input
+                      id="name"
+                      value={form.name}
+                      maxLength={120}
+                      required
+                      onChange={(event) =>
+                        setForm((current) => ({
+                          ...current,
+                          name: event.target.value,
+                          slug: current.slug || slugify(event.target.value),
+                        }))
+                      }
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="slug">URL slug</Label>
-                    <Input id="slug" value={form.slug} maxLength={60} onChange={(e) => setForm({ ...form, slug: slugify(e.target.value) })} placeholder="auto-generated" />
+                    <Label htmlFor="slug">Profile URL</Label>
+                    <Input
+                      id="slug"
+                      value={form.slug}
+                      maxLength={60}
+                      onChange={(event) => update("slug", slugify(event.target.value))}
+                      placeholder="auto-generated"
+                    />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="tagline">Tagline *</Label>
-                    <Input id="tagline" value={form.tagline} maxLength={140} required onChange={(e) => setForm({ ...form, tagline: e.target.value })} />
+                    <Label htmlFor="tagline">Short description *</Label>
+                    <Input
+                      id="tagline"
+                      value={form.tagline}
+                      maxLength={140}
+                      required
+                      onChange={(event) => update("tagline", event.target.value)}
+                      placeholder="Importer, processor and distributor of nuts and seeds"
+                    />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="description">About *</Label>
-                    <Textarea id="description" value={form.description} maxLength={2000} rows={5} required onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                    <Label htmlFor="description">About the business *</Label>
+                    <Textarea
+                      id="description"
+                      value={form.description}
+                      maxLength={2000}
+                      rows={5}
+                      required
+                      onChange={(event) => update("description", event.target.value)}
+                    />
                   </div>
 
                   <div className="space-y-2 sm:col-span-2">
-                    <Label htmlFor="address">Address * <span className="text-xs text-muted-foreground font-normal">(powered by Google Maps)</span></Label>
+                    <Label htmlFor="address">
+                      Address *{" "}
+                      <span className="text-xs font-normal text-muted-foreground">(powered by Google Maps)</span>
+                    </Label>
                     <GooglePlacesAutocomplete
                       id="address"
                       value={form.address}
                       required
                       maxLength={200}
-                      onChange={(v) => setForm((f) => ({ ...f, address: v }))}
-                      onPlaceSelected={(p) => setForm((f) => ({
-                        ...f,
-                        address: p.address || f.address,
-                        city: p.city || f.city,
-                        state: p.state || f.state,
-                        country: p.country || f.country,
-                        pincode: p.pincode || f.pincode,
-                        latitude: p.latitude,
-                        longitude: p.longitude,
-                        place_id: p.place_id,
-                      }))}
+                      onChange={(value) => update("address", value)}
+                      onPlaceSelected={(place) =>
+                        setForm((current) => ({
+                          ...current,
+                          address: place.address || current.address,
+                          city: place.city || current.city,
+                          state: place.state || current.state,
+                          country: place.country || current.country,
+                          pincode: place.pincode || current.pincode,
+                          latitude: place.latitude,
+                          longitude: place.longitude,
+                          place_id: place.place_id,
+                        }))
+                      }
                     />
                   </div>
-                  <div className="space-y-2"><Label>City *</Label><Input value={form.city} maxLength={60} required onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>State *</Label><Input value={form.state} maxLength={60} required onChange={(e) => setForm({ ...form, state: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Country *</Label><Input value={form.country} maxLength={60} required onChange={(e) => setForm({ ...form, country: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Pincode *</Label><Input value={form.pincode} maxLength={10} required inputMode="numeric" onChange={(e) => setForm({ ...form, pincode: e.target.value })} /></div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City *</Label>
+                    <Input id="city" value={form.city} maxLength={60} required onChange={(event) => update("city", event.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State, province or region</Label>
+                    <Input id="state" value={form.state} maxLength={60} onChange={(event) => update("state", event.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country *</Label>
+                    <Input id="country" value={form.country} maxLength={60} required onChange={(event) => update("country", event.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="postal-code">Postal code</Label>
+                    <Input id="postal-code" value={form.pincode} maxLength={20} onChange={(event) => update("pincode", event.target.value)} />
+                  </div>
 
-                  <div className="space-y-2"><Label>Email *</Label><Input type="email" value={form.email} maxLength={120} required onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Phone * <span className="text-xs text-muted-foreground font-normal">(with country code, e.g. +91)</span></Label><Input value={form.phone} maxLength={20} required placeholder="+91 98765 43210" onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>Website *</Label><Input type="url" value={form.website} maxLength={160} required placeholder="https://" onChange={(e) => setForm({ ...form, website: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>GSTIN *</Label><Input value={form.gstin} maxLength={15} required onChange={(e) => setForm({ ...form, gstin: e.target.value.toUpperCase() })} /></div>
-                  <div className="space-y-2"><Label>FSSAI *</Label><Input value={form.fssai} maxLength={20} required onChange={(e) => setForm({ ...form, fssai: e.target.value })} /></div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Business email *</Label>
+                    <Input id="email" type="email" value={form.email} maxLength={120} required onChange={(event) => update("email", event.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">
+                      Business phone *{" "}
+                      <span className="text-xs font-normal text-muted-foreground">(include country code)</span>
+                    </Label>
+                    <Input id="phone" value={form.phone} maxLength={30} required placeholder="+91 98765 43210" onChange={(event) => update("phone", event.target.value)} />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="website">Website</Label>
+                    <Input id="website" type="url" value={form.website} maxLength={160} placeholder="https://" onChange={(event) => update("website", event.target.value)} />
+                  </div>
 
-                  <div className="space-y-2 sm:col-span-2"><Label>Categories Specialty <span className="text-xs text-muted-foreground font-normal">(comma separated)</span></Label><Input value={form.categories} onChange={(e) => setForm({ ...form, categories: e.target.value })} placeholder="Almonds, Cashews, Dates" /></div>
-                  <div className="space-y-2 sm:col-span-2"><Label>Certifications <span className="text-xs text-muted-foreground font-normal">(comma separated)</span></Label><Input value={form.certifications} onChange={(e) => setForm({ ...form, certifications: e.target.value })} placeholder="ISO 22000, Organic India" /></div>
+                  <div className="space-y-2">
+                    <Label htmlFor="business-id">Tax or business registration ID</Label>
+                    <Input
+                      id="business-id"
+                      value={form.gstin}
+                      maxLength={40}
+                      placeholder="GSTIN, VAT, EIN or local equivalent"
+                      onChange={(event) => update("gstin", event.target.value.toUpperCase())}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="food-licence">Food-business licence</Label>
+                    <Input
+                      id="food-licence"
+                      value={form.fssai}
+                      maxLength={40}
+                      placeholder="FSSAI or local equivalent"
+                      onChange={(event) => update("fssai", event.target.value.toUpperCase())}
+                    />
+                  </div>
+
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="categories">
+                      Products, services and business capabilities{" "}
+                      <span className="text-xs font-normal text-muted-foreground">(comma separated)</span>
+                    </Label>
+                    <Input
+                      id="categories"
+                      value={form.categories}
+                      onChange={(event) => update("categories", event.target.value)}
+                      placeholder="Almonds, Seeds, Importer, Processor, Warehousing"
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <Label htmlFor="certifications">
+                      Certifications{" "}
+                      <span className="text-xs font-normal text-muted-foreground">(comma separated)</span>
+                    </Label>
+                    <Input
+                      id="certifications"
+                      value={form.certifications}
+                      onChange={(event) => update("certifications", event.target.value)}
+                      placeholder="ISO 22000, HACCP, Organic certification"
+                    />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <div className="flex justify-between">
-              <Button type="button" variant="outline" asChild><Link to="/account/products">Manage Products →</Link></Button>
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+              <Button type="button" variant="outline" asChild>
+                <Link to="/account/products">Manage products →</Link>
+              </Button>
               <Button type="submit" disabled={saving}>
-                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save company"}
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save business profile"}
               </Button>
             </div>
           </form>
