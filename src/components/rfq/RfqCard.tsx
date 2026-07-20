@@ -1,104 +1,115 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Clock, FileLock2, MapPin, Package, ShieldCheck } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Phone, MessageCircle, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatDistanceToNow } from "date-fns";
-import type { RfqListingRow } from "@/repositories/rfqListings";
-import { revealContact } from "@/repositories/rfqListings";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import type { RfqCompanySummary, RfqListingRow } from "@/repositories/rfqListings";
 
 interface Props {
   rfq: RfqListingRow;
-  companyName?: string;
-  verified?: boolean;
+  company?: RfqCompanySummary;
+  canQuote: boolean;
+  isOwn: boolean;
+  onQuote: () => void;
 }
 
-export function RfqCard({ rfq, companyName, verified }: Props) {
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [phone, setPhone] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const daysLeft = Math.ceil((new Date(rfq.valid_until).getTime() - Date.now()) / 86400000);
+export function RfqCard({ rfq, company, canQuote, isOwn, onQuote }: Props) {
+  const daysLeft = Math.ceil((new Date(rfq.valid_until).getTime() - Date.now()) / 86400_000);
   const expiringSoon = daysLeft <= 3;
-
-  const reveal = async () => {
-    if (!user || !rfq.company_id) return;
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.rpc("get_company_whatsapp", { _company_id: rfq.company_id });
-      if (error) throw error;
-      setPhone(data as string | null);
-      await revealContact(rfq.id, user.id);
-      if (!data) toast({ title: "Contact not available" });
-    } catch (e) {
-      toast({ title: "Failed to reveal", description: e instanceof Error ? e.message : "", variant: "destructive" });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const priceLabel = `${rfq.currency || "INR"} ${rfq.price_min.toLocaleString()}–${rfq.price_max.toLocaleString()} ${rfq.price_unit}`;
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <div className="mb-2 flex items-center gap-2">
-          <Badge className={cn(rfq.listing_type === "buy" ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground")}>
-            {rfq.listing_type === "buy" ? "BUY" : "SELL"}
+    <Card className="overflow-hidden">
+      <CardContent className="p-4 sm:p-5">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Badge
+            className={cn(
+              rfq.listing_type === "buy"
+                ? "bg-primary text-primary-foreground"
+                : "bg-accent text-accent-foreground",
+            )}
+          >
+            {rfq.listing_type === "buy" ? "BUY REQUIREMENT" : "SUPPLY AVAILABLE"}
           </Badge>
-          <span className="truncate text-sm font-medium text-foreground">{companyName ?? "Member"}</span>
-          {verified && <Badge variant="outline" className="text-[10px]">Verified</Badge>}
+          {company?.is_verified && (
+            <Badge variant="success" className="gap-1 text-[10px]">
+              <ShieldCheck className="h-3 w-3" /> Business verified
+            </Badge>
+          )}
+          {isOwn && <Badge variant="outline">Your RFQ</Badge>}
           <span className="ml-auto text-[11px] text-muted-foreground">
             {formatDistanceToNow(new Date(rfq.created_at), { addSuffix: true })}
           </span>
         </div>
 
-        <h3 className="text-base font-semibold text-foreground">{rfq.commodity}</h3>
+        <h3 className="text-lg font-semibold text-foreground">{rfq.commodity}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {company?.name ?? "Verified network business"}
+          {company?.country ? ` · ${company.country}` : ""}
+        </p>
+
         {(rfq.grade_variety || rfq.origin_country) && (
-          <p className="text-xs text-muted-foreground">
+          <p className="mt-2 text-xs text-muted-foreground">
             {[rfq.grade_variety, rfq.origin_country].filter(Boolean).join(" · ")}
           </p>
         )}
 
-        <div className="mt-2 grid grid-cols-2 gap-1 text-xs">
-          <span className="text-muted-foreground">Quantity</span>
-          <span className="font-mono tabular-nums">{rfq.quantity_min}–{rfq.quantity_max} {rfq.quantity_unit}</span>
-          <span className="text-muted-foreground">Price</span>
-          <span className="font-mono tabular-nums">₹{rfq.price_min}–{rfq.price_max} /{rfq.price_unit.replace("per ", "")}</span>
+        <div className="mt-4 grid gap-3 rounded-xl border border-border/70 bg-muted/25 p-3 text-sm sm:grid-cols-2">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Quantity</p>
+            <p className="mt-0.5 font-mono tabular-nums text-foreground">
+              {rfq.quantity_min.toLocaleString()}–{rfq.quantity_max.toLocaleString()} {rfq.quantity_unit}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Indicative range</p>
+            <p className="mt-0.5 font-mono tabular-nums text-foreground">{priceLabel}</p>
+          </div>
+          {rfq.packaging && (
+            <div className="flex items-start gap-2 text-muted-foreground">
+              <Package className="mt-0.5 h-4 w-4 shrink-0" />
+              <span>{rfq.packaging}</span>
+            </div>
+          )}
           {rfq.delivery_location && (
-            <>
-              <span className="text-muted-foreground">Delivery</span>
+            <div className="flex items-start gap-2 text-muted-foreground">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
               <span>{rfq.delivery_location}</span>
-            </>
+            </div>
           )}
         </div>
 
-        <div className={cn("mt-2 inline-flex items-center gap-1 text-xs", expiringSoon ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground")}>
-          <Clock className="h-3 w-3" />
-          {daysLeft <= 0 ? "Expires today" : `Expires in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
+        {rfq.notes && <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{rfq.notes}</p>}
+
+        <div
+          className={cn(
+            "mt-3 inline-flex items-center gap-1 text-xs",
+            expiringSoon ? "text-amber-600 dark:text-amber-400" : "text-muted-foreground",
+          )}
+        >
+          <Clock className="h-3.5 w-3.5" />
+          {daysLeft <= 0 ? "Closes today" : `Closes in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
         </div>
 
-        <div className="mt-3 border-t border-border/60 pt-3">
-          {phone ? (
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="flex-1" onClick={() => { navigator.clipboard.writeText(phone); toast({ title: "Copied" }); }}>
-                <Phone className="h-4 w-4 mr-1" /> {phone}
-              </Button>
-              <Button asChild variant="accent" size="sm">
-                <a href={`https://wa.me/${phone.replace(/[^0-9]/g, "")}`} target="_blank" rel="noreferrer">
-                  <MessageCircle className="h-4 w-4 mr-1" /> WhatsApp
-                </a>
-              </Button>
-            </div>
-          ) : (
-            <Button variant="outline" className="w-full" onClick={reveal} disabled={loading || !rfq.company_id}>
-              Reveal contact
+        <div className="mt-4 flex flex-col gap-2 border-t border-border/60 pt-4 sm:flex-row">
+          {company && (
+            <Button asChild variant="outline" className="sm:flex-1">
+              <Link to={`/directory/${company.slug}`}>View business</Link>
+            </Button>
+          )}
+          {!isOwn && (
+            <Button className="gap-2 sm:flex-1" onClick={onQuote} disabled={!canQuote}>
+              <FileLock2 className="h-4 w-4" />
+              {canQuote ? "Send private quotation" : "Verification required"}
             </Button>
           )}
         </div>
+
+        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+          The RFQ range is indicative. Exact price, payment and delivery terms belong in participant-only quotations.
+        </p>
       </CardContent>
     </Card>
   );
