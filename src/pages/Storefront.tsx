@@ -1,93 +1,81 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  Building2,
+  Calendar,
+  Clock3,
+  ExternalLink,
+  Eye,
+  Globe,
+  Languages,
+  MapPin,
+  Package,
+  Pencil,
+  ShieldCheck,
+} from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-
-import { useRole } from "@/contexts/RoleContext";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { liveCompanyToEntry, type DirectoryEntry } from "@/lib/dataSource";
-import type { CompanyRow } from "@/repositories/companies";
-import {
-  MapPin, Phone, Mail, MessageCircle, ShieldCheck, Star,
-  ArrowLeft, Globe, Calendar, Package, Pencil, Eye, Loader2,
-} from "lucide-react";
-
+import { EmptyState } from "@/components/ui/empty-state";
+import { ListingsGridSkeleton, ProfileHeaderSkeleton } from "@/components/ui/skeletons";
 import { ProductTile } from "@/components/products/ProductTile";
-import { ProfileHeaderSkeleton, ListingsGridSkeleton } from "@/components/ui/skeletons";
-import { useBrandsByCompany } from "@/hooks/queries/useBrands";
 import { BrandStrip } from "@/components/brands/BrandStrip";
-import { WhatsappFab } from "@/components/seller/WhatsappFab";
+import { useAuth } from "@/contexts/AuthContext";
+import { useBrandsByCompany } from "@/hooks/queries/useBrands";
+import { useCompanyBySlug } from "@/hooks/queries/useCompanies";
+import { useProducts } from "@/hooks/queries/useProducts";
 
-interface LiveProduct {
-  id: string;
-  name: string;
-  slug: string;
-  category: string | null;
-  origin: string | null;
-  image_url: string | null;
-  gallery: string[] | null;
-  video_url: string | null;
-  price_min: number | null;
-  price_max: number | null;
-  unit: string | null;
-  description: string | null;
+function initials(name: string) {
+  return (
+    name
+      .split(/\s+/)
+      .map((part) => part[0])
+      .filter(Boolean)
+      .slice(0, 2)
+      .join("")
+      .toUpperCase() || "·"
+  );
+}
+
+function externalUrl(value: string) {
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
 const Storefront = () => {
   const { slug } = useParams();
-  const { canAccess } = useRole();
   const { company: ownCompany, hasRole } = useAuth();
   const [previewMode, setPreviewMode] = useState(false);
-  const [liveMember, setLiveMember] = useState<DirectoryEntry | null>(null);
-  const [liveCompanyId, setLiveCompanyId] = useState<string | null>(null);
-  const [liveProducts, setLiveProducts] = useState<LiveProduct[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { data: companyBrands = [] } = useBrandsByCompany(liveCompanyId ?? undefined);
+  const companyQuery = useCompanyBySlug(slug);
+  const company = companyQuery.data;
+  const productsQuery = useProducts({
+    companyId: company?.id,
+    enabled: Boolean(company?.id),
+  });
+  const { data: companyBrands = [] } = useBrandsByCompany(company?.id);
 
-  useEffect(() => {
-    if (!slug) return;
-    let alive = true;
-    setLoading(true);
-    supabase
-      .from("companies_public")
-      .select("id,owner_id,slug,name,tagline,description,logo_url,city,state,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier")
-      .eq("slug", slug)
-      .maybeSingle()
-      .then(async ({ data }) => {
-        if (!alive) return;
-        if (data) {
-          // Contact info (email/phone/gstin) is fetched server-side via the
-          // admin RPC for moderators. Buyers see the public contact buttons
-          // (WhatsApp / Phone / Email) populated from the directory entry.
-          const contact = { email: null, phone: null, gstin: null };
-          const merged = { ...data, ...contact } as unknown as CompanyRow;
-          setLiveMember(liveCompanyToEntry(merged));
-          setLiveCompanyId(data.id);
-          const { data: prods } = await supabase
-            .from("products")
-            .select("id,name,slug,category,origin,image_url,gallery,video_url,price_min,price_max,unit,description")
-            .eq("company_id", data.id)
-            .eq("is_hidden", false)
-            .order("is_featured", { ascending: false });
-          if (alive) setLiveProducts((prods ?? []) as LiveProduct[]);
-        }
-        if (alive) setLoading(false);
-      });
-    return () => { alive = false; };
-  }, [slug]);
+  const products = useMemo(
+    () =>
+      (productsQuery.data ?? []).map((product) => ({
+        ...product,
+        sellerName: company?.name,
+        sellerSlug: company?.slug,
+      })),
+    [company?.name, company?.slug, productsQuery.data],
+  );
 
-  const member = liveMember;
-  const isOwner = !!ownCompany && ownCompany.slug === slug;
+  const isOwner = Boolean(company && ownCompany?.id === company.id);
   const canManage = isOwner || hasRole("admin");
+  const location = company
+    ? [company.city, company.state, company.country].filter(Boolean).join(", ")
+    : "";
+  const yearsInBusiness = company?.established_year
+    ? Math.max(new Date().getFullYear() - company.established_year, 0)
+    : null;
 
-
-
-  if (loading) {
+  if (companyQuery.isLoading) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
@@ -100,91 +88,118 @@ const Storefront = () => {
     );
   }
 
-  if (!member) {
+  if (companyQuery.isError || !company) {
     return (
       <Layout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold text-primary mb-4">Storefront Not Found</h1>
-          <Link to="/directory" className="text-accent hover:underline">Back to Directory</Link>
+        <div className="container mx-auto max-w-xl px-4 py-16">
+          <EmptyState
+            icon={Building2}
+            title="Business profile not found"
+            body="This profile may still be under review, hidden, or no longer available."
+            action={
+              <Button asChild variant="outline">
+                <Link to="/directory">Back to business directory</Link>
+              </Button>
+            }
+          />
         </div>
       </Layout>
     );
   }
 
-  const sellerListingsCount = liveProducts.length;
-  const yearsInBusiness = new Date().getFullYear() - member.memberSince;
+  const description =
+    company.description ||
+    company.tagline ||
+    `${company.name} is listed on the verified G-BAU-G food-trade network.`;
 
   return (
     <Layout>
       <Seo
-        title={`${member.firmName} — Member Storefront · MDDMA`}
-        description={`Official member storefront for ${member.firmName}, a verified MDDMA dry fruits and dates merchant. Catalogue, certifications and trade history — members-only access.`}
-        path={`/store/${slug}`}
-        noindex
+        title={`${company.name} — Business Profile · G-BAU-G`}
+        description={description.slice(0, 160)}
+        path={`/store/${company.slug}`}
       />
-      {/* Owner / Admin toolbar */}
+
       {canManage && !previewMode && (
-        <div className="bg-accent/10 border-b border-accent/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-b border-accent/30 bg-accent/10">
+          <div className="container mx-auto flex flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <div className="flex items-start gap-2 text-xs">
-              <ShieldCheck className="h-3.5 w-3.5 text-accent mt-0.5 flex-shrink-0" />
+              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
               <span>
                 <span className="font-medium text-foreground">
-                  {isOwner ? "You're viewing your own storefront" : "Admin moderation view"}
+                  {isOwner ? "You are viewing your public business profile" : "Admin moderation view"}
                 </span>{" "}
-                <span className="text-muted-foreground">— prices are gated to signed-in members.</span>
+                <span className="text-muted-foreground">
+                  — private contact and registration evidence are not displayed here.
+                </span>
               </span>
             </div>
             <div className="grid grid-cols-1 gap-1.5 sm:flex sm:items-center sm:gap-2">
-              <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={() => setPreviewMode(true)}>
-                <Eye className="h-3 w-3 mr-1" /> View as buyer
+              <Button size="sm" variant="outline" onClick={() => setPreviewMode(true)}>
+                <Eye className="mr-1 h-3 w-3" /> View as public
               </Button>
-              <Button size="sm" className="w-full sm:w-auto" asChild>
-                <Link to="/account/company"><Pencil className="h-3 w-3 mr-1" /> Edit company</Link>
+              <Button size="sm" asChild>
+                <Link to="/account/company">
+                  <Pencil className="mr-1 h-3 w-3" /> Edit business
+                </Link>
               </Button>
-              <Button size="sm" variant="outline" className="w-full sm:w-auto" asChild>
-                <Link to="/account/products"><Package className="h-3 w-3 mr-1" /> Edit catalog</Link>
+              <Button size="sm" variant="outline" asChild>
+                <Link to="/account/products">
+                  <Package className="mr-1 h-3 w-3" /> Edit catalogue
+                </Link>
               </Button>
             </div>
-          </div>
-        </div>
-      )}
-      {previewMode && canManage && (
-        <div className="bg-muted border-b border-border">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">Buyer preview mode</span>
-            <Button size="sm" variant="ghost" className="h-7" onClick={() => setPreviewMode(false)}>Exit preview</Button>
           </div>
         </div>
       )}
 
-      {/* Header */}
+      {previewMode && canManage && (
+        <div className="border-b border-border bg-muted">
+          <div className="container mx-auto flex items-center justify-between px-4 py-1.5 text-xs sm:px-6 lg:px-8">
+            <span className="text-muted-foreground">Public preview mode</span>
+            <Button size="sm" variant="ghost" className="h-7" onClick={() => setPreviewMode(false)}>
+              Exit preview
+            </Button>
+          </div>
+        </div>
+      )}
+
       <section className="border-b border-border bg-gradient-to-b from-muted/40 to-background py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <Link to="/directory" className="mb-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="mr-1 h-4 w-4" /> Back to Directory
+            <ArrowLeft className="mr-1 h-4 w-4" /> Back to business directory
           </Link>
-          <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-xl font-bold text-primary-foreground">
-              {member.logoPlaceholder}
+
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-border bg-primary text-xl font-bold text-primary-foreground">
+              {company.logo_url ? (
+                <img src={company.logo_url} alt={`${company.name} logo`} className="h-full w-full object-cover" />
+              ) : (
+                initials(company.name)
+              )}
             </div>
-            <div>
+
+            <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="t-h1 text-foreground">{member.firmName}</h1>
-                {member.isSponsored && (
-                  <Badge variant="warning"><Star className="mr-1 h-3 w-3" /> Featured</Badge>
-                )}
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">{member.ownerName} · {member.memberType}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-2">
-                {member.verificationStatus === "Verified" && (
+                <h1 className="t-h1 text-foreground">{company.name}</h1>
+                {company.is_verified && (
                   <Badge variant="success">
-                    <ShieldCheck className="mr-1 h-3 w-3" /> {member.verificationLevel} Verified
+                    <ShieldCheck className="mr-1 h-3 w-3" /> Business verified
                   </Badge>
                 )}
-                <Badge variant="neutral">
-                  <Calendar className="mr-1 h-3 w-3" /> {yearsInBusiness}+ Years
-                </Badge>
+              </div>
+              {company.tagline && <p className="mt-1 text-sm text-muted-foreground">{company.tagline}</p>}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {location && (
+                  <Badge variant="neutral">
+                    <MapPin className="mr-1 h-3 w-3" /> {location}
+                  </Badge>
+                )}
+                {company.established_year && (
+                  <Badge variant="outline">
+                    <Calendar className="mr-1 h-3 w-3" /> Established {company.established_year}
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
@@ -194,162 +209,187 @@ const Storefront = () => {
       <section className="py-8">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid gap-6 lg:grid-cols-3">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6 min-w-0">
-              {/* Description */}
-              <Card className="bg-card border-border">
-                <CardHeader><CardTitle>About the Company</CardTitle></CardHeader>
+            <div className="min-w-0 space-y-6 lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>About the business</CardTitle>
+                </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground leading-relaxed">{member.description}</p>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4 pt-4 border-t border-border">
+                  <p className="leading-relaxed text-muted-foreground">{description}</p>
+                  <div className="mt-5 grid grid-cols-2 gap-4 border-t border-border pt-5 sm:grid-cols-4">
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{yearsInBusiness}+</div>
-                      <div className="text-xs text-muted-foreground">Years in Business</div>
+                      <div className="text-lg font-bold text-accent">{products.length}</div>
+                      <div className="text-xs text-muted-foreground">Active products</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{member.commodities.length}</div>
-                      <div className="text-xs text-muted-foreground">Products</div>
+                      <div className="text-lg font-bold text-accent">{company.categories.length}</div>
+                      <div className="text-xs text-muted-foreground">Capabilities</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{member.originSpecialization.length}</div>
-                      <div className="text-xs text-muted-foreground">Source Countries</div>
+                      <div className="text-lg font-bold text-accent">{company.markets.length}</div>
+                      <div className="text-xs text-muted-foreground">Markets listed</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{sellerListingsCount}</div>
-                      <div className="text-xs text-muted-foreground">Active Listings</div>
+                      <div className="text-lg font-bold text-accent">
+                        {yearsInBusiness === null ? "—" : `${yearsInBusiness}+`}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Years operating</div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Certifications */}
-              <Card className="bg-card border-border">
-                <CardHeader><CardTitle>Certifications & Markets</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between py-2 border-b border-border text-sm">
-                      <span className="text-muted-foreground">GST Number</span>
-                      <span className="font-mono text-foreground">{member.gstNumber}</span>
-                    </div>
-                    {member.fssaiNumber && (
-                      <div className="flex items-center justify-between py-2 border-b border-border text-sm">
-                        <span className="text-muted-foreground">FSSAI License</span>
-                        <span className="font-mono text-foreground">{member.fssaiNumber}</span>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between py-2 text-sm">
-                      <span className="text-muted-foreground">Markets Served</span>
-                      <div className="flex flex-wrap gap-1 justify-end">
-                        {member.originSpecialization.map((o) => (
-                          <Badge key={o} variant="outline" className="text-xs"><Globe className="h-3 w-3 mr-0.5" />{o}</Badge>
-                        ))}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Verification and trade reach</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-5">
+                  <div className="rounded-xl border border-border bg-muted/30 p-4">
+                    <div className="flex items-start gap-3">
+                      <ShieldCheck className={`mt-0.5 h-5 w-5 shrink-0 ${company.is_verified ? "text-success" : "text-muted-foreground"}`} />
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">
+                          {company.is_verified ? company.verification_tier_label || "Business evidence reviewed" : "Business not yet verified"}
+                        </p>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                          Verification confirms that submitted business evidence was reviewed. It does not guarantee inventory, product quality, creditworthiness, pricing or fulfilment.
+                        </p>
                       </div>
                     </div>
                   </div>
+
+                  {company.certifications.length > 0 && (
+                    <div>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Listed certifications</p>
+                      <div className="flex flex-wrap gap-2">
+                        {company.certifications.map((certification) => (
+                          <Badge key={certification} variant="outline">{certification}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {company.markets.length > 0 && (
+                    <div>
+                      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Markets served</p>
+                      <div className="flex flex-wrap gap-2">
+                        {company.markets.map((market) => (
+                          <Badge key={market} variant="secondary">
+                            <Globe className="mr-1 h-3 w-3" /> {market}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
               {companyBrands.length > 0 && (
-                <Card className="bg-card border-border">
+                <Card>
                   <CardContent className="p-5">
-                    <BrandStrip brands={companyBrands} title="Our Brands" />
+                    <BrandStrip brands={companyBrands} title="Brands" />
                   </CardContent>
                 </Card>
               )}
 
-              {/* V2: Product Catalog with controlled pricing */}
-              <Card className="bg-card border-border">
+              <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-accent" /> Product Catalog
+                    <Package className="h-5 w-5 text-accent" /> Product catalogue
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {liveMember && liveProducts.length > 0 ? (
+                  {productsQuery.isLoading ? (
+                    <ListingsGridSkeleton count={6} className="grid-cols-2 sm:grid-cols-3" />
+                  ) : products.length > 0 ? (
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-                      {liveProducts.map((p) => {
-                        const entry = {
-                          id: p.id,
-                          slug: p.slug,
-                          sellerId: liveCompanyId ?? "",
-                          sellerName: liveMember.firmName,
-                          sellerSlug: liveMember.slug,
-                          commodityId: p.id,
-                          commodity: p.name,
-                          variant: p.category ?? "",
-                          origin: p.origin ?? "",
-                          packaging: "",
-                          moq: "",
-                          priceMin: p.price_min,
-                          priceMax: p.price_max,
-                          priceUnit: `₹/${p.unit ?? "kg"}`,
-                          location: "",
-                          listingDate: "",
-                          imageUrl: p.image_url,
-                          gallery: p.gallery,
-                          videoUrl: p.video_url,
-                          isFeatured: false,
-                          isBranded: false,
-                          brandId: null,
-                          retailPackSize: null,
-                          b2cUrl: null,
-                        };
-                        return <ProductTile key={p.id} listing={entry} hideSeller />;
-                      })}
+                      {products.map((product) => (
+                        <ProductTile key={product.id} listing={product} hideSeller />
+                      ))}
                     </div>
                   ) : (
-                    <p className="text-muted-foreground text-center py-6">No active listings yet.</p>
+                    <p className="py-6 text-center text-muted-foreground">No active products have been published yet.</p>
                   )}
                 </CardContent>
               </Card>
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6 min-w-0">
-              <Card className="bg-card border-border">
-                <CardHeader><CardTitle>Contact</CardTitle></CardHeader>
+            <div className="min-w-0 space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Trade with this business</CardTitle>
+                </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button className="w-full bg-success text-success-foreground hover:bg-success/90" asChild>
-                    <a href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`} target="_blank" rel="noopener noreferrer">
-                      <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
-                    </a>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    Use G-BAU-G RFQs and private quotations to keep exact commercial terms inside a controlled participant-only record.
+                  </p>
+                  <Button className="w-full" asChild>
+                    <Link to="/rfq">Browse or post an RFQ</Link>
                   </Button>
-                  <Button className="w-full" variant="outline" asChild>
-                    <a href={`tel:${member.phone}`}><Phone className="mr-2 h-4 w-4" /> Call</a>
-                  </Button>
-                  <Button className="w-full" variant="outline" asChild>
-                    <a href={`mailto:${member.email}`}><Mail className="mr-2 h-4 w-4" /> Email</a>
-                  </Button>
+                  {company.website && (
+                    <Button className="w-full" variant="outline" asChild>
+                      <a href={externalUrl(company.website)} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" /> Visit business website
+                      </a>
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
 
-              <Card className="bg-card border-border">
-                <CardHeader><CardTitle>Location</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <MapPin className="h-4 w-4 mt-0.5 text-accent flex-shrink-0" />
-                    <span>{member.fullAddress}</span>
-                  </div>
-                </CardContent>
-              </Card>
+              {location && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Location</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <span>{location}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-              <Card className="bg-card border-border">
-                <CardHeader><CardTitle>Specializations</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {member.commodities.map((c) => (
-                      <Badge key={c} variant="secondary" className="text-sm">{c}</Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              {company.categories.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Capabilities</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {company.categories.map((category) => (
+                        <Badge key={category} variant="secondary">{category}</Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-              
+              {(company.languages.length > 0 || company.hours) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Business information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3 text-sm text-muted-foreground">
+                    {company.languages.length > 0 && (
+                      <div className="flex items-start gap-2">
+                        <Languages className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                        <span>{company.languages.join(", ")}</span>
+                      </div>
+                    )}
+                    {company.hours && (
+                      <div className="flex items-start gap-2">
+                        <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                        <span>{company.hours}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
             </div>
           </div>
         </div>
       </section>
-      <WhatsappFab companyId={liveCompanyId} contextLabel={member.firmName} />
     </Layout>
   );
 };
