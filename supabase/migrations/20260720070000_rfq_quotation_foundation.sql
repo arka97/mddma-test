@@ -68,8 +68,8 @@ create index if not exists rfq_quotations_recipient_idx
 alter table public.rfq_listings enable row level security;
 alter table public.rfq_quotations enable row level security;
 
--- Authenticated users may discover active/non-hidden requirements. The UI still
--- separates viewing from commercial participation.
+-- Authenticated users may discover non-hidden requirements. The UI separates
+-- discovery from commercial participation and filters closed/expired records.
 drop policy if exists "rfq_authenticated_network_read" on public.rfq_listings;
 create policy "rfq_authenticated_network_read"
   on public.rfq_listings
@@ -154,24 +154,40 @@ create policy "rfq_quotation_verified_sender_insert"
     )
   );
 
--- The sender may revise or withdraw their own quotation. Recipients cannot alter
--- commercial terms and no acceptance state exists in this release.
+-- Do not grant generic quotation updates to clients. The only client mutation in
+-- this release is a narrowly scoped withdrawal function.
 drop policy if exists "rfq_quotation_sender_update" on public.rfq_quotations;
-create policy "rfq_quotation_sender_update"
-  on public.rfq_quotations
-  for update
-  to authenticated
-  using (
-    sender_user_id = auth.uid()
-    or public.has_role(auth.uid(), 'admin'::public.app_role)
-  )
-  with check (
-    sender_user_id = auth.uid()
-    or public.has_role(auth.uid(), 'admin'::public.app_role)
-  );
 
-grant select, insert, update on public.rfq_quotations to authenticated;
+create or replace function public.withdraw_my_rfq_quotation(_quotation_id uuid)
+returns boolean
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  affected_rows integer;
+begin
+  if auth.uid() is null then
+    return false;
+  end if;
+
+  update public.rfq_quotations
+  set status = 'withdrawn', updated_at = now()
+  where id = _quotation_id
+    and sender_user_id = auth.uid()
+    and status in ('sent', 'revised')
+    and valid_until >= current_date;
+
+  get diagnostics affected_rows = row_count;
+  return affected_rows > 0;
+end;
+$$;
+
+grant select, insert, update on public.rfq_listings to authenticated;
+grant select, insert on public.rfq_quotations to authenticated;
 revoke all on public.rfq_quotations from anon;
+revoke all on function public.withdraw_my_rfq_quotation(uuid) from public;
+grant execute on function public.withdraw_my_rfq_quotation(uuid) to authenticated;
 
 comment on table public.rfq_quotations is
   'Private indicative or formal quotations exchanged in response to RFQs. No acceptance or order workflow.';
