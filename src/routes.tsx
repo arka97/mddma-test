@@ -13,6 +13,7 @@ const Products = lazy(() => import("./pages/Products"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const Market = lazy(() => import("./pages/Market"));
 const Rfq = lazy(() => import("./pages/Rfq"));
+const MyQuotations = lazy(() => import("./pages/MyQuotations"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const MembershipPlans = lazy(() => import("./pages/MembershipPlans"));
 const Circulars = lazy(() => import("./pages/Circulars"));
@@ -57,7 +58,6 @@ export function AppRoutes() {
         <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
         <Route path="/directory" element={<Directory />} />
-        {/* Retired: /directorylist merged into /directory */}
         <Route path="/directorylist" element={<Navigate to="/directory" replace />} />
         <Route path="/directory/:slug" element={<MemberProfile />} />
         <Route path="/store/:slug" element={<Storefront />} />
@@ -65,12 +65,11 @@ export function AppRoutes() {
         <Route path="/products/:slug" element={<ProductPage />} />
         <Route path="/brands" element={<Brands />} />
         <Route path="/brands/:slug" element={<BrandPage />} />
-        {/* Retired: /broker removed; brokers surface via Directory ?type=Broker */}
         <Route path="/broker" element={<Navigate to="/directory?type=Broker" replace />} />
         <Route path="/market" element={<Market />} />
-        {/* Retired: /community deprecated; feed lives at /market */}
         <Route path="/community" element={<Navigate to="/market" replace />} />
         <Route path="/rfq" element={<Rfq />} />
+        <Route path="/quotes" element={protect(<MyQuotations />)} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/membership" element={<MembershipPlans />} />
         <Route path="/circulars" element={<Circulars />} />

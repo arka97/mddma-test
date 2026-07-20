@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Building2, Lock, Megaphone, Package, Sparkles, Users } from "lucide-react";
+import { Building2, FileCheck2, Lock, Megaphone, Package, Sparkles, Users } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { InstallAppNudge } from "@/components/account/InstallAppNudge";
 
 const tiles = [
   { label: "My Business", href: "/account/company", icon: Building2, desc: "Manage identity and verification" },
+  { label: "My Quotations", href: "/quotes", icon: FileCheck2, desc: "Private sent and received terms" },
   { label: "My Products", href: "/account/products", icon: Package, desc: "Manage your catalogue" },
   { label: "My Brands", href: "/account/brands", icon: Sparkles, desc: "House brands and retail SKUs" },
   { label: "Business Directory", href: "/directory", icon: Users, desc: "Discover verified firms" },
@@ -63,15 +64,9 @@ const Dashboard = () => {
 
       <section className="py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <InstallAppNudge />
-          </div>
-          <div className="mb-6">
-            <MembershipStatusCard />
-          </div>
-          <div className="mb-6">
-            <OnboardingChecklist />
-          </div>
+          <div className="mb-4"><InstallAppNudge /></div>
+          <div className="mb-6"><MembershipStatusCard /></div>
+          <div className="mb-6"><OnboardingChecklist /></div>
 
           {!company?.id && (
             <Card className="mb-6 border-dashed border-border">
@@ -81,9 +76,7 @@ const Dashboard = () => {
                 <p className="mb-4 text-sm text-muted-foreground">
                   Add the business identity, location and capabilities required for staff review.
                 </p>
-                <Button asChild>
-                  <Link to="/account/company">Create business profile</Link>
-                </Button>
+                <Button asChild><Link to="/account/company">Create business profile</Link></Button>
               </CardContent>
             </Card>
           )}

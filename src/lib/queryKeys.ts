@@ -32,6 +32,11 @@ export const qk = {
     active: (type: "buy" | "sell") => [...qk.rfqs.all, "active", type] as const,
     activeCount: () => [...qk.rfqs.all, "active-count"] as const,
   },
+  quotations: {
+    all: ["quotations"] as const,
+    sent: (userId: string) => [...qk.quotations.all, "sent", userId] as const,
+    received: (companyId: string) => [...qk.quotations.all, "received", companyId] as const,
+  },
   marketNews: {
     all: ["marketNews"] as const,
     list: (publishedOnly = true) =>

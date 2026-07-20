@@ -16,7 +16,6 @@ interface Profile {
   gstin?: string | null;
   verification_tier?: "unverified" | "email" | "company" | "gst";
   buyer_reputation_score?: number;
-  
   is_broker?: boolean;
   email_verified_at?: string | null;
   company_verified_at?: string | null;
@@ -28,6 +27,10 @@ interface CompanyLite {
   slug: string;
   name: string;
   logo_url: string | null;
+  country: string | null;
+  is_verified: boolean;
+  is_hidden: boolean;
+  review_status: "pending" | "approved" | "rejected";
 }
 
 interface AuthContextType {
@@ -58,7 +61,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loadUserData = async (uid: string) => {
     const [{ data: prof }, { data: comp }, { data: rs }] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
-      supabase.from("companies").select("id,slug,name,logo_url").eq("owner_id", uid).maybeSingle(),
+      supabase
+        .from("companies")
+        .select("id,slug,name,logo_url,country,is_verified,is_hidden,review_status")
+        .eq("owner_id", uid)
+        .maybeSingle(),
       supabase.from("user_roles").select("role").eq("user_id", uid),
     ]);
     setProfile(prof as Profile | null);
@@ -67,12 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Set up listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        // defer DB calls to avoid deadlocks inside the callback
         setTimeout(() => loadUserData(sess.user.id), 0);
       } else {
         setProfile(null);
@@ -81,7 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    // Then load existing session
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
       setSession(sess);
       setUser(sess?.user ?? null);
@@ -125,7 +131,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, session, profile, company, roles, loading, signInWithEmail, signUpWithEmail, signInWithGoogle, signOut, refresh, hasRole }}
+      value={{
+        user,
+        session,
+        profile,
+        company,
+        roles,
+        loading,
+        signInWithEmail,
+        signUpWithEmail,
+        signInWithGoogle,
+        signOut,
+        refresh,
+        hasRole,
+      }}
     >
       {children}
     </AuthContext.Provider>

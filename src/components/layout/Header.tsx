@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Building2,
   ChevronDown,
+  FileCheck2,
   LayoutDashboard,
   LogIn,
   LogOut,
@@ -30,7 +31,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// Desktop-only nav. On mobile, the bottom tab bar carries primary navigation.
 const desktopNav = [
   { name: "Directory", href: "/directory" },
   { name: "Products", href: "/products" },
@@ -90,6 +90,11 @@ export function Header() {
         <DropdownMenuItem asChild>
           <Link to="/dashboard">
             <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/quotes">
+            <FileCheck2 className="mr-2 h-4 w-4" /> My quotations
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

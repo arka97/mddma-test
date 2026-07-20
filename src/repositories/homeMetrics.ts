@@ -29,6 +29,7 @@ export async function getHomeMetrics(): Promise<HomeMetrics> {
       .from("rfq_listings" as never)
       .select("id", { count: "exact", head: true })
       .eq("is_hidden", false)
+      .eq("status", "open")
       .gte("valid_until", new Date().toISOString().slice(0, 10)),
   ]);
 
