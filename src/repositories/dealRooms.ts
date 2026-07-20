@@ -63,7 +63,8 @@ function dealMessagesTable() {
   return supabase.from("deal_messages" as never) as any;
 }
 
-type RpcResult<T> = Promise<{ data: T | null; error: unknown }>;
+type RpcError = { message?: string; code?: string } | null;
+type RpcResult<T> = Promise<{ data: T | null; error: RpcError }>;
 
 function callUntypedRpc<T>(name: string, args: Record<string, unknown>) {
   return (supabase.rpc as unknown as (fn: string, params: Record<string, unknown>) => RpcResult<T>)(name, args);
