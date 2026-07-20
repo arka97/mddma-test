@@ -38,7 +38,6 @@ export interface DirectoryEntry {
   whatsapp: string;
   email: string;
   gstNumber: string;
-  fssaiNumber?: string;
   description: string;
   isFeatured: boolean;
   isSponsored: boolean;
@@ -80,16 +79,16 @@ function inferBusinessType(categories: string[]): BusinessType {
 
 export function liveCompanyToEntry(company: CompanyRow): DirectoryEntry {
   const categories = (company.categories ?? []).filter(Boolean);
+  const locationParts = [company.city, company.state, company.country].filter(Boolean) as string[];
+  const compactLocation = [company.city, company.country].filter(Boolean).join(", ");
 
   return {
     id: company.id,
     firmName: company.name,
     ownerName: company.tagline ?? "",
     slug: company.slug,
-    area: company.city ?? company.state ?? "Location not added",
-    fullAddress:
-      company.address ??
-      `${company.city ?? ""}${company.city && company.state ? ", " : ""}${company.state ?? ""}`,
+    area: compactLocation || locationParts.join(", ") || "Location not added",
+    fullAddress: company.address ?? locationParts.join(", "),
     commodities: categories.length ? categories : ["General food trade"],
     originSpecialization: [],
     memberType: inferBusinessType(categories),
