@@ -24,7 +24,10 @@ create policy "rfq_authenticated_network_read"
   to authenticated
   using (
     is_hidden = false
-    or public.has_role(auth.uid(), 'admin'::public.app_role)
+    or public.has_role(
+      _role => 'admin'::public.app_role,
+      _user_id => auth.uid()
+    )
   );
 
 create policy "rfq_verified_business_insert"
@@ -32,7 +35,10 @@ create policy "rfq_verified_business_insert"
   for insert
   to authenticated
   with check (
-    public.has_role(auth.uid(), 'admin'::public.app_role)
+    public.has_role(
+      _role => 'admin'::public.app_role,
+      _user_id => auth.uid()
+    )
     or (
       posted_by = auth.uid()
       and exists (
@@ -53,10 +59,16 @@ create policy "rfq_owner_update"
   to authenticated
   using (
     posted_by = auth.uid()
-    or public.has_role(auth.uid(), 'admin'::public.app_role)
+    or public.has_role(
+      _role => 'admin'::public.app_role,
+      _user_id => auth.uid()
+    )
   )
   with check (
-    public.has_role(auth.uid(), 'admin'::public.app_role)
+    public.has_role(
+      _role => 'admin'::public.app_role,
+      _user_id => auth.uid()
+    )
     or (
       posted_by = auth.uid()
       and exists (
