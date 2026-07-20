@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Search, MapPin, ShieldCheck, Star, BadgeCheck } from "lucide-react";
+import { BadgeCheck, MapPin, Search, ShieldCheck, X } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { AdSlot } from "@/components/home/today/AdSlot";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -17,62 +21,108 @@ import { useDirectory } from "@/hooks/queries/useCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
 
-const memberTypes = ["Importer", "Wholesaler", "Retailer", "Processor", "Broker"];
+const businessTypes = [
+  "Importer",
+  "Exporter",
+  "Wholesaler",
+  "Distributor",
+  "Retailer",
+  "Manufacturer",
+  "Processor",
+  "Brand",
+  "Broker",
+  "Service Provider",
+];
 
 const Directory = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialType = searchParams.get("type");
   const [searchTerm, setSearchTerm] = useState("");
-  const [areaFilter, setAreaFilter] = useState<string>("all");
-  const [typeFilter, setTypeFilter] = useState<string>(
-    initialType && memberTypes.map((t) => t.toLowerCase()).includes(initialType.toLowerCase())
-      ? memberTypes.find((t) => t.toLowerCase() === initialType.toLowerCase())!
-      : "all"
+  const [areaFilter, setAreaFilter] = useState("all");
+  const [typeFilter, setTypeFilter] = useState(
+    initialType && businessTypes.some((type) => type.toLowerCase() === initialType.toLowerCase())
+      ? businessTypes.find((type) => type.toLowerCase() === initialType.toLowerCase()) ?? "all"
+      : "all",
   );
-  const [verificationFilter, setVerificationFilter] = useState<string>("all");
-  const { data: allMembers = [], isLoading: loading } = useDirectory();
+  const [verificationFilter, setVerificationFilter] = useState("all");
+  const { data: allBusinesses = [], isLoading: loading } = useDirectory();
 
-  // Keep URL in sync with the type filter for shareable deep links.
   useEffect(() => {
     const next = new URLSearchParams(searchParams);
     if (typeFilter === "all") next.delete("type");
     else next.set("type", typeFilter.toLowerCase());
     setSearchParams(next, { replace: true });
+    // URL state is intentionally driven only by the selected business type.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeFilter]);
 
-  const filteredMembers = allMembers.filter((member) => {
-    const s = searchTerm.toLowerCase();
-    const matchesSearch =
-      member.firmName.toLowerCase().includes(s) ||
-      member.ownerName.toLowerCase().includes(s) ||
-      member.commodities.some((c) => c.toLowerCase().includes(s));
-    const matchesArea = areaFilter === "all" || member.area === areaFilter;
-    const matchesType = typeFilter === "all" || member.memberType === typeFilter;
-    const matchesVerification =
-      verificationFilter === "all" || member.verificationStatus === verificationFilter;
-    return matchesSearch && matchesArea && matchesType && matchesVerification;
-  });
+  const liveAreas = useMemo(
+    () =>
+      Array.from(
+        new Set(allBusinesses.map((business) => (business.area ?? "").trim()).filter(Boolean)),
+      ).sort(),
+    [allBusinesses],
+  );
 
-  const sorted = [...filteredMembers].sort((a, b) => {
-    if (a.isSponsored && !b.isSponsored) return -1;
-    if (!a.isSponsored && b.isSponsored) return 1;
-    if (a.isFeatured && !b.isFeatured) return -1;
-    if (!a.isFeatured && b.isFeatured) return 1;
-    return 0;
-  });
+  const sortedBusinesses = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
 
-  // Build the area filter from live company data so it always matches reality.
-  const liveAreas = Array.from(
-    new Set(allMembers.map((m) => (m.area ?? "").trim()).filter(Boolean))
-  ).sort();
+    return allBusinesses
+      .filter((business) => {
+        const searchable = [
+          business.firmName,
+          business.ownerName,
+          business.area,
+          business.memberType,
+          ...business.commodities,
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        const matchesSearch = !term || searchable.includes(term);
+        const matchesArea = areaFilter === "all" || business.area === areaFilter;
+        const matchesType =
+          typeFilter === "all" ||
+          business.memberType === typeFilter ||
+          business.commodities.some((category) => category.toLowerCase() === typeFilter.toLowerCase());
+        const matchesVerification =
+          verificationFilter === "all" || business.verificationStatus === verificationFilter;
+
+        return matchesSearch && matchesArea && matchesType && matchesVerification;
+      })
+      .sort((a, b) => {
+        if (a.verificationStatus !== b.verificationStatus) {
+          return a.verificationStatus === "Verified" ? -1 : 1;
+        }
+        return a.firmName.localeCompare(b.firmName);
+      });
+  }, [allBusinesses, areaFilter, searchTerm, typeFilter, verificationFilter]);
+
+  const hasFilters =
+    Boolean(searchTerm.trim()) ||
+    areaFilter !== "all" ||
+    typeFilter !== "all" ||
+    verificationFilter !== "all";
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setAreaFilter("all");
+    setTypeFilter("all");
+    setVerificationFilter("all");
+  };
 
   return (
     <Layout>
-      <Seo title='Member Directory — MDDMA' description='Browse the verified MDDMA member directory to find trusted dry fruits, dates, and nuts merchants across Mumbai’s major trading markets. Members-only.' path='/directory' noindex />
+      <Seo
+        title="Verified Business Directory — G-BAU-G"
+        description="Discover verified food businesses, importers, exporters, processors, brokers, brands and trade-service providers on the international G-BAU-G network."
+        path="/directory"
+        noindex
+      />
       <PageHeader
-        title="Member Directory"
-        subtitle="Find KYC-verified dry fruits and dates merchants across Mumbai's major trading markets."
+        eyebrow="G-BAU-G Network"
+        title="Business Directory"
+        subtitle="Discover verified businesses across nuts, dry fruits, seeds, dates, spices and allied food trade."
       />
 
       <div className="container mx-auto px-4 py-4 sm:px-6 lg:px-8">
@@ -81,51 +131,73 @@ const Directory = () => {
 
       <section className="border-b border-border bg-muted/30 py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row gap-3">
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Find a counterparty or service partner</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Verification confirms reviewed business evidence; it does not guarantee stock, quality or fulfilment.
+              </p>
+            </div>
+            <Button asChild size="sm">
+              <Link to="/apply">Register your business</Link>
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-3 md:flex-row">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
-                placeholder="Search company, owner, or product..."
+                placeholder="Search business, location, product or capability…"
+                aria-label="Search businesses"
                 className="pl-10"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(event) => setSearchTerm(event.target.value)}
               />
             </div>
             <Select value={areaFilter} onValueChange={setAreaFilter}>
-              <SelectTrigger className="w-full md:w-44">
-                <SelectValue placeholder="All Areas" />
+              <SelectTrigger className="w-full md:w-44" aria-label="Filter by location">
+                <SelectValue placeholder="All locations" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Areas</SelectItem>
-                {liveAreas.map((a) => (
-                  <SelectItem key={a} value={a}>{a}</SelectItem>
+                <SelectItem value="all">All locations</SelectItem>
+                {liveAreas.map((area) => (
+                  <SelectItem key={area} value={area}>
+                    {area}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full md:w-44">
-                <SelectValue placeholder="All Types" />
+              <SelectTrigger className="w-full md:w-48" aria-label="Filter by business type">
+                <SelectValue placeholder="All business types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {memberTypes.map((t) => (
-                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                <SelectItem value="all">All business types</SelectItem>
+                {businessTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <Select value={verificationFilter} onValueChange={setVerificationFilter}>
-              <SelectTrigger className="w-full md:w-44">
+              <SelectTrigger className="w-full md:w-44" aria-label="Filter by verification status">
                 <SelectValue placeholder="Verification" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="Verified">Verified</SelectItem>
-                <SelectItem value="Not Verified">Not Verified</SelectItem>
+                <SelectItem value="all">All statuses</SelectItem>
+                <SelectItem value="Verified">Business verified</SelectItem>
+                <SelectItem value="Not Verified">Not yet verified</SelectItem>
               </SelectContent>
             </Select>
+            {hasFilters && (
+              <Button type="button" variant="ghost" size="sm" onClick={clearFilters} className="md:self-center">
+                <X className="mr-1.5 h-4 w-4" /> Clear
+              </Button>
+            )}
           </div>
-          <p className="text-sm text-muted-foreground mt-3">
-            Showing {sorted.length} of {allMembers.length} members
+          <p className="mt-3 text-sm text-muted-foreground" aria-live="polite">
+            Showing {sortedBusinesses.length} of {allBusinesses.length} businesses
           </p>
         </div>
       </section>
@@ -135,79 +207,86 @@ const Directory = () => {
           {loading ? (
             <ListingsGridSkeleton count={8} className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2" />
           ) : (
-          <div className="grid gap-5 sm:grid-cols-2">
-              {sorted.map((member) => {
-                const heroCommodity = member.commodities[0] ?? "Mixed Dry Fruits";
-                const hasGst = member.gstNumber && member.gstNumber.length >= 5;
-                const hasFssai = !!member.fssaiNumber;
+            <div className="grid gap-5 sm:grid-cols-2">
+              {sortedBusinesses.map((business) => {
+                const heroCommodity = business.commodities[0] ?? "Food Trade";
+                const hasBusinessId = Boolean(business.gstNumber && business.gstNumber.length >= 5);
+                const hasFoodLicence = Boolean(business.fssaiNumber);
+
                 return (
-                  <Link key={member.id} to={`/store/${member.slug}`} className="group">
-                    <Card className="bg-card border-border hover:border-accent/50 card-hover h-full overflow-hidden flex flex-col">
-                      {/* Hero photo of primary commodity */}
+                  <Link
+                    key={business.id}
+                    to={`/directory/${business.slug}`}
+                    className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    <Card className="card-hover flex h-full flex-col overflow-hidden border-border bg-card group-hover:border-accent/50">
                       <div className="relative">
                         <CommodityImage commodity={heroCommodity} aspect="16/10" rounded={false} />
-                        <div className="absolute top-2 left-2 flex items-center gap-1.5">
-                          {member.isSponsored && (
-                            <span className="inline-flex items-center gap-0.5 text-[9px] uppercase tracking-wide font-semibold px-2 py-0.5 rounded bg-background/95 text-accent backdrop-blur">
-                              <Star className="h-2.5 w-2.5" /> Sponsored
-                            </span>
-                          )}
-                        </div>
-                        {member.verificationStatus === "Verified" && (
-                          <div className="absolute top-2 right-2">
-                            <Badge className="bg-success text-success-foreground border-success hover:bg-success/90 text-[10px]">
-                              <ShieldCheck className="h-3 w-3 mr-0.5" /> Verified
+                        {business.verificationStatus === "Verified" && (
+                          <div className="absolute right-2 top-2">
+                            <Badge className="border-success bg-success text-[10px] text-success-foreground hover:bg-success/90">
+                              <ShieldCheck className="mr-0.5 h-3 w-3" /> Business verified
                             </Badge>
                           </div>
                         )}
                       </div>
 
-                      <div className="p-4 flex flex-col flex-1">
-                        {/* Logo + firm name */}
-                        <div className="flex items-start gap-3 mb-2">
-                          <div className="h-11 w-11 -mt-7 rounded-lg bg-primary border-2 border-card flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0 shadow">
-                            {member.logoPlaceholder}
+                      <div className="flex flex-1 flex-col p-4">
+                        <div className="mb-2 flex items-start gap-3">
+                          <div className="-mt-7 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border-2 border-card bg-primary text-sm font-bold text-primary-foreground shadow">
+                            {business.logoPlaceholder}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <h3 className="font-semibold text-foreground truncate">{member.firmName}</h3>
-                            <p className="text-xs text-muted-foreground truncate">{member.ownerName || member.memberType}</p>
+                            <h3 className="truncate font-semibold text-foreground">{business.firmName}</h3>
+                            <p className="truncate text-xs text-muted-foreground">
+                              {business.ownerName || business.memberType}
+                            </p>
                           </div>
                         </div>
 
-                        {/* KYC trust pills */}
-                        <div className="flex items-center gap-1 flex-wrap mb-2">
-                          <Badge variant="outline" className="text-[10px] h-5 gap-0.5">{member.memberType}</Badge>
-                          {hasGst && (
-                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-success/30 text-success bg-success/10">
-                              <BadgeCheck className="h-2.5 w-2.5" /> GST
+                        <div className="mb-2 flex flex-wrap items-center gap-1">
+                          <Badge variant="outline" className="h-5 gap-0.5 text-[10px]">
+                            {business.memberType}
+                          </Badge>
+                          {hasBusinessId && (
+                            <Badge
+                              variant="outline"
+                              className="h-5 gap-0.5 border-success/30 bg-success/10 text-[10px] text-success"
+                            >
+                              <BadgeCheck className="h-2.5 w-2.5" /> Business ID
                             </Badge>
                           )}
-                          {hasFssai && (
-                            <Badge variant="outline" className="text-[10px] h-5 gap-0.5 border-success/30 text-success bg-success/10">
-                              <BadgeCheck className="h-2.5 w-2.5" /> FSSAI
+                          {hasFoodLicence && (
+                            <Badge
+                              variant="outline"
+                              className="h-5 gap-0.5 border-success/30 bg-success/10 text-[10px] text-success"
+                            >
+                              <BadgeCheck className="h-2.5 w-2.5" /> Food licence
                             </Badge>
                           )}
                         </div>
 
-                        {/* Location */}
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2">
-                          <MapPin className="h-3 w-3" /> {member.area}
+                        <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <MapPin className="h-3 w-3" /> {business.area}
                         </div>
 
-                        {/* Commodities */}
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {member.commodities.slice(0, 3).map((c) => (
-                            <Badge key={c} variant="secondary" className="text-[10px] h-5">{c}</Badge>
+                        <div className="mb-3 flex flex-wrap gap-1">
+                          {business.commodities.slice(0, 3).map((commodity) => (
+                            <Badge key={commodity} variant="secondary" className="h-5 text-[10px]">
+                              {commodity}
+                            </Badge>
                           ))}
-                          {member.commodities.length > 3 && (
-                            <Badge variant="secondary" className="text-[10px] h-5">+{member.commodities.length - 3}</Badge>
+                          {business.commodities.length > 3 && (
+                            <Badge variant="secondary" className="h-5 text-[10px]">
+                              +{business.commodities.length - 3}
+                            </Badge>
                           )}
                         </div>
 
-                        <div className="mt-auto pt-2 border-t border-border">
+                        <div className="mt-auto border-t border-border pt-2">
                           <SellerSignals
-                            memberSince={member.memberSince}
-                            verified={member.verificationStatus === "Verified"}
+                            memberSince={business.memberSince}
+                            verified={business.verificationStatus === "Verified"}
                           />
                         </div>
                       </div>
@@ -216,12 +295,20 @@ const Directory = () => {
                 );
               })}
 
-              {sorted.length === 0 && (
-                <div className="text-center py-12 col-span-full">
-                  <p className="text-muted-foreground">No members found matching your criteria.</p>
+              {sortedBusinesses.length === 0 && (
+                <div className="col-span-full py-12 text-center">
+                  <p className="font-medium text-foreground">No businesses match these filters.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Clear the filters or search for a broader product, location or capability.
+                  </p>
+                  {hasFilters && (
+                    <Button type="button" variant="outline" size="sm" onClick={clearFilters} className="mt-4">
+                      Clear filters
+                    </Button>
+                  )}
                 </div>
               )}
-          </div>
+            </div>
           )}
         </div>
       </section>
