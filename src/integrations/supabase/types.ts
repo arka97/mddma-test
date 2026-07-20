@@ -465,6 +465,153 @@ export type Database = {
         }
         Relationships: []
       }
+      deal_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          room_id: string
+          sender_company_id: string
+          sender_user_id: string | null
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          room_id: string
+          sender_company_id: string
+          sender_user_id?: string | null
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          room_id?: string
+          sender_company_id?: string
+          sender_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "deal_rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_messages_sender_company_id_fkey"
+            columns: ["sender_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_messages_sender_company_id_fkey"
+            columns: ["sender_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deal_rooms: {
+        Row: {
+          context_type: string
+          counterparty_company_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          initiator_company_id: string
+          last_message_at: string
+          product_id: string | null
+          quotation_id: string | null
+          rfq_id: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          context_type?: string
+          counterparty_company_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          initiator_company_id: string
+          last_message_at?: string
+          product_id?: string | null
+          quotation_id?: string | null
+          rfq_id?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          context_type?: string
+          counterparty_company_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          initiator_company_id?: string
+          last_message_at?: string
+          product_id?: string | null
+          quotation_id?: string | null
+          rfq_id?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deal_rooms_counterparty_company_id_fkey"
+            columns: ["counterparty_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_rooms_counterparty_company_id_fkey"
+            columns: ["counterparty_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_rooms_initiator_company_id_fkey"
+            columns: ["initiator_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_rooms_initiator_company_id_fkey"
+            columns: ["initiator_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_rooms_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_rooms_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "rfq_quotations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deal_rooms_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfq_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       humor_posts: {
         Row: {
           attribution: string | null
@@ -1492,6 +1639,7 @@ export type Database = {
       }
     }
     Functions: {
+      can_access_deal_room: { Args: { _room_id: string }; Returns: boolean }
       downgrade_to_free: { Args: { _user_id: string }; Returns: undefined }
       get_buyer_reputation_tier: { Args: { _score: number }; Returns: string }
       get_company_contact_admin: {
@@ -1578,7 +1726,22 @@ export type Database = {
       is_free_within_grace: { Args: { _uid: string }; Returns: boolean }
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
+      send_deal_message: {
+        Args: { _body: string; _room_id: string }
+        Returns: string
+      }
       slugify: { Args: { _title: string }; Returns: string }
+      start_deal_room: {
+        Args: {
+          _context_type?: string
+          _counterparty_company_id: string
+          _product_id?: string
+          _quotation_id?: string
+          _rfq_id?: string
+          _subject: string
+        }
+        Returns: string
+      }
       withdraw_my_rfq_quotation: {
         Args: { _quotation_id: string }
         Returns: boolean
