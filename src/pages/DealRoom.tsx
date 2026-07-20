@@ -108,15 +108,18 @@ const DealRoom = () => {
   }
 
   const { room, companies } = roomQuery.data;
-  const counterpartyId = company
-    ? room.initiator_company_id === company.id
-      ? room.counterparty_company_id
-      : room.initiator_company_id
-    : room.counterparty_company_id;
+  const participantCompanyIds = [room.initiator_company_id, room.counterparty_company_id];
+  const isParticipant = Boolean(company && participantCompanyIds.includes(company.id));
+  const counterpartyId =
+    isParticipant && company
+      ? room.initiator_company_id === company.id
+        ? room.counterparty_company_id
+        : room.initiator_company_id
+      : room.counterparty_company_id;
   const counterparty = companies[counterpartyId];
   const meta = contextMeta[room.context_type];
   const ContextIcon = meta.icon;
-  const canSend = Boolean(company && room.status === "open");
+  const canSend = Boolean(isParticipant && room.status === "open");
 
   return (
     <Layout>
@@ -144,6 +147,7 @@ const DealRoom = () => {
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-xl font-semibold text-foreground sm:text-2xl">{room.subject}</h1>
                 {room.status === "archived" && <Badge variant="neutral">Archived</Badge>}
+                {!isParticipant && <Badge variant="outline">Admin oversight</Badge>}
               </div>
               <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                 <span>{counterparty?.name ?? "Participating business"}</span>
@@ -259,7 +263,7 @@ const DealRoom = () => {
                 ) : (
                   <div className="flex items-start gap-3 rounded-xl bg-muted/50 p-4 text-sm text-muted-foreground">
                     <Building2 className="mt-0.5 h-4 w-4 shrink-0" />
-                    This room is read-only because it is archived or the current account has no participant business.
+                    This room is read-only because it is archived or the current account is not a participant business.
                   </div>
                 )}
               </form>
