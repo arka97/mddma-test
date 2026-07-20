@@ -1,14 +1,5 @@
 import { Link } from "react-router-dom";
-import {
-  Building2,
-  FileCheck2,
-  Lock,
-  Megaphone,
-  MessageSquareText,
-  Package,
-  Sparkles,
-  Users,
-} from "lucide-react";
+import { Building2, FileCheck2, Lock, Megaphone, Package, Sparkles, Users } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,7 +12,6 @@ import { InstallAppNudge } from "@/components/account/InstallAppNudge";
 
 const tiles = [
   { label: "My Business", href: "/account/company", icon: Building2, desc: "Manage identity and verification" },
-  { label: "Deal Rooms", href: "/messages", icon: MessageSquareText, desc: "Private business conversations" },
   { label: "My Quotations", href: "/quotes", icon: FileCheck2, desc: "Private sent and received terms" },
   { label: "My Products", href: "/account/products", icon: Package, desc: "Manage your catalogue" },
   { label: "My Brands", href: "/account/brands", icon: Sparkles, desc: "House brands and retail SKUs" },

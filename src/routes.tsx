@@ -14,8 +14,6 @@ const ProductPage = lazy(() => import("./pages/ProductPage"));
 const Market = lazy(() => import("./pages/Market"));
 const Rfq = lazy(() => import("./pages/Rfq"));
 const MyQuotations = lazy(() => import("./pages/MyQuotations"));
-const DealRooms = lazy(() => import("./pages/DealRooms"));
-const DealRoom = lazy(() => import("./pages/DealRoom"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const MembershipPlans = lazy(() => import("./pages/MembershipPlans"));
 const Circulars = lazy(() => import("./pages/Circulars"));
@@ -72,8 +70,6 @@ export function AppRoutes() {
         <Route path="/community" element={<Navigate to="/market" replace />} />
         <Route path="/rfq" element={<Rfq />} />
         <Route path="/quotes" element={protect(<MyQuotations />)} />
-        <Route path="/messages" element={protect(<DealRooms />)} />
-        <Route path="/messages/:roomId" element={protect(<DealRoom />)} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/membership" element={<MembershipPlans />} />
         <Route path="/circulars" element={<Circulars />} />

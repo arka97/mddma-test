@@ -4,7 +4,6 @@ import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { StartDealRoomButton } from "@/components/deals/StartDealRoomButton";
 import { cn } from "@/lib/utils";
 import type { RfqCompanySummary, RfqListingRow } from "@/repositories/rfqListings";
 
@@ -94,33 +93,22 @@ export function RfqCard({ rfq, company, canQuote, isOwn, onQuote }: Props) {
           {daysLeft <= 0 ? "Closes today" : `Closes in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}
         </div>
 
-        <div className="mt-4 grid gap-2 border-t border-border/60 pt-4 sm:grid-cols-2">
-          {company && !isOwn && (
-            <StartDealRoomButton
-              counterpartyCompanyId={company.id}
-              subject={`RFQ discussion: ${rfq.commodity}`}
-              contextType="rfq"
-              rfqId={rfq.id}
-              label="Discuss RFQ privately"
-              variant="outline"
-              className="w-full"
-            />
-          )}
+        <div className="mt-4 flex flex-col gap-2 border-t border-border/60 pt-4 sm:flex-row">
           {company && (
-            <Button asChild variant="outline" className="w-full">
+            <Button asChild variant="outline" className="sm:flex-1">
               <Link to={`/directory/${company.slug}`}>View business</Link>
             </Button>
           )}
           {!isOwn && (
-            <Button className="w-full sm:col-span-2" onClick={onQuote} disabled={!canQuote}>
-              <FileLock2 className="mr-2 h-4 w-4" />
+            <Button className="gap-2 sm:flex-1" onClick={onQuote} disabled={!canQuote}>
+              <FileLock2 className="h-4 w-4" />
               {canQuote ? "Send private quotation" : "Verification required"}
             </Button>
           )}
         </div>
 
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          The RFQ range is indicative. Use the deal room for discussion and the quotation record for exact price, payment, and delivery terms.
+          The RFQ range is indicative. Exact price, payment and delivery terms belong in participant-only quotations.
         </p>
       </CardContent>
     </Card>
