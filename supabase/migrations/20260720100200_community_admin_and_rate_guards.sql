@@ -52,6 +52,10 @@ security definer
 set search_path = public, pg_temp
 as $$
 begin
+  -- Anonymous publishing is retired for every write path, including old admin UI.
+  new.is_anonymous := false;
+  new.anonymous_expires_at := null;
+
   if public.has_role(_role => 'admin'::public.app_role, _user_id => new.author_id) then
     return new;
   end if;
