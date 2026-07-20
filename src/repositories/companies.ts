@@ -1,16 +1,14 @@
-// Companies repository — the only place that calls supabase.from("companies").
-// Returns typed rows; consumers should never reach into supabase.from directly.
+// Companies repository — the only place that calls Supabase company relations.
+// Consumers receive normalized rows and never select private identifiers directly.
 
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 import { friendlyErrorMessage } from "@/lib/errors";
 
-// Public columns are exposed via the `companies_public` view. Contact, tax and
-// licence identifiers remain private and are never selected for discovery.
 const COMPANY_PUBLIC_COLUMNS =
   "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,country,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
 
-const COMPANY_FULL_COLUMNS =
-  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,country,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
+type CompanyPublicRow = Database["public"]["Views"]["companies_public"]["Row"];
 
 export interface CompanyRow {
   id: string;
@@ -40,45 +38,64 @@ export interface CompanyRow {
   updated_at: string;
 }
 
+function normalizePublicCompany(row: CompanyPublicRow): CompanyRow | null {
+  if (!row.id || !row.slug || !row.name) return null;
+
+  return {
+    id: row.id,
+    owner_id: row.owner_id,
+    slug: row.slug,
+    name: row.name,
+    tagline: row.tagline,
+    description: row.description,
+    logo_url: row.logo_url,
+    cover_url: row.cover_url,
+    city: row.city,
+    state: row.state,
+    country: row.country,
+    address: null,
+    email: null,
+    phone: null,
+    website: row.website,
+    gstin: null,
+    established_year: row.established_year,
+    categories: row.categories,
+    certifications: row.certifications,
+    is_verified: Boolean(row.is_verified),
+    is_hidden: Boolean(row.is_hidden),
+    membership_tier: row.membership_tier,
+    review_status: row.review_status ?? "pending",
+    created_at: row.created_at ?? "",
+    updated_at: row.updated_at ?? "",
+  };
+}
+
 export async function listCompanies(opts: { includeHidden?: boolean } = {}) {
-  // Always read discovery data through the safe public view.
   let query = supabase
-    .from("companies_public" as never)
+    .from("companies_public")
     .select(COMPANY_PUBLIC_COLUMNS)
     .order("is_verified", { ascending: false })
     .order("created_at", { ascending: false });
 
-  if (!opts.includeHidden) query = (query as any).eq("is_hidden", false);
+  if (!opts.includeHidden) query = query.eq("is_hidden", false);
 
   const { data, error } = await query;
   if (error) throw new Error(friendlyErrorMessage(error));
 
-  return ((data ?? []) as any[]).map((row) => ({
-    ...row,
-    email: null,
-    phone: null,
-    gstin: null,
-    address: null,
-  })) as CompanyRow[];
+  return (data ?? [])
+    .map((row) => normalizePublicCompany(row))
+    .filter((row): row is CompanyRow => row !== null);
 }
 
 export async function getCompanyBySlug(slug: string) {
   const { data, error } = await supabase
-    .from("companies_public" as never)
+    .from("companies_public")
     .select(COMPANY_PUBLIC_COLUMNS)
     .eq("slug", slug)
     .maybeSingle();
 
   if (error) throw new Error(friendlyErrorMessage(error));
-  if (!data) return null;
-
-  return {
-    ...(data as any),
-    email: null,
-    phone: null,
-    gstin: null,
-    address: null,
-  } as CompanyRow;
+  return data ? normalizePublicCompany(data) : null;
 }
 
 /**
@@ -103,6 +120,3 @@ export async function getCompanyByOwner(_ownerId: string) {
   const row = Array.isArray(data) ? data[0] : data;
   return (row ?? null) as CompanyRow | null;
 }
-
-// Retained for admin-only repository extensions that need an explicit safe column set.
-export { COMPANY_FULL_COLUMNS };
