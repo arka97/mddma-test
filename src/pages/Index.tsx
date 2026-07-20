@@ -13,8 +13,8 @@ import { MembershipCTA } from "@/components/home/today/MembershipCTA";
 const Index = () => (
   <Layout>
     <Seo
-      title="MDDMA — Verified B2B Dry Fruits & Dates Trade Network"
-      description="Official MDDMA member portal — verified dry fruits, dates and nuts merchants of Mumbai. Directory, live APMC signals, RFQs and trade circulars."
+      title="G-BAU-G — Verified Global Food Trade Network by MDDMA"
+      description="Discover verified businesses, products, market intelligence and RFQs across nuts, dry fruits, dates, seeds, spices and allied foods."
       path="/"
     />
 
