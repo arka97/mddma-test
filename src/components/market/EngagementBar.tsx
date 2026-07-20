@@ -9,6 +9,7 @@ interface Props {
   onLike: () => void;
   onCommentClick: () => void;
   likeDisabled?: boolean;
+  disabled?: boolean;
 }
 
 export function EngagementBar({
@@ -19,13 +20,16 @@ export function EngagementBar({
   onLike,
   onCommentClick,
   likeDisabled,
+  disabled,
 }: Props) {
+  const reactionDisabled = likeDisabled ?? disabled ?? false;
+
   return (
     <div className="mt-3 flex items-center gap-5 border-t border-border/60 pt-2 text-xs text-muted-foreground">
       <button
         type="button"
         onClick={onLike}
-        disabled={likeDisabled}
+        disabled={reactionDisabled}
         className={cn(
           "inline-flex items-center gap-1 transition-colors disabled:opacity-50",
           liked ? "text-accent" : "hover:text-foreground",
