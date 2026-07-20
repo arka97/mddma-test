@@ -1,13 +1,12 @@
 import { Link } from "react-router-dom";
-import { Users, Megaphone, LineChart, FileSearch } from "lucide-react";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { Building2, FileSearch, LineChart, Megaphone } from "lucide-react";
+import { useHomeMetrics } from "@/hooks/queries/useHomeMetrics";
 
 interface Tile {
   label: string;
   meta: string;
   href: string;
-  icon: typeof Users;
+  icon: typeof Building2;
   tone: "accent" | "primary" | "warning" | "gold";
 }
 
@@ -19,70 +18,49 @@ const toneMap: Record<Tile["tone"], string> = {
 };
 
 export function QuickActionsGrid() {
-  const [circularCount, setCircularCount] = useState<number | null>(null);
-  const [rfqCount, setRfqCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    const since = new Date(Date.now() - 14 * 86400_000).toISOString();
-
-    (async () => {
-      const [{ count: circs }, { count: rfqs }] = await Promise.all([
-        supabase
-          .from("circulars")
-          .select("id", { count: "exact", head: true })
-          .eq("is_published", true)
-          .gte("published_at", since),
-        supabase
-          .from("rfq_listings" as never)
-          .select("id", { count: "exact", head: true })
-          .eq("status", "active"),
-      ]);
-      if (!alive) return;
-      setCircularCount(circs ?? 0);
-      setRfqCount(rfqs ?? 0);
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, []);
+  const { data: metrics } = useHomeMetrics();
 
   const tiles: Tile[] = [
-    { label: "Market", meta: "APMC rates & trends", href: "/market", icon: LineChart, tone: "primary" },
+    { label: "Market", meta: "Signals, reports and trade updates", href: "/market", icon: LineChart, tone: "primary" },
     {
       label: "Bulletin",
-      meta: circularCount == null ? "Trade notices" : `${circularCount} new`,
+      meta: metrics ? `${metrics.recentBulletins} official updates` : "Official trade notices",
       href: "/circulars",
       icon: Megaphone,
       tone: "warning",
     },
     {
       label: "RFQ",
-      meta: rfqCount == null ? "Buy & sell interests" : `${rfqCount} live`,
+      meta: metrics ? `${metrics.activeRfqs} active requirements` : "Buying and selling requirements",
       href: "/rfq",
       icon: FileSearch,
       tone: "gold",
     },
-    { label: "Members", meta: "Browse verified traders", href: "/directory", icon: Users, tone: "accent" },
+    {
+      label: "Businesses",
+      meta: metrics ? `${metrics.verifiedBusinesses} approved profiles` : "Explore verified businesses",
+      href: "/directory",
+      icon: Building2,
+      tone: "accent",
+    },
   ];
 
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-      {tiles.map((t) => {
-        const Icon = t.icon;
+      {tiles.map((tile) => {
+        const Icon = tile.icon;
         return (
           <Link
-            key={t.label}
-            to={t.href}
-            className="group flex flex-col gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+            key={tile.label}
+            to={tile.href}
+            className="group flex flex-col gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
-            <div className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${toneMap[t.tone]}`}>
+            <div className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${toneMap[tile.tone]}`}>
               <Icon className="h-5 w-5" strokeWidth={2.25} />
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-foreground">{t.label}</div>
-              <div className="truncate text-[11px] text-muted-foreground">{t.meta}</div>
+              <div className="text-sm font-semibold text-foreground">{tile.label}</div>
+              <div className="line-clamp-2 text-[11px] leading-4 text-muted-foreground">{tile.meta}</div>
             </div>
           </Link>
         );
