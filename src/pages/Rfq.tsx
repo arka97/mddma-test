@@ -49,6 +49,9 @@ const Rfq = () => {
           cta: "Update business",
         };
 
+  const selectedRecipient =
+    selectedRfq?.company_id && data ? data.companies[selectedRfq.company_id] : undefined;
+
   return (
     <Layout>
       <Seo
@@ -162,7 +165,12 @@ const Rfq = () => {
                       key={rfq.id}
                       rfq={rfq}
                       company={business}
-                      canQuote={canTrade && Boolean(rfq.company_id) && rfq.company_id !== company?.id}
+                      canQuote={
+                        canTrade &&
+                        Boolean(rfq.company_id) &&
+                        Boolean(business) &&
+                        rfq.company_id !== company?.id
+                      }
                       isOwn={Boolean(company?.id && rfq.company_id === company.id)}
                       onQuote={() => setSelectedRfq(rfq)}
                     />
@@ -189,12 +197,8 @@ const Rfq = () => {
                 if (!open) setSelectedRfq(null);
               }}
               rfq={selectedRfq}
-              recipient={
-                selectedRfq?.company_id && data
-                  ? data.companies[selectedRfq.company_id]
-                  : undefined
-              }
-              canQuote={canTrade}
+              recipient={selectedRecipient}
+              canQuote={canTrade && Boolean(selectedRecipient)}
             />
           </>
         )}
