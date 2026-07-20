@@ -4,6 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { StartDealRoomButton } from "@/components/deals/StartDealRoomButton";
 import type {
   QuotationCompanySummary,
   QuotationRfqSummary,
@@ -105,21 +106,31 @@ export function QuotationCard({
           {quotation.version > 1 ? ` · Version ${quotation.version}` : ""}
         </div>
 
-        <div className="mt-4 flex flex-col gap-2 border-t border-border pt-4 sm:flex-row">
+        <div className="mt-4 grid gap-2 border-t border-border pt-4 sm:grid-cols-2">
           {counterparty && (
-            <Button variant="outline" asChild className="sm:flex-1">
+            <StartDealRoomButton
+              counterpartyCompanyId={counterparty.id}
+              subject={`Quotation discussion: ${rfq?.commodity ?? "RFQ"}`}
+              contextType="quotation"
+              quotationId={quotation.id}
+              label="Open deal room"
+              className="w-full"
+            />
+          )}
+          {counterparty && (
+            <Button variant="outline" asChild className="w-full">
               <Link to={`/directory/${counterparty.slug}`}>View business</Link>
             </Button>
           )}
           {canWithdraw && onWithdraw && (
-            <Button variant="outline" className="sm:flex-1" onClick={onWithdraw} disabled={withdrawing}>
+            <Button variant="outline" className="w-full sm:col-span-2" onClick={onWithdraw} disabled={withdrawing}>
               Withdraw quotation
             </Button>
           )}
         </div>
 
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          G-BAU-G records this quotation but provides no acceptance, purchase-order, payment or fulfilment action.
+          G-BAU-G records this quotation and related discussion but provides no acceptance, purchase-order, payment, or fulfilment action.
         </p>
       </CardContent>
     </Card>

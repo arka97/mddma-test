@@ -23,6 +23,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ListingsGridSkeleton, ProfileHeaderSkeleton } from "@/components/ui/skeletons";
 import { ProductTile } from "@/components/products/ProductTile";
 import { BrandStrip } from "@/components/brands/BrandStrip";
+import { StartDealRoomButton } from "@/components/deals/StartDealRoomButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBrandsByCompany } from "@/hooks/queries/useBrands";
 import { useCompanyBySlug } from "@/hooks/queries/useCompanies";
@@ -211,9 +212,7 @@ const Storefront = () => {
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="min-w-0 space-y-6 lg:col-span-2">
               <Card>
-                <CardHeader>
-                  <CardTitle>About the business</CardTitle>
-                </CardHeader>
+                <CardHeader><CardTitle>About the business</CardTitle></CardHeader>
                 <CardContent>
                   <p className="leading-relaxed text-muted-foreground">{description}</p>
                   <div className="mt-5 grid grid-cols-2 gap-4 border-t border-border pt-5 sm:grid-cols-4">
@@ -240,9 +239,7 @@ const Storefront = () => {
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle>Verification and trade reach</CardTitle>
-                </CardHeader>
+                <CardHeader><CardTitle>Verification and trade reach</CardTitle></CardHeader>
                 <CardContent className="space-y-5">
                   <div className="rounded-xl border border-border bg-muted/30 p-4">
                     <div className="flex items-start gap-3">
@@ -252,7 +249,7 @@ const Storefront = () => {
                           {company.is_verified ? company.verification_tier_label || "Business evidence reviewed" : "Business not yet verified"}
                         </p>
                         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                          Verification confirms that submitted business evidence was reviewed. It does not guarantee inventory, product quality, creditworthiness, pricing or fulfilment.
+                          Verification confirms that submitted business evidence was reviewed. It does not guarantee inventory, product quality, creditworthiness, pricing, or fulfilment.
                         </p>
                       </div>
                     </div>
@@ -316,14 +313,18 @@ const Storefront = () => {
 
             <div className="min-w-0 space-y-6">
               <Card>
-                <CardHeader>
-                  <CardTitle>Trade with this business</CardTitle>
-                </CardHeader>
+                <CardHeader><CardTitle>Trade with this business</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    Use G-BAU-G RFQs and private quotations to keep exact commercial terms inside a controlled participant-only record.
+                    Start a private business conversation for early discussion, then use RFQs and quotations for structured commercial terms.
                   </p>
-                  <Button className="w-full" asChild>
+                  <StartDealRoomButton
+                    counterpartyCompanyId={company.id}
+                    subject={`Business enquiry: ${company.name}`}
+                    label="Message business privately"
+                    className="w-full"
+                  />
+                  <Button className="w-full" variant="outline" asChild>
                     <Link to="/rfq">Browse or post an RFQ</Link>
                   </Button>
                   {company.website && (
@@ -338,9 +339,7 @@ const Storefront = () => {
 
               {location && (
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Location</CardTitle>
-                  </CardHeader>
+                  <CardHeader><CardTitle>Location</CardTitle></CardHeader>
                   <CardContent>
                     <div className="flex items-start gap-2 text-sm text-muted-foreground">
                       <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
@@ -352,9 +351,7 @@ const Storefront = () => {
 
               {company.categories.length > 0 && (
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Capabilities</CardTitle>
-                  </CardHeader>
+                  <CardHeader><CardTitle>Capabilities</CardTitle></CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
                       {company.categories.map((category) => (
@@ -367,9 +364,7 @@ const Storefront = () => {
 
               {(company.languages.length > 0 || company.hours) && (
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Business information</CardTitle>
-                  </CardHeader>
+                  <CardHeader><CardTitle>Business information</CardTitle></CardHeader>
                   <CardContent className="space-y-3 text-sm text-muted-foreground">
                     {company.languages.length > 0 && (
                       <div className="flex items-start gap-2">

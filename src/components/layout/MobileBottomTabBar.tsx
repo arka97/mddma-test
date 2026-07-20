@@ -25,7 +25,11 @@ const baseTabs: Tab[] = [
     label: "Account",
     href: "/dashboard",
     icon: User,
-    match: (path) => path.startsWith("/account") || path.startsWith("/dashboard"),
+    match: (path) =>
+      path.startsWith("/account") ||
+      path.startsWith("/dashboard") ||
+      path.startsWith("/messages") ||
+      path.startsWith("/quotes"),
     requireAuth: true,
   },
 ];

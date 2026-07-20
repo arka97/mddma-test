@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { ProductMediaCarousel } from "@/components/commodity/ProductMediaCarousel";
+import { StartDealRoomButton } from "@/components/deals/StartDealRoomButton";
 import { useCompanyById } from "@/hooks/queries/useCompanies";
 import { useProductBySlug } from "@/hooks/queries/useProducts";
 
@@ -174,9 +175,19 @@ const ProductPage = () => {
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    Publish a buy requirement or browse current RFQs. Approved businesses can respond with private indicative or formal quotations.
+                    Start a participant-only product discussion, or publish a buy requirement for structured quotations from verified businesses.
                   </p>
-                  <Button className="w-full" asChild>
+                  {seller && (
+                    <StartDealRoomButton
+                      counterpartyCompanyId={seller.id}
+                      subject={`Product enquiry: ${product.name}`}
+                      contextType="product"
+                      productId={product.id}
+                      label="Discuss product privately"
+                      className="w-full"
+                    />
+                  )}
+                  <Button className="w-full" variant="outline" asChild>
                     <Link to="/rfq">
                       <FileSearch className="mr-2 h-4 w-4" /> Open RFQ network
                     </Link>

@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
+  MessageSquareText,
   Package,
   Search,
   ShieldCheck,
@@ -90,6 +91,11 @@ export function Header() {
         <DropdownMenuItem asChild>
           <Link to="/dashboard">
             <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/messages">
+            <MessageSquareText className="mr-2 h-4 w-4" /> Deal rooms
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

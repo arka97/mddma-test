@@ -38,6 +38,12 @@ export const qk = {
     sent: (userId: string) => [...qk.quotations.all, "sent", userId] as const,
     received: (companyId: string) => [...qk.quotations.all, "received", companyId] as const,
   },
+  dealRooms: {
+    all: ["dealRooms"] as const,
+    list: () => [...qk.dealRooms.all, "list"] as const,
+    detail: (id: string) => [...qk.dealRooms.all, "detail", id] as const,
+    messages: (id: string) => [...qk.dealRooms.all, "messages", id] as const,
+  },
   marketNews: {
     all: ["marketNews"] as const,
     list: (publishedOnly = true) =>
