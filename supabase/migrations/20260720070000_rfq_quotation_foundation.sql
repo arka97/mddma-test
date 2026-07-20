@@ -103,11 +103,17 @@ create policy "rfq_owner_update"
   to authenticated
   using (
     posted_by = auth.uid()
-    or public.has_role(auth.uid(), 'admin'::public.app_role)
+    or public.has_role(
+      _role => 'admin'::public.app_role,
+      _user_id => auth.uid()
+    )
   )
   with check (
     posted_by = auth.uid()
-    or public.has_role(auth.uid(), 'admin'::public.app_role)
+    or public.has_role(
+      _role => 'admin'::public.app_role,
+      _user_id => auth.uid()
+    )
   );
 
 -- Quotation terms are private to the two businesses and administrators.
@@ -124,7 +130,10 @@ create policy "rfq_quotation_participant_read"
       where c.id = recipient_company_id
         and c.owner_id = auth.uid()
     )
-    or public.has_role(auth.uid(), 'admin'::public.app_role)
+    or public.has_role(
+      _role => 'admin'::public.app_role,
+      _user_id => auth.uid()
+    )
   );
 
 drop policy if exists "rfq_quotation_verified_sender_insert" on public.rfq_quotations;
