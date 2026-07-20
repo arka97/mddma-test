@@ -296,7 +296,7 @@ export function PostCard({
           viewCount={viewCount}
           onLike={onLike}
           onCommentClick={() => setCommentsOpen(true)}
-          disabled={!canEngage}
+          likeDisabled={!canEngage}
         />
       </CardContent>
 
