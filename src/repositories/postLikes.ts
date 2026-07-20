@@ -1,5 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
-import { callCommunityRpc } from "@/repositories/communityRpc";
 import { getBusinessPostEngagement } from "@/repositories/communityPosts";
 
 export async function listLikes(postIds: string[]) {
@@ -14,7 +14,7 @@ export async function listLikes(postIds: string[]) {
 }
 
 export async function setBusinessPostLike(postId: string, liked: boolean) {
-  const { data, error } = await callCommunityRpc<boolean>("set_business_post_like", {
+  const { data, error } = await supabase.rpc("set_business_post_like", {
     _post_id: postId,
     _liked: liked,
   });

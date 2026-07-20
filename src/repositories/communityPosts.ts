@@ -1,7 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { friendlyErrorMessage } from "@/lib/errors";
-import { callCommunityRpc } from "@/repositories/communityRpc";
 
 export type PostType =
   | "general"
@@ -148,21 +147,10 @@ export async function listCommunityBusinesses(ownerIds: string[]) {
   }, {});
 }
 
-interface EngagementRpcRow {
-  post_id: string;
-  like_count: number | string;
-  comment_count: number | string;
-  view_count: number | string;
-  liked: boolean;
-}
-
 export async function getBusinessPostEngagement(postIds: string[]) {
   if (!postIds.length) return {} as Record<string, CommunityEngagement>;
 
-  const { data, error } = await callCommunityRpc<EngagementRpcRow[]>(
-    "get_business_post_engagement",
-    { _ids: postIds },
-  );
+  const { data, error } = await supabase.rpc("get_business_post_engagement", { _ids: postIds });
   if (error) throw new Error(friendlyErrorMessage(error));
 
   return (data ?? []).reduce<Record<string, CommunityEngagement>>((map, row) => {
@@ -183,10 +171,10 @@ export interface CreateBusinessPostInput {
 }
 
 export async function createBusinessPost(input: CreateBusinessPostInput) {
-  const { data, error } = await callCommunityRpc<string>("create_business_post", {
+  const { data, error } = await supabase.rpc("create_business_post", {
     _post_type: input.postType,
     _content: input.content,
-    _structured_data: input.structuredData ?? null,
+    _structured_data: (input.structuredData ?? null) as Json,
   });
   if (error) throw new Error(friendlyErrorMessage(error));
   if (!data) throw new Error("The post could not be created.");
@@ -200,12 +188,12 @@ export async function createBusinessPollPost(input: {
   content?: string;
   structuredData?: Record<string, unknown> | null;
 }) {
-  const { data, error } = await callCommunityRpc<string>("create_business_poll_post", {
+  const { data, error } = await supabase.rpc("create_business_poll_post", {
     _question: input.question,
     _options: input.options,
     _duration_days: input.durationDays,
     _content: input.content ?? "",
-    _structured_data: input.structuredData ?? null,
+    _structured_data: (input.structuredData ?? null) as Json,
   });
   if (error) throw new Error(friendlyErrorMessage(error));
   if (!data) throw new Error("The poll could not be created.");
