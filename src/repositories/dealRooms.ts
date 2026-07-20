@@ -1,8 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
+import type { Database } from "@/integrations/supabase/types";
 
 export type DealContextType = "general" | "rfq" | "quotation" | "product";
 export type DealRoomStatus = "open" | "archived";
+
+type DealRoomDbRow = Database["public"]["Tables"]["deal_rooms"]["Row"];
+type DealMessageDbRow = Database["public"]["Tables"]["deal_messages"]["Row"];
 
 export interface DealRoomRow {
   id: string;
@@ -52,22 +56,48 @@ export interface StartDealRoomInput {
   productId?: string | null;
 }
 
-// The migration in this branch introduces these relations and RPCs. Lovable will
-// regenerate Supabase types after applying it; these narrow adapters keep the
-// branch buildable before the generated file is refreshed.
-function dealRoomsTable() {
-  return supabase.from("deal_rooms" as never) as any;
+const CONTEXT_TYPES: readonly DealContextType[] = ["general", "rfq", "quotation", "product"];
+const ROOM_STATUSES: readonly DealRoomStatus[] = ["open", "archived"];
+
+function toContextType(value: string): DealContextType {
+  return (CONTEXT_TYPES as readonly string[]).includes(value)
+    ? (value as DealContextType)
+    : "general";
 }
 
-function dealMessagesTable() {
-  return supabase.from("deal_messages" as never) as any;
+function toRoomStatus(value: string): DealRoomStatus {
+  return (ROOM_STATUSES as readonly string[]).includes(value)
+    ? (value as DealRoomStatus)
+    : "open";
 }
 
-type RpcError = { message?: string; code?: string } | null;
-type RpcResult<T> = Promise<{ data: T | null; error: RpcError }>;
+function mapRoom(row: DealRoomDbRow): DealRoomRow {
+  return {
+    id: row.id,
+    created_by: row.created_by,
+    initiator_company_id: row.initiator_company_id,
+    counterparty_company_id: row.counterparty_company_id,
+    subject: row.subject,
+    context_type: toContextType(row.context_type),
+    rfq_id: row.rfq_id,
+    quotation_id: row.quotation_id,
+    product_id: row.product_id,
+    status: toRoomStatus(row.status),
+    last_message_at: row.last_message_at,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
 
-function callUntypedRpc<T>(name: string, args: Record<string, unknown>) {
-  return (supabase.rpc as unknown as (fn: string, params: Record<string, unknown>) => RpcResult<T>)(name, args);
+function mapMessage(row: DealMessageDbRow): DealMessageRow {
+  return {
+    id: row.id,
+    room_id: row.room_id,
+    sender_user_id: row.sender_user_id,
+    sender_company_id: row.sender_company_id,
+    body: row.body,
+    created_at: row.created_at,
+  };
 }
 
 async function loadCompanies(companyIds: string[]) {
@@ -96,46 +126,55 @@ async function loadCompanies(companyIds: string[]) {
 }
 
 export async function listDealRooms(): Promise<DealRoomBoard> {
-  const { data, error } = await dealRoomsTable()
+  const { data, error } = await supabase
+    .from("deal_rooms")
     .select("*")
     .order("last_message_at", { ascending: false });
 
   if (error) throw new Error(friendlyErrorMessage(error));
-  const rooms = (data ?? []) as DealRoomRow[];
+  const rooms = (data ?? []).map(mapRoom);
   const companies = await loadCompanies(
     rooms.flatMap((room) => [room.initiator_company_id, room.counterparty_company_id]),
   );
   return { rooms, companies };
 }
 
-export async function getDealRoom(id: string): Promise<{ room: DealRoomRow; companies: Record<string, DealCompanySummary> } | null> {
-  const { data, error } = await dealRoomsTable().select("*").eq("id", id).maybeSingle();
+export async function getDealRoom(
+  id: string,
+): Promise<{ room: DealRoomRow; companies: Record<string, DealCompanySummary> } | null> {
+  const { data, error } = await supabase
+    .from("deal_rooms")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
   if (error) throw new Error(friendlyErrorMessage(error));
   if (!data) return null;
 
-  const room = data as DealRoomRow;
+  const room = mapRoom(data);
   const companies = await loadCompanies([room.initiator_company_id, room.counterparty_company_id]);
   return { room, companies };
 }
 
 export async function listDealMessages(roomId: string): Promise<DealMessageRow[]> {
-  const { data, error } = await dealMessagesTable()
+  const { data, error } = await supabase
+    .from("deal_messages")
     .select("*")
     .eq("room_id", roomId)
     .order("created_at", { ascending: true });
 
   if (error) throw new Error(friendlyErrorMessage(error));
-  return (data ?? []) as DealMessageRow[];
+  return (data ?? []).map(mapMessage);
 }
 
 export async function startDealRoom(input: StartDealRoomInput): Promise<string> {
-  const { data, error } = await callUntypedRpc<string>("start_deal_room", {
+  const { data, error } = await supabase.rpc("start_deal_room", {
     _counterparty_company_id: input.counterpartyCompanyId,
     _subject: input.subject,
     _context_type: input.contextType ?? "general",
-    _rfq_id: input.rfqId ?? null,
-    _quotation_id: input.quotationId ?? null,
-    _product_id: input.productId ?? null,
+    _rfq_id: input.rfqId ?? undefined,
+    _quotation_id: input.quotationId ?? undefined,
+    _product_id: input.productId ?? undefined,
   });
 
   if (error) throw new Error(friendlyErrorMessage(error));
@@ -144,7 +183,7 @@ export async function startDealRoom(input: StartDealRoomInput): Promise<string> 
 }
 
 export async function sendDealMessage(roomId: string, body: string): Promise<string> {
-  const { data, error } = await callUntypedRpc<string>("send_deal_message", {
+  const { data, error } = await supabase.rpc("send_deal_message", {
     _room_id: roomId,
     _body: body,
   });
