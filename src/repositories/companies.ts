@@ -128,6 +128,17 @@ export async function listCompanies(opts: { includeHidden?: boolean } = {}) {
     .filter((row): row is CompanyRow => row !== null);
 }
 
+export async function getCompanyById(id: string) {
+  const { data, error } = await supabase
+    .from("companies_public")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw new Error(friendlyErrorMessage(error));
+  return data ? normalizePublicCompany(data) : null;
+}
+
 export async function getCompanyBySlug(slug: string) {
   const { data, error } = await supabase
     .from("companies_public")
