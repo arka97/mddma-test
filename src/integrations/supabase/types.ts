@@ -1184,12 +1184,15 @@ export type Database = {
           commodity: string
           company_id: string | null
           created_at: string
+          currency: string
           delivery_location: string | null
           grade_variety: string | null
           id: string
           is_hidden: boolean
           listing_type: string
+          notes: string | null
           origin_country: string | null
+          packaging: string | null
           posted_by: string
           price_max: number
           price_min: number
@@ -1197,6 +1200,7 @@ export type Database = {
           quantity_max: number
           quantity_min: number
           quantity_unit: string
+          status: string
           updated_at: string
           valid_until: string
         }
@@ -1204,12 +1208,15 @@ export type Database = {
           commodity: string
           company_id?: string | null
           created_at?: string
+          currency?: string
           delivery_location?: string | null
           grade_variety?: string | null
           id?: string
           is_hidden?: boolean
           listing_type: string
+          notes?: string | null
           origin_country?: string | null
+          packaging?: string | null
           posted_by: string
           price_max: number
           price_min: number
@@ -1217,6 +1224,7 @@ export type Database = {
           quantity_max: number
           quantity_min: number
           quantity_unit: string
+          status?: string
           updated_at?: string
           valid_until: string
         }
@@ -1224,12 +1232,15 @@ export type Database = {
           commodity?: string
           company_id?: string | null
           created_at?: string
+          currency?: string
           delivery_location?: string | null
           grade_variety?: string | null
           id?: string
           is_hidden?: boolean
           listing_type?: string
+          notes?: string | null
           origin_country?: string | null
+          packaging?: string | null
           posted_by?: string
           price_max?: number
           price_min?: number
@@ -1237,6 +1248,7 @@ export type Database = {
           quantity_max?: number
           quantity_min?: number
           quantity_unit?: string
+          status?: string
           updated_at?: string
           valid_until?: string
         }
@@ -1251,6 +1263,114 @@ export type Database = {
           {
             foreignKeyName: "rfq_listings_company_id_fkey"
             columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rfq_quotations: {
+        Row: {
+          created_at: string
+          currency: string
+          delivery_terms: string | null
+          id: string
+          notes: string | null
+          payment_terms: string | null
+          price_max: number
+          price_min: number
+          price_unit: string
+          quantity_max: number
+          quantity_min: number
+          quantity_unit: string
+          quote_kind: string
+          recipient_company_id: string
+          rfq_id: string
+          sender_company_id: string
+          sender_user_id: string
+          status: string
+          updated_at: string
+          valid_until: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          delivery_terms?: string | null
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          price_max: number
+          price_min: number
+          price_unit: string
+          quantity_max: number
+          quantity_min: number
+          quantity_unit: string
+          quote_kind?: string
+          recipient_company_id: string
+          rfq_id: string
+          sender_company_id: string
+          sender_user_id: string
+          status?: string
+          updated_at?: string
+          valid_until: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          delivery_terms?: string | null
+          id?: string
+          notes?: string | null
+          payment_terms?: string | null
+          price_max?: number
+          price_min?: number
+          price_unit?: string
+          quantity_max?: number
+          quantity_min?: number
+          quantity_unit?: string
+          quote_kind?: string
+          recipient_company_id?: string
+          rfq_id?: string
+          sender_company_id?: string
+          sender_user_id?: string
+          status?: string
+          updated_at?: string
+          valid_until?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rfq_quotations_recipient_company_id_fkey"
+            columns: ["recipient_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_quotations_recipient_company_id_fkey"
+            columns: ["recipient_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_quotations_rfq_id_fkey"
+            columns: ["rfq_id"]
+            isOneToOne: false
+            referencedRelation: "rfq_listings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_quotations_sender_company_id_fkey"
+            columns: ["sender_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rfq_quotations_sender_company_id_fkey"
+            columns: ["sender_company_id"]
             isOneToOne: false
             referencedRelation: "companies_public"
             referencedColumns: ["id"]
@@ -1459,6 +1579,10 @@ export type Database = {
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
       slugify: { Args: { _title: string }; Returns: string }
+      withdraw_my_rfq_quotation: {
+        Args: { _quotation_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "broker" | "paid_member" | "free_member"
