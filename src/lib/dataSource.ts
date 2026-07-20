@@ -8,6 +8,18 @@ import type { ProductRow } from "@/repositories/products";
 // ---------------------------------------------------------------------------
 // Directory entries (companies)
 // ---------------------------------------------------------------------------
+export type BusinessType =
+  | "Importer"
+  | "Exporter"
+  | "Wholesaler"
+  | "Distributor"
+  | "Retailer"
+  | "Manufacturer"
+  | "Processor"
+  | "Brand"
+  | "Broker"
+  | "Service Provider";
+
 export interface DirectoryEntry {
   id: string;
   firmName: string;
@@ -17,7 +29,7 @@ export interface DirectoryEntry {
   fullAddress: string;
   commodities: string[];
   originSpecialization: string[];
-  memberType: "Importer" | "Wholesaler" | "Retailer" | "Processor" | "Broker";
+  memberType: BusinessType;
   verificationStatus: "Verified" | "Not Verified";
   verificationLevel: "Basic" | "Business";
   membershipStatus: "Active" | "Pending Renewal" | "Expired";
@@ -26,18 +38,30 @@ export interface DirectoryEntry {
   whatsapp: string;
   email: string;
   gstNumber: string;
-  fssaiNumber?: string;
   description: string;
   isFeatured: boolean;
   isSponsored: boolean;
   logoPlaceholder: string;
 }
 
+const BUSINESS_TYPES: BusinessType[] = [
+  "Importer",
+  "Exporter",
+  "Manufacturer",
+  "Processor",
+  "Brand",
+  "Distributor",
+  "Wholesaler",
+  "Retailer",
+  "Broker",
+  "Service Provider",
+];
+
 function initials(name: string): string {
   return (
     name
       .split(/\s+/)
-      .map((w) => w[0])
+      .map((word) => word[0])
       .filter(Boolean)
       .slice(0, 2)
       .join("")
@@ -45,32 +69,43 @@ function initials(name: string): string {
   );
 }
 
-export function liveCompanyToEntry(c: CompanyRow): DirectoryEntry {
-  const cats = (c.categories ?? []).filter(Boolean);
+function inferBusinessType(categories: string[]): BusinessType {
+  const normalized = new Set(categories.map((category) => category.trim().toLowerCase()));
+  return (
+    BUSINESS_TYPES.find((type) => normalized.has(type.toLowerCase())) ??
+    (normalized.has("service") || normalized.has("services") ? "Service Provider" : "Wholesaler")
+  );
+}
+
+export function liveCompanyToEntry(company: CompanyRow): DirectoryEntry {
+  const categories = (company.categories ?? []).filter(Boolean);
+  const locationParts = [company.city, company.state, company.country].filter(Boolean) as string[];
+  const compactLocation = [company.city, company.country].filter(Boolean).join(", ");
+
   return {
-    id: c.id,
-    firmName: c.name,
-    ownerName: c.tagline ?? "",
-    slug: c.slug,
-    area: c.city ?? c.state ?? "Mumbai",
-    fullAddress:
-      c.address ??
-      `${c.city ?? ""}${c.city && c.state ? ", " : ""}${c.state ?? ""}`,
-    commodities: cats.length ? cats : ["General"],
+    id: company.id,
+    firmName: company.name,
+    ownerName: company.tagline ?? "",
+    slug: company.slug,
+    area: compactLocation || locationParts.join(", ") || "Location not added",
+    fullAddress: company.address ?? locationParts.join(", "),
+    commodities: categories.length ? categories : ["General food trade"],
     originSpecialization: [],
-    memberType: (c.categories ?? []).some((x) => x?.toLowerCase() === "broker") ? "Broker" : "Wholesaler",
-    verificationStatus: c.is_verified ? "Verified" : "Not Verified",
-    verificationLevel: c.is_verified ? "Business" : "Basic",
+    memberType: inferBusinessType(categories),
+    verificationStatus: company.is_verified ? "Verified" : "Not Verified",
+    verificationLevel: company.is_verified ? "Business" : "Basic",
     membershipStatus: "Active",
-    memberSince: c.established_year ?? new Date().getFullYear(),
-    phone: c.phone ?? "",
-    whatsapp: c.phone ?? "",
-    email: c.email ?? "",
-    gstNumber: c.gstin ?? "",
-    description: c.description ?? c.tagline ?? "",
-    isFeatured: c.membership_tier === "paid" || c.is_verified,
-    isSponsored: c.membership_tier === "paid",
-    logoPlaceholder: initials(c.name),
+    memberSince: company.established_year ?? new Date().getFullYear(),
+    phone: company.phone ?? "",
+    whatsapp: company.phone ?? "",
+    email: company.email ?? "",
+    gstNumber: company.gstin ?? "",
+    description: company.description ?? company.tagline ?? "",
+    // These fields remain for compatibility with existing home/storefront ranking.
+    // The business directory itself no longer gives paid status priority.
+    isFeatured: company.membership_tier === "paid" || company.is_verified,
+    isSponsored: company.membership_tier === "paid",
+    logoPlaceholder: initials(company.name),
   };
 }
 
@@ -108,34 +143,35 @@ export interface ProductEntry {
   b2cUrl?: string | null;
 }
 
-export function liveProductToEntry(p: ProductRow): ProductEntry {
-  const extras = p as ProductRow & {
+export function liveProductToEntry(product: ProductRow): ProductEntry {
+  const extras = product as ProductRow & {
     video_url?: string | null;
     is_branded?: boolean;
     brand_id?: string | null;
     retail_pack_size?: string | null;
     b2c_url?: string | null;
   };
+
   return {
-    id: p.id,
-    slug: p.slug,
-    sellerId: p.company_id,
-    commodityId: p.id,
-    commodity: p.name,
-    variant: p.category ?? "",
-    origin: p.origin ?? "",
-    packaging: p.packaging_options?.[0] ?? "",
+    id: product.id,
+    slug: product.slug,
+    sellerId: product.company_id,
+    commodityId: product.id,
+    commodity: product.name,
+    variant: product.category ?? "",
+    origin: product.origin ?? "",
+    packaging: product.packaging_options?.[0] ?? "",
     moq: "",
-    priceMin: p.price_min,
-    priceMax: p.price_max,
-    priceUnit: `₹/${p.unit ?? "kg"}`,
+    priceMin: product.price_min,
+    priceMax: product.price_max,
+    priceUnit: `₹/${product.unit ?? "kg"}`,
     location: "",
-    listingDate: p.created_at,
-    imageUrl: p.image_url,
-    gallery: p.gallery,
+    listingDate: product.created_at,
+    imageUrl: product.image_url,
+    gallery: product.gallery,
     videoUrl: extras.video_url ?? null,
-    isFeatured: !!p.is_featured,
-    isBranded: !!extras.is_branded,
+    isFeatured: Boolean(product.is_featured),
+    isBranded: Boolean(extras.is_branded),
     brandId: extras.brand_id ?? null,
     retailPackSize: extras.retail_pack_size ?? null,
     b2cUrl: extras.b2c_url ?? null,
