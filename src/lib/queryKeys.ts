@@ -27,6 +27,11 @@ export const qk = {
     list: (publishedOnly = true) =>
       [...qk.circulars.all, "list", publishedOnly] as const,
   },
+  rfqs: {
+    all: ["rfqs"] as const,
+    active: (type: "buy" | "sell") => [...qk.rfqs.all, "active", type] as const,
+    activeCount: () => [...qk.rfqs.all, "active-count"] as const,
+  },
   marketNews: {
     all: ["marketNews"] as const,
     list: (publishedOnly = true) =>
