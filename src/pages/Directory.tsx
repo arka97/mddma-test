@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { BadgeCheck, MapPin, Search, ShieldCheck, X } from "lucide-react";
+import { MapPin, Search, ShieldCheck, X } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Input } from "@/components/ui/input";
@@ -210,8 +210,6 @@ const Directory = () => {
             <div className="grid gap-5 sm:grid-cols-2">
               {sortedBusinesses.map((business) => {
                 const heroCommodity = business.commodities[0] ?? "Food Trade";
-                const hasBusinessId = Boolean(business.gstNumber && business.gstNumber.length >= 5);
-                const hasFoodLicence = Boolean(business.fssaiNumber);
 
                 return (
                   <Link
@@ -248,22 +246,6 @@ const Directory = () => {
                           <Badge variant="outline" className="h-5 gap-0.5 text-[10px]">
                             {business.memberType}
                           </Badge>
-                          {hasBusinessId && (
-                            <Badge
-                              variant="outline"
-                              className="h-5 gap-0.5 border-success/30 bg-success/10 text-[10px] text-success"
-                            >
-                              <BadgeCheck className="h-2.5 w-2.5" /> Business ID
-                            </Badge>
-                          )}
-                          {hasFoodLicence && (
-                            <Badge
-                              variant="outline"
-                              className="h-5 gap-0.5 border-success/30 bg-success/10 text-[10px] text-success"
-                            >
-                              <BadgeCheck className="h-2.5 w-2.5" /> Food licence
-                            </Badge>
-                          )}
                         </div>
 
                         <div className="mb-2 flex items-center gap-1.5 text-xs text-muted-foreground">
