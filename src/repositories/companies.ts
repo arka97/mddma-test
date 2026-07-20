@@ -5,9 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { friendlyErrorMessage } from "@/lib/errors";
 
-const COMPANY_PUBLIC_COLUMNS =
-  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,country,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
-
 type CompanyPublicRow = Database["public"]["Views"]["companies_public"]["Row"];
 
 export interface CompanyRow {
@@ -71,9 +68,10 @@ function normalizePublicCompany(row: CompanyPublicRow): CompanyRow | null {
 }
 
 export async function listCompanies(opts: { includeHidden?: boolean } = {}) {
+  // The view itself is the public-column allowlist, so selecting all view fields is safe.
   let query = supabase
     .from("companies_public")
-    .select(COMPANY_PUBLIC_COLUMNS)
+    .select("*")
     .order("is_verified", { ascending: false })
     .order("created_at", { ascending: false });
 
@@ -90,7 +88,7 @@ export async function listCompanies(opts: { includeHidden?: boolean } = {}) {
 export async function getCompanyBySlug(slug: string) {
   const { data, error } = await supabase
     .from("companies_public")
-    .select(COMPANY_PUBLIC_COLUMNS)
+    .select("*")
     .eq("slug", slug)
     .maybeSingle();
 
