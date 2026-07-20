@@ -114,7 +114,7 @@ const DocumentsHub = () => {
     <div className="min-h-screen bg-primary text-primary-foreground">
       <div className="max-w-5xl mx-auto px-6 py-16 space-y-12">
         <div className="text-center space-y-4">
-          <Badge className="bg-accent text-accent-foreground font-semibold text-sm px-4 py-1">v3.1 · May 2026</Badge>
+          <Badge className="bg-accent text-accent-foreground font-semibold text-sm px-4 py-1">v3.2 · July 2026</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
             MDDMA <span className="text-accent">Documentation</span>
           </h1>
@@ -170,7 +170,7 @@ const DocumentsHub = () => {
         </div>
 
         <div className="text-center text-xs text-primary-foreground/50 pt-4 border-t border-primary-foreground/10">
-          Source-controlled in <code className="text-accent">src/content/docs/</code>. Updated May 2026.
+          Source-controlled in <code className="text-accent">src/content/docs/</code>. Updated July 2026.
         </div>
       </div>
     </div>
