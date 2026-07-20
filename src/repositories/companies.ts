@@ -4,14 +4,13 @@
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
 
-// Public columns are exposed via the `companies_public` view (no email/phone/gstin
-// for anonymous viewers). Owner/admin reads of contact info go through getCompanyByOwner
-// or admin-only paths against the base table.
+// Public columns are exposed via the `companies_public` view. Contact, tax and
+// licence identifiers remain private and are never selected for discovery.
 const COMPANY_PUBLIC_COLUMNS =
-  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
+  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,country,website,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
 
 const COMPANY_FULL_COLUMNS =
-  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
+  "id,owner_id,slug,name,tagline,description,logo_url,cover_url,city,state,country,address,email,phone,website,gstin,established_year,categories,certifications,is_verified,is_hidden,membership_tier,review_status,created_at,updated_at" as const;
 
 export interface CompanyRow {
   id: string;
@@ -24,6 +23,7 @@ export interface CompanyRow {
   cover_url: string | null;
   city: string | null;
   state: string | null;
+  country: string | null;
   address: string | null;
   email: string | null;
   phone: string | null;
@@ -41,21 +41,24 @@ export interface CompanyRow {
 }
 
 export async function listCompanies(opts: { includeHidden?: boolean } = {}) {
-  // Always read public listing through the safe view — masks email/phone/gstin
-  // for anonymous viewers and works identically for signed-in members.
-  let q = supabase
+  // Always read discovery data through the safe public view.
+  let query = supabase
     .from("companies_public" as never)
     .select(COMPANY_PUBLIC_COLUMNS)
     .order("is_verified", { ascending: false })
     .order("created_at", { ascending: false });
-  if (!opts.includeHidden) q = (q as any).eq("is_hidden", false);
-  const { data, error } = await q;
+
+  if (!opts.includeHidden) query = (query as any).eq("is_hidden", false);
+
+  const { data, error } = await query;
   if (error) throw new Error(friendlyErrorMessage(error));
+
   return ((data ?? []) as any[]).map((row) => ({
     ...row,
     email: null,
     phone: null,
     gstin: null,
+    address: null,
   })) as CompanyRow[];
 }
 
@@ -65,26 +68,41 @@ export async function getCompanyBySlug(slug: string) {
     .select(COMPANY_PUBLIC_COLUMNS)
     .eq("slug", slug)
     .maybeSingle();
+
   if (error) throw new Error(friendlyErrorMessage(error));
   if (!data) return null;
-  return { ...(data as any), email: null, phone: null, gstin: null } as CompanyRow;
+
+  return {
+    ...(data as any),
+    email: null,
+    phone: null,
+    gstin: null,
+    address: null,
+  } as CompanyRow;
 }
 
 /**
- * Contact details (email/phone/gstin) are no longer exposed via direct SELECT.
- * Only the owner can read their own contact info, through getCompanyByOwner.
+ * Contact and registration details are never exposed through direct public SELECT.
+ * Owner reads use the `get_my_company` SECURITY DEFINER RPC.
  */
 export async function getCompanyContactBySlug(_slug: string) {
-  return null as { slug: string; email: string | null; phone: string | null; gstin: string | null } | null;
+  return null as {
+    slug: string;
+    email: string | null;
+    phone: string | null;
+    gstin: string | null;
+  } | null;
 }
 
 export async function getCompanyByOwner(_ownerId: string) {
-  // Uses the SECURITY DEFINER RPC `get_my_company` so the owner can read their
-  // own row including contact columns, which are revoked from the
-  // `authenticated` role at the column level.
-  const { data, error } = await (supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown; error: unknown }>)("get_my_company");
+  const { data, error } = await (
+    supabase.rpc as unknown as (fn: string) => Promise<{ data: unknown; error: unknown }>
+  )("get_my_company");
   if (error) throw new Error(friendlyErrorMessage(error as never));
+
   const row = Array.isArray(data) ? data[0] : data;
   return (row ?? null) as CompanyRow | null;
 }
 
+// Retained for admin-only repository extensions that need an explicit safe column set.
+export { COMPANY_FULL_COLUMNS };
