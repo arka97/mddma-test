@@ -6,7 +6,7 @@ export type DealRoomStatus = "open" | "archived";
 
 export interface DealRoomRow {
   id: string;
-  created_by: string;
+  created_by: string | null;
   initiator_company_id: string;
   counterparty_company_id: string;
   subject: string;
@@ -23,7 +23,7 @@ export interface DealRoomRow {
 export interface DealMessageRow {
   id: string;
   room_id: string;
-  sender_user_id: string;
+  sender_user_id: string | null;
   sender_company_id: string;
   body: string;
   created_at: string;
