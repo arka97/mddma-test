@@ -87,8 +87,8 @@ export function useFollow(companyId: string | null | undefined) {
   return { following, toggle, isPending: mutation.isPending };
 }
 
-/** Live count of companies the current user follows. Zero when signed out. */
-export function useFollowingCount(): number {
+/** Live set of company ids the current user follows. Empty when signed out. */
+export function useFollowingSet(): Set<string> {
   const { user } = useAuth();
   const userId = user?.id ?? null;
   const { data } = useQuery({
@@ -97,5 +97,10 @@ export function useFollowingCount(): number {
     enabled: !!userId,
     staleTime: 60_000,
   });
-  return data?.size ?? 0;
+  return data ?? new Set<string>();
+}
+
+/** Live count of companies the current user follows. Zero when signed out. */
+export function useFollowingCount(): number {
+  return useFollowingSet().size;
 }
