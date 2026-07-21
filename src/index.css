@@ -15,89 +15,91 @@
 
 @layer base {
   :root {
-    /* Surfaces */
-    --background: 40 40% 93%;         /* #F5F1E8 parchment */
-    --foreground: 28 22% 9%;          /* #1B1712 warm ink */
+    /* Surfaces — soft warm off-white page, pure white cards, visible hairline
+       borders so sections separate cleanly (fixes "everything blurs together"). */
+    --background: 40 25% 97%;         /* #F8F5EF soft off-white */
+    --foreground: 220 15% 12%;        /* #1A1D24 near-black */
 
-    --card: 0 0% 100%;                /* #FFFFFF card on parchment */
-    --card-foreground: 28 22% 9%;
+    --card: 0 0% 100%;                /* #FFFFFF card pops on off-white */
+    --card-foreground: 220 15% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 28 22% 9%;
+    --popover-foreground: 220 15% 12%;
 
-    /* Primary actions are INK, not gold — keeps buttons legible. */
-    --primary: 28 22% 9%;             /* #1B1712 */
-    --primary-foreground: 40 40% 96%; /* parchment on ink */
+    /* Primary = rich gold pill (replaces the reference's blue).
+       Text on primary is white — this hue is dark enough for WCAG AA. */
+    --primary: 32 68% 42%;            /* #B57828 rich gold */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 38 30% 90%;          /* #EFE9DC muted parchment fill */
-    --secondary-foreground: 28 22% 9%;
+    --secondary: 36 30% 94%;          /* #F1ECE1 soft gold-tinted fill */
+    --secondary-foreground: 220 15% 12%;
 
-    --muted: 38 30% 90%;              /* #EFE9DC */
-    --muted-foreground: 30 12% 38%;   /* #6E6455 warm secondary text */
+    --muted: 36 20% 95%;              /* #F3EFE9 quiet fill */
+    --muted-foreground: 30 10% 42%;   /* #766D62 secondary text */
 
-    /* Accent = gold-strong. Links, small gold CTAs, verified check. */
-    --accent: 30 71% 34%;             /* ~#935E1B gold-strong */
-    --accent-foreground: 40 40% 96%;
+    /* Accent = gold tint for badges/hovers; text on it uses gold-strong. */
+    --accent: 36 60% 92%;             /* #F5E9D2 pale gold */
+    --accent-foreground: 32 68% 30%;  /* #7F5316 gold-strong on tint */
 
-    --destructive: 358 76% 59%;       /* #E5484D */
+    --destructive: 358 76% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 36 33% 85%;             /* #E6DECF parchment hairline */
-    --input: 36 25% 78%;
-    --ring: 30 71% 34%;               /* gold-strong focus */
+    --border: 36 22% 86%;             /* #E3DACB warm hairline — visible */
+    --input: 36 22% 82%;
+    --ring: 32 68% 42%;               /* gold focus ring */
 
     --radius: 1rem;
 
-    /* Brand gold (light) — logo, large fills, tints, active-nav highlight. */
-    --brand-gold: 33 56% 63%;         /* #D8A86A */
-    --gold: 33 56% 63%;               /* alias */
-    --gold-strong: 30 71% 34%;        /* ~#935E1B — anything bearing/backing text */
+    /* Brand gold — logo, large fills, active-nav highlight. */
+    --brand-gold: 34 72% 55%;         /* #D8A03D warm gold */
+    --gold: 34 72% 55%;
+    --gold-strong: 32 68% 32%;        /* #895716 — text on gold or standalone */
 
     /* Status palette */
-    --success: 158 68% 37%;           /* #1E9E6A generic success */
+    --success: 158 62% 38%;           /* #26A56F */
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
-    --warning-foreground: 28 22% 9%;
-    --info: 30 71% 34%;               /* gold-strong for informational */
-    --info-foreground: 40 40% 96%;
-    --danger: 358 76% 59%;
+    --warning-foreground: 220 15% 12%;
+    --info: 32 68% 42%;               /* gold for info */
+    --info-foreground: 0 0% 100%;
+    --danger: 358 76% 55%;
     --danger-foreground: 0 0% 100%;
-    --up: 158 68% 37%;
-    --down: 358 76% 59%;
+    --up: 158 62% 38%;
+    --down: 358 76% 55%;
 
-    /* Social action accents — universal, keep recognizable */
-    --like: 331 94% 53%;              /* #F91880 heart pink */
-    --repost: 160 84% 39%;            /* #00BA7C repost green (NOT WhatsApp) */
-    --verified: 30 71% 34%;           /* gold-strong verified check */
+    /* Social action accents */
+    --like: 331 94% 53%;
+    --repost: 160 84% 39%;
+    --verified: 32 68% 42%;           /* gold verified check */
 
-    /* Third-party integration colors — used ONLY on their own buttons.
-       Reference values, do not spread across the UI. */
-    --brand-whatsapp: 142 70% 49%;    /* #25D366 */
-    --brand-linkedin: 210 90% 40%;    /* #0A66C2 */
+    /* Third-party integration colors — used ONLY on their own buttons. */
+    --brand-whatsapp: 142 70% 49%;
+    --brand-linkedin: 210 90% 40%;
 
-    /* Legacy aliases — remapped onto Parchment & Gold so older callers
-       inherit the new look without editing each file. */
-    --navy: 28 22% 9%;                /* ink */
-    --navy-light: 30 12% 38%;
-    --navy-dark: 28 22% 6%;
-    --burgundy: 358 76% 59%;
+    /* Legacy aliases — remapped onto the new gold scheme so older callers
+       inherit the look without editing each file. */
+    --navy: 220 15% 12%;
+    --navy-light: 30 10% 42%;
+    --navy-dark: 220 20% 8%;
+    --burgundy: 358 76% 55%;
     --burgundy-light: 358 70% 70%;
-    --burgundy-dark: 358 80% 45%;
-    --gold-light: 36 60% 88%;         /* pale gold tint */
-    --gold-dark: 30 71% 28%;
-    --cream: 40 40% 93%;              /* = parchment */
-    --warm-gray: 30 12% 38%;
+    --burgundy-dark: 358 80% 42%;
+    --gold-light: 36 70% 90%;         /* pale gold tint */
+    --gold-dark: 32 68% 30%;
+    --cream: 40 25% 97%;              /* = new background */
+    --warm-gray: 30 10% 42%;
 
     /* Sidebar */
-    --sidebar-background: 40 40% 93%;
-    --sidebar-foreground: 28 22% 9%;
-    --sidebar-primary: 28 22% 9%;
-    --sidebar-primary-foreground: 40 40% 96%;
-    --sidebar-accent: 38 30% 90%;
-    --sidebar-accent-foreground: 28 22% 9%;
-    --sidebar-border: 36 33% 85%;
-    --sidebar-ring: 30 71% 34%;
+    --sidebar-background: 40 25% 97%;
+    --sidebar-foreground: 220 15% 12%;
+    --sidebar-primary: 32 68% 42%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 36 30% 94%;
+    --sidebar-accent-foreground: 220 15% 12%;
+    --sidebar-border: 36 22% 86%;
+    --sidebar-ring: 32 68% 42%;
   }
+
 
   .dark {
     /* Candlelight — deep warm black, brighter gold */
@@ -110,7 +112,7 @@
     --popover: 30 16% 10%;
     --popover-foreground: 40 30% 89%;
 
-    --primary: 40 30% 89%;            /* on dark, primary pills invert to parchment */
+    --primary: 36 68% 62%;            /* #DDA75E — luminous gold on dark */
     --primary-foreground: 28 22% 9%;
 
     --secondary: 30 14% 14%;
@@ -164,7 +166,7 @@
 
     --sidebar-background: 30 18% 6%;
     --sidebar-foreground: 40 30% 89%;
-    --sidebar-primary: 40 30% 89%;
+    --sidebar-primary: 36 68% 62%;
     --sidebar-primary-foreground: 28 22% 9%;
     --sidebar-accent: 30 14% 14%;
     --sidebar-accent-foreground: 40 30% 89%;
