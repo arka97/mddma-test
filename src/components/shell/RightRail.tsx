@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { NewMembersList } from "@/components/home/today/NewMembersList";
-import { FeaturedBrandsStrip } from "@/components/home/FeaturedBrandsStrip";
 import { AdSlot } from "@/components/home/today/AdSlot";
 
 export function RightRail() {
