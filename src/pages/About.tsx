@@ -174,7 +174,7 @@ const About = () => {
                 <ol className="space-y-2 text-sm text-foreground/85">
                   {founderMembers.map((name, i) => (
                     <li key={name} className="flex items-start gap-3">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-accent text-xs font-bold flex-shrink-0">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold flex-shrink-0">
                         {i + 1}
                       </span>
                       <span>{name}</span>
@@ -198,7 +198,7 @@ const About = () => {
             ].map(({ icon: Icon, label, text }) => (
               <Card key={label} className="bg-card border-border hover:border-accent/40 transition-colors">
                 <CardContent className="p-6">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-accent mb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
                     <Icon className="h-6 w-6" aria-hidden />
                   </div>
                   <h3 className="text-lg font-bold text-primary tracking-wider mb-2">{label}</h3>
@@ -273,7 +273,7 @@ const About = () => {
             {officeBearers.map((p) => (
               <Card key={p.name + p.role} className="bg-card border-border hover:border-accent/40 transition-colors">
                 <CardContent className="p-6 flex items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-accent font-bold text-lg ring-2 ring-accent/30 flex-shrink-0">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-lg ring-2 ring-accent/30 flex-shrink-0">
                     {initialsOf(p.name)}
                   </div>
                   <div>

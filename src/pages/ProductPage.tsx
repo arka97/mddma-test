@@ -59,26 +59,26 @@ const ProductPage = () => {
         ogType="product"
       />
 
-      <section className="bg-primary py-8">
+      <section className="border-b border-border bg-background py-6">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <Link to="/products" className="mb-4 inline-flex items-center text-sm text-primary-foreground/70 hover:text-primary-foreground">
+          <Link to="/products" className="mb-4 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
             <ArrowLeft className="mr-1 h-4 w-4" /> Back to products
           </Link>
           <div className="flex items-center gap-4">
             <CommodityImage commodity={product.name} aspect="1/1" className="w-20 shrink-0 sm:w-24" />
             <div className="min-w-0">
-              <h1 className="text-2xl font-bold text-primary-foreground sm:text-3xl">{product.name}</h1>
+              <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{product.name}</h1>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {product.category && (
-                  <Badge className="border-accent/30 bg-accent/20 text-accent">{product.category}</Badge>
+                  <Badge className="border-primary/20 bg-primary/10 text-primary">{product.category}</Badge>
                 )}
                 {product.origin && (
-                  <Badge variant="outline" className="border-primary-foreground/20 bg-background/10 text-primary-foreground">
+                  <Badge variant="outline" className="border-border bg-muted text-foreground">
                     {product.origin}
                   </Badge>
                 )}
                 {seller?.is_verified && (
-                  <Badge variant="outline" className="border-primary-foreground/20 bg-background/10 text-primary-foreground">
+                  <Badge variant="outline" className="border-border bg-muted text-foreground">
                     <ShieldCheck className="mr-1 h-3 w-3" /> Verified business
                   </Badge>
                 )}

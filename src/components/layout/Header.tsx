@@ -217,13 +217,13 @@ export function Header() {
         </div>
 
         <form onSubmit={submitSearch} className="relative pb-2.5 pt-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted-foreground" />
           <Input
             value={searchQ}
             onChange={(event) => setSearchQ(event.target.value)}
             placeholder="Search products, brands and businesses…"
             aria-label="Search the G-BAU-G network"
-            className="h-10 w-full rounded-full border-border/80 bg-muted/60 pl-9 text-sm shadow-none focus-visible:bg-background"
+            className="h-11 w-full rounded-full border-transparent bg-muted pl-10 text-sm shadow-none focus-visible:border-primary focus-visible:bg-background focus-visible:ring-0"
           />
         </form>
       </div>

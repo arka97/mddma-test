@@ -35,31 +35,31 @@ export function Footer() {
   const { isInstalled } = useInstallPrompt();
 
   return (
-    <footer className="bg-primary pb-safe text-primary-foreground">
+    <footer className="border-t border-border bg-background pb-safe text-muted-foreground">
       <div className="container mx-auto px-5 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
           <div>
             <div className="mb-4 inline-flex items-center gap-2">
               <Logo variant="mark" className="h-8 w-8" />
               <div className="leading-tight">
-                <div className="font-semibold tracking-tight">G-BAU-G</div>
-                <div className="text-[11px] text-primary-foreground/70">by MDDMA</div>
+                <div className="font-semibold tracking-tight text-foreground">G-BAU-G</div>
+                <div className="text-[11px] text-muted-foreground">by MDDMA</div>
               </div>
             </div>
-            <p className="text-sm leading-relaxed text-primary-foreground/80">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               An international verified business network for nuts, dry fruits, seeds, dates, spices and allied food
               trade—founded, governed and directly operated by MDDMA.
             </p>
           </div>
 
           <div>
-            <h3 className="t-eyebrow mb-4 text-primary-foreground/70">Platform</h3>
+            <h3 className="t-eyebrow mb-4 text-muted-foreground">Platform</h3>
             <ul className="space-y-2 text-sm">
               {platformLinks.map((link) => (
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-primary-foreground/70 transition-colors hover:text-primary-foreground"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {link.label}
                   </Link>
@@ -69,13 +69,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="t-eyebrow mb-4 text-primary-foreground/70">Association</h3>
+            <h3 className="t-eyebrow mb-4 text-muted-foreground">Association</h3>
             <ul className="space-y-2 text-sm">
               {learnLinks.map((link) => (
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-primary-foreground/70 transition-colors hover:text-primary-foreground"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {link.label}
                   </Link>
@@ -99,13 +99,13 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="t-eyebrow mb-4 text-primary-foreground/70">Legal</h3>
+            <h3 className="t-eyebrow mb-4 text-muted-foreground">Legal</h3>
             <ul className="space-y-2 text-sm">
               {legalLinks.map((link) => (
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-primary-foreground/70 transition-colors hover:text-primary-foreground"
+                    className="text-muted-foreground transition-colors hover:text-foreground"
                   >
                     {link.label}
                   </Link>
@@ -115,48 +115,48 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="t-eyebrow mb-4 text-primary-foreground/70">Contact</h3>
+            <h3 className="t-eyebrow mb-4 text-muted-foreground">Contact</h3>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-foreground/60" />
-                <span className="text-primary-foreground/80">
+                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                <span className="text-muted-foreground">
                   C/o E-29, APMC Market-I, Phase-II, Sector-19, Masala Market, Navi Mumbai, Maharashtra 400705
                 </span>
               </li>
               <li className="flex items-center gap-2">
-                <Phone className="h-4 w-4 flex-shrink-0 text-primary-foreground/60" />
-                <a href="tel:+912227650827" className="text-primary-foreground/80 hover:text-primary-foreground">
+                <Phone className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                <a href="tel:+912227650827" className="text-muted-foreground hover:text-foreground">
                   +91 22 2765 0827
                 </a>
               </li>
               <li className="flex items-center gap-2">
-                <Mail className="h-4 w-4 flex-shrink-0 text-primary-foreground/60" />
+                <Mail className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 <a
                   href="mailto:grievance@mddma.org"
-                  className="text-primary-foreground/80 hover:text-primary-foreground"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   grievance@mddma.org
                 </a>
               </li>
               <li className="flex items-start gap-2">
-                <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-foreground/60" />
-                <div className="text-primary-foreground/80">
+                <Clock className="mt-0.5 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                <div className="text-muted-foreground">
                   <div>Mon–Sat: 10 AM – 6 PM</div>
-                  <div className="mt-0.5 text-xs text-primary-foreground/60">
+                  <div className="mt-0.5 text-xs text-muted-foreground">
                     Closed Sundays &amp; market holidays
                   </div>
                 </div>
               </li>
             </ul>
-            <p className="mt-3 text-[11px] text-primary-foreground/60">
+            <p className="mt-3 text-[11px] text-muted-foreground">
               Grievance &amp; Data Protection Officer: Aditya Parmar
             </p>
           </div>
         </div>
       </div>
 
-      <div className="border-t border-primary-foreground/15">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-5 py-4 text-xs text-primary-foreground/60 sm:flex-row sm:px-6 lg:px-8">
+      <div className="border-t border-border">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-2 px-5 py-4 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">
           <p>© {new Date().getFullYear()} Mumbai Dry Fruits &amp; Dates Merchants Association. All rights reserved.</p>
           <p>G-BAU-G · Founded and operated by MDDMA</p>
         </div>

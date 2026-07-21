@@ -32,7 +32,7 @@ export function GuestTeaser() {
       <div className="max-w-sm rounded-2xl border border-border bg-card p-6 text-center shadow-lg">
         <h2 className="text-lg font-bold text-foreground">Sign in to join the conversation</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The MDDMA market feed is open to verified members only.
+          The G-BAU-G market feed is open to verified members only.
         </p>
         <div className="mt-4 space-y-2">
           <Button asChild variant="accent" className="w-full">
