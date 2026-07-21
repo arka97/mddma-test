@@ -1,149 +1,144 @@
-# Full-site review — critique first, then a build plan
 
-Depth: 5/5. Scope: UX & visual · content & copy · feature gaps. Backend/RLS untouched unless a copy-only doc change is needed.
+# G-BAU-G v2.1 — Parchment & Gold, ship visible slices first
 
----
+Approved plan with your three residual notes folded in and the palette locked to **Parchment & Gold** (ink primary, gold accent). Name stays **G-BAU-G**.
 
-## Part 1 — Critique (findings by severity)
+## Palette — decided, once, deliberately
 
-### 🔴 Critical (breaks trust or IA on first visit)
+Third and final swap. Structure (feed column, flat cards, action bar, shell) is palette-agnostic — this is ~40 token values in `src/index.css`, not a rebuild. Tailwind config stays as-is (semantic tokens).
 
-1. **Split brand identity.** Header shows "**G.BAU.G**" with sub-line "by Mumbai Dryfruits & Dates Merchants Association" (trailing NBSP, missing hyphen), while Footer/Copyright/`index.html`/`/about`/`Seo` all use "**MDDMA**" and "**Mumbai Dry-fruits & Dates**". Three different spellings ("Dryfruits", "Dry-fruits", "Dry Fruits") plus two brand acronyms. A first-time visitor cannot tell what this site is called.
-2. **Stale footer nav.** `Footer.tsx` links list "Lead CRM" (removed BIZ-001), "Market Intelligence" (now the Community Feed), and no link to `/rfq`, `/circulars` in the Platform column ordering. Contradicts locked v3.2 IA.
-3. **Route duplication / dead pages.**
-  - `/directory` and `/directorylist` both exist and both surface members.
-  - `/community` still exists as a full page but v3.2 rule says the feed lives at `/market` (and Community appears in the desktop header nav, sending users to a legacy view).
-  - `/forms` and `/contact` render the same "Advertise / Circular" tabbed page — `/contact` sets a false expectation.
-  - `HeroSection`, `FeaturedCategoriesSection`, `WhyMddmaSection`, `SponsorsSection`, `MarketplacePulse`, `IndustryFeed`, `FooterCTA` (~800 LOC in `src/components/home/`) are no longer rendered anywhere.
-4. **Membership page renders 2 tiers inside `md:grid-cols-3**` — a permanent empty column — and prints internal metadata to users: `Badge: Paid Member` and `Sponsored Eligible: Yes`. Also uses 3 tier icons for 2 tiers.
-5. **Missing GTM-001 public routes.** Core memory names `/faq` and `/knowledge` (+ `/knowledge/<slug>`) as pillars of the public authority layer; neither is defined in `routes.tsx`. `index.html` FAQ JSON-LD promises answers that no page carries.
-6. **Home has no welcome / hero for guests.** `Index.tsx` opens with an ad slot → a small `<h1 class="text-lg">Today on the market</h1>` → tiles. No positioning, no proof, no CTA above the fold. Fails the "authority layer" job the docs describe.
+**Light — "Parchment & Gold"**
+| Role | Token | Value | Use |
+|---|---|---|---|
+| Page base | `--background` | `#F5F1E8` | warm parchment |
+| Surface | `--card` `--popover` | `#FFFFFF` | cards on parchment, LinkedIn-style depth via **border**, no shadow |
+| Hover / secondary | `--muted` `--secondary` | `#EFE9DC` | fills, hovers |
+| Ink | `--foreground` | `#1B1712` | text + **primary action pills** (X/LinkedIn-black style) |
+| Secondary text | `--muted-foreground` | `#6E6455` | metadata |
+| Border | `--border` | `#E6DECF` | hairlines |
+| Brand gold | `--gold` / `--brand-gold` | `#D8A86A` | logo, large brand fills, 10–20% tints, active-nav highlight |
+| Gold-strong (CTA/text on gold) | `--accent` / new `--gold-strong` | `~#935E1B` | links, verified check, small gold CTAs, **any time gold bears or backs text** (WCAG) |
+| `--primary` | ink | `#1B1712` | primary pills are ink, not gold |
+| Success | `--success` | `#1E9E6A` | generic success — **reserve exact `#25D366` for WhatsApp buttons only** |
+| Like / Repost | `--like` / `--repost` | `#F91880` / `#00BA7C` | keep universal social signals |
+| Destructive | `--destructive` | `#E5484D` | unchanged in intent |
 
-### 🟠 High (weakens polish and comprehension)
+**Dark — "candlelight" (optional this phase):** `--background #14110C`, `--card #1E1A13`, `--foreground #EDE6D8`, gold brightens to `#E7B979`.
 
-7. **Desktop header nav vs. mobile bottom tabs disagree.**
-  - Desktop: Directory · Products · Brands · Market · Community · Membership.
-  - Mobile: Home · Market · RFQ · Members · Account.
-  - RFQ and Account are absent from desktop; Community/Brands/Membership are absent from mobile. Users learning one flow are lost on the other device.
-8. `**TodayHeader` subtitle lies:** "Live rates, circulars and verified merchants" — but the Index page no longer includes a Live Rates ticker (removed).
-9. `**QuickActionsGrid` mixes navigation with marketing** — "About Us" and "Directory List" (a redundant page) sit next to real actions like "Market" and "Bulletin".
-10. **Hard-coded colors bypass tokens in 14 files** (verified via ripgrep) — `bg-emerald-600`, `border-emerald-200`, `bg-emerald-50`, `text-white`, `bg-black` used in `Directory.tsx`, `MemberCard.tsx`, `Storefront.tsx`, `MembershipStatusCard.tsx`, `SellerSignals.tsx`, `WhatsappFab.tsx`, `LinkPreviewCard.tsx`, `ProductsPage.tsx`, `ProductMediaCarousel.tsx`. Breaks the cream+navy+gold system and future dark mode.
-11. **Directory / Broker overlap.** Directory has a `Broker` type filter and a whole `/broker` page exists as a filtered view — duplicated navigation.
-12. **Empty-state copy is uniformly weak.** "No members found matching your criteria." "No posts yet — be the first to share." No reset-filter action, no upgrade CTA, no illustration.
-13. **Footer contact block is placeholder-tier.** Address "Sector 19, APMC Market, Vashi" and phone "+91 22 2784 1234" contradict the canonical address/phone in `index.html` JSON-LD and hide the named Grievance Officer (Aditya Parmar) that legal docs require.
-14. **Dashboard hero uses `bg-primary**` (which is gold in this theme) — a giant gold band under the logged-in shell competes visually with the gold logo and gold accents.
-15. **Header search placeholder** says "Mamra, Medjool, traders…" but always routes to `/products?q=…`, so "traders" returns product listings, not people.
+**Integration-color rule (the reason we chose gold):** third-party brand color is used *only* on that integration's action.
+- WhatsApp `#25D366` → "Message on WhatsApp", WhatsApp-style Communities.
+- LinkedIn `#0A66C2` → "Share / Connect on LinkedIn".
+- X → ink → "Share on X".
+No blue or green claimed as ours anywhere else. Legacy `--gold*` aliases in `index.css` that were remapped to X-blue get restored to real gold. Grep for stray `text-primary` / `bg-primary` uses that assume blue — those now read ink and must be audited in the guest walkthrough.
 
-### 🟡 Medium (opportunities to sharpen)
-
-16. **No microcopy for controlled transparency.** Free/guest visitors see "Contact seller" but never a preview of what's unlocked with Paid — hurts conversion.
-17. **No onboarding for new paid members** — no "add your first product / brand / logo" checklist on `/dashboard`.
-18. **No FAQ page even though `index.html` publishes FAQ JSON-LD** — search engines will surface answers that don't exist on-site.
-19. **Ads (`AdSlot`) appear in high-friction slots** — between `PageHeader` and filters on `/directory` and `/products`. Consider inline-between-cards rhythm instead.
-20. **Skimpy meta on child pages.** Most pages set `<Seo title="… — MDDMA" noindex>` — fine for gated pages, but the public `/about`, `/circulars`, `/apply`, `/membership` need distinct meta titles/descriptions optimized against the SemRush keyword universe (dry fruits importer, mamra almond wholesaler, medjool dates supplier).
-21. **No language toggle.** Target users trade in Hindi / Gujarati; keeping English-only is fine but a subtle "हिन्दी" toggle would signal welcome even if it only translates the home/apply pages.
-22. **PWA install prompt only in header (icon-only) and footer.** No install nudge on `/dashboard` where the value proposition is highest.
-23. **No breadcrumbs on deep routes** (`/products/:slug`, `/directory/:slug`, `/store/:slug`, `/documents/:slug`) — mobile users can't step back through IA.
-24. **Community feed anonymity** is powerful (v3.2) but there's no UI explainer next to the toggle for the poster — "How does anonymous work?".
-
-### 🟢 Low / polish
-
-25. Header row 1 collapses on scroll on mobile — good — but the search row jumps up abruptly. Add a `transition-transform` for smoothness.
-26. Category tiles' "hot / featured" pill uses a red-orange accent on gold + cream — visually fine but the pill's `text-[8px]` is illegible.
-27. Mobile tab labels at `text-[10px]` fail WCAG 1.4.4 for small screens; icons alone would be cleaner or `text-xs`.
-28. `Layout.tsx` bottom-tab spacer is not audited — check for content clipped under fixed bar on iOS Safari.
+**Rule that keeps gold from looking cheap:** light `#D8A86A` never carries text and never sits under white text. Text on gold → gold-strong `~#935E1B`. Primary buttons stay ink pills. This one rule is the difference between "warm and expensive" and "muddy."
 
 ---
 
-## Part 2 — Prioritized build plan (5 phases, approve to execute)
+## Phase 1 — Reskin delta + real follows + palette swap
 
-Each phase is a self-contained batch. You can approve them one at a time; I'll pause between phases if you want.
+- **Re-token `src/index.css` to Parchment & Gold** per the table above. Restore real `--gold*` values (currently remapped to X-blue). Add `--gold-strong`.
+- **Guest + authed Playwright walkthrough** of Home, Market, Directory, Storefront, ProductPage, RFQ, Membership, About, Login. Fix any surface still reading blue where it should read ink or gold.
+- **Desktop 3-column shell** in `src/components/layout/Layout.tsx`: left icon rail (Home / Search / Notifications / Deal Messages / RFQ / Directory / Profile), centered 600px feed column, right rail (Who to follow · Upcoming trade events · Trending in trade). Mobile bottom tabs unchanged.
+- **Hover cards** on handles/avatars in feed, directory, post detail, deal messages: logo, verified check, Follow, Message, Start RFQ. Reuse `companies_public`.
+- **Unified search bar** in header — visual only this phase (autocomplete stub returns empty), backend wired in Phase 5.
+- **Wire `FollowButton` to the real `follows` table.** Delete `src/lib/follow.ts` localStorage shim; rewrite `src/hooks/useFollow.ts` to read/write `follows` via Supabase. Optimistic UI, invalidate on error, dedupe by `(follower_id, following_id)`. The `follows` table already exists.
 
-### Phase 1 — Brand & IA truth (fixes #1, #2, #3, #6, #11, #14, #15)
-
-1. **Brand lockup.** Decide brand-name in a short chat: keep "MDDMA" everywhere OR keep "GBAUG (by MDDMA)". I'll then propagate one name consistently across `Header`, `Footer`, `index.html`, `Seo` defaults, `manifest.json`, `apple-mobile-web-app-title`, JSON-LD, and copy — plus fix the "Dryfruits / Dry-fruits / Dry Fruits" spelling to a single canonical form.
-2. **Retire duplicate/dead routes.**
-  - Redirect `/directorylist` → `/directory` (with an A–Z toggle inside Directory).
-  - Redirect `/community` → `/market`; remove from header desktop nav.
-  - Redirect `/contact` → new `/contact` page (see phase 3) and remove the `/forms == /contact` alias.
-  - Delete unused home components (`HeroSection`, `FeaturedCategoriesSection`, `WhyMddmaSection`, `SponsorsSection`, `MarketplacePulse`, `IndustryFeed`, `FooterCTA`).
-3. **Reconcile desktop nav ↔ mobile tabs.** Desktop primary: Home · Directory · Products · Market · RFQ · Membership. Everything else moves under a "More" dropdown (Brands, Circulars, About, Documents). Mobile keeps current 5 tabs; add long-press or "more" sheet mirror.
-4. **Broker page** becomes a curated landing (see phase 4) rather than a duplicated directory filter; header link removed.
-5. **Repaint `/dashboard` hero** — swap `bg-primary` band for `bg-card` with a thin gold underline; primary reserved for CTAs.
-6. **Search UX** — placeholder becomes "Search Mamra, Medjool, dates…"; add a "People" tab in results that routes to `/directory?q=`.
-
-### Phase 2 — Home page rework (fixes #6, #8, #9)
-
-1. **New hero band** (guest-visible, member-aware): 1-line H1 ("India's verified trade network for dates, mamra & dry fruits — since 1930"), 1-line sub (proof: N verified members · N circulars this quarter), two CTAs ("Browse members", "Apply for membership"). Warm cream surface, gold underline, muted navy ink — no gradient soup.
-2. **Above-the-fold rhythm** for both guests and members:
-  - Hero
-  - Live Ticker (bring back the ticker component — subtitle claims it)
-  - Categories
-  - Recent listings
-  - New members
-  - Circular alert (only if unread)
-  - Membership CTA (only for non-paid)
-3. `**QuickActionsGrid` shrinks to 4 tiles** — Market · Bulletin · RFQ · Members. About/Directory List/Brands move into "More" from header.
-4. **Rewrite `TodayHeader` subtitle** to match reality.
-5. **Guest-only strip** below hero — 3 authority pills (95 years · APMC Vashi · KYC-verified) with a "Why MDDMA?" mini link.
-
-### Phase 3 — Public authority pages & meta (fixes #5, #13, #18, #20)
-
-1. **New `/faq` page** — renders the same Q&A as `index.html` JSON-LD; also produces the JSON-LD from the page data so they can never drift again.
-2. **New `/knowledge` hub + `/knowledge/<slug>` viewer** — reuses the existing markdown renderer (`Markdown.tsx`) with a small `src/content/knowledge/` seed (import policy 101, GST for traders, Mamra grades, Medjool storage). Sitemap-listed.
-3. **New standalone `/contact` page** — real address (canonical from `index.html`), phone, `grievance@mddma.org`, named Grievance & Data Protection Officer (Aditya Parmar), office hours, embedded Google map, and a lightweight message form (not the ad/circular Forms).
-4. **Footer overhaul** — Platform column matches v3.2 nav; add "Legal" column (Privacy, Terms, Refund, Grievance) linking to the promoted policy pages; canonical address/phone; small Grievance Officer line.
-5. **Per-page SEO meta** — write distinct titles + 150-char descriptions for `/`, `/about`, `/membership`, `/apply`, `/circulars`, `/faq`, `/knowledge`, `/contact` grounded in a quick SemRush pass on target keywords (mamra almond, medjool dates wholesaler, dry fruits importer India).
-
-### Phase 4 — Component & feature polish (fixes #4, #7, #10, #12, #16, #17, #19, #22, #23, #24)
-
-1. `**/membership` fix** — 2-column grid on md, single row on lg; remove internal metadata lines; icon per tier (2 icons, not 3); add "What you unlock" side-by-side comparison table below cards; add a Contact-us row for enterprise/broker questions.
-2. **Design-token sweep** — replace 34 hard-coded color occurrences across 14 files with semantic tokens. Introduce `--success-soft` and `--success-strong` for the verified-badge pattern currently using `bg-emerald-*`.
-3. **Empty states upgrade** — one shared `EmptyState` layout: illustration slot + heading + body + primary action + "Reset filters" secondary; wire into Directory, Products, Market, RFQ, Community feed migration.
-4. **Reveal-preview microcopy** — on Directory/Storefront/Product cards for guest/free users, subtle "Paid members see WhatsApp & phone" chip near the CTA (already gated, this is *only* copy).
-5. **Onboarding checklist card** on `/dashboard` for authenticated members without a completed profile: "Add company logo · List first product · Verify GST · Publish first brand" with progress %.
-6. **Breadcrumbs** on `/products/:slug`, `/directory/:slug`, `/store/:slug`, `/documents/:slug`, `/knowledge/:slug`, `/circulars` article view.
-7. **Ad slot rhythm** — move `AdSlot` on Directory/Products from above-filters to a between-cards position at index 4 and 12.
-8. **Install-app nudge** on `/dashboard` (one-line banner, dismissible, respects `useInstallPrompt`).
-9. **Anonymity explainer** — 1-line "Only admins can trace anonymous posts (log kept for compliance)." next to the toggle in `ComposeSheet`.
-10. **New "Broker board"** — reframe `/broker` from filtered directory to a curated matchmaking page: 3 sections (Brokers accepting mandates · Open buy interests · Open sell interests). Reuses `rfq_listings` for the last two.
-
-### Phase 5 — Accessibility, polish, docs sync (fixes #25–#28)
-
-1. Mobile bottom-tab labels → `text-xs`, min 44×44 hit area verified.
-2. Header collapse — add `transition-transform` + reduce jump.
-3. Category "hot / featured" pill → readable `text-[10px]` with better contrast.
-4. Layout — verify `pb-24` spacer on all mobile pages so content clears the fixed tab bar on iOS.
-5. Update `mem://index.md` core rules to reflect single brand name, `/faq` and `/knowledge` now live, `/directorylist` retired, and Broker board reframed. Regenerate internal-docs bundle.
+No new tables. No RLS changes.
 
 ---
 
-## Files touched (indicative, per phase)
+## Phase 2 — Seed + staging data (prerequisite)
 
-```text
-Phase 1: src/components/layout/{Header,Footer,MobileBottomTabBar}.tsx
-         src/routes.tsx, src/pages/Dashboard.tsx, index.html
-         delete: 7 unused src/components/home/*.tsx
-Phase 2: src/pages/Index.tsx + new src/components/home/hero/*
-         src/components/home/today/{TodayHeader,QuickActionsGrid}.tsx
-Phase 3: new src/pages/{Faq,Knowledge,KnowledgeArticle,Contact}.tsx
-         new src/content/knowledge/*.md
-         src/components/layout/Footer.tsx, src/components/Seo.tsx, index.html
-Phase 4: src/pages/MembershipPlans.tsx
-         14 files under src/{pages,components}/** for token sweep
-         src/components/ui/empty-state.tsx (extend)
-         src/pages/{Directory,Products,Storefront,Rfq,Community}.tsx
-         src/components/rfq/CreateRfqSheet.tsx, market/ComposeSheet.tsx
-         src/pages/Broker.tsx (rewrite)
-Phase 5: src/components/layout/{Header,MobileBottomTabBar,Layout}.tsx
-         mem://index.md, scripts/build-internal-docs-bundle.ts (rerun)
-```
+- `scripts/seed-demo.ts` — idempotent, `seed_marker` metadata field, `--reset` flag.
+- 20 verified companies, 40 offerings (mixed product + service), 10 RFQs across statuses, 30 community posts (text/image/poll/link), 5 brands, follow edges, likes, comments.
+- **Non-prod env guard on "Load demo data":** button in `/account/moderation` only mounts when `import.meta.env.MODE !== 'production'` **and** `VITE_ALLOW_SEED === 'true'` **and** user is admin. Seed rows can never land in prod.
 
-## Decisions I need before executing
+---
 
-1. **Brand name** — "MDDMA" everywhere, or "GBAUG (by MDDMA)" everywhere? "G-BAU-G"
-2. **Deprecate `/community**` entirely (redirect to `/market`), or keep as read-only archive? deprecate
-3. **Broker board scope** — reframe as matchmaking (recommended) or just remove `/broker` and keep the Directory filter? remove /broker
-4. **Seed content for** `/knowledge` — do you have 3–5 canonical articles ready, or should I draft placeholders you can replace? draft placeholders
+## Phase 3 — Following/For-you feed + system event cards (read-time first)
 
-Once you approve this plan (and answer the 4 decisions above), I'll execute Phase 1 immediately and pause for review before Phase 2.
+- **Feed tabs on `/market`**: `For you` (default) / `Following` / `Market Events` / `All`. Following filters to the `follows` graph.
+- **`feed_stream(cursor, filter)` RPC** — read-time union of `community_posts` + synthetic event rows derived from source tables (`products` newly listed, `rfq_listings` newly opened). No trigger, no `feed_events` table yet. Dedupe by `(source_table, source_id)` in the query. Cheaper to evolve, no write-path fan-out.
+- **Graduate to a `feed_events` table only when needed** — specifically for `member.joined` (no natural source-row change to hook) and durable dedupe once the union query slows. Ships as a small follow-up migration if/when it does.
+- **`SystemEventCard`** in the feed with dashed border, distinct from manual posts.
+
+RLS: read gates carry through from source tables — nothing to loosen.
+
+---
+
+## Phase 4 — Identity: N:M business representatives (with pgTAP)
+
+**Schema (one migration, one rollback prepared and reviewed *before* the forward migration ships)**
+- `business_representatives(business_id, user_id, role enum: owner|admin|member, is_authorized bool, invited_by, added_at, revoked_at nullable, unique(business_id, user_id))`.
+- Backfill one `role='owner', is_authorized=true` row per existing `companies.owner_id`.
+- `companies.owner_id` stays — becomes the "primary rep" pointer.
+
+**Helper** — `is_rep_of(_business_id uuid) returns boolean`, SECURITY DEFINER, matches on `auth.uid()` AND `is_authorized=true` AND `revoked_at is null`.
+
+**RLS rewrite** on `companies`, `products`, `brands`, `product_variants`, `community_posts` (author path), `rfq_listings`, `rfq_quotations`, `deal_rooms`, `deal_messages`, `advertisements`, `circulars`. Primary-rep-only actions (delete business, change primary rep) keep `owner_id = auth.uid()`.
+
+**pgTAP suite in `supabase/tests/rls/` — first-class deliverable, CI-gated.** Fixtures cover the leak cases explicitly, not just owner/stranger/admin:
+- `owner` rep
+- `admin` rep
+- `member` rep (limited role — can post as business, cannot edit business profile or products)
+- **`is_authorized=false` rep** (invited but not accepted)
+- **`revoked_at` set rep** (previously authorized, now removed — must lose all access immediately)
+- unrelated user
+- platform admin
+
+Per-table matrix: SELECT / INSERT / UPDATE / DELETE × every fixture. Run against a shadow DB from a fresh dump.
+
+**UI** — rep switcher in header (only when user is rep of >1 business); `AuthContext` gains `myBusinesses[]` + `activeBusinessId` with a shim so existing single-`company` callers keep working; `/account/company/reps` page for invite/remove/role-change.
+
+---
+
+## Phase 5 — Discovery: unified search + directory polish
+
+- `search-network` edge function using Postgres FTS across `companies`, `products` (with `offering_type` filter), `rfq_listings`, `community_posts`. Grouped typed results, narrowable to one type.
+- Wire header search bar shipped visually in Phase 1.
+- Filters: platform-wide (vertical, verification, region); offering-only (product vs service, MOQ, price tier).
+- Directory polish: hover cards live, verified badges cleaned up, "New this week" strip, alpha jump on `/directorylist`.
+
+---
+
+## Phase 6 — Commerce: offerings, quotes, RFQ carts, Deal Messages rename
+
+- **`products.offering_type enum('product','service') default 'product'`** — decided now, not during build. One storefront, one search, one RFQ pipeline. Service-only columns (`scope`, `duration`, `coverage_area`, `cert_validity`) nullable. `product_variants` stays product-only.
+- **`rfq_quotations.quote_type enum('indicative','formal')`.** Indicative → shortlist / revise. Formal → shortlist / revise / reject / withdraw / expire. **No "Accept Quotation" surface anywhere** — audit and remove; copy explains commitment happens in Deal Messages.
+- **`rfq_carts` + `rfq_cart_items`** — single-seller auto-splits into one RFQ per seller; multi-seller open-tender posts one combined RFQ, sellers can quote on any subset of line items.
+- **Rename Deal Room → Deal Message in UI copy only.** Keep table + RPC names (`start_deal_room`, `send_deal_message`) for backwards compat. Add participant history, edited indicator, export.
+- Any commercial action (submit quote, RFQ response, storefront/product inquiry) auto-opens a Deal Message thread and bypasses any future follow-gate.
+
+---
+
+## Phase 7 — Notifications + moderation
+
+- Tiered notifications (default on): real-time push/email for commercial (RFQ response, quote received/expiring, deal-message reply); in-app only for social; digest for association announcements. Opt-in "everything real-time" toggle.
+- `notifications` + `notification_prefs` tables. Realtime via Supabase channels.
+- Moderation v1: `reports`, `blocks`. Platform admin sees all reports (association scoping lands with tenancy). Appeals infra deferred.
+
+---
+
+## Deferred until demand is real
+
+- **Multi-tenancy** — `associations` table, `association_id` foreign keys, per-association seller approval, Admin Console, Public Hub, Association Desk. Built only when a real second association is onboarding; separate plan with its own RLS-rewrite pgTAP suite.
+- **Communities** (WhatsApp-style group chats — will use exact WhatsApp `#25D366` per integration-color rule), **Lists**.
+- **Trade Shows**, **Event Organizers** (their own entity, not a `companies` flag), **Media Partners**, **Calendar**.
+- Synthesized market-intelligence posts with provenance labels — v1.1.
+- DigiKhoj rename, payments, escrow, invoices, full appeals moderation, live/virtual event infra, multi-vertical launch — explicitly out.
+
+---
+
+## Order of operations
+
+1. Phase 1 — palette swap + reskin delta + real follows (visible, days)
+2. Phase 2 — seed data (prerequisite, non-prod-gated)
+3. Phase 3 — feed tabs + read-time system event cards
+4. Phase 4 — N:M reps with pgTAP (including `is_authorized=false`, `revoked_at`, `role='member'` fixtures)
+5. Phase 5 — unified search + directory polish
+6. Phase 6 — offerings, quotes, RFQ carts, Deal Messages rename
+7. Phase 7 — notifications + basic moderation
+8. **Only if a second association is real:** multi-tenancy (separate plan)
+
+Approve to start Phase 1.
