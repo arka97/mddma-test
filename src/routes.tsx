@@ -31,6 +31,7 @@ const ProfilePage = lazy(() => import("./pages/account/ProfilePage"));
 const CompanyPage = lazy(() => import("./pages/account/CompanyPage"));
 const ProductsPage = lazy(() => import("./pages/account/ProductsPage"));
 const TeamPage = lazy(() => import("./pages/account/TeamPage"));
+const CompaniesPage = lazy(() => import("./pages/account/CompaniesPage"));
 
 const AdminModeration = lazy(() => import("./pages/account/AdminModeration"));
 const Brands = lazy(() => import("./pages/Brands"));
@@ -95,6 +96,7 @@ export function AppRoutes() {
         <Route path="/account/products" element={protect(<ProductsPage />)} />
         <Route path="/account/brands" element={protect(<AccountBrandsPage />)} />
         <Route path="/account/team" element={protect(<TeamPage />)} />
+        <Route path="/account/companies" element={protect(<CompaniesPage />)} />
 
         <Route path="/account/moderation" element={protect(<AdminModeration />, "admin")} />
 

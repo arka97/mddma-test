@@ -84,8 +84,8 @@ export function CompanySwitcher({ compact = false, className }: CompanySwitcherP
         })}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link to="/account/company" className="flex items-center gap-2">
-            <Building2 className="h-4 w-4" /> Manage this business
+          <Link to="/account/companies" className="flex items-center gap-2">
+            <Building2 className="h-4 w-4" /> All my businesses
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
