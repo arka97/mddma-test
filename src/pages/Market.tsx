@@ -188,19 +188,26 @@ const Market = () => {
                     : "No posts yet — be the first to share."}
                 </p>
               ) : (
-                rest.map((p) => (
-                  <PostCard
-                    key={p.id}
-                    post={p}
-                    author={authors[p.author_id]}
-                    liked={likes.mine.has(p.id)}
-                    likeCount={likes.counts[p.id] ?? 0}
-                    commentCount={comments[p.id] ?? 0}
-                    viewCount={views[p.id] ?? 0}
-                    canEngage={canEngage}
-                    isAdmin={isAdmin}
-                  />
-                ))
+                rest.map((p, idx) => {
+                  const event = feedTab === "for_you" && idx > 0 && idx % 4 === 0
+                    ? events[Math.floor(idx / 4) - 1]
+                    : null;
+                  return (
+                    <div key={p.id}>
+                      {event && <SystemEventCard event={event} />}
+                      <PostCard
+                        post={p}
+                        author={authors[p.author_id]}
+                        liked={likes.mine.has(p.id)}
+                        likeCount={likes.counts[p.id] ?? 0}
+                        commentCount={comments[p.id] ?? 0}
+                        viewCount={views[p.id] ?? 0}
+                        canEngage={canEngage}
+                        isAdmin={isAdmin}
+                      />
+                    </div>
+                  );
+                })
               )}
             </div>
           </>
