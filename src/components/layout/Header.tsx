@@ -57,6 +57,7 @@ export function Header() {
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
   const scrolled = useScrolled(24);
+  const { hasActivity: hasDealActivity } = useDealRoomsActivity();
 
   const submitSearch = (event?: React.FormEvent) => {
     event?.preventDefault();
