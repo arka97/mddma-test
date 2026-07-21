@@ -11,6 +11,9 @@ import { useRfqBoard } from "@/hooks/queries/useRfqs";
 import { RfqCard } from "@/components/rfq/RfqCard";
 import { CreateRfqSheet } from "@/components/rfq/CreateRfqSheet";
 import { QuoteRfqSheet } from "@/components/rfq/QuoteRfqSheet";
+import { RfqPrimerCard } from "@/components/rfq/RfqPrimerCard";
+import { FeedShell } from "@/components/layout/FeedShell";
+import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
 import { cn } from "@/lib/utils";
 import type { RfqListingRow, RfqType } from "@/repositories/rfqListings";
 
