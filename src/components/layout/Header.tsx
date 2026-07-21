@@ -263,6 +263,10 @@ export function Header() {
             </kbd>
           </button>
         </div>
+
+        <div className="pb-2.5">
+          <AdSlot placement="search-below" />
+        </div>
       </div>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
