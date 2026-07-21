@@ -246,17 +246,22 @@ export function Header() {
           </div>
         </div>
 
-        <form onSubmit={submitSearch} className="relative pb-2.5 pt-1">
-          <Search className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={searchQ}
-            onChange={(event) => setSearchQ(event.target.value)}
-            placeholder="Search products, brands and businesses…"
-            aria-label="Search the G-BAU-G network"
-            className="h-11 w-full rounded-full border-transparent bg-muted pl-10 text-sm shadow-none focus-visible:border-primary focus-visible:bg-background focus-visible:ring-0"
-          />
-        </form>
+        <div className="relative pb-2.5 pt-1">
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="group flex h-11 w-full items-center gap-2.5 rounded-full border border-transparent bg-muted px-4 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/70 focus-visible:border-primary focus-visible:bg-background focus-visible:outline-none"
+            aria-label="Open global search"
+          >
+            <Search className="h-[18px] w-[18px]" aria-hidden />
+            <span className="flex-1 truncate">Search businesses, products, RFQs…</span>
+            <kbd className="hidden shrink-0 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-muted-foreground sm:inline-block">
+              ⌘K
+            </kbd>
+          </button>
+        </div>
       </div>
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
   );
 }
