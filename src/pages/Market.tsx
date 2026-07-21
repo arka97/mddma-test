@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { FeedShell } from "@/components/layout/FeedShell";
 import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
 import { TrendingTopics } from "@/components/feed/TrendingTopics";
+import { MyBusinessesCard } from "@/components/feed/MyBusinessesCard";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -131,6 +132,7 @@ const Market = () => {
       <FeedShell
         rightRail={
           <>
+            <MyBusinessesCard />
             <SuggestedFollows />
             <TrendingTopics />
           </>
