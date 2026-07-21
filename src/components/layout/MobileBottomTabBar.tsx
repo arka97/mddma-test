@@ -1,22 +1,23 @@
 import { Link, useLocation } from "react-router-dom";
-import { FileText, Home, MessageSquare, User, Users } from "lucide-react";
+import { Feather, Home, MessageSquare, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface Tab {
   label: string;
-  href: string;
+  href?: string;
   icon: typeof Home;
-  match: (path: string) => boolean;
+  match?: (path: string) => boolean;
   requireAuth?: boolean;
+  action?: "post";
 }
 
-const baseTabs: Tab[] = [
+const tabs: Tab[] = [
   { label: "Home", href: "/", icon: Home, match: (path) => path === "/" },
   { label: "Market", href: "/market", icon: MessageSquare, match: (path) => path.startsWith("/market") },
-  { label: "RFQ", href: "/rfq", icon: FileText, match: (path) => path.startsWith("/rfq") },
+  { label: "Post", icon: Feather, action: "post" },
   {
-    label: "Firms",
+    label: "Members",
     href: "/directory",
     icon: Users,
     match: (path) => path.startsWith("/directory") || path.startsWith("/store"),
@@ -34,42 +35,47 @@ const baseTabs: Tab[] = [
   },
 ];
 
-export function MobileBottomTabBar() {
+export function MobileBottomTabBar({ onPost }: { onPost?: () => void }) {
   const location = useLocation();
   const { user } = useAuth();
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-safe shadow-[0_-4px_16px_-8px_rgba(0,4,40,0.08)] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-safe backdrop-blur lg:hidden"
       aria-label="Primary"
     >
       <ul className="grid grid-cols-5">
-        {baseTabs.map((tab) => {
-          const active = tab.match(location.pathname);
+        {tabs.map((tab) => {
+          const active = tab.match ? tab.match(location.pathname) : false;
           const Icon = tab.icon;
-          const target = tab.requireAuth && !user ? `/login?next=${encodeURIComponent(tab.href)}` : tab.href;
+          const isPost = tab.action === "post";
 
+          if (isPost) {
+            return (
+              <li key={tab.label} className="relative flex items-center justify-center">
+                <button
+                  onClick={onPost}
+                  className="my-1 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm hover:bg-primary/90"
+                  aria-label="Post"
+                >
+                  <Icon className="h-5 w-5" strokeWidth={2.5} />
+                </button>
+              </li>
+            );
+          }
+
+          const target = tab.requireAuth && !user ? `/login?next=${encodeURIComponent(tab.href!)}` : tab.href!;
           return (
-            <li key={tab.label} className="relative">
+            <li key={tab.label}>
               <Link
                 to={target}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 pb-2 pt-2.5 text-[11px] font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
+                  "flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 pb-2 pt-2 text-[11px] font-semibold transition-colors",
+                  active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                {active && (
-                  <span className="absolute inset-x-6 top-0 h-1 rounded-b-full bg-primary" aria-hidden="true" />
-                )}
-                <span
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
-                    active ? "bg-primary/15" : "hover:bg-muted",
-                  )}
-                >
-                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
-                </span>
+                <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
                 <span>{tab.label}</span>
               </Link>
             </li>
