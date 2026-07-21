@@ -128,6 +128,49 @@ export async function listCompanies(opts: { includeHidden?: boolean } = {}) {
     .filter((row): row is CompanyRow => row !== null);
 }
 
+export interface AuthorCompanyLite {
+  owner_id: string;
+  id: string;
+  slug: string;
+  name: string;
+  logo_url: string | null;
+  is_verified: boolean;
+}
+
+/**
+ * Resolve a batch of post-author user ids to their public storefront (slug,
+ * name, logo, verified flag) so feed authors can link through to a profile.
+ * Reads the public view only — no contact/registration columns.
+ */
+export async function listCompaniesByOwners(
+  ownerIds: string[],
+): Promise<Record<string, AuthorCompanyLite>> {
+  const ids = Array.from(new Set(ownerIds.filter(Boolean)));
+  if (!ids.length) return {};
+  const { data, error } = await supabase
+    .from("companies_public")
+    .select("id, owner_id, slug, name, logo_url, is_verified")
+    .in("owner_id", ids)
+    .eq("is_hidden", false);
+  if (error) throw new Error(friendlyErrorMessage(error));
+  const map: Record<string, AuthorCompanyLite> = {};
+  for (const row of (data ?? []) as Array<Record<string, unknown>>) {
+    const owner = row.owner_id as string | null;
+    const slug = row.slug as string | null;
+    if (owner && slug) {
+      map[owner] = {
+        owner_id: owner,
+        id: (row.id as string | null) ?? "",
+        slug,
+        name: (row.name as string | null) ?? "",
+        logo_url: (row.logo_url as string | null) ?? null,
+        is_verified: !!row.is_verified,
+      };
+    }
+  }
+  return map;
+}
+
 export async function getCompanyById(id: string) {
   const { data, error } = await supabase
     .from("companies_public")

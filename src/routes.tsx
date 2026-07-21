@@ -12,6 +12,7 @@ const Storefront = lazy(() => import("./pages/Storefront"));
 const Products = lazy(() => import("./pages/Products"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const Market = lazy(() => import("./pages/Market"));
+const PostDetail = lazy(() => import("./pages/PostDetail"));
 const Rfq = lazy(() => import("./pages/Rfq"));
 const MyQuotations = lazy(() => import("./pages/MyQuotations"));
 const DealRooms = lazy(() => import("./pages/DealRooms"));
@@ -69,6 +70,7 @@ export function AppRoutes() {
         <Route path="/brands/:slug" element={<BrandPage />} />
         <Route path="/broker" element={<Navigate to="/directory?type=Broker" replace />} />
         <Route path="/market" element={<Market />} />
+        <Route path="/market/:postId" element={<PostDetail />} />
         <Route path="/community" element={<Navigate to="/market" replace />} />
         <Route path="/rfq" element={<Rfq />} />
         <Route path="/quotes" element={protect(<MyQuotations />)} />
