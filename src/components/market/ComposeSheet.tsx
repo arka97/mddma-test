@@ -40,7 +40,7 @@ const SIGNAL_OPTIONS: { value: Exclude<PostType, "general" | "admin_rate_update"
 interface PendingImage { file: File; previewUrl: string; }
 
 export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
-  const { user, profile } = useAuth();
+  const { user, profile, company, memberships } = useAuth();
   const { toast } = useToast();
   const qc = useQueryClient();
 
@@ -263,6 +263,15 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                 <AvatarFallback className="bg-primary/20 text-sm font-semibold text-primary-foreground">{initials}</AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
+                {!isAnon && company && (
+                  <div className="mb-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                    <span>Posting as</span>
+                    <span className="font-medium text-foreground">{company.name}</span>
+                    {memberships.length > 1 && (
+                      <span className="text-muted-foreground">· switch in header</span>
+                    )}
+                  </div>
+                )}
                 <Textarea
                   ref={textareaRef}
                   className="min-h-[120px] resize-none border-0 bg-transparent p-0 text-base shadow-none focus-visible:ring-0"
@@ -272,6 +281,7 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                   onPaste={onPaste}
                   autoFocus
                 />
+
 
                 {images.length > 0 && (
                   <div className={cn("mt-2 grid gap-1", images.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
