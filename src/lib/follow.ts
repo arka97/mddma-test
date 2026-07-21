@@ -9,4 +9,4 @@
  * Kept as a module so any lingering `@/lib/follow` import surface fails at
  * type-check time instead of silently reading stale localStorage.
  */
-export { useFollow, useFollowingCount } from "@/hooks/useFollow";
+export { useFollow, useFollowingCount, useFollowingSet } from "@/hooks/useFollow";

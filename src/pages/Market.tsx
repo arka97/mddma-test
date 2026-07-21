@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { TopicChips } from "@/components/market/TopicChips";
+import { FeedTabs, type FeedTab } from "@/components/market/FeedTabs";
 import { PostCard } from "@/components/market/PostCard";
 import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
@@ -20,6 +21,7 @@ import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
 import { viewCounts } from "@/repositories/postViews";
 import { listCompaniesByOwners } from "@/repositories/companies";
+import { useFollowingSet } from "@/hooks/useFollow";
 import { supabase } from "@/integrations/supabase/client";
 
 type FeedAuthor = {
@@ -35,13 +37,16 @@ const Market = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<TopicTag | "all">("all");
+  const [feedTab, setFeedTab] = useState<FeedTab>("for_you");
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
+  const [authorCompanyIds, setAuthorCompanyIds] = useState<Record<string, string>>({});
   const [likes, setLikes] = useState<{ counts: Record<string, number>; mine: Set<string> }>({ counts: {}, mine: new Set() });
   const [comments, setComments] = useState<Record<string, number>>({});
   const [views, setViews] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
+  const followingSet = useFollowingSet();
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
@@ -75,17 +80,20 @@ const Market = () => {
       setComments(c);
       setViews(v);
       const map: Record<string, FeedAuthor> = {};
+      const companyIds: Record<string, string> = {};
       ((profs.data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>).forEach((p) => { map[p.id] = p; });
       // Merge storefront slug + verified flag so authors link to their profile.
-      Object.entries(companies as Record<string, { slug: string; name: string; is_verified: boolean }>).forEach(([ownerId, co]) => {
+      Object.entries(companies as Record<string, { id: string; slug: string; name: string; is_verified: boolean }>).forEach(([ownerId, co]) => {
         map[ownerId] = {
           ...(map[ownerId] ?? { id: ownerId, full_name: null, avatar_url: null }),
           company_name: map[ownerId]?.company_name ?? co.name,
           slug: co.slug,
           is_verified: co.is_verified,
         };
+        if (co.id) companyIds[ownerId] = co.id;
       });
       setAuthors(map);
+      setAuthorCompanyIds(companyIds);
     } catch {
       setPosts([]);
     } finally {
@@ -100,7 +108,13 @@ const Market = () => {
   }, [topic, canRead]);
 
   const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
-  const rest = posts.filter((p) => !pinned.includes(p));
+  const restAll = posts.filter((p) => !pinned.includes(p));
+  const rest = feedTab === "following"
+    ? restAll.filter((p) => {
+        const cid = authorCompanyIds[p.author_id];
+        return cid ? followingSet.has(cid) : false;
+      })
+    : restAll;
 
   return (
     <Layout>
@@ -116,11 +130,12 @@ const Market = () => {
       >
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
         {/* X-style feed header */}
-        <div className="border-b border-border bg-background">
+        <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
           <div className="px-4 pt-3">
             <h1 className="text-lg font-extrabold tracking-tight text-foreground">Market</h1>
           </div>
-          <div className="px-2 pt-1">
+          <FeedTabs active={feedTab} onChange={setFeedTab} followingDisabled={!user} />
+          <div className="border-b border-border px-2 pt-2">
             <TopicChips active={topic} onChange={setTopic} />
           </div>
         </div>
@@ -159,7 +174,11 @@ const Market = () => {
                   </div>
                 ))
               ) : rest.length === 0 ? (
-                <p className="py-16 text-center text-sm text-muted-foreground">No posts yet — be the first to share.</p>
+                <p className="py-16 text-center text-sm text-muted-foreground">
+                  {feedTab === "following"
+                    ? "You're not following anyone with posts yet — try Who to follow on the right."
+                    : "No posts yet — be the first to share."}
+                </p>
               ) : (
                 rest.map((p) => (
                   <PostCard
