@@ -17,7 +17,7 @@ import {
   User,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+
 import { cn } from "@/lib/utils";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { useAuth } from "@/contexts/AuthContext";
