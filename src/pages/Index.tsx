@@ -20,13 +20,13 @@ const Index = () => (
 
     <div className="container mx-auto max-w-6xl space-y-5 px-5 pt-4 sm:px-6 sm:pt-5 lg:px-8">
       <AdSlot placement="homepage-banner" />
+      <TodayHeader />
+      <QuickActionsGrid />
     </div>
 
     <div className="container mx-auto max-w-6xl px-5 py-5 sm:px-6 lg:px-8">
       <div className="space-y-5">
         <HomeHero />
-        <TodayHeader />
-        <QuickActionsGrid />
         <CategoryGrid />
         <RecentListingsList />
         <NewMembersList />
