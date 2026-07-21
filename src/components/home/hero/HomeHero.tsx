@@ -11,36 +11,35 @@ export function HomeHero() {
   return (
     <section
       aria-label="G-BAU-G trade network introduction"
-      className="relative overflow-hidden rounded-2xl border border-border bg-card px-5 py-6 shadow-sm sm:px-7 sm:py-8"
+      className="rounded-2xl border border-border bg-card px-5 py-6 sm:px-7 sm:py-8"
     >
-      <div className="absolute inset-x-5 top-0 h-0.5 bg-[hsl(var(--gold))]/70 sm:inset-x-7" aria-hidden />
-      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[hsl(var(--gold-dark))]">
+      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
         G-BAU-G · Governed by MDDMA
       </p>
-      <h1 className="mt-2 max-w-3xl text-xl font-semibold leading-tight text-foreground sm:text-2xl md:text-3xl">
-        The verified business network for nuts, dry fruits, dates, seeds, spices and allied foods.
+      <h1 className="mt-2 max-w-3xl text-2xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-3xl md:text-[2.5rem]">
+        The verified business network for nuts, dry fruits, dates, seeds and spices.
       </h1>
-      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+      <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-muted-foreground">
         Discover legitimate businesses, follow market intelligence, publish requirements and move qualified trade conversations forward.
       </p>
 
       {metrics && (
-        <p className="mt-3 text-xs font-medium text-foreground">
+        <p className="mt-3 text-[13px] font-medium text-foreground">
           {metrics.verifiedBusinesses} approved businesses · {metrics.activeRfqs} active requirements · {metrics.recentBulletins} official updates this quarter
         </p>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
+      <div className="mt-5 flex flex-wrap items-center gap-2.5">
         <Link
           to="/directory"
-          className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-xs font-semibold text-background shadow-sm transition-opacity hover:opacity-90"
+          className="inline-flex h-11 items-center gap-1.5 rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
         >
-          Explore businesses <ArrowRight className="h-3.5 w-3.5" />
+          Explore businesses <ArrowRight className="h-4 w-4" />
         </Link>
         {!canParticipate && (
           <Link
             to={user ? "/apply" : "/login"}
-            className="inline-flex items-center gap-1.5 rounded-full border border-[hsl(var(--gold))]/50 bg-[hsl(var(--gold))]/10 px-4 py-2 text-xs font-semibold text-[hsl(var(--gold-dark))] transition-colors hover:bg-[hsl(var(--gold))]/20"
+            className="inline-flex h-11 items-center gap-1.5 rounded-full border border-input bg-background px-5 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
             {user ? "Verify your business" : "Register your business"}
           </Link>
@@ -48,22 +47,22 @@ export function HomeHero() {
         {canParticipate && (
           <Link
             to="/dashboard"
-            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted"
+            className="inline-flex h-11 items-center gap-1.5 rounded-full border border-input bg-background px-5 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
             Open business desk
           </Link>
         )}
       </div>
 
-      <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-2 text-[11px] text-muted-foreground">
+      <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-[12px] font-medium text-muted-foreground">
         <li className="inline-flex items-center gap-1.5">
-          <ShieldCheck className="h-3.5 w-3.5 text-[hsl(var(--gold-dark))]" /> Verified businesses only
+          <ShieldCheck className="h-4 w-4 text-primary" /> Verified businesses only
         </li>
         <li className="inline-flex items-center gap-1.5">
-          <Globe2 className="h-3.5 w-3.5 text-[hsl(var(--gold-dark))]" /> Indian and overseas participation
+          <Globe2 className="h-4 w-4 text-primary" /> Indian &amp; overseas participation
         </li>
         <li className="inline-flex items-center gap-1.5">
-          <Building2 className="h-3.5 w-3.5 text-[hsl(var(--gold-dark))]" /> Operated by MDDMA
+          <Building2 className="h-4 w-4 text-primary" /> Operated by MDDMA
         </li>
       </ul>
     </section>

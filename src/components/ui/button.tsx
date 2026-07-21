@@ -10,17 +10,17 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_8px_20px_-8px_hsl(var(--primary)/0.55)] hover:shadow-[0_10px_22px_-8px_hsl(var(--primary)/0.7)]",
+          "rounded-full bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/85",
         secondary:
           "rounded-full bg-secondary text-secondary-foreground hover:bg-secondary/80",
         outline:
           "rounded-full border border-input bg-background text-foreground hover:bg-muted",
-        ghost: "rounded-md text-foreground hover:bg-muted",
+        ghost: "rounded-full text-foreground hover:bg-muted",
         link: "rounded-md text-primary underline-offset-4 hover:underline",
         destructive:
           "rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/90",
         accent:
-          "rounded-full bg-accent text-accent-foreground hover:bg-accent/90 shadow-[0_8px_20px_-8px_hsl(var(--accent)/0.55)]",
+          "rounded-full bg-accent text-accent-foreground hover:bg-accent/90",
       },
       size: {
         default: "h-11 px-5 py-2",

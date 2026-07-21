@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus } from "lucide-react";
+import { Feather } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
@@ -16,14 +16,24 @@ import { listFeedPosts, type CommunityPostRow, type TopicTag } from "@/repositor
 import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
 import { viewCounts } from "@/repositories/postViews";
+import { listCompaniesByOwners } from "@/repositories/companies";
 import { supabase } from "@/integrations/supabase/client";
+
+type FeedAuthor = {
+  id: string;
+  full_name: string | null;
+  avatar_url: string | null;
+  company_name?: string | null;
+  slug?: string | null;
+  is_verified?: boolean | null;
+};
 
 const Market = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<TopicTag | "all">("all");
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
-  const [authors, setAuthors] = useState<Record<string, { id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>>({});
+  const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
   const [likes, setLikes] = useState<{ counts: Record<string, number>; mine: Set<string> }>({ counts: {}, mine: new Set() });
   const [comments, setComments] = useState<Record<string, number>>({});
   const [views, setViews] = useState<Record<string, number>>({});
@@ -51,17 +61,27 @@ const Market = () => {
       setPosts(data);
       const ids = data.map((p) => p.id);
       const aIds = Array.from(new Set(data.filter((p) => !p.is_anonymous).map((p) => p.author_id)));
-      const [l, c, v, profs] = await Promise.all([
+      const [l, c, v, profs, companies] = await Promise.all([
         listLikes(ids),
         commentCounts(ids),
         viewCounts(ids),
         aIds.length ? supabase.from("profiles").select("id,full_name,avatar_url,company_name").in("id", aIds) : Promise.resolve({ data: [] }),
+        aIds.length ? listCompaniesByOwners(aIds) : Promise.resolve({}),
       ]);
       setLikes(l);
       setComments(c);
       setViews(v);
-      const map: typeof authors = {};
+      const map: Record<string, FeedAuthor> = {};
       ((profs.data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>).forEach((p) => { map[p.id] = p; });
+      // Merge storefront slug + verified flag so authors link to their profile.
+      Object.entries(companies as Record<string, { slug: string; name: string; is_verified: boolean }>).forEach(([ownerId, co]) => {
+        map[ownerId] = {
+          ...(map[ownerId] ?? { id: ownerId, full_name: null, avatar_url: null }),
+          company_name: map[ownerId]?.company_name ?? co.name,
+          slug: co.slug,
+          is_verified: co.is_verified,
+        };
+      });
       setAuthors(map);
     } catch {
       setPosts([]);
@@ -70,44 +90,65 @@ const Market = () => {
     }
   };
 
-  useEffect(() => { if (canRead) load(); else setLoading(false); /* eslint-disable-next-line */ }, [topic, canRead]);
+  useEffect(() => {
+    if (canRead) load();
+    else setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topic, canRead]);
 
   const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const rest = posts.filter((p) => !pinned.includes(p));
 
   return (
     <Layout>
-      <Seo title="Market — MDDMA Community" description="MDDMA member community: market signals, alerts, sourcing asks, and rates." path="/market" noindex />
+      <Seo title="Market — G-BAU-G" description="G-BAU-G market feed: price signals, alerts, sourcing asks and verified-member rates." path="/market" noindex />
 
-      <div className="container mx-auto max-w-3xl px-4 pb-24 pt-3 sm:px-6 sm:pt-4 lg:px-8">
-        <div className="sticky top-0 z-10 -mx-4 bg-background/95 backdrop-blur px-4 py-2 sm:-mx-6 sm:px-6">
-          <TopicChips active={topic} onChange={setTopic} />
+      <div className="mx-auto min-h-screen max-w-[600px] pb-24 sm:border-x sm:border-border">
+        {/* X-style feed header */}
+        <div className="border-b border-border bg-background">
+          <div className="px-4 pt-3">
+            <h1 className="text-lg font-extrabold tracking-tight text-foreground">Market</h1>
+          </div>
+          <div className="px-2 pt-1">
+            <TopicChips active={topic} onChange={setTopic} />
+          </div>
         </div>
 
-        <div className="mt-4 space-y-4">
+        <div className="px-4 pt-3">
           <CircularsSection />
+        </div>
 
-          {!canRead && !isGuest && (
-            <div className="rounded-md border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
-              Free trial expired. Upgrade to access the market feed.
-            </div>
-          )}
+        {!canRead && !isGuest && (
+          <div className="m-4 rounded-2xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
+            Free trial expired. Upgrade to access the market feed.
+          </div>
+        )}
 
-          {canRead && (
-            <>
-              {pinned.map((p) => (
-                <PinnedRatesCard
-                  key={p.id}
-                  post={p}
-                  likeCount={likes.counts[p.id] ?? 0}
-                  commentCount={comments[p.id] ?? 0}
-                  viewCount={views[p.id] ?? 0}
-                />
-              ))}
+        {canRead && (
+          <>
+            {pinned.length > 0 && (
+              <div className="space-y-3 px-4 pt-3">
+                {pinned.map((p) => (
+                  <PinnedRatesCard
+                    key={p.id}
+                    post={p}
+                    likeCount={likes.counts[p.id] ?? 0}
+                    commentCount={comments[p.id] ?? 0}
+                    viewCount={views[p.id] ?? 0}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="mt-3 divide-y divide-border border-t border-border">
               {loading ? (
-                Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-40 rounded-md" />)
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="px-4 py-3">
+                    <Skeleton className="h-28 rounded-2xl" />
+                  </div>
+                ))
               ) : rest.length === 0 ? (
-                <p className="py-10 text-center text-sm text-muted-foreground">No posts yet — be the first to share.</p>
+                <p className="py-16 text-center text-sm text-muted-foreground">No posts yet — be the first to share.</p>
               ) : (
                 rest.map((p) => (
                   <PostCard
@@ -123,18 +164,19 @@ const Market = () => {
                   />
                 ))
               )}
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
 
         {canEngage && (
           <>
             <Button
               onClick={() => setComposeOpen(true)}
-              className="fixed bottom-24 right-4 z-50 h-12 px-5 shadow-[0_10px_28px_-8px_hsl(var(--primary)/0.65)] lg:bottom-6"
+              aria-label="Compose post"
+              className="fixed bottom-20 right-4 z-50 h-14 w-14 rounded-full p-0 shadow-lg lg:bottom-6 lg:h-12 lg:w-auto lg:px-6"
             >
-              <Plus className="h-5 w-5" />
-              <span>Post</span>
+              <Feather className="h-6 w-6 lg:h-5 lg:w-5" />
+              <span className="hidden lg:inline">Post</span>
             </Button>
             <ComposeSheet
               open={composeOpen}

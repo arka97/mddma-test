@@ -11,10 +11,10 @@ interface Tile {
 }
 
 const toneMap: Record<Tile["tone"], string> = {
-  accent: "bg-accent/10 text-accent",
+  accent: "bg-primary/10 text-primary",
   primary: "bg-primary/10 text-primary",
-  warning: "bg-warning/15 text-warning-foreground",
-  gold: "bg-[hsl(var(--gold))]/15 text-[hsl(var(--gold-dark))]",
+  warning: "bg-primary/10 text-primary",
+  gold: "bg-primary/10 text-primary",
 };
 
 export function QuickActionsGrid() {
@@ -53,7 +53,7 @@ export function QuickActionsGrid() {
           <Link
             key={tile.label}
             to={tile.href}
-            className="group flex flex-col gap-2 rounded-2xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="group flex flex-col gap-2 rounded-2xl border border-border bg-card p-4 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <div className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${toneMap[tile.tone]}`}>
               <Icon className="h-5 w-5" strokeWidth={2.25} />
