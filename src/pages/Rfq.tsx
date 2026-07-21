@@ -93,6 +93,7 @@ const Rfq = () => {
         rightRail={
           user ? (
             <>
+              <MyBusinessesCard />
               <RfqPrimerCard />
               <SuggestedFollows limit={5} />
             </>
