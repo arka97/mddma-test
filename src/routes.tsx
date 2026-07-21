@@ -30,6 +30,7 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const ProfilePage = lazy(() => import("./pages/account/ProfilePage"));
 const CompanyPage = lazy(() => import("./pages/account/CompanyPage"));
 const ProductsPage = lazy(() => import("./pages/account/ProductsPage"));
+const TeamPage = lazy(() => import("./pages/account/TeamPage"));
 
 const AdminModeration = lazy(() => import("./pages/account/AdminModeration"));
 const Brands = lazy(() => import("./pages/Brands"));
