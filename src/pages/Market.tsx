@@ -132,6 +132,7 @@ const Market = () => {
       <FeedShell
         rightRail={
           <>
+            <MyBusinessesCard />
             <SuggestedFollows />
             <TrendingTopics />
           </>
