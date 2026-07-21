@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
+  Bookmark,
   MessageSquareText,
   Package,
   Search,
