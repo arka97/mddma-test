@@ -461,6 +461,7 @@ const AdminModeration = () => {
                       <select className="w-full border rounded h-9 px-2 text-sm bg-background" value={adForm.placement} onChange={(e) => setAdForm({ ...adForm, placement: e.target.value })}>
                         <option value="homepage-banner">Homepage Banner</option>
                         <option value="search-below">Search bar banner</option>
+                        <option value="categories-above">Categories above</option>
                         <option value="directory-banner">Directory Banner</option>
                         <option value="products-banner">Products Banner</option>
                         <option value="circulars-banner">Circulars Banner</option>
