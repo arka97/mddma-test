@@ -27,6 +27,7 @@ const Index = () => (
     <div className="container mx-auto max-w-6xl px-5 py-5 sm:px-6 lg:px-8">
       <div className="space-y-5">
         <HomeHero />
+        <AdSlot placement="categories-above" />
         <CategoryGrid />
         <RecentListingsList />
         <NewMembersList />
