@@ -28,6 +28,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBrandsByCompany } from "@/hooks/queries/useBrands";
 import { useCompanyBySlug } from "@/hooks/queries/useCompanies";
 import { useProducts } from "@/hooks/queries/useProducts";
+import { CompanyTeamStrip } from "@/components/company/CompanyTeamStrip";
 
 function initials(name: string) {
   return (
@@ -309,7 +310,10 @@ const Storefront = () => {
                   )}
                 </CardContent>
               </Card>
+
+              <CompanyTeamStrip companyId={company.id} />
             </div>
+
 
             <div className="min-w-0 space-y-6">
               <Card>
