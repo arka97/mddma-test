@@ -112,7 +112,7 @@
     --popover: 30 16% 10%;
     --popover-foreground: 40 30% 89%;
 
-    --primary: 40 30% 89%;            /* on dark, primary pills invert to parchment */
+    --primary: 36 68% 62%;            /* #DDA75E — luminous gold on dark */
     --primary-foreground: 28 22% 9%;
 
     --secondary: 30 14% 14%;
@@ -166,7 +166,7 @@
 
     --sidebar-background: 30 18% 6%;
     --sidebar-foreground: 40 30% 89%;
-    --sidebar-primary: 40 30% 89%;
+    --sidebar-primary: 36 68% 62%;
     --sidebar-primary-foreground: 28 22% 9%;
     --sidebar-accent: 30 14% 14%;
     --sidebar-accent-foreground: 40 30% 89%;
