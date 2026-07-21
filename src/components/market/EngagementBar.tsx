@@ -83,7 +83,7 @@ export function EngagementBar({
 }: Props) {
   const { toast } = useToast();
   const [reposted, setReposted] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
+  const { bookmarked, toggle: toggleBookmark } = useBookmark(postId);
 
   const onShare = async () => {
     const url = `${window.location.origin}/market/${postId}`;
