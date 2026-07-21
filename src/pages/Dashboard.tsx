@@ -25,6 +25,7 @@ const tiles = [
   { label: "My Quotations", href: "/quotes", icon: FileCheck2, desc: "Private sent and received terms" },
   { label: "My Products", href: "/account/products", icon: Package, desc: "Manage your catalogue" },
   { label: "My Brands", href: "/account/brands", icon: Sparkles, desc: "House brands and retail SKUs" },
+  { label: "Team", href: "/account/team", icon: Users, desc: "Add teammates to act on behalf of your business" },
   { label: "Business Directory", href: "/directory", icon: Users, desc: "Discover verified firms" },
   { label: "Bulletin", href: "/circulars", icon: Megaphone, desc: "Association and trade notices" },
 ];
