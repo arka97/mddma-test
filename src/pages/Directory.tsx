@@ -304,7 +304,7 @@ const Directory = () => {
               )}
             </div>
           )}
-        </div>
+        </FeedShell>
       </section>
     </Layout>
   );
