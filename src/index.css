@@ -15,53 +15,52 @@
 
 @layer base {
   :root {
-    /* Surfaces — soft warm off-white page, pure white cards, visible hairline
-       borders so sections separate cleanly (fixes "everything blurs together"). */
-    --background: 40 25% 97%;         /* #F8F5EF soft off-white */
-    --foreground: 220 15% 12%;        /* #1A1D24 near-black */
+    /* Surfaces — pure white base like X. Muted panels are near-white
+       cool neutrals (no yellow cast). Gold is used only as an accent. */
+    --background: 0 0% 100%;          /* #FFFFFF true white */
+    --foreground: 210 24% 9%;         /* #0F1419 X ink */
 
-    --card: 0 0% 100%;                /* #FFFFFF card pops on off-white */
-    --card-foreground: 220 15% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 210 24% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 12%;
+    --popover-foreground: 210 24% 9%;
 
-    /* Primary = rich gold pill (replaces the reference's blue).
-       Text on primary is white — this hue is dark enough for WCAG AA. */
-    --primary: 32 68% 42%;            /* #B57828 rich gold */
-    --primary-foreground: 0 0% 100%;
+    /* Primary = softer, lighter gold — contrasts on white without the
+       muddy brown feel. Text on primary is dark ink for AA. */
+    --primary: 36 78% 52%;            /* #E4A238 warm light gold */
+    --primary-foreground: 210 24% 9%;
 
-    --secondary: 36 30% 94%;          /* #F1ECE1 soft gold-tinted fill */
-    --secondary-foreground: 220 15% 12%;
+    --secondary: 210 16% 96%;         /* #F1F3F5 cool neutral chip */
+    --secondary-foreground: 210 24% 9%;
 
-    --muted: 36 20% 95%;              /* #F3EFE9 quiet fill */
-    --muted-foreground: 30 10% 42%;   /* #766D62 secondary text */
+    --muted: 210 16% 97%;             /* #F4F6F8 quiet fill */
+    --muted-foreground: 212 12% 43%;  /* #5B6673 X-style secondary */
 
-    /* Accent = gold tint for badges/hovers; text on it uses gold-strong. */
-    --accent: 36 60% 92%;             /* #F5E9D2 pale gold */
-    --accent-foreground: 32 68% 30%;  /* #7F5316 gold-strong on tint */
+    --accent: 38 92% 95%;             /* #FDF1DC pale gold tint */
+    --accent-foreground: 32 70% 30%;  /* #82571A gold-strong */
 
     --destructive: 358 76% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 36 22% 86%;             /* #E3DACB warm hairline — visible */
-    --input: 36 22% 82%;
-    --ring: 32 68% 42%;               /* gold focus ring */
+    --border: 210 16% 91%;            /* #E4E7EB cool hairline (X-like) */
+    --input: 210 16% 86%;
+    --ring: 36 78% 52%;
 
     --radius: 1rem;
 
-    /* Brand gold — logo, large fills, active-nav highlight. */
-    --brand-gold: 34 72% 55%;         /* #D8A03D warm gold */
-    --gold: 34 72% 55%;
-    --gold-strong: 32 68% 32%;        /* #895716 — text on gold or standalone */
+    /* Brand gold — logo, highlights, verified. */
+    --brand-gold: 36 85% 55%;         /* #EAAA38 */
+    --gold: 36 85% 55%;
+    --gold-strong: 32 70% 30%;        /* #82571A — text on gold */
 
     /* Status palette */
-    --success: 158 62% 38%;           /* #26A56F */
+    --success: 158 62% 38%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
-    --warning-foreground: 220 15% 12%;
-    --info: 32 68% 42%;               /* gold for info */
-    --info-foreground: 0 0% 100%;
+    --warning-foreground: 210 24% 9%;
+    --info: 36 78% 52%;
+    --info-foreground: 210 24% 9%;
     --danger: 358 76% 55%;
     --danger-foreground: 0 0% 100%;
     --up: 158 62% 38%;
@@ -70,34 +69,33 @@
     /* Social action accents */
     --like: 331 94% 53%;
     --repost: 160 84% 39%;
-    --verified: 32 68% 42%;           /* gold verified check */
+    --verified: 36 85% 55%;
 
     /* Third-party integration colors — used ONLY on their own buttons. */
     --brand-whatsapp: 142 70% 49%;
     --brand-linkedin: 210 90% 40%;
 
-    /* Legacy aliases — remapped onto the new gold scheme so older callers
-       inherit the look without editing each file. */
-    --navy: 220 15% 12%;
-    --navy-light: 30 10% 42%;
-    --navy-dark: 220 20% 8%;
+    /* Legacy aliases — remapped so older callers inherit the new look. */
+    --navy: 210 24% 9%;
+    --navy-light: 212 12% 43%;
+    --navy-dark: 210 30% 6%;
     --burgundy: 358 76% 55%;
     --burgundy-light: 358 70% 70%;
     --burgundy-dark: 358 80% 42%;
-    --gold-light: 36 70% 90%;         /* pale gold tint */
-    --gold-dark: 32 68% 30%;
-    --cream: 40 25% 97%;              /* = new background */
-    --warm-gray: 30 10% 42%;
+    --gold-light: 38 92% 95%;
+    --gold-dark: 32 70% 30%;
+    --cream: 0 0% 100%;
+    --warm-gray: 212 12% 43%;
 
     /* Sidebar */
-    --sidebar-background: 40 25% 97%;
-    --sidebar-foreground: 220 15% 12%;
-    --sidebar-primary: 32 68% 42%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 36 30% 94%;
-    --sidebar-accent-foreground: 220 15% 12%;
-    --sidebar-border: 36 22% 86%;
-    --sidebar-ring: 32 68% 42%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 24% 9%;
+    --sidebar-primary: 36 78% 52%;
+    --sidebar-primary-foreground: 210 24% 9%;
+    --sidebar-accent: 210 16% 96%;
+    --sidebar-accent-foreground: 210 24% 9%;
+    --sidebar-border: 210 16% 91%;
+    --sidebar-ring: 36 78% 52%;
   }
 
 
