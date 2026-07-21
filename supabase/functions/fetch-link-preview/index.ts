@@ -1,26 +1,58 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const TIMEOUT_MS = 6000;
 const MAX_BYTES = 1_500_000;
 const cache = new Map<string, { at: number; data: unknown }>();
 const CACHE_TTL = 10 * 60 * 1000;
 
-function isPrivateHost(host: string): boolean {
-  const h = host.toLowerCase();
-  if (h === "localhost" || h.endsWith(".localhost")) return true;
-  if (h === "0.0.0.0" || h === "::1") return true;
-  const m = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+function ipIsPrivate(ip: string): boolean {
+  const m = ip.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
   if (m) {
     const [a, b] = [parseInt(m[1]), parseInt(m[2])];
     if (a === 10) return true;
     if (a === 127) return true;
+    if (a === 0) return true;
     if (a === 169 && b === 254) return true;
     if (a === 172 && b >= 16 && b <= 31) return true;
     if (a === 192 && b === 168) return true;
-    if (a === 0) return true;
+    if (a === 100 && b >= 64 && b <= 127) return true; // CGNAT
+    if (a >= 224) return true; // multicast + reserved
+    return false;
   }
-  if (h.startsWith("fc") || h.startsWith("fd") || h.startsWith("fe80")) return true;
+  const v6 = ip.toLowerCase();
+  if (v6 === "::1" || v6 === "::") return true;
+  if (v6.startsWith("fc") || v6.startsWith("fd")) return true; // ULA
+  if (v6.startsWith("fe80")) return true; // link-local
+  if (v6.startsWith("ff")) return true; // multicast
+  const mapped = v6.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+  if (mapped) return ipIsPrivate(mapped[1]);
   return false;
+}
+
+async function assertPublicHost(hostname: string): Promise<void> {
+  const h = hostname.toLowerCase();
+  if (!h || h === "localhost" || h.endsWith(".localhost") || h.endsWith(".local") || h.endsWith(".internal")) {
+    throw new Error("blocked_host");
+  }
+  // Literal IP: check directly.
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h) || h.includes(":")) {
+    if (ipIsPrivate(h)) throw new Error("blocked_host");
+    return;
+  }
+  // Resolve DNS and verify no A/AAAA record points to private space (SSRF/DNS-rebinding guard).
+  let ips: string[] = [];
+  const results = await Promise.allSettled([
+    Deno.resolveDns(h, "A"),
+    Deno.resolveDns(h, "AAAA"),
+  ]);
+  for (const r of results) {
+    if (r.status === "fulfilled") ips = ips.concat(r.value);
+  }
+  if (ips.length === 0) throw new Error("dns_no_records");
+  for (const ip of ips) {
+    if (ipIsPrivate(ip)) throw new Error("blocked_host");
+  }
 }
 
 function decodeEntities(s: string): string {
