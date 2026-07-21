@@ -161,10 +161,37 @@ function detectMediaByExt(u: URL): { kind: "image" | "video" | "pdf" } | null {
   return null;
 }
 
+async function fetchWithRedirectGuard(startUrl: string, signal: AbortSignal): Promise<Response> {
+  let currentUrl = startUrl;
+  for (let hop = 0; hop < 5; hop++) {
+    const u = new URL(currentUrl);
+    if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error("invalid_protocol");
+    await assertPublicHost(u.hostname);
+    const res = await fetch(u.toString(), {
+      method: "GET",
+      redirect: "manual",
+      signal,
+      headers: {
+        "user-agent": "Mozilla/5.0 (compatible; MDDMA-LinkPreview/1.0; +https://mddma.org)",
+        accept: "text/html,application/xhtml+xml,*/*",
+      },
+    });
+    if (res.status >= 300 && res.status < 400) {
+      const loc = res.headers.get("location");
+      try { await res.body?.cancel(); } catch { /* ignore */ }
+      if (!loc) return res;
+      currentUrl = new URL(loc, currentUrl).toString();
+      continue;
+    }
+    return res;
+  }
+  throw new Error("too_many_redirects");
+}
+
 async function fetchScrape(targetUrl: string) {
   const u = new URL(targetUrl);
   if (u.protocol !== "http:" && u.protocol !== "https:") throw new Error("invalid_protocol");
-  if (isPrivateHost(u.hostname)) throw new Error("blocked_host");
+  await assertPublicHost(u.hostname);
 
   // YouTube/Vimeo via oEmbed (don't scrape consent walls)
   const yt = extYoutubeId(u);
@@ -202,16 +229,9 @@ async function fetchScrape(targetUrl: string) {
   const t = setTimeout(() => ctl.abort(), TIMEOUT_MS);
   let res: Response;
   try {
-    res = await fetch(u.toString(), {
-      method: "GET",
-      redirect: "follow",
-      signal: ctl.signal,
-      headers: {
-        "user-agent": "Mozilla/5.0 (compatible; MDDMA-LinkPreview/1.0; +https://mddma.org)",
-        accept: "text/html,application/xhtml+xml,*/*",
-      },
-    });
+    res = await fetchWithRedirectGuard(u.toString(), ctl.signal);
   } finally { clearTimeout(t); }
+
 
   const ct = (res.headers.get("content-type") ?? "").toLowerCase();
   const host = u.hostname.replace(/^www\./, "");
