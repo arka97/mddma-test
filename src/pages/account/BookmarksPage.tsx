@@ -72,7 +72,7 @@ export default function BookmarksPage() {
         viewCounts(ids).catch(() => ({} as Record<string, number>)),
         commentCounts(ids).catch(() => ({} as Record<string, number>)),
         supabase.from("profiles").select("id, full_name, avatar_url").in("id", ownerIds),
-        listCompaniesByOwners(ownerIds).catch(() => []),
+        listCompaniesByOwners(ownerIds).catch(() => ({} as Record<string, { name: string; slug: string; is_verified: boolean }>)),
       ]);
 
       if (cancelled) return;
