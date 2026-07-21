@@ -144,7 +144,7 @@ export function EngagementBar({
         <ActionButton
           icon={Bookmark}
           label={bookmarked ? "Remove bookmark" : "Bookmark"}
-          onClick={() => setBookmarked((v) => !v)}
+          onClick={toggleBookmark}
           active={bookmarked}
           activeText="text-primary"
           hoverText="hover:text-primary"
