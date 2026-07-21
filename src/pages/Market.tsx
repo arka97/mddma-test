@@ -110,6 +110,11 @@ const Market = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic, canRead]);
 
+  useEffect(() => {
+    if (!canRead) { setEvents([]); return; }
+    listFeedEvents(6).then(setEvents).catch(() => setEvents([]));
+  }, [canRead]);
+
   const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const restAll = posts.filter((p) => !pinned.includes(p));
   const rest = feedTab === "following"
