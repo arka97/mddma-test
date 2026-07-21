@@ -1777,6 +1777,10 @@ export type Database = {
           phone: string
         }[]
       }
+      get_company_follower_count: {
+        Args: { _company_id: string }
+        Returns: number
+      }
       get_company_team_public: {
         Args: { _company_id: string }
         Returns: {
