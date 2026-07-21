@@ -131,7 +131,7 @@ export function GlobalSearch({ open, onOpenChange }: Props) {
           key: `post-${row.id}`,
           label: row.content.slice(0, 80) || "Post",
           hint: row.post_type,
-          href: `/market?post=${row.id}`,
+          href: `/market/${row.id}`,
           icon: MessageSquare,
         })),
       );
