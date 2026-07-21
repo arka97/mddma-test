@@ -212,6 +212,7 @@ const Directory = () => {
           centerClassName="max-w-none flex-1"
           rightRail={
             <>
+              <MyBusinessesCard />
               <SuggestedFollows limit={5} />
               <TrendingTopics />
             </>
