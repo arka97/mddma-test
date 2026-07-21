@@ -11,6 +11,9 @@ import { useRfqBoard } from "@/hooks/queries/useRfqs";
 import { RfqCard } from "@/components/rfq/RfqCard";
 import { CreateRfqSheet } from "@/components/rfq/CreateRfqSheet";
 import { QuoteRfqSheet } from "@/components/rfq/QuoteRfqSheet";
+import { RfqPrimerCard } from "@/components/rfq/RfqPrimerCard";
+import { FeedShell } from "@/components/layout/FeedShell";
+import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
 import { cn } from "@/lib/utils";
 import type { RfqListingRow, RfqType } from "@/repositories/rfqListings";
 
@@ -84,7 +87,17 @@ const Rfq = () => {
         </div>
       </section>
 
-      <div className="container mx-auto max-w-4xl px-4 pb-24 pt-5 sm:px-6 lg:px-8">
+      <FeedShell
+        className="max-w-[1100px] px-4 pb-24 pt-5 sm:px-6 lg:px-8"
+        rightRail={
+          user ? (
+            <>
+              <RfqPrimerCard />
+              <SuggestedFollows limit={5} />
+            </>
+          ) : undefined
+        }
+      >
         {authLoading ? (
           <Skeleton className="h-36 rounded-xl" />
         ) : !user ? (
@@ -202,7 +215,7 @@ const Rfq = () => {
             />
           </>
         )}
-      </div>
+      </FeedShell>
     </Layout>
   );
 };
