@@ -87,7 +87,17 @@ const Rfq = () => {
         </div>
       </section>
 
-      <div className="container mx-auto max-w-4xl px-4 pb-24 pt-5 sm:px-6 lg:px-8">
+      <FeedShell
+        className="max-w-[1100px] px-4 pb-24 pt-5 sm:px-6 lg:px-8"
+        rightRail={
+          user ? (
+            <>
+              <RfqPrimerCard />
+              <SuggestedFollows limit={5} />
+            </>
+          ) : undefined
+        }
+      >
         {authLoading ? (
           <Skeleton className="h-36 rounded-xl" />
         ) : !user ? (
