@@ -26,6 +26,7 @@ import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { useDealRoomsActivity } from "@/hooks/useDealRoomsActivity";
+import { AdSlot } from "@/components/home/today/AdSlot";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -261,6 +262,10 @@ export function Header() {
               ⌘K
             </kbd>
           </button>
+        </div>
+
+        <div className="pb-2.5">
+          <AdSlot placement="search-below" />
         </div>
       </div>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
