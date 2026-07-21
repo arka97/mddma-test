@@ -1,40 +1,55 @@
+import { useState } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
-import { HomeHero } from "@/components/home/hero/HomeHero";
-import { LiveTicker } from "@/components/home/hero/LiveTicker";
-import { TodayHeader } from "@/components/home/today/TodayHeader";
-import { AdSlot } from "@/components/home/today/AdSlot";
-import { QuickActionsGrid } from "@/components/home/today/QuickActionsGrid";
-import { CategoryGrid } from "@/components/home/today/CategoryGrid";
-import { RecentListingsList } from "@/components/home/today/RecentListingsList";
-import { NewMembersList } from "@/components/home/today/NewMembersList";
-import { MembershipCTA } from "@/components/home/today/MembershipCTA";
+import { FeedTabs, type FeedTab } from "@/components/shell/FeedTabs";
+import { FeedRow, usePostMeta } from "@/components/shell/FeedRow";
+import { useUnifiedFeed } from "@/hooks/queries/useUnifiedFeed";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const Index = () => (
-  <Layout>
-    <Seo
-      title="G-BAU-G — Verified Global Food Trade Network by MDDMA"
-      description="Discover verified businesses, products, market intelligence and RFQs across nuts, dry fruits, dates, seeds, spices and allied foods."
-      path="/"
-    />
+const Index = () => {
+  const [tab, setTab] = useState<FeedTab>("for_you");
+  const { items, loading } = useUnifiedFeed(tab);
+  const meta = usePostMeta(items);
 
-    <div className="container mx-auto max-w-6xl space-y-5 px-5 pt-4 sm:px-6 sm:pt-5 lg:px-8">
-      <HomeHero />
-      <LiveTicker />
-    </div>
+  return (
+    <Layout>
+      <Seo
+        title="G-BAU-G — Verified Global Food Trade Network by MDDMA"
+        description="Live feed of verified merchants, new products, RFQs, bulletin notices and market signals across nuts, dry fruits, dates, seeds and spices."
+        path="/"
+      />
 
-    <div className="container mx-auto max-w-6xl px-5 py-5 sm:px-6 lg:px-8">
-      <div className="space-y-5">
-        <QuickActionsGrid />
-        <TodayHeader />
-        <CategoryGrid />
-        <RecentListingsList />
-        <NewMembersList />
-        <MembershipCTA />
-        <AdSlot placement="homepage-banner" />
+      <div className="mx-auto w-full max-w-[720px]">
+        <div className="hidden border-b border-border px-4 py-3 lg:block">
+          <h1 className="text-xl font-bold">Home</h1>
+        </div>
+        <FeedTabs active={tab} onChange={setTab} />
+
+        {loading ? (
+          <div className="space-y-4 p-4">
+            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
+          </div>
+        ) : items.length === 0 ? (
+          <div className="p-10 text-center text-sm text-muted-foreground">
+            Nothing here yet. Follow members, wait for new posts, or switch tabs.
+          </div>
+        ) : (
+          <div>
+            {items.map((item, i) => (
+              <FeedRow
+                key={`${item.kind}-${item.kind === "ad" ? `${item.data.id}-${i}` : item.data.id}`}
+                item={item}
+                authors={meta.authors}
+                likes={meta.likes}
+                comments={meta.comments}
+                views={meta.views}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </div>
-  </Layout>
-);
+    </Layout>
+  );
+};
 
 export default Index;
