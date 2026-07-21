@@ -76,6 +76,10 @@ export default {
         },
         up: "hsl(var(--up))",
         down: "hsl(var(--down))",
+        // X-style social action accents
+        like: "hsl(var(--like))",
+        repost: "hsl(var(--repost))",
+        verified: "hsl(var(--verified))",
         // One-cycle legacy aliases — drop in a follow-up PR after callers
         // are migrated to status/primary tokens.
         navy: {
