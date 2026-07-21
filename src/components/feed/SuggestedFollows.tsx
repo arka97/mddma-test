@@ -31,7 +31,7 @@ export function SuggestedFollows({ limit = 5 }: { limit?: number }) {
         .order("is_verified", { ascending: false })
         .order("created_at", { ascending: false })
         .limit(limit);
-      if (!cancelled) setRows((data as Row[] | null) ?? []);
+      if (!cancelled) setRows(((data as unknown as Row[] | null) ?? []).filter((r) => r.id && r.slug));
     })();
     return () => {
       cancelled = true;

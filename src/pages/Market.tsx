@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Feather } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
+import { FeedShell } from "@/components/layout/FeedShell";
+import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
+import { TrendingTopics } from "@/components/feed/TrendingTopics";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
