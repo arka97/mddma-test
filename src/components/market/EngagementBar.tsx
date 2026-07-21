@@ -1,6 +1,7 @@
 import { useState, type ComponentType } from "react";
 import { MessageCircle, Repeat2, Heart, BarChart3, Bookmark, Share } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useBookmark } from "@/hooks/useBookmark";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -82,7 +83,7 @@ export function EngagementBar({
 }: Props) {
   const { toast } = useToast();
   const [reposted, setReposted] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
+  const { bookmarked, toggle: toggleBookmark } = useBookmark(postId);
 
   const onShare = async () => {
     const url = `${window.location.origin}/market/${postId}`;
@@ -143,7 +144,7 @@ export function EngagementBar({
         <ActionButton
           icon={Bookmark}
           label={bookmarked ? "Remove bookmark" : "Bookmark"}
-          onClick={() => setBookmarked((v) => !v)}
+          onClick={toggleBookmark}
           active={bookmarked}
           activeText="text-primary"
           hoverText="hover:text-primary"

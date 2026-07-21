@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogIn,
   LogOut,
+  Bookmark,
   MessageSquareText,
   Package,
   Search,
@@ -115,6 +116,11 @@ export function Header() {
         <DropdownMenuItem asChild>
           <Link to="/quotes">
             <FileCheck2 className="mr-2 h-4 w-4" /> My quotations
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/account/bookmarks">
+            <Bookmark className="mr-2 h-4 w-4" /> Bookmarks
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
