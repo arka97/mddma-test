@@ -35,12 +35,7 @@ export function RightRail() {
 
       <section className="mb-4 rounded-2xl border border-border bg-muted/40 p-4">
         <h3 className="mb-3 text-lg font-bold">Who to follow</h3>
-        <NewMembersList compact />
-      </section>
-
-      <section className="mb-4 rounded-2xl border border-border bg-muted/40 p-4">
-        <h3 className="mb-3 text-lg font-bold">Featured brands</h3>
-        <FeaturedBrandsStrip compact />
+        <NewMembersList />
       </section>
 
       <section className="mb-6">
