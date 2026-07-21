@@ -1,8 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
-import { Building2, FileText, Home, Newspaper, User } from "lucide-react";
+import { FileText, Home, MessageSquare, User, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface Tab {
   label: string;
@@ -14,12 +13,12 @@ interface Tab {
 
 const baseTabs: Tab[] = [
   { label: "Home", href: "/", icon: Home, match: (path) => path === "/" },
-  { label: "Market", href: "/market", icon: Newspaper, match: (path) => path.startsWith("/market") },
+  { label: "Market", href: "/market", icon: MessageSquare, match: (path) => path.startsWith("/market") },
   { label: "RFQ", href: "/rfq", icon: FileText, match: (path) => path.startsWith("/rfq") },
   {
     label: "Firms",
     href: "/directory",
-    icon: Building2,
+    icon: Users,
     match: (path) => path.startsWith("/directory") || path.startsWith("/store"),
   },
   {
@@ -37,42 +36,41 @@ const baseTabs: Tab[] = [
 
 export function MobileBottomTabBar() {
   const location = useLocation();
-  const { user, profile } = useAuth();
+  const { user } = useAuth();
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-safe backdrop-blur lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card pb-safe shadow-[0_-4px_16px_-8px_rgba(0,4,40,0.08)] lg:hidden"
       aria-label="Primary"
     >
-      <ul className="flex">
+      <ul className="grid grid-cols-5">
         {baseTabs.map((tab) => {
           const active = tab.match(location.pathname);
           const Icon = tab.icon;
           const target = tab.requireAuth && !user ? `/login?next=${encodeURIComponent(tab.href)}` : tab.href;
-          const isAccount = tab.label === "Account";
 
           return (
-            <li key={tab.label} className="flex-1">
+            <li key={tab.label} className="relative">
               <Link
                 to={target}
                 aria-current={active ? "page" : undefined}
-                aria-label={tab.label}
                 className={cn(
-                  "group flex min-h-[54px] flex-col items-center justify-center gap-0.5 px-1 pb-1.5 pt-2 text-[10px] font-medium transition-colors touch-action-manipulation",
-                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  "relative flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-1 pb-2 pt-2.5 text-[11px] font-medium transition-colors",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                {isAccount && user ? (
-                  <Avatar className={cn("h-6 w-6 transition-all", active && "ring-2 ring-foreground ring-offset-2 ring-offset-background")}>
-                    <AvatarImage src={profile?.avatar_url ?? undefined} />
-                    <AvatarFallback className="text-[10px]">
-                      {(profile?.full_name || user.email || "U").slice(0, 1).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                ) : (
-                  <Icon className="h-[22px] w-[22px]" strokeWidth={active ? 2.6 : 2} />
+                {active && (
+                  <span className="absolute inset-x-6 top-0 h-1 rounded-b-full bg-primary" aria-hidden="true" />
                 )}
-                <span className={cn(active && "font-semibold")}>{tab.label}</span>
+                <span
+                  className={cn(
+                    "flex h-8 w-8 items-center justify-center rounded-full transition-colors",
+                    active ? "bg-primary/15" : "hover:bg-muted",
+                  )}
+                >
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.5 : 2} />
+                </span>
+                <span>{tab.label}</span>
               </Link>
             </li>
           );

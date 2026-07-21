@@ -46,17 +46,6 @@ export async function listFeedPosts(topic?: TopicTag) {
   return (data ?? []) as unknown as CommunityPostRow[];
 }
 
-export async function getPost(id: string) {
-  const { data, error } = await supabase
-    .from("community_posts")
-    .select("*")
-    .eq("id", id)
-    .eq("is_hidden", false)
-    .maybeSingle();
-  if (error) throw new Error(friendlyErrorMessage(error));
-  return data ? (data as unknown as CommunityPostRow) : null;
-}
-
 export async function listAllPostsAdmin() {
   const { data, error } = await supabase
     .from("community_posts")
