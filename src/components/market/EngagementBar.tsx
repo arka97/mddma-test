@@ -1,6 +1,7 @@
 import { useState, type ComponentType } from "react";
 import { MessageCircle, Repeat2, Heart, BarChart3, Bookmark, Share } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useBookmark } from "@/hooks/useBookmark";
 import { cn } from "@/lib/utils";
 
 interface Props {
