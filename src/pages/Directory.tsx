@@ -23,6 +23,7 @@ import { SellerSignals } from "@/components/commodity/SellerSignals";
 import { FeedShell } from "@/components/layout/FeedShell";
 import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
 import { TrendingTopics } from "@/components/feed/TrendingTopics";
+import { MyBusinessesCard } from "@/components/feed/MyBusinessesCard";
 
 const businessTypes = [
   "Importer",
