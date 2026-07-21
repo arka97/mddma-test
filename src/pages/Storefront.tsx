@@ -59,6 +59,8 @@ const Storefront = () => {
     enabled: Boolean(company?.id),
   });
   const { data: companyBrands = [] } = useBrandsByCompany(company?.id);
+  const { data: followerCount = 0 } = useFollowerCount(company?.id);
+
 
   const products = useMemo(
     () =>
@@ -184,28 +186,46 @@ const Storefront = () => {
             </div>
 
             <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <h1 className="t-h1 text-foreground">{company.name}</h1>
-                {company.is_verified && (
-                  <Badge variant="success">
-                    <ShieldCheck className="mr-1 h-3 w-3" /> Business verified
-                  </Badge>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="t-h1 text-foreground">{company.name}</h1>
+                    {company.is_verified && (
+                      <Badge variant="success">
+                        <ShieldCheck className="mr-1 h-3 w-3" /> Business verified
+                      </Badge>
+                    )}
+                  </div>
+                  {company.tagline && <p className="mt-1 text-sm text-muted-foreground">{company.tagline}</p>}
+                </div>
+                {!isOwner && (
+                  <FollowButton id={company.id} name={company.name} size="default" />
                 )}
               </div>
-              {company.tagline && <p className="mt-1 text-sm text-muted-foreground">{company.tagline}</p>}
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span>
+                  <span className="font-semibold text-foreground">{followerCount.toLocaleString()}</span>{" "}
+                  {followerCount === 1 ? "follower" : "followers"}
+                </span>
                 {location && (
-                  <Badge variant="neutral">
-                    <MapPin className="mr-1 h-3 w-3" /> {location}
-                  </Badge>
+                  <>
+                    <span aria-hidden>·</span>
+                    <span className="inline-flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> {location}
+                    </span>
+                  </>
                 )}
                 {company.established_year && (
-                  <Badge variant="outline">
-                    <Calendar className="mr-1 h-3 w-3" /> Established {company.established_year}
-                  </Badge>
+                  <>
+                    <span aria-hidden>·</span>
+                    <span className="inline-flex items-center gap-1">
+                      <Calendar className="h-3 w-3" /> Est. {company.established_year}
+                    </span>
+                  </>
                 )}
               </div>
             </div>
+
           </div>
         </div>
       </section>
