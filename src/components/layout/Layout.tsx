@@ -1,22 +1,12 @@
-import { ReactNode } from "react";
-import { Header } from "./Header";
-import { Footer } from "./Footer";
-import { MobileBottomTabBar } from "./MobileBottomTabBar";
+import { type ReactNode } from "react";
+import { AppShell } from "@/components/shell/AppShell";
 
 interface LayoutProps {
   children: ReactNode;
+  hideRightRail?: boolean;
 }
 
-export function Layout({ children }: LayoutProps) {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      {/* Bottom tab bar reserves ~64px on mobile so content isn't covered */}
-      <main className="w-full min-w-0 overflow-x-hidden flex-1 pb-[72px] lg:pb-0">{children}</main>
-      <div className="hidden lg:block">
-        <Footer />
-      </div>
-      <MobileBottomTabBar />
-    </div>
-  );
+// Kept for backwards compatibility — every page renders inside the new AppShell now.
+export function Layout({ children, hideRightRail }: LayoutProps) {
+  return <AppShell hideRightRail={hideRightRail}>{children}</AppShell>;
 }

@@ -2,79 +2,81 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MDDMA Design System — Modern B2B / Trade Dashboard
-   Slate-indigo + Emerald · near-white surfaces · self-hosted Inter Variable */
+/* G-BAU-G Design System — X / Threads / LinkedIn light social language
+   Near-white surfaces · ink foreground · gold accent used sparingly for CTAs
+*/
 
 @layer base {
   :root {
-    /* GoKwik Warm Commerce — cream surface, midnight navy ink, warm gold primary */
-    --background: 36 100% 96%;        /* #FFF7EC */
-    --foreground: 231 100% 8%;        /* #000428 */
+    /* Surfaces */
+    --background: 0 0% 100%;             /* pure white app background */
+    --foreground: 210 20% 8%;            /* #0f1419 ink */
 
     --card: 0 0% 100%;
-    --card-foreground: 231 100% 8%;
+    --card-foreground: 210 20% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 231 100% 8%;
+    --popover-foreground: 210 20% 8%;
 
-    --primary: 33 56% 63%;            /* #d8a86a */
-    --primary-foreground: 231 100% 8%;
+    /* Primary accent — warm gold, used sparingly (CTAs, verified, active tab) */
+    --primary: 33 56% 55%;               /* #d8a86a */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 36 92% 93%;          /* #FEF1DE — primary soft */
-    --secondary-foreground: 231 100% 8%;
+    --secondary: 210 20% 96%;            /* subtle chip fill */
+    --secondary-foreground: 210 20% 8%;
 
-    --muted: 48 18% 93%;              /* #F2F1EA */
-    --muted-foreground: 231 30% 35%;
+    --muted: 210 20% 96%;                /* #f2f4f7 */
+    --muted-foreground: 210 12% 42%;     /* #536471 muted ink */
 
-    --accent: 33 93% 54%;             /* #F79D1D — vivid warm orange, sparing */
-    --accent-foreground: 231 100% 8%;
+    --accent: 210 20% 96%;
+    --accent-foreground: 210 20% 8%;
 
-    --destructive: 358 75% 59%;       /* #E5484D */
+    --destructive: 358 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 231 50% 88%;            /* hairline navy-tinted */
-    --input: 231 50% 88%;
-    --ring: 33 56% 63%;
+    --border: 210 20% 92%;               /* #eff3f4 hairline */
+    --input: 210 20% 92%;
+    --ring: 33 56% 55%;
 
     --radius: 1rem;
 
     /* Status palette */
-    --success: 142 71% 45%;           /* #22C55E */
+    --success: 142 71% 40%;
     --success-foreground: 0 0% 100%;
     --warning: 33 93% 54%;
-    --warning-foreground: 231 100% 8%;
-    --info: 213 100% 51%;             /* #0779ff */
+    --warning-foreground: 210 20% 8%;
+    --info: 213 100% 51%;
     --info-foreground: 0 0% 100%;
-    --danger: 358 75% 59%;
+    --danger: 358 75% 55%;
     --danger-foreground: 0 0% 100%;
-    --up: 142 71% 45%;
-    --down: 358 75% 59%;
+    --up: 142 71% 40%;
+    --down: 358 75% 55%;
 
-    /* Logo/brand-only static color */
-    --brand-gold: 33 56% 63%;
+    /* Brand-only static color */
+    --brand-gold: 33 56% 55%;
 
-    /* Legacy aliases — remapped onto GoKwik palette so older callers don't break */
-    --navy: 231 100% 8%;
-    --navy-light: 231 60% 25%;
-    --navy-dark: 231 100% 6%;
-    --burgundy: 358 75% 59%;
+    /* Legacy aliases — remapped so older callers don't break */
+    --navy: 210 20% 8%;
+    --navy-light: 210 15% 25%;
+    --navy-dark: 210 20% 6%;
+    --burgundy: 358 75% 55%;
     --burgundy-light: 358 70% 70%;
     --burgundy-dark: 358 80% 45%;
-    --gold: 33 56% 63%;
+    --gold: 33 56% 55%;
     --gold-light: 36 92% 80%;
     --gold-dark: 33 65% 48%;
-    --cream: 36 100% 96%;
-    --warm-gray: 231 20% 45%;
+    --cream: 210 20% 98%;
+    --warm-gray: 210 12% 42%;
 
-    /* Sidebar */
-    --sidebar-background: 231 100% 8%;
-    --sidebar-foreground: 36 100% 96%;
-    --sidebar-primary: 33 56% 63%;
-    --sidebar-primary-foreground: 231 100% 8%;
-    --sidebar-accent: 231 60% 18%;
-    --sidebar-accent-foreground: 36 100% 96%;
-    --sidebar-border: 231 50% 20%;
-    --sidebar-ring: 33 56% 63%;
+    /* Sidebar tokens — light rail */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 20% 8%;
+    --sidebar-primary: 33 56% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 96%;
+    --sidebar-accent-foreground: 210 20% 8%;
+    --sidebar-border: 210 20% 92%;
+    --sidebar-ring: 33 56% 55%;
   }
 
   .dark {
@@ -87,8 +89,8 @@
     --popover: 222 40% 10%;
     --popover-foreground: 210 20% 96%;
 
-    --primary: 210 20% 96%;
-    --primary-foreground: 222 47% 12%;
+    --primary: 33 56% 60%;
+    --primary-foreground: 210 20% 8%;
 
     --secondary: 222 30% 16%;
     --secondary-foreground: 210 20% 96%;
@@ -96,15 +98,15 @@
     --muted: 222 30% 14%;
     --muted-foreground: 220 12% 65%;
 
-    --accent: 158 60% 48%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 222 30% 16%;
+    --accent-foreground: 210 20% 96%;
 
     --destructive: 0 62% 55%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 222 30% 18%;
     --input: 222 30% 18%;
-    --ring: 158 60% 48%;
+    --ring: 33 56% 60%;
 
     --success: 158 60% 48%;
     --warning: 38 90% 55%;
@@ -119,7 +121,7 @@
     --burgundy: 0 62% 55%;
     --burgundy-light: 0 50% 65%;
     --burgundy-dark: 0 70% 45%;
-    --gold: 38 60% 60%;
+    --gold: 33 56% 60%;
     --gold-light: 45 70% 70%;
     --gold-dark: 35 60% 50%;
     --cream: 222 47% 7%;
@@ -127,12 +129,12 @@
 
     --sidebar-background: 222 47% 7%;
     --sidebar-foreground: 210 20% 96%;
-    --sidebar-primary: 158 60% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-primary: 33 56% 60%;
+    --sidebar-primary-foreground: 210 20% 8%;
     --sidebar-accent: 222 30% 16%;
     --sidebar-accent-foreground: 210 20% 96%;
     --sidebar-border: 222 30% 18%;
-    --sidebar-ring: 158 60% 48%;
+    --sidebar-ring: 33 56% 60%;
   }
 }
 
@@ -143,136 +145,68 @@
 
   body {
     @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-feature-settings: "cv11", "ss01", "tnum";
+    font-size: 15px;
+    line-height: 1.4;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-bold tracking-tight;
+    letter-spacing: -0.01em;
   }
 }
 
 @layer components {
-  /* Type scale */
-  .t-display {
-    font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    font-weight: 700;
-  }
+  .t-display { font-size: clamp(1.75rem, 3vw + 0.75rem, 2.25rem); line-height: 1.1; letter-spacing: -0.02em; font-weight: 800; }
+  .t-h1      { font-size: 1.5rem;   line-height: 1.15; font-weight: 800; letter-spacing: -0.015em; }
+  .t-h2      { font-size: 1.25rem;  line-height: 1.2;  font-weight: 700; }
+  .t-h3      { font-size: 1.0625rem; line-height: 1.25; font-weight: 700; }
+  .t-body    { font-size: 0.9375rem; line-height: 1.45; }
+  .t-small   { font-size: 0.8125rem; line-height: 1.4; }
+  .t-eyebrow { font-size: 0.6875rem; line-height: 1.4; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
 
-  .t-h1 {
-    font-size: clamp(1.875rem, 2.5vw + 1rem, 2.5rem);
-    line-height: 1.1;
-    letter-spacing: -0.015em;
-    font-weight: 700;
-  }
+  .card-hover { @apply transition-colors hover:bg-muted/40; }
 
-  .t-h2 {
-    font-size: clamp(1.5rem, 1.5vw + 1rem, 1.875rem);
-    line-height: 1.15;
-    letter-spacing: -0.01em;
-    font-weight: 600;
-  }
-
-  .t-h3 {
-    font-size: 1.25rem;
-    line-height: 1.25;
-    font-weight: 600;
-  }
-
-  .t-body {
-    font-size: 1rem;
-    line-height: 1.55;
-  }
-
-  .t-small {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-  }
-
-  .t-eyebrow {
-    font-size: 0.6875rem;
-    line-height: 1.4;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-  }
-
-  .card-hover {
-    @apply transition-shadow hover:shadow-md;
+  /* Feed row separator — X-style hairline instead of card gap */
+  .feed-row {
+    @apply border-b border-border px-4 py-3 transition-colors hover:bg-muted/30;
   }
 }
 
 @layer utilities {
-  /* Tabular figures for prices/quantities */
-  .tabular-nums {
-    font-variant-numeric: tabular-nums;
-  }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
 
-  /* Safe-area aware padding for notch / status bar / home indicator */
   .pt-safe { padding-top: env(safe-area-inset-top); }
   .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
   .pl-safe { padding-left: env(safe-area-inset-left); }
   .pr-safe { padding-right: env(safe-area-inset-right); }
-  .px-safe {
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
-  }
+  .px-safe { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
   .mt-safe { margin-top: env(safe-area-inset-top); }
   .mb-safe { margin-bottom: env(safe-area-inset-bottom); }
   .top-safe { top: env(safe-area-inset-top); }
   .bottom-safe { bottom: env(safe-area-inset-bottom); }
 
-  /* Touch-friendly: removes 300ms tap delay on legacy Android Chrome */
   .touch-action-manipulation { touch-action: manipulation; }
 }
 
 @layer base {
   html {
-    /* Anchor links land below the sticky header + notch */
     scroll-padding-top: calc(52px + env(safe-area-inset-top));
     -webkit-text-size-adjust: 100%;
   }
-  /* Horizontal-overflow hard guard. Combine `clip` (no scroll container)
-     with explicit max-width so a stray wide descendant cannot push the
-     page sideways even if its ancestors fail to constrain it. */
-  html, body {
-    overflow-x: clip;
-    max-width: 100vw;
-  }
-  body {
-    overscroll-behavior-y: contain;
-  }
-  #root {
-    overflow-x: clip;
-    max-width: 100vw;
-  }
-  /* Media must never blow out its container */
-  img, video, svg, canvas, iframe {
-    max-width: 100%;
-    height: auto;
-  }
-  /* Long unbroken strings (URLs, SKUs, descriptions) should wrap, not push layout */
-  p, h1, h2, h3, h4, h5, h6, span, li, td, th, a {
-    overflow-wrap: anywhere;
-  }
-  button, a, [role="button"] {
-    touch-action: manipulation;
-  }
+  html, body { overflow-x: clip; max-width: 100vw; }
+  body { overscroll-behavior-y: contain; }
+  #root { overflow-x: clip; max-width: 100vw; }
+  img, video, svg, canvas, iframe { max-width: 100%; height: auto; }
+  p, h1, h2, h3, h4, h5, h6, span, li, td, th, a { overflow-wrap: anywhere; }
+  button, a, [role="button"] { touch-action: manipulation; }
 }
 
 @keyframes ticker-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-
-.ticker-track {
-  animation: ticker-scroll 45s linear infinite;
-  width: max-content;
-}
-.ticker-track:hover {
-  animation-play-state: paused;
-}
-@media (prefers-reduced-motion: reduce) {
-  .ticker-track { animation: none; }
-}
+.ticker-track { animation: ticker-scroll 45s linear infinite; width: max-content; }
+.ticker-track:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
