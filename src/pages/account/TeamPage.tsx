@@ -27,7 +27,13 @@ import {
   type CompanyMemberRole,
   type CompanyMemberRow,
 } from "@/repositories/companyMembers";
-import { getMyCompany } from "@/repositories/companies";
+
+async function getMyCompanyLite(): Promise<{ id: string; name: string } | null> {
+  const { data, error } = await supabase.rpc("get_my_company");
+  if (error) throw error;
+  const row = (data ?? [])[0] as { id: string; name: string } | undefined;
+  return row ? { id: row.id, name: row.name } : null;
+}
 
 type ProfileLite = { id: string; full_name: string | null; avatar_url: string | null };
 type MemberWithProfile = CompanyMemberRow & { profile?: ProfileLite };
