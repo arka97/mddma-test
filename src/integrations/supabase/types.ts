@@ -1901,6 +1901,7 @@ export type Database = {
       is_free_within_grace: { Args: { _uid: string }; Returns: boolean }
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
+      is_verification_open: { Args: never; Returns: boolean }
       record_business_post_view: {
         Args: { _post_id: string }
         Returns: undefined
