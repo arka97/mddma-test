@@ -16,7 +16,7 @@ interface CompanySummary {
   name: string;
   slug: string;
   logo_url: string | null;
-  short_description: string | null;
+  tagline: string | null;
   is_verified: boolean;
 }
 
@@ -37,7 +37,7 @@ export function CompanyHoverCard({ slug, children }: CompanyHoverCardProps) {
     (async () => {
       const { data: row } = await supabase
         .from("companies_public")
-        .select("id,name,slug,logo_url,short_description,is_verified")
+        .select("id,name,slug,logo_url,tagline,is_verified")
         .eq("slug", slug)
         .maybeSingle();
       if (cancelled) return;
@@ -74,8 +74,8 @@ export function CompanyHoverCard({ slug, children }: CompanyHoverCardProps) {
               </Link>
               <FollowButton id={data.id} name={data.name} />
             </div>
-            {data.short_description && (
-              <p className="line-clamp-3 text-xs text-muted-foreground">{data.short_description}</p>
+            {data.tagline && (
+              <p className="line-clamp-3 text-xs text-muted-foreground">{data.tagline}</p>
             )}
           </>
         )}
