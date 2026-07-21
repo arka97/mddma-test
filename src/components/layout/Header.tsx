@@ -22,6 +22,7 @@ import { useScrolled } from "@/hooks/use-scrolled";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
+import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -203,6 +204,7 @@ export function Header() {
 
           <div className="flex items-center gap-1.5">
             <InstallAppButton iconOnly size="sm" className="h-9 w-9 p-0" />
+            {user && <CompanySwitcher />}
             {user ? (
               <UserMenu />
             ) : (
