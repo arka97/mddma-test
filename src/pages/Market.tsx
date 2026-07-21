@@ -22,6 +22,8 @@ import { commentCounts } from "@/repositories/postComments";
 import { viewCounts } from "@/repositories/postViews";
 import { listCompaniesByOwners } from "@/repositories/companies";
 import { useFollowingSet } from "@/hooks/useFollow";
+import { listFeedEvents, type FeedEvent } from "@/repositories/feedEvents";
+import { SystemEventCard } from "@/components/market/SystemEventCard";
 import { supabase } from "@/integrations/supabase/client";
 
 type FeedAuthor = {
