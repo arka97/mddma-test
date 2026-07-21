@@ -206,6 +206,21 @@ export function Header() {
 
           <div className="flex items-center gap-1.5">
             <InstallAppButton iconOnly size="sm" className="h-9 w-9 p-0" />
+            {user && (
+              <Link
+                to="/messages"
+                aria-label="Deal rooms"
+                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <MessageSquareText className="h-[18px] w-[18px]" />
+                {hasDealActivity && (
+                  <span
+                    aria-hidden
+                    className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-card"
+                  />
+                )}
+              </Link>
+            )}
             {user && <CompanySwitcher />}
             {user ? (
               <UserMenu />
