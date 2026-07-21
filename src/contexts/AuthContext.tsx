@@ -1,9 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 
 export type AppRole = "admin" | "broker" | "paid_member" | "free_member";
+export type CompanyMemberRole = "owner" | "admin" | "editor" | "viewer";
 
 interface Profile {
   id: string;
@@ -33,11 +34,23 @@ interface CompanyLite {
   review_status: "pending" | "approved" | "rejected";
 }
 
+export interface CompanyMembership {
+  company: CompanyLite;
+  role: CompanyMemberRole;
+}
+
+const ACTIVE_COMPANY_KEY = "gbaug:active-company-id";
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
+  /** Currently-active company (auto-selected or user-switched). */
   company: CompanyLite | null;
+  /** All companies the signed-in user belongs to (owner/admin/editor/viewer). */
+  memberships: CompanyMembership[];
+  activeMembershipRole: CompanyMemberRole | null;
+  setActiveCompany: (companyId: string) => void;
   roles: AppRole[];
   loading: boolean;
   signInWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -54,22 +67,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [company, setCompany] = useState<CompanyLite | null>(null);
+  const [memberships, setMemberships] = useState<CompanyMembership[]>([]);
+  const [activeCompanyId, setActiveCompanyIdState] = useState<string | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
 
   const loadUserData = async (uid: string) => {
-    const [{ data: prof }, { data: comp }, { data: rs }] = await Promise.all([
+    const [{ data: prof }, { data: memberRows }, { data: rs }] = await Promise.all([
       supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
       supabase
-        .from("companies")
-        .select("id,slug,name,logo_url,country,is_verified,is_hidden,review_status")
-        .eq("owner_id", uid)
-        .maybeSingle(),
+        .from("company_members")
+        .select(
+          "role, companies!inner(id,slug,name,logo_url,country,is_verified,is_hidden,review_status)",
+        )
+        .eq("user_id", uid),
       supabase.from("user_roles").select("role").eq("user_id", uid),
     ]);
     setProfile(prof as Profile | null);
-    setCompany(comp as CompanyLite | null);
+
+    const list: CompanyMembership[] = ((memberRows ?? []) as Array<{
+      role: CompanyMemberRole;
+      companies: CompanyLite | null;
+    }>)
+      .filter((row) => row.companies)
+      .map((row) => ({ role: row.role, company: row.companies as CompanyLite }))
+      // Sort so owners appear first, then by name
+      .sort((a, b) => {
+        if (a.role === "owner" && b.role !== "owner") return -1;
+        if (b.role === "owner" && a.role !== "owner") return 1;
+        return a.company.name.localeCompare(b.company.name);
+      });
+    setMemberships(list);
+
+    const stored = typeof window !== "undefined" ? localStorage.getItem(ACTIVE_COMPANY_KEY) : null;
+    const initial =
+      list.find((m) => m.company.id === stored)?.company.id ?? list[0]?.company.id ?? null;
+    setActiveCompanyIdState(initial);
+
     setRoles((rs ?? []).map((r: { role: AppRole }) => r.role));
   };
 
@@ -83,7 +117,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setTimeout(() => loadUserData(sess.user.id), 0);
       } else {
         setProfile(null);
-        setCompany(null);
+        setMemberships([]);
+        setActiveCompanyIdState(null);
         setRoles([]);
       }
     });
@@ -97,6 +132,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const setActiveCompany = useCallback(
+    (companyId: string) => {
+      const match = memberships.find((m) => m.company.id === companyId);
+      if (!match) return;
+      setActiveCompanyIdState(companyId);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(ACTIVE_COMPANY_KEY, companyId);
+      }
+    },
+    [memberships],
+  );
 
   const signInWithEmail = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -129,13 +176,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const hasRole = (role: AppRole) => roles.includes(role);
 
+  const activeMembership =
+    memberships.find((m) => m.company.id === activeCompanyId) ?? null;
+
   return (
     <AuthContext.Provider
       value={{
         user,
         session,
         profile,
-        company,
+        company: activeMembership?.company ?? null,
+        memberships,
+        activeMembershipRole: activeMembership?.role ?? null,
+        setActiveCompany,
         roles,
         loading,
         signInWithEmail,
