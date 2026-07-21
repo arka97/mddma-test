@@ -1777,6 +1777,16 @@ export type Database = {
           phone: string
         }[]
       }
+      get_company_team_public: {
+        Args: { _company_id: string }
+        Returns: {
+          avatar_url: string
+          full_name: string
+          joined_at: string
+          role: Database["public"]["Enums"]["company_member_role"]
+          user_id: string
+        }[]
+      }
       get_company_whatsapp: { Args: { _company_id: string }; Returns: string }
       get_my_company: {
         Args: never
