@@ -80,17 +80,20 @@ const Market = () => {
       setComments(c);
       setViews(v);
       const map: Record<string, FeedAuthor> = {};
+      const companyIds: Record<string, string> = {};
       ((profs.data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>).forEach((p) => { map[p.id] = p; });
       // Merge storefront slug + verified flag so authors link to their profile.
-      Object.entries(companies as Record<string, { slug: string; name: string; is_verified: boolean }>).forEach(([ownerId, co]) => {
+      Object.entries(companies as Record<string, { id: string; slug: string; name: string; is_verified: boolean }>).forEach(([ownerId, co]) => {
         map[ownerId] = {
           ...(map[ownerId] ?? { id: ownerId, full_name: null, avatar_url: null }),
           company_name: map[ownerId]?.company_name ?? co.name,
           slug: co.slug,
           is_verified: co.is_verified,
         };
+        if (co.id) companyIds[ownerId] = co.id;
       });
       setAuthors(map);
+      setAuthorCompanyIds(companyIds);
     } catch {
       setPosts([]);
     } finally {
@@ -105,7 +108,13 @@ const Market = () => {
   }, [topic, canRead]);
 
   const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
-  const rest = posts.filter((p) => !pinned.includes(p));
+  const restAll = posts.filter((p) => !pinned.includes(p));
+  const rest = feedTab === "following"
+    ? restAll.filter((p) => {
+        const cid = authorCompanyIds[p.author_id];
+        return cid ? followingSet.has(cid) : false;
+      })
+    : restAll;
 
   return (
     <Layout>
