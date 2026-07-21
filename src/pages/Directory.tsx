@@ -206,7 +206,16 @@ const Directory = () => {
       </section>
 
       <section className="py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <FeedShell
+          className="max-w-[1240px] px-4 sm:px-6 lg:px-8"
+          centerClassName="max-w-none flex-1"
+          rightRail={
+            <>
+              <SuggestedFollows limit={5} />
+              <TrendingTopics />
+            </>
+          }
+        >
           {loading ? (
             <ListingsGridSkeleton count={8} className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2" />
           ) : (
