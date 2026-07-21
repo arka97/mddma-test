@@ -20,6 +20,9 @@ import { ListingsGridSkeleton } from "@/components/ui/skeletons";
 import { useDirectory } from "@/hooks/queries/useCompanies";
 import { CommodityImage } from "@/components/commodity/CommodityImage";
 import { SellerSignals } from "@/components/commodity/SellerSignals";
+import { FeedShell } from "@/components/layout/FeedShell";
+import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
+import { TrendingTopics } from "@/components/feed/TrendingTopics";
 
 const businessTypes = [
   "Importer",
@@ -203,7 +206,16 @@ const Directory = () => {
       </section>
 
       <section className="py-8">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <FeedShell
+          className="max-w-[1240px] px-4 sm:px-6 lg:px-8"
+          centerClassName="max-w-none flex-1"
+          rightRail={
+            <>
+              <SuggestedFollows limit={5} />
+              <TrendingTopics />
+            </>
+          }
+        >
           {loading ? (
             <ListingsGridSkeleton count={8} className="grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2" />
           ) : (
@@ -292,7 +304,7 @@ const Directory = () => {
               )}
             </div>
           )}
-        </div>
+        </FeedShell>
       </section>
     </Layout>
   );
