@@ -612,6 +612,42 @@ export type Database = {
           },
         ]
       }
+      follows: {
+        Row: {
+          created_at: string
+          followed_company_id: string
+          follower_user_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          followed_company_id: string
+          follower_user_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          followed_company_id?: string
+          follower_user_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "follows_followed_company_id_fkey"
+            columns: ["followed_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "follows_followed_company_id_fkey"
+            columns: ["followed_company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       humor_posts: {
         Row: {
           attribution: string | null
@@ -1639,8 +1675,54 @@ export type Database = {
       }
     }
     Functions: {
+      add_business_comment: {
+        Args: { _content: string; _post_id: string }
+        Returns: string
+      }
       can_access_deal_room: { Args: { _room_id: string }; Returns: boolean }
+      cast_business_poll_vote: {
+        Args: { _option_id: string; _poll_id: string }
+        Returns: string
+      }
+      create_business_poll_post: {
+        Args: {
+          _content?: string
+          _duration_days?: number
+          _options: string[]
+          _question: string
+          _structured_data?: Json
+        }
+        Returns: string
+      }
+      create_business_post: {
+        Args: { _content?: string; _post_type: string; _structured_data?: Json }
+        Returns: string
+      }
       downgrade_to_free: { Args: { _user_id: string }; Returns: undefined }
+      get_business_poll: {
+        Args: { _post_id: string }
+        Returns: {
+          closes_at: string
+          option_id: string
+          option_index: number
+          option_label: string
+          poll_id: string
+          post_id: string
+          question: string
+          vote_count: number
+          voted: boolean
+        }[]
+      }
+      get_business_post_engagement: {
+        Args: { _ids: string[] }
+        Returns: {
+          comment_count: number
+          like_count: number
+          liked: boolean
+          post_id: string
+          view_count: number
+        }[]
+      }
       get_buyer_reputation_tier: { Args: { _score: number }; Returns: string }
       get_company_contact_admin: {
         Args: { _company_id: string }
@@ -1722,13 +1804,22 @@ export type Database = {
         }
         Returns: boolean
       }
+      has_verified_business: { Args: never; Returns: boolean }
       is_features_open: { Args: never; Returns: boolean }
       is_free_within_grace: { Args: { _uid: string }; Returns: boolean }
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
+      record_business_post_view: {
+        Args: { _post_id: string }
+        Returns: undefined
+      }
       send_deal_message: {
         Args: { _body: string; _room_id: string }
         Returns: string
+      }
+      set_business_post_like: {
+        Args: { _liked: boolean; _post_id: string }
+        Returns: boolean
       }
       slugify: { Args: { _title: string }; Returns: string }
       start_deal_room: {
