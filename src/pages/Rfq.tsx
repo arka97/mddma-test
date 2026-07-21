@@ -14,6 +14,7 @@ import { QuoteRfqSheet } from "@/components/rfq/QuoteRfqSheet";
 import { RfqPrimerCard } from "@/components/rfq/RfqPrimerCard";
 import { FeedShell } from "@/components/layout/FeedShell";
 import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
+import { MyBusinessesCard } from "@/components/feed/MyBusinessesCard";
 import { cn } from "@/lib/utils";
 import type { RfqListingRow, RfqType } from "@/repositories/rfqListings";
 
