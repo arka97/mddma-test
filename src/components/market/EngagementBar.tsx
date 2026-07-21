@@ -1,6 +1,4 @@
-import { useState, type ComponentType } from "react";
-import { MessageCircle, Repeat2, Heart, BarChart3, Bookmark, Share } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { ThumbsUp, MessageCircle, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -9,157 +7,38 @@ interface Props {
   commentCount: number;
   viewCount: number;
   onLike: () => void;
-  onReplyClick: () => void;
+  onCommentClick: () => void;
   disabled?: boolean;
-  postId: string;
-  size?: "sm" | "lg";
 }
 
-function ActionButton({
-  icon: Icon,
-  count,
-  label,
-  onClick,
-  active,
-  activeText,
-  hoverText,
-  hoverBg,
-  fill,
-  disabled,
-  size,
-}: {
-  icon: ComponentType<{ className?: string }>;
-  count?: number;
-  label: string;
-  onClick?: () => void;
-  active?: boolean;
-  activeText?: string;
-  hoverText?: string;
-  hoverBg?: string;
-  fill?: boolean;
-  disabled?: boolean;
-  size: "sm" | "lg";
-}) {
-  const iconSize = size === "lg" ? "h-5 w-5" : "h-[18px] w-[18px]";
+export function EngagementBar({ liked, likeCount, commentCount, viewCount, onLike, onCommentClick, disabled }: Props) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      aria-label={label}
-      aria-pressed={active}
-      className={cn(
-        "group -ml-2 inline-flex items-center gap-1 text-[13px] transition-colors disabled:opacity-40",
-        active ? activeText : "text-muted-foreground",
-        !disabled && hoverText,
-      )}
-    >
-      <span
-        className={cn(
-          "flex items-center justify-center rounded-full transition-colors",
-          size === "lg" ? "p-2.5" : "p-2",
-          !disabled && hoverBg,
-        )}
-      >
-        <Icon className={cn(iconSize, fill && active && "fill-current")} />
-      </span>
-      {count !== undefined && count > 0 && <span className="tabular-nums">{count}</span>}
-    </button>
-  );
-}
-
-/** X-style action row: reply · repost · like · views · bookmark · share. */
-export function EngagementBar({
-  liked,
-  likeCount,
-  commentCount,
-  viewCount,
-  onLike,
-  onReplyClick,
-  disabled,
-  postId,
-  size = "sm",
-}: Props) {
-  const { toast } = useToast();
-  const [reposted, setReposted] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
-
-  const onShare = async () => {
-    const url = `${window.location.origin}/market/${postId}`;
-    try {
-      if (navigator.share) await navigator.share({ url });
-      else {
-        await navigator.clipboard.writeText(url);
-        toast({ title: "Link copied", description: "Post link copied to your clipboard." });
-      }
-    } catch {
-      /* user dismissed the share sheet */
-    }
-  };
-
-  return (
-    <div className={cn("mt-2 flex items-center justify-between", size === "lg" ? "max-w-lg" : "max-w-md")}>
-      <ActionButton
-        icon={MessageCircle}
-        count={commentCount}
-        label="Reply"
-        onClick={onReplyClick}
-        hoverText="hover:text-primary"
-        hoverBg="group-hover:bg-primary/10"
-        size={size}
-      />
-      <ActionButton
-        icon={Repeat2}
-        count={reposted ? 1 : 0}
-        label={reposted ? "Undo repost" : "Repost"}
-        onClick={() => setReposted((v) => !v)}
-        active={reposted}
-        activeText="text-repost"
-        hoverText="hover:text-repost"
-        hoverBg="group-hover:bg-repost/10"
-        size={size}
-      />
-      <ActionButton
-        icon={Heart}
-        count={likeCount}
-        label={liked ? "Unlike" : "Like"}
+    <div className="mt-3 flex items-center gap-5 border-t border-border/60 pt-2 text-xs text-muted-foreground">
+      <button
+        type="button"
         onClick={onLike}
         disabled={disabled}
-        active={liked}
-        activeText="text-like"
-        hoverText="hover:text-like"
-        hoverBg="group-hover:bg-like/10"
-        fill
-        size={size}
-      />
-      <ActionButton
-        icon={BarChart3}
-        count={viewCount}
-        label="Views"
-        size={size}
-        disabled
-      />
-      <div className="flex items-center">
-        <ActionButton
-          icon={Bookmark}
-          label={bookmarked ? "Remove bookmark" : "Bookmark"}
-          onClick={() => setBookmarked((v) => !v)}
-          active={bookmarked}
-          activeText="text-primary"
-          hoverText="hover:text-primary"
-          hoverBg="group-hover:bg-primary/10"
-          fill
-          size={size}
-        />
-        <ActionButton
-          icon={Share}
-          label="Share post"
-          onClick={onShare}
-          hoverText="hover:text-primary"
-          hoverBg="group-hover:bg-primary/10"
-          size={size}
-        />
-      </div>
+        className={cn(
+          "inline-flex items-center gap-1 transition-colors disabled:opacity-50",
+          liked ? "text-accent" : "hover:text-foreground",
+        )}
+      >
+        <ThumbsUp className={cn("h-4 w-4", liked && "fill-current")} />
+        <span className="tabular-nums">{likeCount}</span>
+      </button>
+      <button
+        type="button"
+        onClick={onCommentClick}
+        disabled={disabled}
+        className="inline-flex items-center gap-1 transition-colors hover:text-foreground disabled:opacity-50"
+      >
+        <MessageCircle className="h-4 w-4" />
+        <span className="tabular-nums">{commentCount}</span>
+      </button>
+      <span className="ml-auto inline-flex items-center gap-1">
+        <Eye className="h-3.5 w-3.5" />
+        <span className="tabular-nums">{viewCount}</span>
+      </span>
     </div>
   );
 }
