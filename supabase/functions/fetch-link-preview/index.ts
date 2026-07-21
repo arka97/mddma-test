@@ -346,6 +346,41 @@ async function fetchScrape(targetUrl: string) {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
+    // Require an authenticated caller with paid/broker/admin role (matches the paid feature gate).
+    const authHeader = req.headers.get("Authorization") ?? "";
+    if (!authHeader.startsWith("Bearer ")) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const token = authHeader.slice("Bearer ".length);
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
+      return new Response(JSON.stringify({ error: "unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userId = claimsData.claims.sub as string;
+
+    // Allow the call if features are globally opened by admin, or the user has a qualifying role.
+    const [{ data: flagRow }, { data: roleRows }] = await Promise.all([
+      supabase.from("app_settings").select("value").eq("key", "features_open_to_all").maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", userId),
+    ]);
+    const featuresOpen = (flagRow as { value?: unknown } | null)?.value === true;
+    const roles = ((roleRows as Array<{ role: string }> | null) ?? []).map((r) => r.role);
+    const allowed = featuresOpen || roles.some((r) => r === "admin" || r === "paid_member" || r === "broker");
+    if (!allowed) {
+      return new Response(JSON.stringify({ error: "forbidden" }), {
+        status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json().catch(() => ({}));
     const url = typeof body?.url === "string" ? body.url.trim() : "";
     if (!url || url.length > 2048) {
@@ -353,6 +388,7 @@ Deno.serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
 
     const now = Date.now();
     const cached = cache.get(url);
