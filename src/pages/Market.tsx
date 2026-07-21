@@ -48,6 +48,7 @@ const Market = () => {
   const [views, setViews] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
+  const [events, setEvents] = useState<FeedEvent[]>([]);
   const followingSet = useFollowingSet();
 
   const isPaid = isEffectivePaid;
