@@ -5,6 +5,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FollowButton } from "./FollowButton";
 import { supabase } from "@/integrations/supabase/client";
+import { useFollowerCount } from "@/hooks/queries/useFollowerCount";
 
 interface CompanyHoverCardProps {
   slug: string;
@@ -57,29 +58,41 @@ export function CompanyHoverCard({ slug, children }: CompanyHoverCardProps) {
         {!data ? (
           <div className="text-xs text-muted-foreground">Loading business…</div>
         ) : (
-          <>
-            <div className="flex items-start justify-between gap-3">
-              <Link to={`/store/${data.slug}`} className="flex min-w-0 items-center gap-3">
-                <Avatar className="h-11 w-11">
-                  <AvatarImage src={data.logo_url ?? undefined} />
-                  <AvatarFallback>{data.name.slice(0, 1)}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1 truncate text-sm font-semibold text-foreground">
-                    {data.name}
-                    {data.is_verified && <BadgeCheck className="h-4 w-4 text-primary" aria-label="Verified" />}
-                  </div>
-                  <div className="truncate text-xs text-muted-foreground">@{data.slug}</div>
-                </div>
-              </Link>
-              <FollowButton id={data.id} name={data.name} />
-            </div>
-            {data.tagline && (
-              <p className="line-clamp-3 text-xs text-muted-foreground">{data.tagline}</p>
-            )}
-          </>
+          <HoverCardBody data={data} />
         )}
       </HoverCardContent>
     </HoverCard>
   );
 }
+
+function HoverCardBody({ data }: { data: CompanySummary }) {
+  const { data: followerCount = 0 } = useFollowerCount(data.id);
+  return (
+    <>
+      <div className="flex items-start justify-between gap-3">
+        <Link to={`/store/${data.slug}`} className="flex min-w-0 items-center gap-3">
+          <Avatar className="h-11 w-11">
+            <AvatarImage src={data.logo_url ?? undefined} />
+            <AvatarFallback>{data.name.slice(0, 1)}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1 truncate text-sm font-semibold text-foreground">
+              {data.name}
+              {data.is_verified && <BadgeCheck className="h-4 w-4 text-primary" aria-label="Verified" />}
+            </div>
+            <div className="truncate text-xs text-muted-foreground">@{data.slug}</div>
+          </div>
+        </Link>
+        <FollowButton id={data.id} name={data.name} />
+      </div>
+      {data.tagline && (
+        <p className="line-clamp-3 text-xs text-muted-foreground">{data.tagline}</p>
+      )}
+      <div className="text-xs text-muted-foreground">
+        <span className="font-semibold text-foreground">{followerCount.toLocaleString()}</span>{" "}
+        {followerCount === 1 ? "follower" : "followers"}
+      </div>
+    </>
+  );
+}
+
