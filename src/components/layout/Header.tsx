@@ -119,6 +119,11 @@ export function Header() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
+          <Link to="/account/bookmarks">
+            <Bookmark className="mr-2 h-4 w-4" /> Bookmarks
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link to="/account/profile">
             <User className="mr-2 h-4 w-4" /> My profile
           </Link>
