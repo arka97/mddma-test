@@ -171,52 +171,53 @@ export function Header() {
       <div className="container mx-auto px-5 sm:px-6 lg:px-8">
         <div
           className={cn(
-            "flex items-center justify-between gap-2 overflow-hidden transition-all duration-200 ease-out",
+            "grid grid-cols-[1fr_auto_1fr] items-center gap-2 overflow-hidden transition-all duration-200 ease-out",
             scrolled
               ? "pointer-events-none h-0 opacity-0 lg:pointer-events-auto lg:h-12 lg:opacity-100"
               : "h-12 opacity-100",
           )}
           aria-hidden={scrolled ? "true" : "false"}
         >
-          <div className="flex min-w-0 items-center gap-2">
-            <Link to="/" className="flex min-w-0 items-center gap-2 lg:py-1" aria-label="G-BAU-G — by MDDMA">
-              <Logo variant="mark" className="h-8 w-8 shrink-0 lg:h-9 lg:w-9" />
-              <span className="text-sm font-bold tracking-tight text-foreground lg:text-base">G-BAU-G</span>
-            </Link>
-          </div>
+          <Link to="/" className="flex min-w-0 items-center" aria-label="G-BAU-G">
+            <span className="text-base font-bold tracking-tight text-foreground lg:text-lg">G-BAU-G</span>
+          </Link>
 
-          <div className="hidden lg:flex lg:items-center lg:gap-0.5">
-            {desktopNav.map((item) => (
-              <Link
-                key={item.name}
-                to={item.href}
-                className={cn(
-                  "rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
-                  isActive(item.href)
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-              >
-                {item.name}
-              </Link>
-            ))}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="inline-flex items-center gap-0.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-                  More <ChevronDown className="h-3.5 w-3.5" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {moreNav.map((item) => (
-                  <DropdownMenuItem key={item.name} asChild>
-                    <Link to={item.href}>{item.name}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <Link to="/" className="flex justify-center" aria-label="G-BAU-G home">
+            <Logo variant="mark" className="h-10 w-10 shrink-0 lg:h-12 lg:w-12" />
+          </Link>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-end gap-1.5">
+            <div className="hidden lg:flex lg:items-center lg:gap-0.5">
+              {desktopNav.map((item) => (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className={cn(
+                    "rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
+                    isActive(item.href)
+                      ? "bg-secondary text-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  )}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="inline-flex items-center gap-0.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
+                    More <ChevronDown className="h-3.5 w-3.5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {moreNav.map((item) => (
+                    <DropdownMenuItem key={item.name} asChild>
+                      <Link to={item.href}>{item.name}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
             <InstallAppButton iconOnly size="sm" className="h-9 w-9 p-0" />
             {user && (
               <Link
