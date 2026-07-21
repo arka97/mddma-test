@@ -37,13 +37,16 @@ const Market = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<TopicTag | "all">("all");
+  const [feedTab, setFeedTab] = useState<FeedTab>("for_you");
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
+  const [authorCompanyIds, setAuthorCompanyIds] = useState<Record<string, string>>({});
   const [likes, setLikes] = useState<{ counts: Record<string, number>; mine: Set<string> }>({ counts: {}, mine: new Set() });
   const [comments, setComments] = useState<Record<string, number>>({});
   const [views, setViews] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
+  const followingSet = useFollowingSet();
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
