@@ -19,7 +19,7 @@ const Index = () => (
     />
 
     <div className="container mx-auto max-w-6xl space-y-5 px-5 pt-4 sm:px-6 sm:pt-5 lg:px-8">
-      <LiveTicker />
+      <AdSlot placement="homepage-banner" />
     </div>
 
     <div className="container mx-auto max-w-6xl px-5 py-5 sm:px-6 lg:px-8">
@@ -31,7 +31,7 @@ const Index = () => (
         <RecentListingsList />
         <NewMembersList />
         <MembershipCTA />
-        <AdSlot placement="homepage-banner" />
+        <LiveTicker />
       </div>
     </div>
   </Layout>
