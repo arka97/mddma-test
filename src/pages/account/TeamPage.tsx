@@ -177,7 +177,7 @@ export default function TeamPage() {
 
   return (
     <Layout>
-      <Seo title="Team | G-BAU-G" description="Add teammates to your business account." noindex />
+      <Seo title="Team | G-BAU-G" description="Add teammates to your business account." path="/account/team" noindex />
       <div className="mx-auto max-w-3xl px-5 py-8 space-y-6">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">Team</h1>
