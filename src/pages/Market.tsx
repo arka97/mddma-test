@@ -174,7 +174,11 @@ const Market = () => {
                   </div>
                 ))
               ) : rest.length === 0 ? (
-                <p className="py-16 text-center text-sm text-muted-foreground">No posts yet — be the first to share.</p>
+                <p className="py-16 text-center text-sm text-muted-foreground">
+                  {feedTab === "following"
+                    ? "You're not following anyone with posts yet — try Who to follow on the right."
+                    : "No posts yet — be the first to share."}
+                </p>
               ) : (
                 rest.map((p) => (
                   <PostCard
