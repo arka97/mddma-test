@@ -215,7 +215,7 @@ const Rfq = () => {
             />
           </>
         )}
-      </div>
+      </FeedShell>
     </Layout>
   );
 };
