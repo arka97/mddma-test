@@ -89,13 +89,13 @@ export default function BookmarksPage() {
           avatar_url: p.avatar_url,
         };
       });
-      (companiesRes ?? []).forEach((c) => {
-        const existing = authorMap[c.owner_id] ?? {
-          id: c.owner_id,
+      Object.entries(companiesRes ?? {}).forEach(([ownerId, c]) => {
+        const existing = authorMap[ownerId] ?? {
+          id: ownerId,
           full_name: null,
           avatar_url: null,
         };
-        authorMap[c.owner_id] = {
+        authorMap[ownerId] = {
           ...existing,
           company_name: c.name,
           slug: c.slug,
