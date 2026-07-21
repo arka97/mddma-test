@@ -23,6 +23,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
+import { useDealRoomsActivity } from "@/hooks/useDealRoomsActivity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -56,6 +57,7 @@ export function Header() {
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
   const scrolled = useScrolled(24);
+  const { hasActivity: hasDealActivity } = useDealRoomsActivity();
 
   const submitSearch = (event?: React.FormEvent) => {
     event?.preventDefault();
@@ -204,6 +206,21 @@ export function Header() {
 
           <div className="flex items-center gap-1.5">
             <InstallAppButton iconOnly size="sm" className="h-9 w-9 p-0" />
+            {user && (
+              <Link
+                to="/messages"
+                aria-label="Deal rooms"
+                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <MessageSquareText className="h-[18px] w-[18px]" />
+                {hasDealActivity && (
+                  <span
+                    aria-hidden
+                    className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-card"
+                  />
+                )}
+              </Link>
+            )}
             {user && <CompanySwitcher />}
             {user ? (
               <UserMenu />
