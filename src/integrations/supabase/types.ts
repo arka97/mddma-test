@@ -465,6 +465,51 @@ export type Database = {
         }
         Relationships: []
       }
+      company_members: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["company_member_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["company_member_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["company_member_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_members_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "company_members_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       deal_messages: {
         Row: {
           body: string
@@ -1797,6 +1842,13 @@ export type Database = {
           view_count: number
         }[]
       }
+      has_company_role: {
+        Args: {
+          _company_id: string
+          _roles: Database["public"]["Enums"]["company_member_role"][]
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1840,6 +1892,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "broker" | "paid_member" | "free_member"
+      company_member_role: "owner" | "admin" | "editor" | "viewer"
       review_status: "pending" | "approved" | "rejected"
       rfq_status:
         | "new"
@@ -1977,6 +2030,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "broker", "paid_member", "free_member"],
+      company_member_role: ["owner", "admin", "editor", "viewer"],
       review_status: ["pending", "approved", "rejected"],
       rfq_status: [
         "new",
