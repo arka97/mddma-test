@@ -130,11 +130,12 @@ const Market = () => {
       >
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
         {/* X-style feed header */}
-        <div className="border-b border-border bg-background">
+        <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
           <div className="px-4 pt-3">
             <h1 className="text-lg font-extrabold tracking-tight text-foreground">Market</h1>
           </div>
-          <div className="px-2 pt-1">
+          <FeedTabs active={feedTab} onChange={setFeedTab} followingDisabled={!user} />
+          <div className="border-b border-border px-2 pt-2">
             <TopicChips active={topic} onChange={setTopic} />
           </div>
         </div>
