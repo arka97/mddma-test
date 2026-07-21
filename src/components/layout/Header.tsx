@@ -23,6 +23,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
+import { useDealRoomsActivity } from "@/hooks/useDealRoomsActivity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
