@@ -94,6 +94,7 @@ export function AppRoutes() {
         <Route path="/account/company" element={protect(<CompanyPage />)} />
         <Route path="/account/products" element={protect(<ProductsPage />)} />
         <Route path="/account/brands" element={protect(<AccountBrandsPage />)} />
+        <Route path="/account/team" element={protect(<TeamPage />)} />
 
         <Route path="/account/moderation" element={protect(<AdminModeration />, "admin")} />
 
