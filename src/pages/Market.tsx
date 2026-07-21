@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Feather } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
+import { FeedShell } from "@/components/layout/FeedShell";
+import { SuggestedFollows } from "@/components/feed/SuggestedFollows";
+import { TrendingTopics } from "@/components/feed/TrendingTopics";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -103,7 +106,15 @@ const Market = () => {
     <Layout>
       <Seo title="Market — G-BAU-G" description="G-BAU-G market feed: price signals, alerts, sourcing asks and verified-member rates." path="/market" noindex />
 
-      <div className="mx-auto min-h-screen max-w-[600px] pb-24 sm:border-x sm:border-border">
+      <FeedShell
+        rightRail={
+          <>
+            <SuggestedFollows />
+            <TrendingTopics />
+          </>
+        }
+      >
+      <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
         {/* X-style feed header */}
         <div className="border-b border-border bg-background">
           <div className="px-4 pt-3">
@@ -186,6 +197,7 @@ const Market = () => {
           </>
         )}
       </div>
+      </FeedShell>
 
       {isGuest && <GuestTeaser />}
       {!isGuest && !canRead && <PaywallOverlay />}

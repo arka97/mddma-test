@@ -17,6 +17,7 @@ import { LinkPreviewCard } from "./LinkPreviewCard";
 import { PostImages, PostFileChip } from "./PostMedia";
 import { PollWidget } from "./PollWidget";
 import { FollowButton } from "@/components/social/FollowButton";
+import { CompanyHoverCard } from "@/components/social/CompanyHoverCard";
 import type { CommunityPostRow } from "@/repositories/communityPosts";
 import { recordView } from "@/repositories/postViews";
 import { likePost, unlikePost } from "@/repositories/postLikes";
@@ -225,7 +226,13 @@ export function PostCard({
 
   const NameBlock = (
     <div className="flex min-w-0 flex-wrap items-center gap-x-1 gap-y-0 text-[15px] leading-tight">
-      {profileHref ? (
+      {profileHref && slug ? (
+        <CompanyHoverCard slug={slug}>
+          <Link to={profileHref} className="truncate font-bold text-foreground hover:underline">
+            {displayName}
+          </Link>
+        </CompanyHoverCard>
+      ) : profileHref ? (
         <Link to={profileHref} className="truncate font-bold text-foreground hover:underline">
           {displayName}
         </Link>
