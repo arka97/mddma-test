@@ -2,23 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-/* G-BAU-G Design System — "Parchment & Gold"
-   Light: warm parchment surface · ink primary · gold as accent only
-   Dark:  candlelight (deep warm black) · brighter gold
+/* G-BAU-G Design System — "MDDMA Burgundy & Gold"
+   Inspired by mddma.org: deep burgundy primary + warm gold accent on a
+   clean, near-white neutral base. The structure mirrors what X, LinkedIn,
+   WhatsApp and Threads all do — one strong brand color on a neutral
+   surface — so swapping the accent hue produces any of those brands.
 
-   Rule: light gold #D8A86A never carries text and never sits under white
-   text. Any text on gold uses --gold-strong (~#935E1B). Primary action
-   pills stay ink, so gold remains the accent that reads premium.
-
-   Integration colors (WhatsApp #25D366, LinkedIn #0A66C2, X ink) appear
-   ONLY on that integration's own button — never as UI-wide colors. */
+   Rule: burgundy is the single primary accent (CTAs, links, active state).
+   Gold is a secondary accent for badges, verified marks, highlights.
+   Text on gold uses --gold-strong. Third-party colors appear ONLY on
+   that integration's own button. */
 
 @layer base {
   :root {
-    /* Surfaces — pure white base like X. Muted panels are near-white
-       cool neutrals (no yellow cast). Gold is used only as an accent. */
-    --background: 0 0% 100%;          /* #FFFFFF true white */
-    --foreground: 210 24% 9%;         /* #0F1419 X ink */
+    /* Surfaces — pure white base. Muted panels are cool near-white so
+       the burgundy CTAs and gold accents pop cleanly. */
+    --background: 0 0% 100%;          /* #FFFFFF */
+    --foreground: 210 24% 9%;         /* #0F1419 ink */
 
     --card: 0 0% 100%;
     --card-foreground: 210 24% 9%;
@@ -26,50 +26,49 @@
     --popover: 0 0% 100%;
     --popover-foreground: 210 24% 9%;
 
-    /* Primary = softer, lighter gold — contrasts on white without the
-       muddy brown feel. Text on primary is dark ink for AA. */
-    --primary: 36 78% 52%;            /* #E4A238 warm light gold */
-    --primary-foreground: 210 24% 9%;
+    /* Primary = MDDMA burgundy. Strong, editorial, high contrast on white. */
+    --primary: 348 60% 27%;           /* #6E1B2E burgundy */
+    --primary-foreground: 40 33% 97%; /* #FAF6EE warm off-white */
 
     --secondary: 210 16% 96%;         /* #F1F3F5 cool neutral chip */
     --secondary-foreground: 210 24% 9%;
 
     --muted: 210 16% 97%;             /* #F4F6F8 quiet fill */
-    --muted-foreground: 212 12% 43%;  /* #5B6673 X-style secondary */
+    --muted-foreground: 212 12% 43%;  /* #5B6673 secondary text */
 
-    --accent: 38 92% 95%;             /* #FDF1DC pale gold tint */
-    --accent-foreground: 32 70% 30%;  /* #82571A gold-strong */
+    --accent: 38 55% 92%;             /* #F4EAD5 pale gold tint */
+    --accent-foreground: 32 70% 25%;  /* #6E4514 gold-strong */
 
-    --destructive: 358 76% 55%;
+    --destructive: 358 76% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 16% 91%;            /* #E4E7EB cool hairline (X-like) */
+    --border: 210 16% 91%;            /* #E4E7EB cool hairline */
     --input: 210 16% 86%;
-    --ring: 36 78% 52%;
+    --ring: 348 60% 27%;              /* focus ring = burgundy */
 
     --radius: 1rem;
 
-    /* Brand gold — logo, highlights, verified. */
-    --brand-gold: 36 85% 55%;         /* #EAAA38 */
-    --gold: 36 85% 55%;
-    --gold-strong: 32 70% 30%;        /* #82571A — text on gold */
+    /* Brand gold — logo, highlights, verified, badges. */
+    --brand-gold: 36 58% 51%;         /* #C99A3A MDDMA gold */
+    --gold: 36 58% 51%;
+    --gold-strong: 32 70% 25%;        /* text-on-gold */
 
     /* Status palette */
     --success: 158 62% 38%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 50%;
     --warning-foreground: 210 24% 9%;
-    --info: 36 78% 52%;
-    --info-foreground: 210 24% 9%;
-    --danger: 358 76% 55%;
+    --info: 348 60% 27%;
+    --info-foreground: 40 33% 97%;
+    --danger: 358 76% 45%;
     --danger-foreground: 0 0% 100%;
     --up: 158 62% 38%;
-    --down: 358 76% 55%;
+    --down: 358 76% 45%;
 
     /* Social action accents */
     --like: 331 94% 53%;
     --repost: 160 84% 39%;
-    --verified: 36 85% 55%;
+    --verified: 36 58% 51%;
 
     /* Third-party integration colors — used ONLY on their own buttons. */
     --brand-whatsapp: 142 70% 49%;
@@ -79,66 +78,67 @@
     --navy: 210 24% 9%;
     --navy-light: 212 12% 43%;
     --navy-dark: 210 30% 6%;
-    --burgundy: 358 76% 55%;
-    --burgundy-light: 358 70% 70%;
-    --burgundy-dark: 358 80% 42%;
-    --gold-light: 38 92% 95%;
-    --gold-dark: 32 70% 30%;
-    --cream: 0 0% 100%;
+    --burgundy: 348 60% 27%;
+    --burgundy-light: 348 45% 45%;
+    --burgundy-dark: 348 65% 20%;
+    --gold-light: 38 55% 92%;
+    --gold-dark: 32 70% 25%;
+    --cream: 40 33% 97%;
     --warm-gray: 212 12% 43%;
 
     /* Sidebar */
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 210 24% 9%;
-    --sidebar-primary: 36 78% 52%;
-    --sidebar-primary-foreground: 210 24% 9%;
+    --sidebar-primary: 348 60% 27%;
+    --sidebar-primary-foreground: 40 33% 97%;
     --sidebar-accent: 210 16% 96%;
     --sidebar-accent-foreground: 210 24% 9%;
     --sidebar-border: 210 16% 91%;
-    --sidebar-ring: 36 78% 52%;
+    --sidebar-ring: 348 60% 27%;
   }
 
 
+
   .dark {
-    /* Candlelight — deep warm black, brighter gold */
-    --background: 30 18% 6%;          /* #14110C */
+    /* Deep warm black, luminous burgundy + gold */
+    --background: 348 20% 6%;         /* #14100F */
     --foreground: 40 30% 89%;         /* #EDE6D8 */
 
-    --card: 30 16% 10%;               /* #1E1A13 elevated warm surface */
+    --card: 348 16% 10%;
     --card-foreground: 40 30% 89%;
 
-    --popover: 30 16% 10%;
+    --popover: 348 16% 10%;
     --popover-foreground: 40 30% 89%;
 
-    --primary: 36 68% 62%;            /* #DDA75E — luminous gold on dark */
-    --primary-foreground: 28 22% 9%;
+    --primary: 348 65% 55%;           /* #C93E58 luminous burgundy on dark */
+    --primary-foreground: 40 33% 97%;
 
-    --secondary: 30 14% 14%;
+    --secondary: 348 14% 14%;
     --secondary-foreground: 40 30% 89%;
 
-    --muted: 30 14% 14%;
+    --muted: 348 14% 14%;
     --muted-foreground: 34 12% 62%;
 
-    --accent: 36 68% 69%;             /* #E7B979 brighter gold on dark */
-    --accent-foreground: 28 22% 9%;
+    --accent: 36 60% 62%;             /* brighter gold on dark */
+    --accent-foreground: 348 20% 6%;
 
     --destructive: 358 76% 59%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 14% 18%;
-    --input: 30 14% 22%;
-    --ring: 36 68% 69%;
+    --border: 348 14% 18%;
+    --input: 348 14% 22%;
+    --ring: 348 65% 55%;
 
-    --brand-gold: 36 68% 69%;
-    --gold: 36 68% 69%;
-    --gold-strong: 36 68% 69%;        /* already luminous on dark */
+    --brand-gold: 36 68% 65%;
+    --gold: 36 68% 65%;
+    --gold-strong: 36 68% 65%;
 
     --success: 158 68% 45%;
-    --success-foreground: 28 22% 9%;
+    --success-foreground: 348 20% 6%;
     --warning: 38 92% 60%;
-    --warning-foreground: 28 22% 9%;
-    --info: 36 68% 69%;
-    --info-foreground: 28 22% 9%;
+    --warning-foreground: 348 20% 6%;
+    --info: 348 65% 55%;
+    --info-foreground: 40 33% 97%;
     --danger: 358 76% 59%;
     --danger-foreground: 0 0% 100%;
     --up: 158 68% 45%;
@@ -146,7 +146,7 @@
 
     --like: 331 94% 60%;
     --repost: 160 84% 45%;
-    --verified: 36 68% 69%;
+    --verified: 36 68% 65%;
 
     --brand-whatsapp: 142 70% 49%;
     --brand-linkedin: 210 90% 55%;
@@ -154,23 +154,24 @@
     --navy: 40 30% 89%;
     --navy-light: 34 12% 62%;
     --navy-dark: 40 30% 95%;
-    --burgundy: 358 76% 59%;
-    --burgundy-light: 358 70% 70%;
-    --burgundy-dark: 358 80% 45%;
-    --gold-light: 30 20% 20%;
+    --burgundy: 348 65% 55%;
+    --burgundy-light: 348 60% 70%;
+    --burgundy-dark: 348 70% 40%;
+    --gold-light: 348 14% 18%;
     --gold-dark: 36 68% 75%;
-    --cream: 30 18% 6%;
+    --cream: 348 20% 6%;
     --warm-gray: 34 12% 62%;
 
-    --sidebar-background: 30 18% 6%;
+    --sidebar-background: 348 20% 6%;
     --sidebar-foreground: 40 30% 89%;
-    --sidebar-primary: 36 68% 62%;
-    --sidebar-primary-foreground: 28 22% 9%;
-    --sidebar-accent: 30 14% 14%;
+    --sidebar-primary: 348 65% 55%;
+    --sidebar-primary-foreground: 40 33% 97%;
+    --sidebar-accent: 348 14% 14%;
     --sidebar-accent-foreground: 40 30% 89%;
-    --sidebar-border: 30 14% 18%;
-    --sidebar-ring: 36 68% 69%;
+    --sidebar-border: 348 14% 18%;
+    --sidebar-ring: 348 65% 55%;
   }
+
 }
 
 
