@@ -68,7 +68,7 @@ export default function TeamPage() {
   async function refresh() {
     setLoading(true);
     try {
-      const company = await getMyCompany();
+      const company = await getMyCompanyLite();
       if (!company) {
         setCompanyId(null);
         return;
