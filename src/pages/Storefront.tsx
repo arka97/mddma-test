@@ -29,6 +29,8 @@ import { useBrandsByCompany } from "@/hooks/queries/useBrands";
 import { useCompanyBySlug } from "@/hooks/queries/useCompanies";
 import { useProducts } from "@/hooks/queries/useProducts";
 import { CompanyTeamStrip } from "@/components/company/CompanyTeamStrip";
+import { FollowButton } from "@/components/social/FollowButton";
+import { useFollowerCount } from "@/hooks/queries/useFollowerCount";
 
 function initials(name: string) {
   return (
