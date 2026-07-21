@@ -53,20 +53,30 @@ const moreNav = [
 ];
 
 export function Header() {
-  const [searchQ, setSearchQ] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, profile, company, hasRole, signOut } = useAuth();
   const scrolled = useScrolled(24);
   const { hasActivity: hasDealActivity } = useDealRoomsActivity();
 
-  const submitSearch = (event?: React.FormEvent) => {
-    event?.preventDefault();
-    const searchParams = new URLSearchParams();
-    if (searchQ.trim()) searchParams.set("q", searchQ.trim());
-    searchParams.set("view", "marketplace");
-    navigate(`/products?${searchParams.toString()}`);
-  };
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const typing =
+        target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+      if ((e.key === "k" || e.key === "K") && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setSearchOpen((o) => !o);
+      } else if (e.key === "/" && !typing) {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
 
   const isActive = (href: string) => location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
