@@ -22,6 +22,8 @@ import { commentCounts } from "@/repositories/postComments";
 import { viewCounts } from "@/repositories/postViews";
 import { listCompaniesByOwners } from "@/repositories/companies";
 import { useFollowingSet } from "@/hooks/useFollow";
+import { listFeedEvents, type FeedEvent } from "@/repositories/feedEvents";
+import { SystemEventCard } from "@/components/market/SystemEventCard";
 import { supabase } from "@/integrations/supabase/client";
 
 type FeedAuthor = {
@@ -46,6 +48,7 @@ const Market = () => {
   const [views, setViews] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
+  const [events, setEvents] = useState<FeedEvent[]>([]);
   const followingSet = useFollowingSet();
 
   const isPaid = isEffectivePaid;
@@ -106,6 +109,11 @@ const Market = () => {
     else setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic, canRead]);
+
+  useEffect(() => {
+    if (!canRead) { setEvents([]); return; }
+    listFeedEvents(6).then(setEvents).catch(() => setEvents([]));
+  }, [canRead]);
 
   const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const restAll = posts.filter((p) => !pinned.includes(p));
@@ -180,19 +188,26 @@ const Market = () => {
                     : "No posts yet — be the first to share."}
                 </p>
               ) : (
-                rest.map((p) => (
-                  <PostCard
-                    key={p.id}
-                    post={p}
-                    author={authors[p.author_id]}
-                    liked={likes.mine.has(p.id)}
-                    likeCount={likes.counts[p.id] ?? 0}
-                    commentCount={comments[p.id] ?? 0}
-                    viewCount={views[p.id] ?? 0}
-                    canEngage={canEngage}
-                    isAdmin={isAdmin}
-                  />
-                ))
+                rest.map((p, idx) => {
+                  const event = feedTab === "for_you" && idx > 0 && idx % 4 === 0
+                    ? events[Math.floor(idx / 4) - 1]
+                    : null;
+                  return (
+                    <div key={p.id}>
+                      {event && <SystemEventCard event={event} />}
+                      <PostCard
+                        post={p}
+                        author={authors[p.author_id]}
+                        liked={likes.mine.has(p.id)}
+                        likeCount={likes.counts[p.id] ?? 0}
+                        commentCount={comments[p.id] ?? 0}
+                        viewCount={views[p.id] ?? 0}
+                        canEngage={canEngage}
+                        isAdmin={isAdmin}
+                      />
+                    </div>
+                  );
+                })
               )}
             </div>
           </>
