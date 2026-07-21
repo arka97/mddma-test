@@ -14,7 +14,7 @@ export function HomeHero() {
       className="rounded-2xl border border-border bg-card px-5 py-6 sm:px-7 sm:py-8"
     >
       <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-primary">
-        G-BAU-G · Governed by MDDMA
+        GOVERNED BY MUMBAI DRY FRUITS & DATES MERCHANTS ASSOCIATION
       </p>
       <h1 className="mt-2 max-w-3xl text-2xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-3xl md:text-[2.5rem]">
         The verified business network for nuts, dry fruits, dates, seeds and spices.
