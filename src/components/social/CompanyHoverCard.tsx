@@ -41,7 +41,7 @@ export function CompanyHoverCard({ slug, children }: CompanyHoverCardProps) {
         .eq("slug", slug)
         .maybeSingle();
       if (cancelled) return;
-      const summary = (row as CompanySummary | null) ?? null;
+      const summary = (row as unknown as CompanySummary | null) ?? null;
       cache.set(slug, summary);
       setData(summary);
     })();
