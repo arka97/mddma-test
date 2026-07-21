@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { TopicChips } from "@/components/market/TopicChips";
+import { FeedTabs, type FeedTab } from "@/components/market/FeedTabs";
 import { PostCard } from "@/components/market/PostCard";
 import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
@@ -20,6 +21,7 @@ import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
 import { viewCounts } from "@/repositories/postViews";
 import { listCompaniesByOwners } from "@/repositories/companies";
+import { useFollowingSet } from "@/hooks/useFollow";
 import { supabase } from "@/integrations/supabase/client";
 
 type FeedAuthor = {
