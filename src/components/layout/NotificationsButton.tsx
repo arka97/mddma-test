@@ -60,16 +60,22 @@ export function NotificationsButton() {
             Nothing new right now.
           </div>
         ) : (
-          events.map((e) => (
-            <DropdownMenuItem key={`${e.kind}-${e.id}`} asChild>
-              <Link to={e.href ?? "/"} className="flex flex-col items-start gap-0.5">
-                <span className="line-clamp-2 text-sm">{e.title}</span>
-                {e.subtitle && (
-                  <span className="line-clamp-1 text-xs text-muted-foreground">{e.subtitle}</span>
-                )}
-              </Link>
-            </DropdownMenuItem>
-          ))
+          events.map((e) => {
+            const href = e.kind === "circular_published" ? "/" : `/store/${e.slug}`;
+            const title =
+              e.kind === "circular_published" ? e.title : `${e.name} is now verified`;
+            const subtitle = e.kind === "circular_published" ? e.category : e.city;
+            return (
+              <DropdownMenuItem key={e.id} asChild>
+                <Link to={href} className="flex flex-col items-start gap-0.5">
+                  <span className="line-clamp-2 text-sm">{title}</span>
+                  {subtitle && (
+                    <span className="line-clamp-1 text-xs text-muted-foreground">{subtitle}</span>
+                  )}
+                </Link>
+              </DropdownMenuItem>
+            );
+          })
         )}
       </DropdownMenuContent>
     </DropdownMenu>
