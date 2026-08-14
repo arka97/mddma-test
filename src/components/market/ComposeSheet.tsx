@@ -448,18 +448,17 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label className="text-xs">Add a note (optional)</Label>
-                <Textarea className="mt-1" rows={2} value={content} onChange={(e) => setContent(e.target.value)} />
-              </div>
             </div>
           )}
 
           {mode === "signal" && (
-            <div className="space-y-3">
-              <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-                <ChevronLeft className="h-3.5 w-3.5" /> Back to post
-              </button>
+            <div className="mt-3 space-y-3 rounded-2xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Market signal</div>
+                <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-3.5 w-3.5" /> Remove
+                </button>
+              </div>
               <div>
                 <Label className="text-xs">Signal type</Label>
                 <Select value={signalType} onValueChange={(v) => { setSignalType(v as typeof signalType); setSd({}); }}>
