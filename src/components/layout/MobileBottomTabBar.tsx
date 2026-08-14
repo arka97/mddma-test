@@ -14,7 +14,7 @@ interface Tab {
 
 const baseTabs: Tab[] = [
   { label: "Home", href: "/", icon: Home, match: (path) => path === "/" },
-  { label: "Market", href: "/market", icon: Newspaper, match: (path) => path.startsWith("/market") },
+  { label: "Discover", href: "/discover", icon: Compass, match: (path) => path.startsWith("/discover") },
   { label: "RFQ", href: "/rfq", icon: FileText, match: (path) => path.startsWith("/rfq") },
   {
     label: "Firms",
