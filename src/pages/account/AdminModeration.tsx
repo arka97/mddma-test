@@ -481,6 +481,11 @@ const AdminModeration = () => {
                 <Card>
                   <CardHeader><CardTitle className="text-base">Upload New Ad</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
+                    <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
+                      <p className="font-medium text-foreground">Recommended creative size</p>
+                      <p>Desktop: 1456 × 180 px (728×90 @2x) · Mobile: 720 × 200 px. JPG/PNG/WebP under 300 KB.</p>
+                      <p>Logos and text should sit in the centre band. Off-ratio images will be letterboxed instead of cropped.</p>
+                    </div>
                     <div className="space-y-1.5"><Label>Title</Label><Input maxLength={120} value={adForm.title} onChange={(e) => setAdForm({ ...adForm, title: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Click-through URL</Label><Input maxLength={500} placeholder="https://..." value={adForm.link_url} onChange={(e) => setAdForm({ ...adForm, link_url: e.target.value })} /></div>
                     <div className="space-y-1.5">
@@ -498,12 +503,73 @@ const AdminModeration = () => {
                       <Label>Priority (higher shows first)</Label>
                       <Input type="number" value={adForm.priority} onChange={(e) => setAdForm({ ...adForm, priority: Number(e.target.value) || 0 })} />
                     </div>
-                    <div className="space-y-1.5"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setAdForm({ ...adForm, file: e.target.files?.[0] ?? null })} /></div>
+                    <div className="space-y-1.5">
+                      <Label>Desktop / primary image</Label>
+                      <Input type="file" accept="image/*" onChange={async (e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        let dims: AdImageDims = null;
+                        if (file) {
+                          try { dims = await measureImage(file); } catch { /* ignore */ }
+                        }
+                        setAdForm((f) => ({ ...f, file, imageDims: dims }));
+                      }} />
+                      {adForm.imageDims && (
+                        <p className="text-xs text-muted-foreground">{adForm.imageDims.width} × {adForm.imageDims.height} px · aspect {adForm.imageDims.aspect.toFixed(2)}</p>
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Mobile image <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                      <Input type="file" accept="image/*" onChange={async (e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        let dims: AdImageDims = null;
+                        if (file) {
+                          try { dims = await measureImage(file); } catch { /* ignore */ }
+                        }
+                        setAdForm((f) => ({ ...f, mobileFile: file, mobileDims: dims }));
+                      }} />
+                      {adForm.mobileDims && (
+                        <p className="text-xs text-muted-foreground">{adForm.mobileDims.width} × {adForm.mobileDims.height} px · aspect {adForm.mobileDims.aspect.toFixed(2)}</p>
+                      )}
+                    </div>
+                    {adForm.file && (
+                      <>
+                        <div className="space-y-1.5">
+                          <Label>Crop focal point (top ↔ bottom)</Label>
+                          <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            value={adForm.focalY}
+                            onChange={(e) => setAdForm({ ...adForm, focalY: Number(e.target.value) })}
+                            className="w-full accent-primary"
+                          />
+                          <p className="text-xs text-muted-foreground">Used when cropping is unavoidable; ignored for letterboxed images.</p>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label>Preview</Label>
+                          <div className="space-y-2 rounded-md border bg-muted/30 p-2">
+                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Mobile slot</div>
+                            <AdPreview file={adForm.mobileFile ?? adForm.file} aspect={adForm.mobileFile ? adForm.mobileDims?.aspect : adForm.imageDims?.aspect} focalY={adForm.focalY} slotAspect={32 / 5} />
+                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-2">Desktop slot</div>
+                            <AdPreview file={adForm.file} aspect={adForm.imageDims?.aspect} focalY={adForm.focalY} slotAspect={728 / 90} />
+                          </div>
+                        </div>
+                        {(() => {
+                          const slotAspect = 32 / 5;
+                          const aspect = adForm.mobileFile ? adForm.mobileDims?.aspect : adForm.imageDims?.aspect;
+                          if (!aspect) return null;
+                          const ratio = aspect / slotAspect;
+                          if (ratio >= 0.85 && ratio <= 1.15) return null;
+                          return <p className="text-xs text-amber-600">This image will be letterboxed in the mobile slot. For edge-to-edge coverage, use a ratio closer to {slotAspect.toFixed(2)}.</p>;
+                        })()}
+                      </>
+                    )}
                     <Button onClick={saveAd} disabled={savingAd} variant="accent">
                       {savingAd ? <Loader2 className="h-3 w-3 animate-spin" /> : "Publish Ad"}
                     </Button>
                   </CardContent>
                 </Card>
+
                 {ads.map((a) => (
                   <Card key={a.id}>
                     <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
