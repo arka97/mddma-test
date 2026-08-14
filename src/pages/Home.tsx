@@ -13,7 +13,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { TopicChips, type FeedTopic } from "@/components/market/TopicChips";
 import { useFollowingSet } from "@/hooks/useFollow";
 import { listUserIdsForCompanies } from "@/repositories/companies";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FEED_TOPIC_ORDER } from "@/components/market/TopicChips";
 import { ReelsView } from "@/components/reels/ReelsView";
 import { listReposts } from "@/repositories/postReposts";
@@ -51,6 +51,7 @@ const Home = () => {
   const [topic, setTopic] = useState<FeedTopic>("all");
   const touchStart = useRef<{ x: number; y: number } | null>(null);
   const hideChrome = useScrollDirection();
+  const navigate = useNavigate();
 
   /** Horizontal swipe moves to the previous/next chip in order. */
   const onTouchStart = (e: ReactTouchEvent) => {
@@ -332,26 +333,27 @@ const Home = () => {
         )}
         </div>
 
-        {canEngage && (
-          <>
-            <Button
-              onClick={() => setComposeOpen(true)}
-              aria-label="Compose post"
-              className={cn(
-                "fixed bottom-[86px] right-4 z-30 h-14 w-14 rounded-full p-0 shadow-lg transition-all duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
-                hideChrome && "translate-y-24 opacity-0 lg:translate-y-0 lg:opacity-100",
-              )}
-            >
-              <Feather className="h-6 w-6 lg:mr-2 lg:h-5 lg:w-5" />
-              <span className="hidden lg:inline">Post</span>
-            </Button>
+        <>
+          <Button
+            onClick={() => (canEngage ? setComposeOpen(true) : navigate("/login"))}
+            aria-label="Compose post"
+            className={cn(
+              "fixed bottom-[86px] right-4 z-40 h-14 w-14 rounded-full p-0 shadow-lg transition-all duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
+              hideChrome && "translate-y-24 opacity-0 lg:translate-y-0 lg:opacity-100",
+            )}
+          >
+            <Feather className="h-6 w-6 lg:mr-2 lg:h-5 lg:w-5" />
+            <span className="hidden lg:inline">Post</span>
+          </Button>
+          {canEngage && (
             <ComposeSheet
               open={composeOpen}
               onOpenChange={(v) => { setComposeOpen(v); if (!v) load(); }}
               canPostAnonymous={role === "paid_member" || role === "broker"}
             />
-          </>
-        )}
+          )}
+        </>
+
       </div>
       </FeedShell>
 
