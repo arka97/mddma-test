@@ -229,62 +229,104 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const openMode = (m: EditorMode) => { setMode(m); setSd({}); };
   const backToGeneral = () => { setMode("general"); setSd({}); };
 
+  const modeLabel = mode === "price" ? "Price" : mode === "poll" ? "Poll" : mode === "signal" ? (SIGNAL_OPTIONS.find((o) => o.value === signalType)?.label ?? "Signal") : null;
+  const CHAR_LIMIT = 2000;
+  const ringPct = Math.min(1, content.length / CHAR_LIMIT);
+
   return (
     <Sheet open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
       <SheetContent
         side="bottom"
-        className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 rounded-none bg-background p-0 pt-safe [&>button.absolute]:hidden sm:h-auto sm:max-h-[92vh] sm:rounded-t-2xl"
+        style={vvHeight ? { height: vvHeight, maxHeight: vvHeight } : undefined}
+        className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 overscroll-contain rounded-none bg-background p-0 pt-safe [&>button.absolute]:hidden sm:h-auto sm:max-h-[92vh] sm:rounded-t-2xl"
       >
         {/* X-style top bar: Cancel · title · Post */}
-        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5">
           <SheetClose asChild>
             <button type="button" className="text-[15px] font-medium text-foreground">Cancel</button>
           </SheetClose>
-          <h2 className="text-[15px] font-bold">New Post</h2>
-          <Button onClick={submit} disabled={!canSubmit} size="sm" className="h-8 rounded-full px-5 text-sm font-bold">
+          <h2 className="text-[15px] font-bold">{modeLabel ? `New ${modeLabel}` : "New Post"}</h2>
+          <Button
+            onClick={submit}
+            disabled={!canSubmit}
+            size="sm"
+            title={canSubmit ? "Post" : "Add text or media to post"}
+            className="h-8 rounded-full px-5 text-sm font-bold"
+          >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Post"}
           </Button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          {mode === "general" && (
-            <div className="flex gap-3">
-              <Avatar className="h-10 w-10 shrink-0">
-                <AvatarImage src={profile?.avatar_url ?? undefined} />
-                <AvatarFallback className="bg-primary/20 text-sm font-semibold text-primary-foreground">{initials}</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-                  {!isAnon && company && (
-                    <span className="inline-flex items-center gap-1">
-                      Posting as <span className="font-medium text-foreground">{company.name}</span>
-                      {memberships.length > 1 && <span>· switch in header</span>}
-                    </span>
-                  )}
-                  {canPostAnonymous && (
-                    <span className="inline-flex items-center gap-1.5">
-                      <Label htmlFor="anon-toggle" className="text-[11px] font-medium">Anonymous</Label>
-                      <Switch id="anon-toggle" checked={isAnon} onCheckedChange={setIsAnon} className="scale-75" />
-                    </span>
-                  )}
-                </div>
-                {isAnon && (
-                  <p className="mb-2 rounded-md bg-muted/50 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                    Only MDDMA admins can trace anonymous posts — a log is kept for compliance and dispute resolution.
-                  </p>
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+          {/* Identity row — always visible, whatever the mode */}
+          <div className="mb-3 flex items-start gap-3">
+            <Avatar className="h-10 w-10 shrink-0">
+              <AvatarImage src={isAnon ? undefined : profile?.avatar_url ?? undefined} />
+              <AvatarFallback className="bg-primary/15 text-sm font-semibold text-primary">
+                {isAnon ? "?" : initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {isAnon ? "Anonymous member" : company?.name ?? profile?.full_name ?? "You"}
+              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  <Globe className="h-3 w-3" /> Public · everyone on G-BAU-G
+                </span>
+                {canPostAnonymous && (
+                  <button
+                    type="button"
+                    onClick={() => setIsAnon((v) => !v)}
+                    aria-pressed={isAnon}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors",
+                      isAnon ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    <EyeOff className="h-3 w-3" /> Anonymous
+                  </button>
                 )}
-                <Textarea
-                  ref={textareaRef}
-                  className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground/70 focus-visible:ring-0"
-                  placeholder="What's happening in the market?"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  onPaste={onPaste}
-                  autoFocus
-                />
+                {modeLabel && (
+                  <button
+                    type="button"
+                    onClick={backToGeneral}
+                    className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary"
+                  >
+                    {modeLabel} <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+              {isAnon && (
+                <p className="mt-2 rounded-md bg-muted/60 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                  Only MDDMA admins can trace anonymous posts — a log is kept for compliance and dispute resolution.
+                </p>
+              )}
+            </div>
+          </div>
 
+          {/* Writing surface — visible field so the caret is never a mystery */}
+          <div
+            onClick={() => textareaRef.current?.focus()}
+            className={cn(
+              "rounded-2xl border bg-muted/30 px-3 py-2.5 transition-colors",
+              focused ? "border-primary ring-2 ring-primary/25" : "border-border",
+            )}
+          >
+            <Textarea
+              ref={textareaRef}
+              className="min-h-[150px] resize-none border-0 bg-transparent p-0 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
+              placeholder={mode === "general" ? "What's happening in the market?" : "Add a note (optional)"}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onPaste={onPaste}
+              autoFocus
+            />
+          </div>
 
-
+          <div className="min-w-0">
                 {images.length > 0 && (
                   <div className={cn("mt-2 grid gap-1", images.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
                     {images.map((im, i) => (
@@ -335,9 +377,8 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                     <div className="mt-2 rounded-xl border border-border/60 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">Loading preview…</div>
                   )
                 )}
-              </div>
-            </div>
-          )}
+          </div>
+
 
           {mode === "price" && (
             <div className="space-y-3">
