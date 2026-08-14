@@ -1,6 +1,6 @@
-# Ad banner sizing: current spec and how to handle mixed advertiser artwork
+# Ad banner sizing: keep current slot, handle mixed advertiser artwork
 
-## What the slot is today
+## What the slot is today (stays unchanged)
 
 The banner is capped at **728px wide**, centred, with a fixed shape:
 
@@ -10,6 +10,9 @@ The banner is capped at **728px wide**, centred, with a fixed shape:
 The image is rendered with `object-cover`, so any artwork that isn't ~8:1 gets
 **centre-cropped** — which is exactly the clipping seen in the three examples
 (product packs and headlines cut off top and bottom).
+
+We will keep this exact slot size. The fix is to accept varying creative sizes
+and present them without clipping instead of cropping them.
 
 ## Recommended fix (three parts)
 
@@ -26,7 +29,7 @@ Add two optional fields to the advertisements record:
 Rendering rule:
 - If the creative is within ~15% of the slot ratio, keep `object-cover` (edge-to-edge, no visible loss).
 - If it is taller/squarer than the slot, **letterbox instead of crop**: `object-contain` over a soft backdrop derived from the image (blurred copy of the same image behind it), so nothing important is cut and the banner still looks intentional.
-- Cap the slot height so a tall creative can never dominate the feed: min 56px, max 140px on mobile, max 120px on desktop.
+- Slot height stays fixed at the current 32:5 mobile / 728:90 desktop values.
 
 ### 3. Guide the advertiser at upload time (admin panel)
 In the ad create/edit form:
@@ -37,7 +40,7 @@ In the ad create/edit form:
 
 ## Scope of changes
 
-- `src/components/home/today/AdSlot.tsx` — ratio-aware rendering, letterbox fallback, height caps, mobile creative support
+- `src/components/home/today/AdSlot.tsx` — ratio-aware rendering, letterbox fallback, mobile creative support
 - Admin ads form — spec copy, dimension read on upload, dual preview, off-spec warning, optional focal point
 - One migration adding `image_aspect`, `mobile_image_url`, `focal_y` (all nullable, existing ads unaffected)
 
@@ -47,3 +50,4 @@ Aspect measurement uses the browser's `naturalWidth/naturalHeight` at upload tim
 so no server-side image processing is needed. The blurred backdrop is the same
 `image_url` rendered behind at `scale-110 blur-xl` — no extra asset or bandwidth.
 Existing ads with no stored aspect fall back to today's behaviour until re-saved.
+
