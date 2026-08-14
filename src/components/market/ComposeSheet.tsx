@@ -522,12 +522,9 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                 </div>
               )}
 
-              <div>
-                <Label className="text-xs">Add a note (optional)</Label>
-                <Textarea className="mt-1" rows={3} placeholder="Anything else members should know?" value={content} onChange={(e) => setContent(e.target.value)} />
-              </div>
             </div>
           )}
+          <div className="h-6" />
         </div>
 
         {/* Hidden inputs */}
