@@ -36,48 +36,48 @@ export async function createPollForPost(params: {
   if (e2) throw new Error(friendlyErrorMessage(e2));
 }
 
-export async function getPollByPostId(postId: string, viewerId: string | null): Promise<PollData | null> {
-  const { data: poll, error } = await supabase
-    .from("post_polls")
-    .select("id, post_id, question, closes_at")
-    .eq("post_id", postId)
-    .maybeSingle();
-  if (error || !poll) return null;
-  const { data: opts } = await supabase
-    .from("post_poll_options")
-    .select("id, idx, label")
-    .eq("poll_id", poll.id)
-    .order("idx", { ascending: true });
-  const { data: votes } = await supabase
-    .from("post_poll_votes")
-    .select("option_id, voter_id")
-    .eq("poll_id", poll.id);
-  const tally: Record<string, number> = {};
+type RpcFn = (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+
+interface PollRpcRow {
+  poll_id: string;
+  post_id: string;
+  question: string;
+  closes_at: string;
+  option_id: string;
+  option_index: number;
+  option_label: string;
+  vote_count: number;
+  voted: boolean;
+}
+
+export async function getPollByPostId(postId: string, _viewerId: string | null): Promise<PollData | null> {
+  const { data, error } = await (supabase.rpc as unknown as RpcFn)("get_business_poll", { _post_id: postId });
+  if (error) return null;
+  const rows = (data ?? []) as PollRpcRow[];
+  if (rows.length === 0) return null;
   let myOptionId: string | null = null;
-  (votes ?? []).forEach((v) => {
-    tally[v.option_id] = (tally[v.option_id] ?? 0) + 1;
-    if (viewerId && v.voter_id === viewerId) myOptionId = v.option_id;
+  let totalVotes = 0;
+  const options: PollOption[] = rows.map((r) => {
+    const votes = Number(r.vote_count) || 0;
+    totalVotes += votes;
+    if (r.voted) myOptionId = r.option_id;
+    return { id: r.option_id, idx: r.option_index, label: r.option_label, votes };
   });
-  const options: PollOption[] = (opts ?? []).map((o) => ({
-    id: o.id,
-    idx: o.idx,
-    label: o.label,
-    votes: tally[o.id] ?? 0,
-  }));
   return {
-    id: poll.id,
-    post_id: poll.post_id,
-    question: poll.question,
-    closes_at: poll.closes_at,
+    id: rows[0].poll_id,
+    post_id: rows[0].post_id,
+    question: rows[0].question,
+    closes_at: rows[0].closes_at,
     options,
-    totalVotes: (votes ?? []).length,
+    totalVotes,
     myOptionId,
   };
 }
 
-export async function castPollVote(pollId: string, optionId: string, voterId: string): Promise<void> {
-  const { error } = await supabase
-    .from("post_poll_votes")
-    .insert({ poll_id: pollId, option_id: optionId, voter_id: voterId });
-  if (error) throw new Error(friendlyErrorMessage(error));
+export async function castPollVote(pollId: string, optionId: string, _voterId?: string): Promise<void> {
+  const { error } = await (supabase.rpc as unknown as RpcFn)("cast_business_poll_vote", {
+    _poll_id: pollId,
+    _option_id: optionId,
+  });
+  if (error) throw new Error(friendlyErrorMessage(error as never));
 }
