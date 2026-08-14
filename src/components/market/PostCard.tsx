@@ -14,13 +14,14 @@ import {
 import { EngagementBar } from "./EngagementBar";
 import { CommentsSheet } from "./CommentsSheet";
 import { LinkPreviewCard } from "./LinkPreviewCard";
-import { PostImages, PostFileChip } from "./PostMedia";
+import { PostImages, PostFileChip, PostVideo } from "./PostMedia";
 import { PollWidget } from "./PollWidget";
 import { FollowButton } from "@/components/social/FollowButton";
 import { CompanyHoverCard } from "@/components/social/CompanyHoverCard";
 import type { CommunityPostRow } from "@/repositories/communityPosts";
 import { recordView } from "@/repositories/postViews";
 import { likePost, unlikePost } from "@/repositories/postLikes";
+import { setRepost } from "@/repositories/postReposts";
 import { setPostHidden, deletePost, muteAuthor } from "@/repositories/communityPosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -68,6 +69,8 @@ interface Props {
   likeCount: number;
   commentCount: number;
   viewCount: number;
+  reposted?: boolean;
+  repostCount?: number;
   canEngage: boolean;
   isAdmin: boolean;
   variant?: "feed" | "detail";
@@ -147,6 +150,8 @@ export function PostCard({
   likeCount: initialCount,
   commentCount,
   viewCount,
+  reposted: initialReposted = false,
+  repostCount: initialRepostCount = 0,
   canEngage,
   isAdmin,
   variant = "feed",
@@ -158,9 +163,12 @@ export function PostCard({
   const navigate = useNavigate();
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
+  const [reposted, setReposted] = useState(initialReposted);
+  const [repostCount, setRepostCount] = useState(initialRepostCount);
   const [open, setOpen] = useState(false);
 
   useEffect(() => { setLiked(initialLiked); setCount(initialCount); }, [initialLiked, initialCount]);
+  useEffect(() => { setReposted(initialReposted); setRepostCount(initialRepostCount); }, [initialReposted, initialRepostCount]);
 
   // Record view once per mount (RLS allows authenticated only).
   useEffect(() => {
@@ -168,8 +176,13 @@ export function PostCard({
   }, [post.id, user]);
 
   const onLike = async () => {
-    if (!canEngage || !user) {
-      toast({ title: "Paid members only", description: "Upgrade to like posts." });
+    if (!user) {
+      toast({ title: "Sign in to like", description: "Create a free account to interact with the feed." });
+      navigate("/login");
+      return;
+    }
+    if (!canEngage) {
+      toast({ title: "Not available", description: "Your account can't interact with posts right now." });
       return;
     }
     const next = !liked;
@@ -182,6 +195,24 @@ export function PostCard({
     } catch {
       setLiked(!next);
       setCount((c) => c + (next ? -1 : 1));
+    }
+  };
+
+  const onRepost = async () => {
+    if (!user) {
+      toast({ title: "Sign in to repost", description: "Create a free account to interact with the feed." });
+      navigate("/login");
+      return;
+    }
+    const next = !reposted;
+    setReposted(next);
+    setRepostCount((c) => Math.max(0, c + (next ? 1 : -1)));
+    try {
+      await setRepost(post.id, next);
+    } catch (e) {
+      setReposted(!next);
+      setRepostCount((c) => Math.max(0, c + (next ? -1 : 1)));
+      toast({ title: "Failed", description: e instanceof Error ? e.message : "", variant: "destructive" });
     }
   };
 
@@ -253,8 +284,10 @@ export function PostCard({
     const sd = (post.structured_data ?? {}) as Record<string, unknown>;
     const images = Array.isArray(sd.images) ? (sd.images as string[]).filter((s) => typeof s === "string") : [];
     const file = sd.file as { path: string; name: string; size: number } | undefined;
+    const video = sd.video as { path: string } | undefined;
     return (
       <>
+        {video && typeof video === "object" && video.path && <PostVideo path={video.path} />}
         {images.length > 0 && <PostImages paths={images} />}
         {file && typeof file === "object" && file.path && <PostFileChip file={file} />}
       </>
@@ -348,9 +381,13 @@ export function PostCard({
             likeCount={count}
             commentCount={commentCount}
             viewCount={viewCount}
+            reposted={reposted}
+            repostCount={repostCount}
+            onRepost={onRepost}
             onLike={onLike}
+            shareText={post.content?.slice(0, 120)}
             onReplyClick={onReply ?? (() => setOpen(true))}
-            disabled={!canEngage}
+            disabled={!user}
             postId={post.id}
             size={isDetail ? "lg" : "sm"}
           />
