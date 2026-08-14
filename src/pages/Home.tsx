@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type TouchEvent as ReactTouchEvent } from "react";
 import { Feather } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { FeedShell } from "@/components/layout/FeedShell";
@@ -251,7 +251,7 @@ const Home = () => {
           style={{
             "--home-chrome-rows": hideChrome ? "0fr" : "1fr",
             "--home-chrome-opacity": hideChrome ? 0 : 1,
-          } as React.CSSProperties}
+          } as CSSProperties}
           className={cn(
             "sticky top-12 z-30 grid grid-rows-[var(--home-chrome-rows)] overflow-hidden bg-background opacity-[var(--home-chrome-opacity)] transition-[grid-template-rows,opacity] duration-200 ease-out lg:top-12 lg:grid-rows-[1fr] lg:opacity-100",
             hideChrome ? "pointer-events-none lg:pointer-events-auto" : "pointer-events-auto",
@@ -371,7 +371,7 @@ const Home = () => {
               "--fab-bottom": hideChrome
                 ? "calc(env(safe-area-inset-bottom) + 12px)"
                 : "calc(env(safe-area-inset-bottom) + 66px)",
-            } as React.CSSProperties}
+            } as CSSProperties}
             className={cn(
               "fixed bottom-[var(--fab-bottom)] right-4 z-40 h-14 w-14 rounded-full p-0 shadow-lg transition-[bottom] duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
             )}
