@@ -19,6 +19,7 @@ import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
 import { PaywallOverlay, GuestTeaser } from "@/components/market/PaywallOverlay";
 import { CircularsSection } from "@/components/home/today/CircularsSection";
+import { AdSlot } from "@/components/home/today/AdSlot";
 import { listFeedPosts, type CommunityPostRow, type TopicTag } from "@/repositories/communityPosts";
 import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
