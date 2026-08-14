@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Compass, FileText, Home, MessageSquareText, Plus, Search } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Building2, FileText, Home, MessageSquareText, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
-import { useRole } from "@/contexts/RoleContext";
 import { useDealRoomsActivity } from "@/hooks/useDealRoomsActivity";
-import { ComposeSheet } from "@/components/market/ComposeSheet";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 interface Tab {
   label: string;
@@ -18,24 +16,20 @@ interface Tab {
 
 export function MobileBottomTabBar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user } = useAuth();
-  const { role } = useRole();
   const { hasActivity } = useDealRoomsActivity();
-  const [composeOpen, setComposeOpen] = useState(false);
+  const hidden = useScrollDirection();
 
-  const left: Tab[] = [
+  const tabs: Tab[] = [
     { label: "Home", href: "/", icon: Home, match: (p) => p === "/" },
     {
       label: "Discover",
       href: "/discover",
       icon: Search,
-      match: (p) => p.startsWith("/discover") || p.startsWith("/directory") || p.startsWith("/store") || p.startsWith("/products"),
+      match: (p) => p.startsWith("/discover") || p.startsWith("/store") || p.startsWith("/products"),
     },
-  ];
-
-  const right: Tab[] = [
     { label: "RFQ", href: "/rfq", icon: FileText, match: (p) => p.startsWith("/rfq") },
+    { label: "Firms", href: "/directory", icon: Building2, match: (p) => p.startsWith("/directory") },
     {
       label: "Chat",
       href: "/messages",
@@ -76,51 +70,15 @@ export function MobileBottomTabBar() {
     );
   };
 
-  const onCreate = () => {
-    if (!user) {
-      navigate(`/login?next=${encodeURIComponent("/")}`);
-      return;
-    }
-    setComposeOpen(true);
-  };
-
   return (
-    <>
-      <nav
-        className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-safe backdrop-blur lg:hidden"
-        aria-label="Primary"
-      >
-        <ul className="flex items-center">
-          {left.map(renderTab)}
-
-          <li className="flex-1">
-            <button
-              type="button"
-              onClick={onCreate}
-              aria-label="Create post"
-              className="flex min-h-[54px] w-full flex-col items-center justify-center gap-0.5 pb-1.5 pt-2 text-[10px] font-medium text-muted-foreground touch-action-manipulation"
-            >
-              <span className="flex h-8 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                <Plus className="h-5 w-5" strokeWidth={2.6} />
-              </span>
-              <span>Post</span>
-            </button>
-          </li>
-
-          {right.map(renderTab)}
-        </ul>
-      </nav>
-
-      {user && (
-        <ComposeSheet
-          open={composeOpen}
-          onOpenChange={(v) => {
-            setComposeOpen(v);
-            if (!v) window.dispatchEvent(new Event("gbaug:feed-refresh"));
-          }}
-          canPostAnonymous={role === "paid_member" || role === "broker"}
-        />
+    <nav
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 pb-safe backdrop-blur transition-transform duration-200 ease-out will-change-transform lg:hidden",
+        hidden ? "translate-y-[130%]" : "translate-y-0",
       )}
-    </>
+      aria-label="Primary"
+    >
+      <ul className="flex items-center">{tabs.map(renderTab)}</ul>
+    </nav>
   );
 }
