@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, MessageCircle, Repeat2, Share, Volume2, VolumeX, Package, BadgeCheck } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -74,7 +74,11 @@ function ReelMedia({ item, active, muted }: { item: ReelItem; active: boolean; m
   return <img src={url} alt="" className="h-full w-full object-contain" />;
 }
 
-export function ReelsView() {
+interface ReelsViewProps {
+  visibleTopInset?: number;
+}
+
+export function ReelsView({ visibleTopInset = 48 }: ReelsViewProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const { hidden: chromeHidden, reportScroll } = useChromeVisibility();
@@ -182,16 +186,29 @@ export function ReelsView() {
       <div
         ref={containerRef}
         onScroll={onScroll}
-        className={cn(
-          "snap-y snap-mandatory overflow-y-auto overscroll-contain rounded-none bg-black transition-[height] duration-200 ease-out lg:h-[calc(100dvh-8rem)] lg:rounded-2xl",
-          chromeHidden ? "h-[100dvh]" : "h-[calc(100dvh-10rem)]",
-        )}
+        style={{ "--reel-top-inset": `${visibleTopInset}px` } as CSSProperties}
+        className="fixed inset-0 z-10 h-[100dvh] snap-y snap-mandatory overflow-y-auto overscroll-contain rounded-none bg-black lg:static lg:h-[calc(100dvh-8rem)] lg:rounded-2xl"
       >
         {items.map((item, idx) => (
-          <section key={item.id} className="relative h-full w-full snap-start snap-always">
+          <section
+            key={item.id}
+            className={cn(
+              "relative box-border h-full w-full snap-start snap-always transition-[padding] duration-200 ease-out lg:p-0",
+              chromeHidden
+                ? "pt-0 pb-[env(safe-area-inset-bottom)]"
+                : "pt-[var(--reel-top-inset)] pb-[calc(54px+env(safe-area-inset-bottom))]",
+            )}
+          >
             <ReelMedia item={item} active={idx === activeIdx} muted={muted} />
 
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent p-4 pb-8">
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-4 pb-8 transition-[bottom] duration-200 ease-out lg:bottom-0",
+                chromeHidden
+                  ? "bottom-[env(safe-area-inset-bottom)]"
+                  : "bottom-[calc(54px+env(safe-area-inset-bottom))]",
+              )}
+            >
               <div className="pointer-events-auto max-w-[75%] text-white">
                 {item.kind === "product" ? (
                   <>
@@ -224,7 +241,14 @@ export function ReelsView() {
               </div>
             </div>
 
-            <div className="absolute bottom-24 right-3 flex flex-col items-center gap-4">
+            <div
+              className={cn(
+                "absolute right-3 flex flex-col items-center gap-4 transition-[bottom] duration-200 ease-out lg:bottom-24",
+                chromeHidden
+                  ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]"
+                  : "bottom-[calc(9rem+env(safe-area-inset-bottom))]",
+              )}
+            >
               {item.mediaType === "video" && (
                 <RailButton
                   icon={muted ? VolumeX : Volume2}
