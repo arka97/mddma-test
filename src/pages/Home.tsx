@@ -19,6 +19,7 @@ import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
 import { PaywallOverlay, GuestTeaser } from "@/components/market/PaywallOverlay";
 import { CircularsSection } from "@/components/home/today/CircularsSection";
+import { AdSlot } from "@/components/home/today/AdSlot";
 import { listFeedPosts, type CommunityPostRow, type TopicTag } from "@/repositories/communityPosts";
 import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
@@ -136,6 +137,10 @@ const Home = () => {
         }
       >
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
+        <div className="px-4 pt-3">
+          <AdSlot placement="feed-top" />
+        </div>
+
         {/* X-style feed header */}
         <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
           <FeedTabs active={feedTab} onChange={setFeedTab} />
