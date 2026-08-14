@@ -56,6 +56,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
   const [events, setEvents] = useState<FeedEvent[]>([]);
+  const followingSet = useFollowingSet();
+  const [followedAuthorIds, setFollowedAuthorIds] = useState<Set<string>>(new Set());
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
@@ -121,6 +123,18 @@ const Home = () => {
     if (!canRead) { setEvents([]); return; }
     listFeedEvents(6).then(setEvents).catch(() => setEvents([]));
   }, [canRead]);
+
+  // Resolve the author user ids behind the businesses the viewer follows.
+  const followingIdsKey = Array.from(followingSet).sort().join(",");
+  useEffect(() => {
+    const ids = followingIdsKey ? followingIdsKey.split(",") : [];
+    if (!ids.length) { setFollowedAuthorIds(new Set()); return; }
+    let cancelled = false;
+    listUserIdsForCompanies(ids)
+      .then((s) => { if (!cancelled) setFollowedAuthorIds(s); })
+      .catch(() => { if (!cancelled) setFollowedAuthorIds(new Set()); });
+    return () => { cancelled = true; };
+  }, [followingIdsKey]);
 
   const pinned = topic === "following"
     ? []
