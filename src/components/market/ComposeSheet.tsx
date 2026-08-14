@@ -602,12 +602,13 @@ function ActionPill({
       aria-label={label}
       title={label}
       className={cn(
-        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
+        "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium transition-colors",
         active ? "bg-primary/15 text-primary" : "text-primary hover:bg-primary/10",
         disabled && "cursor-not-allowed opacity-40",
       )}
     >
       <Icon className="h-[18px] w-[18px]" />
+      <span>{label}</span>
     </button>
   );
 }
