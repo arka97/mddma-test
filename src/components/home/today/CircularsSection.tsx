@@ -12,12 +12,12 @@ export function CircularsSection() {
     <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <header className="mb-3 flex items-end justify-between gap-2">
         <div>
-          <p className="t-eyebrow inline-flex items-center gap-1.5 text-accent">
+          <p className="t-eyebrow inline-flex items-center gap-1.5 text-gold-dark">
             <Megaphone className="h-3.5 w-3.5" /> Circulars &amp; Notices
           </p>
           <h2 className="t-h3 mt-1 text-foreground">Trade notices &amp; association updates</h2>
         </div>
-        <Link to="/" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
+        <Link to="/" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold-dark/80">
           All <ArrowRight className="h-3 w-3" />
         </Link>
       </header>
@@ -42,7 +42,7 @@ export function CircularsSection() {
                       {new Date(date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-foreground group-hover:text-accent">{c.title}</h3>
+                  <h3 className="text-sm font-semibold text-foreground group-hover:text-gold-dark">{c.title}</h3>
                   {c.body && <p className="line-clamp-1 text-xs text-muted-foreground">{c.body}</p>}
                 </Link>
               </li>

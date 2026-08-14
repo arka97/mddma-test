@@ -156,7 +156,7 @@ const BrandsPage = () => {
                       </div>
                       {b.tagline && <p className="text-xs text-muted-foreground line-clamp-2">{b.tagline}</p>}
                       {b.b2c_url && (
-                        <a href={b.b2c_url} target="_blank" rel="noopener noreferrer" className="text-xs text-accent hover:underline inline-flex items-center gap-1">
+                        <a href={b.b2c_url} target="_blank" rel="noopener noreferrer" className="text-xs text-gold-dark hover:underline inline-flex items-center gap-1">
                           Retail site <ExternalLink className="h-3 w-3" />
                         </a>
                       )}

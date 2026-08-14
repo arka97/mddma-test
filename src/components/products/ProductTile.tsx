@@ -90,7 +90,7 @@ export function ProductTile({ listing, hideSeller }: Props) {
         </div>
 
         <Link to={detailHref} className="min-w-0">
-          <h3 className="truncate text-sm font-semibold leading-tight text-foreground group-hover:text-accent sm:text-[15px]">
+          <h3 className="truncate text-sm font-semibold leading-tight text-foreground group-hover:text-gold-dark sm:text-[15px]">
             {listing.commodity}
           </h3>
           <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
@@ -110,7 +110,7 @@ export function ProductTile({ listing, hideSeller }: Props) {
             <Button
               size="sm"
               variant="outline"
-              className="w-full h-8 text-xs border-accent/40 text-accent hover:bg-accent hover:text-accent-foreground"
+              className="w-full h-8 text-xs border-accent/40 text-gold-dark hover:bg-accent hover:text-accent-foreground"
               asChild
             >
               <Link to={detailHref}>

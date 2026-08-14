@@ -130,7 +130,7 @@ const Storefront = () => {
         <div className="border-b border-accent/30 bg-accent/10">
           <div className="container mx-auto flex flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <div className="flex items-start gap-2 text-xs">
-              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold-dark" />
               <span>
                 <span className="font-medium text-foreground">
                   {isOwner ? "You are viewing your public business profile" : "Admin moderation view"}
@@ -240,19 +240,19 @@ const Storefront = () => {
                   <p className="leading-relaxed text-muted-foreground">{description}</p>
                   <div className="mt-5 grid grid-cols-2 gap-4 border-t border-border pt-5 sm:grid-cols-4">
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{products.length}</div>
+                      <div className="text-lg font-bold text-gold-dark">{products.length}</div>
                       <div className="text-xs text-muted-foreground">Active products</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{company.categories.length}</div>
+                      <div className="text-lg font-bold text-gold-dark">{company.categories.length}</div>
                       <div className="text-xs text-muted-foreground">Capabilities</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">{company.markets.length}</div>
+                      <div className="text-lg font-bold text-gold-dark">{company.markets.length}</div>
                       <div className="text-xs text-muted-foreground">Markets listed</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-lg font-bold text-accent">
+                      <div className="text-lg font-bold text-gold-dark">
                         {yearsInBusiness === null ? "—" : `${yearsInBusiness}+`}
                       </div>
                       <div className="text-xs text-muted-foreground">Years operating</div>
@@ -315,7 +315,7 @@ const Storefront = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-accent" /> Product catalogue
+                    <Package className="h-5 w-5 text-gold-dark" /> Product catalogue
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -368,7 +368,7 @@ const Storefront = () => {
                   <CardHeader><CardTitle>Location</CardTitle></CardHeader>
                   <CardContent>
                     <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />
                       <span>{location}</span>
                     </div>
                   </CardContent>
@@ -394,13 +394,13 @@ const Storefront = () => {
                   <CardContent className="space-y-3 text-sm text-muted-foreground">
                     {company.languages.length > 0 && (
                       <div className="flex items-start gap-2">
-                        <Languages className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                        <Languages className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />
                         <span>{company.languages.join(", ")}</span>
                       </div>
                     )}
                     {company.hours && (
                       <div className="flex items-start gap-2">
-                        <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                        <Clock3 className="mt-0.5 h-4 w-4 shrink-0 text-gold-dark" />
                         <span>{company.hours}</span>
                       </div>
                     )}

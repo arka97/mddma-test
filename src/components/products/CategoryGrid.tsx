@@ -40,7 +40,7 @@ export function CategoryGrid({ listings }: Props) {
 
         {isLoading ? (
           <div className="text-center py-10">
-            <Loader2 className="h-6 w-6 animate-spin mx-auto text-accent" />
+            <Loader2 className="h-6 w-6 animate-spin mx-auto text-gold-dark" />
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 border border-dashed border-border rounded-lg">

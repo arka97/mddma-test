@@ -99,7 +99,7 @@ const Dashboard = () => {
                 <Link key={tile.href} to={tile.href} className="rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                   <Card className="h-full transition hover:border-accent/60">
                     <CardContent className="flex items-start gap-3 p-5">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-accent">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-accent/10 text-gold-dark">
                         <Icon className="h-5 w-5" />
                       </div>
                       <div>

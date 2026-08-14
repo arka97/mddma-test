@@ -47,7 +47,7 @@ const DocViewer = () => {
     if (!internalSource) {
       return (
         <div className="min-h-screen bg-primary text-primary-foreground flex items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-accent" />
+          <Loader2 className="h-6 w-6 animate-spin text-gold-dark" />
         </div>
       );
     }

@@ -40,7 +40,7 @@ export function RecentListingsList() {
           <h2 className="text-base font-semibold text-foreground">New Products</h2>
           <p className="text-xs text-muted-foreground">Latest commodities from verified sellers</p>
         </div>
-        <Link to="/products" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
+        <Link to="/products" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold-dark/80">
           View all <ArrowRight className="h-3 w-3" />
         </Link>
       </div>

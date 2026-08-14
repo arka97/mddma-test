@@ -14,7 +14,7 @@ export function FeaturedMembers() {
           <h2 className="t-h3 text-foreground">Featured members</h2>
           <p className="text-xs text-muted-foreground">Verified traders across Mumbai's markets</p>
         </div>
-        <Link to="/directory" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
+        <Link to="/directory" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold-dark/80">
           Directory <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
@@ -70,7 +70,7 @@ export function FeaturedMembers() {
                 <span className="text-muted-foreground">
                   Member since <span className="font-semibold text-foreground">{m.memberSince}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 font-semibold text-accent group-hover:translate-x-0.5 transition-transform">
+                <span className="inline-flex items-center gap-1 font-semibold text-gold-dark group-hover:translate-x-0.5 transition-transform">
                   View store <ArrowRight className="h-3 w-3" />
                 </span>
               </div>

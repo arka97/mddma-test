@@ -74,17 +74,17 @@ const DocumentsHub = () => {
         <CardContent className="p-6 space-y-3">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-accent">{doc.number}</span>
-              <FileText className="h-5 w-5 text-accent" />
+              <span className="text-2xl font-bold text-gold-dark">{doc.number}</span>
+              <FileText className="h-5 w-5 text-gold-dark" />
             </div>
             <div className="flex items-center gap-2">
               {doc.internal && (
-                <Badge variant="outline" className="text-xs border-accent/40 text-accent">
+                <Badge variant="outline" className="text-xs border-accent/40 text-gold-dark">
                   <Lock className="h-3 w-3 mr-1" /> Internal
                 </Badge>
               )}
               {read.has(doc.slug) && (
-                <Badge variant="outline" className="text-xs border-accent/40 text-accent">read</Badge>
+                <Badge variant="outline" className="text-xs border-accent/40 text-gold-dark">read</Badge>
               )}
             </div>
           </div>
@@ -102,7 +102,7 @@ const DocumentsHub = () => {
               </Badge>
             )}
           </div>
-          <span className="inline-flex items-center gap-1 text-accent text-sm font-medium pt-1">
+          <span className="inline-flex items-center gap-1 text-gold-dark text-sm font-medium pt-1">
             Open <ArrowRight className="h-3 w-3" />
           </span>
         </CardContent>
@@ -116,7 +116,7 @@ const DocumentsHub = () => {
         <div className="text-center space-y-4">
           <Badge className="bg-accent text-accent-foreground font-semibold text-sm px-4 py-1">v3.2 · July 2026</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-            MDDMA <span className="text-accent">Documentation</span>
+            MDDMA <span className="text-gold-dark">Documentation</span>
           </h1>
           <p className="text-primary-foreground/70 max-w-2xl mx-auto">
             Start with doc 00. Public spec ({publicDocs.length} docs) plus owner-only deep reference ({internalDocs.length} docs). Download any single doc or the full set.
@@ -141,8 +141,8 @@ const DocumentsHub = () => {
                   to={`/documents/${d.slug}`}
                   className={`flex items-center gap-1 px-3 py-1.5 rounded-full border transition-colors ${
                     read.has(d.slug)
-                      ? "bg-accent/15 border-accent text-accent"
-                      : "border-primary-foreground/20 text-primary-foreground/70 hover:border-accent hover:text-accent"
+                      ? "bg-accent/15 border-accent text-gold-dark"
+                      : "border-primary-foreground/20 text-primary-foreground/70 hover:border-accent hover:text-gold-dark"
                   }`}
                 >
                   {read.has(d.slug) ? <CheckCircle2 className="h-3 w-3" /> : <Circle className="h-3 w-3" />}
@@ -158,7 +158,7 @@ const DocumentsHub = () => {
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             <div className="h-px flex-1 bg-accent/30" />
-            <p className="text-xs uppercase tracking-widest text-accent inline-flex items-center gap-1">
+            <p className="text-xs uppercase tracking-widest text-gold-dark inline-flex items-center gap-1">
               <Lock className="h-3 w-3" /> Owner reference (internal)
             </p>
             <div className="h-px flex-1 bg-accent/30" />
@@ -170,7 +170,7 @@ const DocumentsHub = () => {
         </div>
 
         <div className="text-center text-xs text-primary-foreground/50 pt-4 border-t border-primary-foreground/10">
-          Source-controlled in <code className="text-accent">src/content/docs/</code>. Updated July 2026.
+          Source-controlled in <code className="text-gold-dark">src/content/docs/</code>. Updated July 2026.
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ export function MemberCard({ m }: { m: DirMember }) {
     <article className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <div className="mb-2 flex flex-wrap items-center gap-1.5">
         {m.isSponsored && (
-          <span className="inline-flex items-center gap-0.5 rounded bg-accent/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-accent">
+          <span className="inline-flex items-center gap-0.5 rounded bg-accent/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-gold-dark">
             <Star className="h-2.5 w-2.5" /> Sponsored
           </span>
         )}

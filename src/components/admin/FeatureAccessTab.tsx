@@ -68,7 +68,7 @@ export function FeatureAccessTab() {
       <Card>
         <CardContent className="p-5 space-y-4">
           <div className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-full bg-accent/10 text-accent flex items-center justify-center flex-shrink-0">
+            <div className="h-10 w-10 rounded-full bg-accent/10 text-gold-dark flex items-center justify-center flex-shrink-0">
               <Unlock className="h-5 w-5" />
             </div>
             <div className="flex-1">

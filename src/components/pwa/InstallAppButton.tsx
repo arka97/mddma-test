@@ -83,7 +83,7 @@ export function InstallAppButton({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Smartphone className="h-5 w-5 text-accent" /> Install MDDMA App
+              <Smartphone className="h-5 w-5 text-gold-dark" /> Install MDDMA App
             </DialogTitle>
             <DialogDescription>
               Add the MDDMA Trade Hub to your home screen for quick, app-like access.

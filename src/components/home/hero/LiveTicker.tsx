@@ -17,7 +17,7 @@ export function LiveTicker() {
       aria-label="Open full market"
       className="group relative flex items-stretch overflow-hidden rounded-xl border border-border bg-card shadow-sm"
     >
-      <div className="flex shrink-0 items-center gap-1.5 border-r border-border bg-muted/40 px-3 text-[10px] font-bold uppercase tracking-widest text-accent">
+      <div className="flex shrink-0 items-center gap-1.5 border-r border-border bg-muted/40 px-3 text-[10px] font-bold uppercase tracking-widest text-gold-dark">
         <LineChart className="h-3 w-3" /> Live
       </div>
 

@@ -440,7 +440,7 @@ const ProductsPage = () => {
                       <Label>Brand</Label>
                       {companyBrands.length === 0 ? (
                         <p className="text-xs text-muted-foreground">
-                          No brands yet. <Link to="/account/brands" className="text-accent hover:underline">Create a brand →</Link>
+                          No brands yet. <Link to="/account/brands" className="text-gold-dark hover:underline">Create a brand →</Link>
                         </p>
                       ) : (
                         <Select value={editing.brand_id ?? ""} onValueChange={(v) => setEditing({ ...editing, brand_id: v || null })}>

@@ -29,7 +29,7 @@ const ProductPage = () => {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-accent" />
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-gold-dark" />
         </div>
       </Layout>
     );
@@ -40,7 +40,7 @@ const ProductPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="mb-4 text-2xl font-bold text-primary">Product not found</h1>
-          <Link to="/products" className="text-accent hover:underline">Back to products</Link>
+          <Link to="/products" className="text-gold-dark hover:underline">Back to products</Link>
         </div>
       </Layout>
     );
@@ -150,7 +150,7 @@ const ProductPage = () => {
               <Card className="border-accent/30 bg-accent/10 ring-2 ring-accent/20">
                 <CardContent className="p-5">
                   <div className="flex items-start gap-3">
-                    <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-accent" />
+                    <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-gold-dark" />
                     <div className="min-w-0">
                       <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Listed by</p>
                       <h2 className="mt-1 text-lg font-bold text-foreground">

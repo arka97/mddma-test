@@ -98,7 +98,7 @@ export function DocPage({ meta, source }: { meta: DocMeta; source: string }) {
           <Markdown source={source} />
 
           <footer className="mt-16 pt-6 border-t border-border flex items-center justify-between text-sm not-prose">
-            <Link to="/documents" className="text-accent hover:underline inline-flex items-center gap-1">
+            <Link to="/documents" className="text-gold-dark hover:underline inline-flex items-center gap-1">
               <ArrowLeft className="h-4 w-4" /> Documentation hub
             </Link>
             <Button variant="outline" size="sm" onClick={() => downloadMd(`${meta.slug}.md`, source)}>
@@ -116,7 +116,7 @@ export function DocPage({ meta, source }: { meta: DocMeta; source: string }) {
                 <a
                   key={h.id}
                   href={`#${h.id}`}
-                  className={`flex items-start gap-1 text-muted-foreground hover:text-accent transition-colors ${h.level === 3 ? "pl-4 text-xs" : ""}`}
+                  className={`flex items-start gap-1 text-muted-foreground hover:text-gold-dark transition-colors ${h.level === 3 ? "pl-4 text-xs" : ""}`}
                 >
                   {h.level === 2 && <ChevronRight className="h-3 w-3 mt-1 flex-shrink-0" />}
                   <span>{h.text}</span>

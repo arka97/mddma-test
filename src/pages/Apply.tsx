@@ -142,14 +142,14 @@ const Apply = () => {
           <Card className="border-accent/30 ring-1 ring-accent/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Globe2 className="h-5 w-5 text-accent" /> Join the verified business network
+                <Globe2 className="h-5 w-5 text-gold-dark" /> Join the verified business network
               </CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-2.5">
                 {NETWORK_BENEFITS.map((benefit) => (
                   <li key={benefit} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-dark" />
                     <span>{benefit}</span>
                   </li>
                 ))}
@@ -166,7 +166,7 @@ const Apply = () => {
             <Card>
               <CardContent className="flex flex-col items-start gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3">
-                  <Store className="mt-0.5 h-5 w-5 text-accent" />
+                  <Store className="mt-0.5 h-5 w-5 text-gold-dark" />
                   <div>
                     <h2 className="font-semibold text-foreground">Your business profile already exists</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -185,7 +185,7 @@ const Apply = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5 text-accent" /> Business details
+                  <Building2 className="h-5 w-5 text-gold-dark" /> Business details
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -329,7 +329,7 @@ const Apply = () => {
                   </label>
 
                   <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground">
-                    <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent" />
+                    <ShieldCheck className="mt-0.5 h-4 w-4 flex-shrink-0 text-gold-dark" />
                     <span>
                       The profile remains hidden until staff review it. MDDMA membership, business verification and
                       platform access are separate statuses and will be displayed separately.

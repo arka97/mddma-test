@@ -6,7 +6,7 @@ import { Mermaid } from "./Mermaid";
 
 export function Markdown({ source }: { source: string }) {
   return (
-    <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-4xl prose-h2:text-2xl prose-h2:mt-10 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border prose-h3:text-xl prose-a:text-accent hover:prose-a:underline prose-strong:text-foreground prose-code:text-accent prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-muted prose-pre:text-foreground prose-blockquote:border-l-accent prose-blockquote:text-foreground prose-blockquote:not-italic prose-table:text-sm prose-th:bg-muted prose-th:text-foreground prose-li:marker:text-accent">
+    <div className="prose prose-slate max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-4xl prose-h2:text-2xl prose-h2:mt-10 prose-h2:pb-2 prose-h2:border-b prose-h2:border-border prose-h3:text-xl prose-a:text-gold-dark hover:prose-a:underline prose-strong:text-foreground prose-code:text-gold-dark prose-code:before:content-none prose-code:after:content-none prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-pre:bg-muted prose-pre:text-foreground prose-blockquote:border-l-accent prose-blockquote:text-foreground prose-blockquote:not-italic prose-table:text-sm prose-th:bg-muted prose-th:text-foreground prose-li:marker:text-gold-dark">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeSlug, [rehypeAutolinkHeadings, { behavior: "wrap" }]]}

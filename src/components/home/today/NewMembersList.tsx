@@ -48,7 +48,7 @@ export function NewMembersList() {
           <h2 className="text-base font-semibold text-foreground">New Members</h2>
           <p className="text-xs text-muted-foreground">Recently joined verified traders</p>
         </div>
-        <Link to="/directory" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
+        <Link to="/directory" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold-dark/80">
           Directory <ArrowRight className="h-3 w-3" />
         </Link>
       </div>
@@ -88,7 +88,7 @@ export function NewMembersList() {
                       <MapPin className="h-2.5 w-2.5" /> {loc}{cat ? ` · ${cat}` : ""}
                     </p>
                   </div>
-                  <ArrowRight className="h-4 w-4 shrink-0 text-accent transition-transform group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-4 w-4 shrink-0 text-gold-dark transition-transform group-hover:translate-x-0.5" />
                 </Link>
               </li>
             );

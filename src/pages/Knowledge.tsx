@@ -34,7 +34,7 @@ const Knowledge = () => {
                   <span className="inline-flex items-center gap-1">
                     <Clock className="h-3 w-3" /> {k.readTime}
                   </span>
-                  <span className="inline-flex items-center gap-1 font-medium text-accent group-hover:underline">
+                  <span className="inline-flex items-center gap-1 font-medium text-gold-dark group-hover:underline">
                     Read <ArrowRight className="h-3 w-3" />
                   </span>
                 </div>
