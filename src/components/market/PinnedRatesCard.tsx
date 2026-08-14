@@ -27,8 +27,8 @@ export function PinnedRatesCard({ post, likeCount, commentCount, viewCount }: Pr
     <Card className="relative border-accent/30">
       <CardContent className="p-4">
         <div className="mb-2 flex items-center justify-between">
-          <Badge className="bg-accent text-accent-foreground">Committee Rates</Badge>
-          <Pin className="h-4 w-4 text-accent" />
+          <Badge className="bg-accent text-gold-dark-foreground">Committee Rates</Badge>
+          <Pin className="h-4 w-4 text-gold-dark" />
         </div>
         {sd.title && <h3 className="mb-2 text-sm font-semibold text-foreground">{sd.title}</h3>}
         {post.content && <p className="mb-3 text-xs text-muted-foreground">{post.content}</p>}

@@ -48,13 +48,13 @@ const Contact = () => {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="h-4 w-4 flex-shrink-0 text-[hsl(var(--gold-dark))]" />
-                <a href="tel:+912227650827" className="font-medium text-foreground hover:text-accent">
+                <a href="tel:+912227650827" className="font-medium text-foreground hover:text-gold-dark">
                   +91 22 2765 0827
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="h-4 w-4 flex-shrink-0 text-[hsl(var(--gold-dark))]" />
-                <a href="mailto:grievance@mddma.org" className="font-medium text-foreground hover:text-accent">
+                <a href="mailto:grievance@mddma.org" className="font-medium text-foreground hover:text-gold-dark">
                   grievance@mddma.org
                 </a>
               </li>
@@ -73,7 +73,7 @@ const Contact = () => {
                 <div className="text-xs leading-relaxed text-foreground/90">
                   <p className="font-semibold">Grievance & Data Protection Officer</p>
                   <p className="mt-0.5 text-muted-foreground">
-                    Aditya Parmar · <a href="mailto:grievance@mddma.org" className="hover:text-accent">grievance@mddma.org</a>
+                    Aditya Parmar · <a href="mailto:grievance@mddma.org" className="hover:text-gold-dark">grievance@mddma.org</a>
                   </p>
                   <p className="mt-1 text-[11px] text-muted-foreground">
                     Acknowledgement within 3 working days · resolution target 30 days.

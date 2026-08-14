@@ -215,7 +215,7 @@ const Login = () => {
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
               Represent an existing food-trade business?{" "}
-              <Link to="/apply" className="font-medium text-accent hover:underline">Start business verification</Link>
+              <Link to="/apply" className="font-medium text-gold-dark hover:underline">Start business verification</Link>
             </p>
           </div>
         </div>

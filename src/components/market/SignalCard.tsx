@@ -35,7 +35,7 @@ export function SignalCard({ signal, canSeeAnalyst }: Props) {
       </div>
 
       <div className="mt-3 rounded-xl border border-border bg-muted/40 p-3">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-accent">Analyst signal</div>
+        <div className="text-[10px] font-bold uppercase tracking-widest text-gold-dark">Analyst signal</div>
         {canSeeAnalyst || !signal.requires_paid ? (
           <p className="mt-1 text-xs text-foreground/90">{signal.analyst_note ?? "—"}</p>
         ) : (

@@ -32,7 +32,7 @@ const TIER_META: Record<VerificationTier, { label: string; icon: typeof ShieldCh
   gst: {
     label: "GST verified",
     icon: BadgeCheck,
-    classes: "bg-accent/15 text-accent-foreground border-accent/40",
+    classes: "bg-accent/15 text-gold-dark-foreground border-accent/40",
     help: "Buyer holds a verified GSTIN — highest trust tier.",
   },
 };

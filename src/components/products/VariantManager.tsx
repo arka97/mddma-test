@@ -101,7 +101,7 @@ export function VariantManager({ productId, productName }: { productId: string; 
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-semibold flex items-center gap-2"><Layers className="h-4 w-4 text-accent" /> Variants of {productName}</h3>
+          <h3 className="font-semibold flex items-center gap-2"><Layers className="h-4 w-4 text-gold-dark" /> Variants of {productName}</h3>
           <p className="text-xs text-muted-foreground">SKU rows let buyers request specific grades, packaging, and MOQs.</p>
         </div>
         {!editing && (

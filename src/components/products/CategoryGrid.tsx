@@ -40,7 +40,7 @@ export function CategoryGrid({ listings }: Props) {
 
         {isLoading ? (
           <div className="text-center py-10">
-            <Loader2 className="h-6 w-6 animate-spin mx-auto text-accent" />
+            <Loader2 className="h-6 w-6 animate-spin mx-auto text-gold-dark" />
           </div>
         ) : filtered.length === 0 ? (
           <div className="text-center py-10 border border-dashed border-border rounded-lg">
@@ -55,7 +55,7 @@ export function CategoryGrid({ listings }: Props) {
                 <Link key={cat.id} to={`/products?cat=${encodeURIComponent(cat.name)}`}>
                   <Card className="bg-card border-border hover:border-accent/60 card-hover h-full overflow-hidden relative">
                     {cat.is_featured && (
-                      <span className="absolute top-1 right-1 z-10 inline-flex items-center gap-0.5 rounded bg-accent px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-accent-foreground shadow sm:top-2 sm:right-2 sm:px-1.5 sm:text-[10px]">
+                      <span className="absolute top-1 right-1 z-10 inline-flex items-center gap-0.5 rounded bg-accent px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-gold-dark-foreground shadow sm:top-2 sm:right-2 sm:px-1.5 sm:text-[10px]">
                         <Star className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
                         <span className="hidden sm:inline">Featured</span>
                       </span>

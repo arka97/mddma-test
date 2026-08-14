@@ -54,7 +54,7 @@ export function ProductTile({ listing, hideSeller }: Props) {
 
         {/* Featured ★ — top-right */}
         {listing.isFeatured && (
-          <span className="absolute right-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded bg-accent px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-accent-foreground shadow sm:right-2 sm:top-2 sm:px-1.5 sm:text-[10px]">
+          <span className="absolute right-1.5 top-1.5 z-10 inline-flex items-center gap-0.5 rounded bg-accent px-1 py-0.5 text-[8px] font-bold uppercase tracking-wide text-gold-dark-foreground shadow sm:right-2 sm:top-2 sm:px-1.5 sm:text-[10px]">
             <Star className="h-2 w-2 sm:h-2.5 sm:w-2.5" />
             <span className="hidden sm:inline">Featured</span>
           </span>
@@ -90,7 +90,7 @@ export function ProductTile({ listing, hideSeller }: Props) {
         </div>
 
         <Link to={detailHref} className="min-w-0">
-          <h3 className="truncate text-sm font-semibold leading-tight text-foreground group-hover:text-accent sm:text-[15px]">
+          <h3 className="truncate text-sm font-semibold leading-tight text-foreground group-hover:text-gold-dark sm:text-[15px]">
             {listing.commodity}
           </h3>
           <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
@@ -110,7 +110,7 @@ export function ProductTile({ listing, hideSeller }: Props) {
             <Button
               size="sm"
               variant="outline"
-              className="w-full h-8 text-xs border-accent/40 text-accent hover:bg-accent hover:text-accent-foreground"
+              className="w-full h-8 text-xs border-accent/40 text-gold-dark hover:bg-accent hover:text-gold-dark-foreground"
               asChild
             >
               <Link to={detailHref}>

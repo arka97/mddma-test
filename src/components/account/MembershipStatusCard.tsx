@@ -16,7 +16,7 @@ export function MembershipStatusCard() {
     return (
       <Card className="border-accent/30 bg-accent/10">
         <CardContent className="flex items-center gap-3 p-4">
-          <ShieldCheck className="h-5 w-5 text-accent" />
+          <ShieldCheck className="h-5 w-5 text-gold-dark" />
           <div className="min-w-0">
             <div className="flex items-center gap-2 font-semibold">
               Platform operator access
@@ -35,7 +35,7 @@ export function MembershipStatusCard() {
     return (
       <Card className="border-accent/20 bg-accent/5">
         <CardContent className="flex items-center gap-3 p-4">
-          <BadgeCheck className="h-5 w-5 text-accent" />
+          <BadgeCheck className="h-5 w-5 text-gold-dark" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 font-semibold">
               Business network access
@@ -77,7 +77,7 @@ export function MembershipStatusCard() {
     <Card className="border-accent/30 bg-accent/5">
       <CardContent className="flex flex-col justify-between gap-4 p-4 sm:flex-row sm:items-center">
         <div className="flex items-start gap-3">
-          <Building2 className="mt-0.5 h-5 w-5 text-accent" />
+          <Building2 className="mt-0.5 h-5 w-5 text-gold-dark" />
           <div>
             <div className="font-semibold">Register an existing business</div>
             <div className="text-xs text-muted-foreground">

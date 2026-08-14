@@ -61,7 +61,7 @@ export function PasswordGate({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-primary flex items-center justify-center px-6">
       <Card className="w-full max-w-md bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
         <CardContent className="p-8 space-y-6 text-center">
-          <Lock className="h-12 w-12 text-accent mx-auto" />
+          <Lock className="h-12 w-12 text-gold-dark mx-auto" />
           <div>
             <h1 className="text-2xl font-bold">Document Vault</h1>
             <p className="text-sm text-primary-foreground/60 mt-1">Enter password to access project documents</p>

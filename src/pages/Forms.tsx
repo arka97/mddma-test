@@ -56,7 +56,7 @@ const Forms = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Megaphone className="h-5 w-5 text-accent" /> Advertise With Us
+                    <Megaphone className="h-5 w-5 text-gold-dark" /> Advertise With Us
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -96,7 +96,7 @@ const Forms = () => {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Mail className="h-5 w-5 text-accent" /> Contact Us
+                    <Mail className="h-5 w-5 text-gold-dark" /> Contact Us
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

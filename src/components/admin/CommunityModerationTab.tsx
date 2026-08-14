@@ -81,7 +81,7 @@ export function CommunityModerationTab() {
                   {p.topic_tag && <Badge variant="secondary" className="text-[10px]">{p.topic_tag}</Badge>}
                   {p.is_anonymous && <Badge className="bg-muted text-foreground text-[10px]">Anon</Badge>}
                   {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
-                  {p.is_pinned && <Badge className="bg-accent text-accent-foreground">Pinned</Badge>}
+                  {p.is_pinned && <Badge className="bg-accent text-gold-dark-foreground">Pinned</Badge>}
                 </div>
                 <p className="text-sm font-medium truncate">{authors[p.id] ?? "Member"}</p>
                 <p className="text-xs text-muted-foreground line-clamp-2">{p.content.slice(0, 100)}</p>

@@ -126,7 +126,7 @@ const About = () => {
       {/* Hero */}
       <section className="border-b border-border bg-gradient-to-b from-muted/40 to-background py-12 sm:py-16">
         <div className="container mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-          <div className="t-eyebrow mb-3 inline-flex items-center gap-2 text-accent">
+          <div className="t-eyebrow mb-3 inline-flex items-center gap-2 text-gold-dark">
             <Crown className="h-3.5 w-3.5" /> Established 1930 · Mumbai
           </div>
           <h1 className="t-h1 mb-3 text-foreground sm:t-display">About MDDMA</h1>
@@ -149,7 +149,7 @@ const About = () => {
           <div className="grid lg:grid-cols-3 gap-10">
             <div className="lg:col-span-2 space-y-5">
               <h2 className="text-2xl sm:text-3xl font-bold text-primary flex items-center gap-2">
-                <BookOpen className="h-6 w-6 text-accent" aria-hidden /> Our Story
+                <BookOpen className="h-6 w-6 text-gold-dark" aria-hidden /> Our Story
               </h2>
               <p className="text-foreground/85 leading-relaxed">
                 In <strong>1930</strong>, a small group of importers and traders of Bombay dealing in dry and wet dates and dry fruits — sourced from <strong>Muscat (Oman), Basra (Iraq), Iran and Afghanistan</strong> — gathered and founded the Association to protect the interests of the trade and to advise members on the various rules, regulations and laws of the Government of India.
@@ -168,7 +168,7 @@ const About = () => {
             <Card className="border-accent/40 bg-card">
               <CardContent className="p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Crown className="h-5 w-5 text-accent" aria-hidden />
+                  <Crown className="h-5 w-5 text-gold-dark" aria-hidden />
                   <h3 className="font-semibold text-primary text-sm uppercase tracking-wide">Founder Members</h3>
                 </div>
                 <ol className="space-y-2 text-sm text-foreground/85">
@@ -222,7 +222,7 @@ const About = () => {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {objectives.map(({ icon: Icon, title, desc }) => (
               <div key={title} className="p-5 rounded-lg border border-border bg-card hover:border-accent/40 hover:shadow-sm transition">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent/15 text-accent mb-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-accent/15 text-gold-dark mb-3">
                   <Icon className="h-5 w-5" aria-hidden />
                 </div>
                 <h3 className="font-semibold text-primary text-sm mb-1">{title}</h3>
@@ -237,13 +237,13 @@ const About = () => {
       <section className="py-16 bg-muted/50 border-y border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-3xl">
           <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-10 flex items-center gap-2">
-            <Calendar className="h-6 w-6 text-accent" aria-hidden /> Our Journey
+            <Calendar className="h-6 w-6 text-gold-dark" aria-hidden /> Our Journey
           </h2>
           <div className="space-y-6">
             {milestones.map((m, i) => (
               <div key={m.year} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center text-accent-foreground font-bold text-xs flex-shrink-0 ring-4 ring-accent/20">
+                  <div className="h-12 w-12 rounded-full bg-accent flex items-center justify-center text-gold-dark-foreground font-bold text-xs flex-shrink-0 ring-4 ring-accent/20">
                     {m.year}
                   </div>
                   {i < milestones.length - 1 && <div className="w-0.5 flex-1 bg-border mt-2" />}
@@ -263,7 +263,7 @@ const About = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           <div className="text-center mb-10 max-w-2xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3 flex items-center justify-center gap-2">
-              <Crown className="h-6 w-6 text-accent" aria-hidden /> Office Bearers
+              <Crown className="h-6 w-6 text-gold-dark" aria-hidden /> Office Bearers
             </h2>
             <p className="text-muted-foreground text-sm sm:text-base">
               The current leadership of the Mumbai Dryfruits & Dates Merchants Association.
@@ -291,13 +291,13 @@ const About = () => {
       <section className="py-16 bg-muted/50 border-y border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl">
           <h2 className="text-2xl sm:text-3xl font-bold text-primary mb-3 flex items-center gap-2">
-            <Users className="h-6 w-6 text-accent" aria-hidden /> Committee Members
+            <Users className="h-6 w-6 text-gold-dark" aria-hidden /> Committee Members
           </h2>
           <p className="text-muted-foreground text-sm mb-8">Members serving on the MDDMA managing committee.</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {committeeMembers.map((name) => (
               <div key={name} className="flex items-center gap-3 p-4 rounded-lg bg-card border border-border">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-accent text-xs font-bold flex-shrink-0">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/15 text-gold-dark text-xs font-bold flex-shrink-0">
                   {initialsOf(name)}
                 </div>
                 <span className="text-sm font-medium text-foreground">{name}</span>
@@ -319,7 +319,7 @@ const About = () => {
 
               <div className="space-y-4">
                 <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                  <MapPin className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" aria-hidden />
+                  <MapPin className="h-5 w-5 text-gold-dark flex-shrink-0 mt-0.5" aria-hidden />
                   <div>
                     <div className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Address</div>
                     <div className="text-sm text-foreground mt-1">
@@ -332,7 +332,7 @@ const About = () => {
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                    <Phone className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" aria-hidden />
+                    <Phone className="h-5 w-5 text-gold-dark flex-shrink-0 mt-0.5" aria-hidden />
                     <div>
                       <div className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Phone</div>
                       <a href="tel:+919820069545" className="text-sm text-foreground mt-1 hover:text-primary block">+91 98200 69545</a>
@@ -340,7 +340,7 @@ const About = () => {
                   </div>
 
                   <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                    <Mail className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" aria-hidden />
+                    <Mail className="h-5 w-5 text-gold-dark flex-shrink-0 mt-0.5" aria-hidden />
                     <div className="min-w-0">
                       <div className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Email</div>
                       <a href="mailto:vijaybhuta@gmail.com" className="text-sm text-foreground mt-1 hover:text-primary block break-all">vijaybhuta@gmail.com</a>
@@ -349,7 +349,7 @@ const About = () => {
                 </div>
 
                 <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-                  <Clock className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" aria-hidden />
+                  <Clock className="h-5 w-5 text-gold-dark flex-shrink-0 mt-0.5" aria-hidden />
                   <div>
                     <div className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Office Hours</div>
                     <div className="text-sm text-foreground mt-1">Mon – Sat · 10:00 AM – 6:00 PM</div>

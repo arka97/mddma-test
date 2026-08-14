@@ -32,7 +32,7 @@ export default function Install() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto">
           {benefits.map((b) => (
             <div key={b.title} className="rounded-xl border bg-card p-5">
-              <b.icon className="h-6 w-6 text-accent mb-3" />
+              <b.icon className="h-6 w-6 text-gold-dark mb-3" />
               <h3 className="font-semibold mb-1">{b.title}</h3>
               <p className="text-sm text-muted-foreground">{b.body}</p>
             </div>
@@ -43,7 +43,7 @@ export default function Install() {
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
           <div className="rounded-xl border bg-card p-6">
-            <h3 className="font-semibold mb-3 text-accent">Android (Chrome)</h3>
+            <h3 className="font-semibold mb-3 text-gold-dark">Android (Chrome)</h3>
             <ol className="space-y-2 text-sm list-decimal list-inside text-muted-foreground">
               <li>Tap the menu (⋮) in the top-right of Chrome.</li>
               <li>Choose <b className="text-foreground">Install app</b> or <b className="text-foreground">Add to Home screen</b>.</li>
@@ -51,7 +51,7 @@ export default function Install() {
             </ol>
           </div>
           <div className="rounded-xl border bg-card p-6">
-            <h3 className="font-semibold mb-3 text-accent">iPhone / iPad (Safari)</h3>
+            <h3 className="font-semibold mb-3 text-gold-dark">iPhone / iPad (Safari)</h3>
             <ol className="space-y-2 text-sm list-decimal list-inside text-muted-foreground">
               <li>Tap the <Share className="inline h-4 w-4 mx-1 align-text-bottom" /> Share button.</li>
               <li>Choose <Plus className="inline h-4 w-4 mx-1 align-text-bottom" /> <b className="text-foreground">Add to Home Screen</b>.</li>
@@ -59,7 +59,7 @@ export default function Install() {
             </ol>
           </div>
           <div className="rounded-xl border bg-card p-6">
-            <h3 className="font-semibold mb-3 text-accent">Desktop (Chrome/Edge)</h3>
+            <h3 className="font-semibold mb-3 text-gold-dark">Desktop (Chrome/Edge)</h3>
             <ol className="space-y-2 text-sm list-decimal list-inside text-muted-foreground">
               <li>Look for the <Download className="inline h-4 w-4 mx-1 align-text-bottom" /> icon in the address bar.</li>
               <li>Click <b className="text-foreground">Install MDDMA</b>.</li>

@@ -87,7 +87,7 @@ const MembershipPlans = () => {
         <div className="container mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
           <div className="mb-6 rounded-2xl border border-border bg-muted/30 p-5">
             <div className="flex items-start gap-3">
-              <ShieldCheck className="mt-0.5 h-5 w-5 flex-shrink-0 text-accent" />
+              <ShieldCheck className="mt-0.5 h-5 w-5 flex-shrink-0 text-gold-dark" />
               <div>
                 <h2 className="text-sm font-semibold text-foreground">Verification is not a paid trust badge</h2>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">

@@ -30,7 +30,7 @@ export function RecencyCue({ dateStr }: { dateStr: string }) {
     <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
       <Clock className="h-3 w-3" />
       {d === 0 ? "Listed today" : `Listed ${d}d ago`}
-      {isNew && <Badge className="ml-1 h-4 px-1.5 text-[9px] bg-accent/15 text-accent border-accent/30">New</Badge>}
+      {isNew && <Badge className="ml-1 h-4 px-1.5 text-[9px] bg-accent/15 text-gold-dark border-accent/30">New</Badge>}
     </span>
   );
 }
@@ -43,7 +43,7 @@ export function LiveViewersCue({ id, base = 0 }: { id: string; base?: number }) 
     <Tooltip>
       <TooltipTrigger asChild>
         <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
-          <Eye className="h-3 w-3 text-accent" /> {viewers} viewing now
+          <Eye className="h-3 w-3 text-gold-dark" /> {viewers} viewing now
         </span>
       </TooltipTrigger>
       <TooltipContent>
@@ -66,7 +66,7 @@ export function InquiryProofCue({ count }: { count: number }) {
 /** Reciprocity nudge — small benefit chip near CTA */
 export function ReciprocityChip({ children = "Free price discovery · No obligation" }: { children?: React.ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1 text-[10px] text-accent">
+    <span className="inline-flex items-center gap-1 text-[10px] text-gold-dark">
       <Sparkles className="h-3 w-3" /> {children}
     </span>
   );

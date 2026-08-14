@@ -29,7 +29,7 @@ export function RfqCard({ rfq, company, canQuote, isOwn, onQuote }: Props) {
             className={cn(
               rfq.listing_type === "buy"
                 ? "bg-primary text-primary-foreground"
-                : "bg-accent text-accent-foreground",
+                : "bg-accent text-gold-dark-foreground",
             )}
           >
             {rfq.listing_type === "buy" ? "BUY REQUIREMENT" : "SUPPLY AVAILABLE"}

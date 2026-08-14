@@ -121,7 +121,7 @@ const Products = () => {
       <section className="border-b border-border bg-muted/30 py-8 sm:py-10">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="mb-3 flex items-center gap-1 text-sm text-muted-foreground">
-            <button onClick={clearCategory} className="inline-flex items-center hover:text-accent">
+            <button onClick={clearCategory} className="inline-flex items-center hover:text-gold-dark">
               <ChevronLeft className="h-4 w-4" /> Categories
             </button>
             <ChevronRight className="h-3 w-3" />
@@ -200,7 +200,7 @@ const Products = () => {
                   ? `No live listings yet in ${activeCat}. Check back soon.`
                   : "No listings match your filters."}
               </p>
-              <Link to="/products" className="mt-3 inline-block text-sm text-accent hover:text-accent/80">
+              <Link to="/products" className="mt-3 inline-block text-sm text-gold-dark hover:text-gold-dark/80">
                 ← Browse other categories
               </Link>
             </div>

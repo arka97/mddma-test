@@ -7,7 +7,7 @@ export function BrandStrip({ brands, title = "Our Brands" }: { brands: BrandRow[
     <section className="py-6">
       <div className="flex items-end justify-between mb-3">
         <h2 className="t-h3 text-foreground">{title}</h2>
-        <Link to="/brands" className="text-xs text-accent hover:underline">Explore all brands →</Link>
+        <Link to="/brands" className="text-xs text-gold-dark hover:underline">Explore all brands →</Link>
       </div>
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 snap-x">
         {brands.map((b) => (

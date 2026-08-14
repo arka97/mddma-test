@@ -19,7 +19,7 @@ interface GuardedPriceProps {
 
 function PriceRange({ listing }: { listing: PricedListing }) {
   if (listing.priceMin === null) {
-    return <Badge className="bg-accent/20 text-accent border-accent/30 text-xs font-semibold">Request Price</Badge>;
+    return <Badge className="bg-accent/20 text-gold-dark border-accent/30 text-xs font-semibold">Request Price</Badge>;
   }
   return (
     <span className="font-semibold text-foreground text-sm">
@@ -37,7 +37,7 @@ export function GuardedPrice({ listing }: GuardedPriceProps) {
     return (
       <Link
         to="/login"
-        className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-accent/80"
+        className="inline-flex items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold-dark/80"
       >
         <Lock className="h-3 w-3" />
         Sign in for price
@@ -53,7 +53,7 @@ export function GuardedPublicPriceLine({ listing }: GuardedPriceProps) {
     return (
       <Link
         to="/login"
-        className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-accent/80"
+        className="inline-flex items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold-dark/80"
       >
         <Lock className="h-3 w-3" />
         Sign in for price

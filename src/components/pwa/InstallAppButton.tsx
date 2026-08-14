@@ -69,7 +69,7 @@ export function InstallAppButton({
         onClick={handleClick}
         size={size}
         className={cn(
-          "bg-accent text-accent-foreground hover:bg-accent/90 font-semibold",
+          "bg-accent text-gold-dark-foreground hover:bg-accent/90 font-semibold",
           className,
         )}
         aria-label={label}
@@ -83,7 +83,7 @@ export function InstallAppButton({
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Smartphone className="h-5 w-5 text-accent" /> Install MDDMA App
+              <Smartphone className="h-5 w-5 text-gold-dark" /> Install MDDMA App
             </DialogTitle>
             <DialogDescription>
               Add the MDDMA Trade Hub to your home screen for quick, app-like access.
@@ -203,7 +203,7 @@ export function InstallAppButton({
 
 function Step({ n }: { n: number }) {
   return (
-    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs font-bold">
+    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent text-gold-dark-foreground text-xs font-bold">
       {n}
     </span>
   );

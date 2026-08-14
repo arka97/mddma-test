@@ -12,12 +12,12 @@ export function MarketSnapshot() {
     <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <header className="mb-3 flex items-end justify-between gap-2">
         <div>
-          <p className="t-eyebrow inline-flex items-center gap-1.5 text-accent">
+          <p className="t-eyebrow inline-flex items-center gap-1.5 text-gold-dark">
             <LineChart className="h-3.5 w-3.5" /> Market
           </p>
           <h2 className="t-h3 mt-1 text-foreground">Today's rate snapshot</h2>
         </div>
-        <Link to="/" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
+        <Link to="/" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-gold-dark hover:text-gold-dark/80">
           Full market <ArrowRight className="h-3 w-3" />
         </Link>
       </header>

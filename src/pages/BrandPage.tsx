@@ -67,7 +67,7 @@ const BrandPage = () => {
       <Layout>
         <div className="container mx-auto px-4 py-16 text-center">
           <h1 className="t-h2 mb-4">Brand not found</h1>
-          <Link to="/brands" className="text-accent hover:underline">← Back to brands</Link>
+          <Link to="/brands" className="text-gold-dark hover:underline">← Back to brands</Link>
         </div>
       </Layout>
     );
@@ -218,7 +218,7 @@ const BrandPage = () => {
                       </div>
                     )}
                     <div className="min-w-0">
-                      <div className="font-medium text-foreground group-hover:text-accent truncate">{company.name}</div>
+                      <div className="font-medium text-foreground group-hover:text-gold-dark truncate">{company.name}</div>
                       <div className="text-xs text-muted-foreground">View storefront →</div>
                     </div>
                   </Link>

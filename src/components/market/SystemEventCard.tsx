@@ -18,7 +18,7 @@ export function SystemEventCard({ event }: { event: FeedEvent }) {
         to="/"
         className="flex gap-3 px-4 py-3 transition hover:bg-muted/40"
       >
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-gold-dark">
           <FileText className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -43,7 +43,7 @@ export function SystemEventCard({ event }: { event: FeedEvent }) {
         {event.logo_url ? (
           <img src={event.logo_url} alt="" className="h-full w-full object-cover" />
         ) : (
-          <BadgeCheck className="h-5 w-5 text-accent" />
+          <BadgeCheck className="h-5 w-5 text-gold-dark" />
         )}
       </div>
       <div className="min-w-0 flex-1">
@@ -52,7 +52,7 @@ export function SystemEventCard({ event }: { event: FeedEvent }) {
         </p>
         <p className="mt-0.5 flex items-center gap-1 truncate text-[15px] font-semibold text-foreground">
           {event.name}
-          <BadgeCheck className="h-4 w-4 shrink-0 text-accent" />
+          <BadgeCheck className="h-4 w-4 shrink-0 text-gold-dark" />
         </p>
         {event.city && (
           <p className="truncate text-[13px] text-muted-foreground">{event.city}</p>

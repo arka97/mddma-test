@@ -30,7 +30,7 @@ export function BrandCard({ brand }: { brand: BrandRow }) {
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <Link to={`/brands/${brand.slug}`} className="block font-semibold text-foreground hover:text-accent truncate">
+            <Link to={`/brands/${brand.slug}`} className="block font-semibold text-foreground hover:text-gold-dark truncate">
               {brand.name}
             </Link>
             {brand.tagline && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{brand.tagline}</p>}
@@ -48,7 +48,7 @@ export function BrandCard({ brand }: { brand: BrandRow }) {
             href={brand.b2c_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 inline-flex items-center gap-1 text-xs text-accent hover:underline"
+            className="mt-3 inline-flex items-center gap-1 text-xs text-gold-dark hover:underline"
           >
             Buy retail <ExternalLink className="h-3 w-3" />
           </a>

@@ -6,7 +6,7 @@ export function PaywallOverlay() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 backdrop-blur px-6">
       <div className="max-w-sm text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-accent">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/10 text-gold-dark">
           <Lock className="h-6 w-6" />
         </div>
         <h2 className="text-lg font-bold text-foreground">Join MDDMA to access the community</h2>
