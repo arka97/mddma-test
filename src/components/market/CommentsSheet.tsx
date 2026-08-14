@@ -8,7 +8,7 @@ import { Send, Loader2 } from "lucide-react";
 import { listComments, addComment, type PostCommentRow } from "@/repositories/postComments";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { formatDistanceToNow } from "date-fns";
+import { shortTimeAgo } from "@/lib/time";
 
 interface Props {
   open: boolean;
@@ -77,7 +77,7 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
                     <div className="flex items-center gap-1.5 text-[13px]">
                       <span className="font-semibold">{name}</span>
                       <span className="text-muted-foreground">
-                        · {formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}
+                        · {shortTimeAgo(c.created_at)}
                       </span>
                     </div>
                     <p className="whitespace-pre-wrap break-words text-sm">{c.content}</p>
