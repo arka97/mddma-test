@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
 
+type RpcFn = (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+
 export interface PostCommentRow {
   id: string;
   post_id: string;
@@ -8,6 +10,23 @@ export interface PostCommentRow {
   content: string;
   is_hidden: boolean;
   created_at: string;
+  author_name?: string | null;
+  author_avatar?: string | null;
+}
+
+/** Attach display name + avatar for a batch of comment rows. */
+async function withAuthors(rows: PostCommentRow[]) {
+  const ids = Array.from(new Set(rows.map((r) => r.author_id)));
+  if (ids.length === 0) return rows;
+  const { data } = await supabase.from("profiles").select("id,full_name,avatar_url").in("id", ids);
+  const map = new Map(
+    ((data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null }>).map((p) => [p.id, p]),
+  );
+  return rows.map((r) => ({
+    ...r,
+    author_name: map.get(r.author_id)?.full_name ?? null,
+    author_avatar: map.get(r.author_id)?.avatar_url ?? null,
+  }));
 }
 
 export async function listComments(postId: string) {
@@ -18,17 +37,31 @@ export async function listComments(postId: string) {
     .eq("is_hidden", false)
     .order("created_at", { ascending: true });
   if (error) throw new Error(friendlyErrorMessage(error));
-  return (data ?? []) as PostCommentRow[];
+  return withAuthors((data ?? []) as PostCommentRow[]);
 }
 
-export async function addComment(postId: string, authorId: string, content: string) {
-  const { data, error } = await supabase
-    .from("post_comments")
-    .insert({ post_id: postId, author_id: authorId, content })
-    .select("*")
-    .single();
-  if (error) throw new Error(friendlyErrorMessage(error));
-  return data as PostCommentRow;
+/**
+ * Comments are written through the `add_business_comment` security-definer
+ * function — direct inserts into `post_comments` are blocked by RLS.
+ */
+export async function addComment(postId: string, _authorId: string, content: string) {
+  const { data, error } = await (supabase.rpc as unknown as RpcFn)("add_business_comment", {
+    _post_id: postId,
+    _content: content,
+  });
+  if (error) throw new Error(friendlyErrorMessage(error as never));
+  const newId = data as string;
+  const { data: row } = await supabase.from("post_comments").select("*").eq("id", newId).maybeSingle();
+  const base = (row ?? {
+    id: newId,
+    post_id: postId,
+    author_id: _authorId,
+    content,
+    is_hidden: false,
+    created_at: new Date().toISOString(),
+  }) as PostCommentRow;
+  const [withAuthor] = await withAuthors([base]);
+  return withAuthor;
 }
 
 export async function deleteComment(id: string) {
