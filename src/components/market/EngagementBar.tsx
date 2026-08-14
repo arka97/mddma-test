@@ -16,6 +16,8 @@ interface Props {
   likeCount: number;
   commentCount: number;
   viewCount: number;
+  /** Views only render on an opened post, like X. */
+  showViews?: boolean;
   reposted?: boolean;
   repostCount?: number;
   onRepost?: () => void;
