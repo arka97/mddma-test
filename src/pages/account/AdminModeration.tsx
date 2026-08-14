@@ -35,9 +35,11 @@ const AdminModeration = () => {
   const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string; attachments: CircularAttachment[] }[]>([]);
   const [circularForm, setCircularForm] = useState<{ title: string; body: string; category: string; files: File[] }>({ title: "", body: "", category: "general", files: [] });
   const [savingCircular, setSavingCircular] = useState(false);
-  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null; priority: number }[]>([]);
-  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null });
+  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; mobile_image_url: string | null; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null; priority: number; image_aspect: number | null; focal_y: number | null }[]>([]);
+  type AdImageDims = { width: number; height: number; aspect: number } | null;
+  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null, mobileFile: null as File | null, focalY: 50, imageDims: null as AdImageDims, mobileDims: null as AdImageDims });
   const [savingAd, setSavingAd] = useState(false);
+
   const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
   const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false, aliases: "" };
   const [catForm, setCatForm] = useState<typeof emptyCatForm>(emptyCatForm);
