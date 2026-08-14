@@ -552,17 +552,34 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         />
 
         {/* Toolbar pinned above the keyboard */}
-        <div className="flex items-center gap-0.5 border-t border-border/60 bg-background px-2 py-2 pb-safe">
-          <ActionPill icon={ImageIcon} label="Photo" onClick={() => imageInputRef.current?.click()} disabled={mode !== "general"} />
-          <ActionPill icon={Video} label="Video" onClick={() => videoInputRef.current?.click()} disabled={mode !== "general"} />
-          <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
-          <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
-          <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
-          <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
-          <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
-          <span className="ml-auto pr-2 text-xs tabular-nums text-muted-foreground">
-            {content.length > 0 ? content.length : ""}
-          </span>
+        <div className="shrink-0 border-t border-border/60 bg-background pb-safe">
+          <div className="flex items-center gap-1 overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <ActionPill icon={ImageIcon} label="Photo" onClick={() => imageInputRef.current?.click()} disabled={mode !== "general"} />
+            <ActionPill icon={Video} label="Video" onClick={() => videoInputRef.current?.click()} disabled={mode !== "general"} />
+            <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
+            <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
+            <span className="mx-1 h-5 w-px shrink-0 bg-border" aria-hidden />
+            <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
+            <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
+            <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
+            <span className="ml-auto flex shrink-0 items-center gap-2 pl-2 pr-1">
+              {content.length > 0 && (
+                <span
+                  className="relative h-5 w-5 rounded-full"
+                  style={{ background: `conic-gradient(hsl(var(--primary)) ${ringPct * 360}deg, hsl(var(--muted)) 0deg)` }}
+                  aria-hidden
+                >
+                  <span className="absolute inset-[3px] rounded-full bg-background" />
+                </span>
+              )}
+              {content.length > CHAR_LIMIT - 200 && (
+                <span className={cn("text-xs tabular-nums", content.length > CHAR_LIMIT ? "text-destructive" : "text-muted-foreground")}>
+                  {CHAR_LIMIT - content.length}
+                </span>
+              )}
+            </span>
+          </div>
+        </div>
         </div>
       </SheetContent>
     </Sheet>
