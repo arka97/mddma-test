@@ -24,8 +24,36 @@ import { Link, Navigate } from "react-router-dom";
 
 import { uploadFile, validateFile, UploadValidationError } from "@/lib/storage";
 import { tierLabel } from "@/lib/membership";
+import { cn } from "@/lib/utils";
+
+function AdPreview({ file, aspect, focalY, slotAspect }: { file: File; aspect: number | undefined; focalY: number; slotAspect: number }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(file);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+  if (!url) return <div className="aspect-[32/5] w-full rounded bg-muted" />;
+  const ratio = aspect ? aspect / slotAspect : 1;
+  const mode = ratio >= 0.85 && ratio <= 1.15 ? "cover" : "contain";
+  const position = `center ${Math.max(0, Math.min(100, focalY))}%`;
+  return (
+    <div className="relative mx-auto w-full max-w-[728px] overflow-hidden rounded border border-border bg-muted" style={{ aspectRatio: String(slotAspect) }}>
+      {mode === "contain" && (
+        <img src={url} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl" />
+      )}
+      <img
+        src={url}
+        alt="Ad preview"
+        className={cn("relative z-[1] h-full w-full", mode === "cover" ? "object-cover" : "object-contain")}
+        style={{ objectPosition: position }}
+      />
+    </div>
+  );
+}
 
 const AdminModeration = () => {
+
   const { hasRole, loading: authLoading, user } = useAuth();
   const { toast } = useToast();
   const [companies, setCompanies] = useState<{ id: string; name: string; slug: string; is_verified: boolean; is_hidden: boolean; city: string | null; logo_url: string | null; review_status?: string }[]>([]);
