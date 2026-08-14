@@ -10,7 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
-import { TopicChips } from "@/components/market/TopicChips";
+import { TopicChips, type FeedTopic } from "@/components/market/TopicChips";
+import { useFollowingSet } from "@/hooks/useFollow";
+import { listUserIdsForCompanies } from "@/repositories/companies";
+import { Link } from "react-router-dom";
 import { FeedTabs, type FeedTab } from "@/components/market/FeedTabs";
 import { ReelsView } from "@/components/reels/ReelsView";
 import { listReposts } from "@/repositories/postReposts";
@@ -41,7 +44,7 @@ type FeedAuthor = {
 const Home = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
-  const [topic, setTopic] = useState<TopicTag | "all">("all");
+  const [topic, setTopic] = useState<FeedTopic>("all");
   const [feedTab, setFeedTab] = useState<FeedTab>("feed");
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
@@ -53,6 +56,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
   const [events, setEvents] = useState<FeedEvent[]>([]);
+  const followingSet = useFollowingSet();
+  const [followedAuthorIds, setFollowedAuthorIds] = useState<Set<string>>(new Set());
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
@@ -71,7 +76,7 @@ const Home = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await listFeedPosts(topic === "all" ? undefined : topic);
+      const data = await listFeedPosts(topic === "all" || topic === "following" ? undefined : topic);
       setPosts(data);
       const ids = data.map((p) => p.id);
       const aIds = Array.from(new Set(data.filter((p) => !p.is_anonymous).map((p) => p.author_id)));
@@ -119,9 +124,25 @@ const Home = () => {
     listFeedEvents(6).then(setEvents).catch(() => setEvents([]));
   }, [canRead]);
 
-  const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
+  // Resolve the author user ids behind the businesses the viewer follows.
+  const followingIdsKey = Array.from(followingSet).sort().join(",");
+  useEffect(() => {
+    const ids = followingIdsKey ? followingIdsKey.split(",") : [];
+    if (!ids.length) { setFollowedAuthorIds(new Set()); return; }
+    let cancelled = false;
+    listUserIdsForCompanies(ids)
+      .then((s) => { if (!cancelled) setFollowedAuthorIds(s); })
+      .catch(() => { if (!cancelled) setFollowedAuthorIds(new Set()); });
+    return () => { cancelled = true; };
+  }, [followingIdsKey]);
+
+  const pinned = topic === "following"
+    ? []
+    : posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const restAll = posts.filter((p) => !pinned.includes(p));
-  const rest = restAll;
+  const rest = topic === "following"
+    ? restAll.filter((p) => !p.is_anonymous && followedAuthorIds.has(p.author_id))
+    : restAll;
 
   return (
     <Layout>
@@ -189,9 +210,24 @@ const Home = () => {
                   </div>
                 ))
               ) : rest.length === 0 ? (
-                <p className="py-16 text-center text-sm text-muted-foreground">
-                  No posts yet — be the first to share.
-                </p>
+                topic === "following" ? (
+                  <div className="px-6 py-16 text-center">
+                    <p className="text-sm font-semibold text-foreground">Your Following feed is empty</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Follow businesses to build your Following feed.
+                    </p>
+                    <Link
+                      to="/discover"
+                      className="mt-4 inline-flex h-9 items-center rounded-full bg-foreground px-5 text-sm font-semibold text-background"
+                    >
+                      Discover businesses
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="py-16 text-center text-sm text-muted-foreground">
+                    No posts yet — be the first to share.
+                  </p>
+                )
               ) : (
                 rest.map((p, idx) => {
                   const event = idx > 0 && idx % 4 === 0

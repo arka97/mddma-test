@@ -171,6 +171,28 @@ export async function listCompaniesByOwners(
   return map;
 }
 
+/**
+ * Author user ids connected to a set of companies (owners + team members).
+ * Used to build the "Following" feed.
+ */
+export async function listUserIdsForCompanies(companyIds: string[]): Promise<Set<string>> {
+  const ids = Array.from(new Set(companyIds.filter(Boolean)));
+  const out = new Set<string>();
+  if (!ids.length) return out;
+
+  const [ownersRes, membersRes] = await Promise.all([
+    supabase.from("companies_public").select("owner_id").in("id", ids),
+    supabase.from("company_members").select("user_id").in("company_id", ids),
+  ]);
+  for (const row of (ownersRes.data ?? []) as Array<{ owner_id: string | null }>) {
+    if (row.owner_id) out.add(row.owner_id);
+  }
+  for (const row of (membersRes.data ?? []) as Array<{ user_id: string | null }>) {
+    if (row.user_id) out.add(row.user_id);
+  }
+  return out;
+}
+
 export async function getCompanyById(id: string) {
   const { data, error } = await supabase
     .from("companies_public")

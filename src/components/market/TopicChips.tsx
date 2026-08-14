@@ -1,8 +1,11 @@
 import { cn } from "@/lib/utils";
 import type { TopicTag } from "@/repositories/communityPosts";
 
-const CHIPS: { id: TopicTag | "all"; label: string }[] = [
-  { id: "all", label: "All" },
+export type FeedTopic = TopicTag | "all" | "following";
+
+const CHIPS: { id: FeedTopic; label: string }[] = [
+  { id: "all", label: "For You" },
+  { id: "following", label: "Following" },
   { id: "price_signals", label: "Price Signals" },
   { id: "market_alerts", label: "Market Alerts" },
   { id: "sourcing", label: "Sourcing" },
@@ -11,8 +14,8 @@ const CHIPS: { id: TopicTag | "all"; label: string }[] = [
 ];
 
 interface Props {
-  active: TopicTag | "all";
-  onChange: (t: TopicTag | "all") => void;
+  active: FeedTopic;
+  onChange: (t: FeedTopic) => void;
 }
 
 export function TopicChips({ active, onChange }: Props) {
