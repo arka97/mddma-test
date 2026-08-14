@@ -248,9 +248,13 @@ const Home = () => {
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
         <div
           ref={homeChromeRef}
+          style={{
+            gridTemplateRows: hideChrome ? "0fr" : "1fr",
+            opacity: hideChrome ? 0 : 1,
+            pointerEvents: hideChrome ? "none" : "auto",
+          }}
           className={cn(
-            "sticky top-12 z-30 grid overflow-hidden bg-background transition-[grid-template-rows,opacity] duration-200 ease-out lg:top-12 lg:grid-rows-[1fr] lg:opacity-100",
-            hideChrome ? "grid-rows-[0fr] opacity-0" : "grid-rows-[1fr] opacity-100",
+            "sticky top-12 z-30 grid overflow-hidden bg-background transition-[grid-template-rows,opacity] duration-200 ease-out lg:top-12",
           )}
         >
           <div className="min-h-0 overflow-hidden">
@@ -363,11 +367,13 @@ const Home = () => {
           <Button
             onClick={() => (canEngage ? setComposeOpen(true) : navigate("/login"))}
             aria-label="Compose post"
+            style={{
+              bottom: hideChrome
+                ? "calc(env(safe-area-inset-bottom) + 12px)"
+                : "calc(env(safe-area-inset-bottom) + 66px)",
+            }}
             className={cn(
               "fixed right-4 z-40 h-14 w-14 rounded-full p-0 shadow-lg transition-[bottom] duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
-              hideChrome
-                ? "bottom-[calc(env(safe-area-inset-bottom)+12px)]"
-                : "bottom-[calc(env(safe-area-inset-bottom)+66px)]",
             )}
           >
             <Feather className="h-6 w-6 lg:mr-2 lg:h-5 lg:w-5" />
