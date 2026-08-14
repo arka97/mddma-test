@@ -60,6 +60,8 @@ const Home = () => {
   const [events, setEvents] = useState<FeedEvent[]>([]);
   const followingSet = useFollowingSet();
   const [followedAuthorIds, setFollowedAuthorIds] = useState<Set<string>>(new Set());
+  const { data: circulars } = useCirculars();
+
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
@@ -203,11 +205,8 @@ const Home = () => {
           <ReelsView />
         ) : (
         <>
-        <div className="px-4 pt-3">
-          <CircularsSection />
-        </div>
-
         {!canRead && !isGuest && (
+
           <div className="m-4 rounded-2xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
             Free trial expired. Upgrade to access the market feed.
           </div>
@@ -236,7 +235,7 @@ const Home = () => {
                     <Skeleton className="h-28 rounded-2xl" />
                   </div>
                 ))
-              ) : rest.length === 0 ? (
+              ) : items.length === 0 ? (
                 topic === "following" ? (
                   <div className="px-6 py-16 text-center">
                     <p className="text-sm font-semibold text-foreground">Your Following feed is empty</p>
@@ -250,13 +249,21 @@ const Home = () => {
                       Discover businesses
                     </Link>
                   </div>
+                ) : topic === "bulletin" ? (
+                  <p className="py-16 text-center text-sm text-muted-foreground">
+                    No bulletins published yet.
+                  </p>
                 ) : (
                   <p className="py-16 text-center text-sm text-muted-foreground">
                     No posts yet — be the first to share.
                   </p>
                 )
               ) : (
-                rest.map((p, idx) => {
+                items.map((item, idx) => {
+                  if (item.kind === "bulletin") {
+                    return <BulletinCard key={`bulletin-${item.circular.id}`} circular={item.circular} />;
+                  }
+                  const p = item.post;
                   const event = idx > 0 && idx % 4 === 0
                     ? events[Math.floor(idx / 4) - 1]
                     : null;
@@ -279,6 +286,7 @@ const Home = () => {
                   );
                 })
               )}
+
             </div>
           </>
         )}
@@ -305,8 +313,6 @@ const Home = () => {
       </div>
       </FeedShell>
 
-      {isGuest && <GuestTeaser />}
-      {!isGuest && !canRead && <PaywallOverlay />}
     </Layout>
   );
 };
