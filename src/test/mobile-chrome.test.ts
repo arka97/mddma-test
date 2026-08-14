@@ -65,7 +65,9 @@ describe("scroll chrome regression: Feed / Reels / Following", () => {
     expect(HOME).toContain("--home-chrome-transform");
     expect(HOME).toContain("sticky top-12");
     // ad and chips live inside the same measured element
-    const stack = HOME.slice(HOME.indexOf("homeChromeRef"), HOME.indexOf("homeChromeRef") + 1200);
+    const start = HOME.lastIndexOf("ref={homeChromeRef}");
+    const stack = HOME.slice(start, start + 1200);
+
     expect(stack).toContain("AdSlot");
     expect(stack).toContain("TopicChips");
   });
