@@ -25,11 +25,11 @@ function extFromMime(mime: string): string {
   } as Record<string, string>)[mime] ?? "bin";
 }
 
-export async function uploadPostImage(userId: string, file: File): Promise<UploadedMedia> {
+export async function uploadPostImage(_userId: string, file: File): Promise<UploadedMedia> {
   if (!IMAGE_MIME.includes(file.type)) throw new Error("Unsupported image type");
   if (file.size > MAX_IMAGE_MB * 1024 * 1024) throw new Error(`Image > ${MAX_IMAGE_MB} MB`);
   const ext = file.name.split(".").pop() || extFromMime(file.type);
-  const path = `posts/${userId}/${crypto.randomUUID()}.${ext}`;
+  const path = `posts/${crypto.randomUUID()}/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
     contentType: file.type,
     upsert: false,
@@ -38,10 +38,10 @@ export async function uploadPostImage(userId: string, file: File): Promise<Uploa
   return { path, name: file.name, size: file.size, mime: file.type };
 }
 
-export async function uploadPostFile(userId: string, file: File): Promise<UploadedMedia> {
+export async function uploadPostFile(_userId: string, file: File): Promise<UploadedMedia> {
   if (file.type !== "application/pdf") throw new Error("Only PDF files are supported");
   if (file.size > MAX_FILE_MB * 1024 * 1024) throw new Error(`File > ${MAX_FILE_MB} MB`);
-  const path = `posts/${userId}/files/${crypto.randomUUID()}.pdf`;
+  const path = `posts/${crypto.randomUUID()}/files/${crypto.randomUUID()}.pdf`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
     contentType: "application/pdf",
     upsert: false,
@@ -68,11 +68,11 @@ export function formatBytes(b: number): string {
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export async function uploadPostVideo(userId: string, file: File): Promise<UploadedMedia> {
+export async function uploadPostVideo(_userId: string, file: File): Promise<UploadedMedia> {
   if (!VIDEO_MIME.includes(file.type)) throw new Error("Unsupported video type (use MP4, MOV or WebM)");
   if (file.size > MAX_VIDEO_MB * 1024 * 1024) throw new Error(`Video > ${MAX_VIDEO_MB} MB`);
   const ext = file.name.split(".").pop() || "mp4";
-  const path = `posts/${userId}/videos/${crypto.randomUUID()}.${ext}`;
+  const path = `posts/${crypto.randomUUID()}/videos/${crypto.randomUUID()}.${ext}`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
     contentType: file.type,
     upsert: false,
