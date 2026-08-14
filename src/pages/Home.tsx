@@ -24,6 +24,8 @@ import { BulletinCard } from "@/components/market/BulletinCard";
 import { useCirculars } from "@/hooks/queries/useContent";
 import type { CircularRow } from "@/repositories/circulars";
 import { AdSlot } from "@/components/home/today/AdSlot";
+import { cn } from "@/lib/utils";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 
 import { listFeedPosts, type CommunityPostRow, type TopicTag } from "@/repositories/communityPosts";
 import { listLikes } from "@/repositories/postLikes";
@@ -221,9 +223,13 @@ const Home = () => {
           <AdSlot placement="homepage-banner" />
         </div>
 
-        {/* Chips stick under the app header (48px tall) with an opaque bg so
-            nothing shows through while the ad scrolls beneath. */}
-        <div className="sticky top-12 z-20 bg-background">
+        {/* Chips stick under the app header and slide away with it on scroll-down. */}
+        <div
+          className={cn(
+            "sticky top-12 z-20 bg-background transition-transform duration-200 ease-out will-change-transform",
+            hideChrome ? "-translate-y-[200%] lg:translate-y-0" : "translate-y-0",
+          )}
+        >
           <div className="border-b border-border px-2 py-2">
             <TopicChips active={topic} onChange={setTopic} />
           </div>
@@ -327,14 +333,16 @@ const Home = () => {
 
         {canEngage && (
           <>
-            {/* Mobile composing happens from the bottom bar's centre button. */}
             <Button
               onClick={() => setComposeOpen(true)}
               aria-label="Compose post"
-              className="fixed bottom-6 right-6 z-30 hidden h-12 rounded-full px-6 shadow-lg lg:inline-flex"
+              className={cn(
+                "fixed bottom-[86px] right-4 z-30 h-14 w-14 rounded-full p-0 shadow-lg transition-all duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
+                hideChrome && "translate-y-24 opacity-0 lg:translate-y-0 lg:opacity-100",
+              )}
             >
-              <Feather className="mr-2 h-5 w-5" />
-              Post
+              <Feather className="h-6 w-6 lg:mr-2 lg:h-5 lg:w-5" />
+              <span className="hidden lg:inline">Post</span>
             </Button>
             <ComposeSheet
               open={composeOpen}
