@@ -1,15 +1,42 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { listAdsByPlacement, type AdRow } from "@/repositories/advertisements";
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Props {
   placement: string;
 }
 
+const MOBILE_SLOT_ASPECT = 32 / 5;      // 6.4
+const DESKTOP_SLOT_ASPECT = 728 / 90;   // ~8.09
+const FIT_TOLERANCE = 0.15;
+
+function fitMode(
+  imageAspect: number | null | undefined,
+  slotAspect: number,
+  tolerance = FIT_TOLERANCE,
+): "cover" | "contain" {
+  if (!imageAspect || imageAspect <= 0) return "cover";
+  const ratio = imageAspect / slotAspect;
+  return ratio >= 1 - tolerance && ratio <= 1 + tolerance ? "cover" : "contain";
+}
+
+function objectPosition(focalY: number | null | undefined): string {
+  const y = focalY == null ? 50 : Math.max(0, Math.min(100, focalY));
+  return `center ${y}%`;
+}
+
 function AdCard({ ad }: { ad: AdRow }) {
+  const isMobile = useIsMobile();
+  const slotAspect = isMobile ? MOBILE_SLOT_ASPECT : DESKTOP_SLOT_ASPECT;
+  const imageUrl = isMobile && ad.mobile_image_url ? ad.mobile_image_url : ad.image_url;
+  const aspect = isMobile && ad.mobile_image_url ? undefined : ad.image_aspect;
+  const mode = fitMode(aspect, slotAspect);
+  const position = objectPosition(ad.focal_y);
+
   return (
     <a
       href={ad.link_url ?? "#"}
@@ -20,9 +47,27 @@ function AdCard({ ad }: { ad: AdRow }) {
       <span className="absolute right-1.5 top-1.5 z-10 rounded-sm bg-background/80 px-1 py-px text-[8px] font-semibold uppercase tracking-wider text-muted-foreground leading-none">
         Ad
       </span>
-      {ad.image_url && (
-        <div className="aspect-[32/5] w-full overflow-hidden bg-muted md:aspect-[728/90]">
-          <img src={ad.image_url} alt={ad.title} className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]" loading="lazy" />
+      {imageUrl && (
+        <div className="relative aspect-[32/5] w-full overflow-hidden bg-muted md:aspect-[728/90]">
+          {/* Blurred backdrop for letterboxed creatives so the slot never looks empty */}
+          {mode === "contain" && (
+            <img
+              src={imageUrl}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl"
+            />
+          )}
+          <img
+            src={imageUrl}
+            alt={ad.title}
+            className={cn(
+              "relative z-[1] h-full w-full transition-transform group-hover:scale-[1.02]",
+              mode === "cover" ? "object-cover" : "object-contain",
+            )}
+            style={{ objectPosition: position }}
+            loading="lazy"
+          />
         </div>
       )}
     </a>

@@ -24,8 +24,36 @@ import { Link, Navigate } from "react-router-dom";
 
 import { uploadFile, validateFile, UploadValidationError } from "@/lib/storage";
 import { tierLabel } from "@/lib/membership";
+import { cn } from "@/lib/utils";
+
+function AdPreview({ file, aspect, focalY, slotAspect }: { file: File; aspect: number | undefined; focalY: number; slotAspect: number }) {
+  const [url, setUrl] = useState<string | null>(null);
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(file);
+    setUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+  if (!url) return <div className="aspect-[32/5] w-full rounded bg-muted" />;
+  const ratio = aspect ? aspect / slotAspect : 1;
+  const mode = ratio >= 0.85 && ratio <= 1.15 ? "cover" : "contain";
+  const position = `center ${Math.max(0, Math.min(100, focalY))}%`;
+  return (
+    <div className="relative mx-auto w-full max-w-[728px] overflow-hidden rounded border border-border bg-muted" style={{ aspectRatio: String(slotAspect) }}>
+      {mode === "contain" && (
+        <img src={url} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover opacity-60 blur-xl" />
+      )}
+      <img
+        src={url}
+        alt="Ad preview"
+        className={cn("relative z-[1] h-full w-full", mode === "cover" ? "object-cover" : "object-contain")}
+        style={{ objectPosition: position }}
+      />
+    </div>
+  );
+}
 
 const AdminModeration = () => {
+
   const { hasRole, loading: authLoading, user } = useAuth();
   const { toast } = useToast();
   const [companies, setCompanies] = useState<{ id: string; name: string; slug: string; is_verified: boolean; is_hidden: boolean; city: string | null; logo_url: string | null; review_status?: string }[]>([]);
@@ -35,9 +63,11 @@ const AdminModeration = () => {
   const [circulars, setCirculars] = useState<{ id: string; title: string; body: string; is_published: boolean; created_at: string; attachments: CircularAttachment[] }[]>([]);
   const [circularForm, setCircularForm] = useState<{ title: string; body: string; category: string; files: File[] }>({ title: "", body: "", category: "general", files: [] });
   const [savingCircular, setSavingCircular] = useState(false);
-  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null; priority: number }[]>([]);
-  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null });
+  const [ads, setAds] = useState<{ id: string; title: string; image_url: string; mobile_image_url: string | null; link_url: string | null; placement: string; is_active: boolean; start_date: string; end_date: string | null; priority: number; image_aspect: number | null; focal_y: number | null }[]>([]);
+  type AdImageDims = { width: number; height: number; aspect: number } | null;
+  const [adForm, setAdForm] = useState({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null, mobileFile: null as File | null, focalY: 50, imageDims: null as AdImageDims, mobileDims: null as AdImageDims });
   const [savingAd, setSavingAd] = useState(false);
+
   const [categories, setCategories] = useState<ProductCategoryRow[]>([]);
   const emptyCatForm = { id: "", name: "", slug: "", description: "", image_url: "", sort_order: 0, is_active: true, is_featured: false, aliases: "" };
   const [catForm, setCatForm] = useState<typeof emptyCatForm>(emptyCatForm);
@@ -55,7 +85,7 @@ const AdminModeration = () => {
       supabase.from("profiles").select("id,full_name,avatar_url"),
       supabase.from("user_roles").select("user_id,role"),
       supabase.from("circulars").select("id,title,body,is_published,created_at,attachments").order("created_at", { ascending: false }),
-      supabase.from("advertisements").select("id,title,image_url,link_url,placement,is_active,start_date,end_date,priority").order("priority", { ascending: false }).order("created_at", { ascending: false }),
+      supabase.from("advertisements").select("id,title,image_url,mobile_image_url,link_url,placement,is_active,start_date,end_date,priority,image_aspect,focal_y").order("priority", { ascending: false }).order("created_at", { ascending: false }),
       listCategories().catch(() => [] as ProductCategoryRow[]),
     ]);
     setCompanies((c ?? []) as typeof companies);
@@ -168,26 +198,51 @@ const AdminModeration = () => {
   };
 
   // Ads
+  const measureImage = (file: File): Promise<{ width: number; height: number; aspect: number }> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve({ width: img.naturalWidth, height: img.naturalHeight, aspect: img.naturalWidth / img.naturalHeight });
+      };
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("Could not read image")); };
+      img.src = objectUrl;
+    });
+
+  const emptyAdForm = { title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null, mobileFile: null as File | null, focalY: 50, imageDims: null as AdImageDims, mobileDims: null as AdImageDims };
+
   const saveAd = async () => {
     if (!user || !adForm.title.trim() || !adForm.file) {
       toast({ title: "Title and image required", variant: "destructive" });
       return;
     }
     setSavingAd(true);
-    const url = await uploadFile("ad-assets", user.id, adForm.file);
-    if (!url) { setSavingAd(false); toast({ title: "Image upload failed", variant: "destructive" }); return; }
-    const { error } = await supabase.from("advertisements").insert({
-      title: adForm.title,
-      image_url: url,
-      link_url: adForm.link_url || null,
-      placement: adForm.placement,
-      priority: adForm.priority,
-      is_active: true,
-    });
-    setSavingAd(false);
-    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null }); load(); }
+    try {
+      const url = await uploadFile("ad-assets", user.id, adForm.file);
+      if (!url) { toast({ title: "Image upload failed", variant: "destructive" }); return; }
+      let mobileUrl: string | null = null;
+      if (adForm.mobileFile) {
+        mobileUrl = await uploadFile("ad-assets", user.id, adForm.mobileFile);
+      }
+      const { error } = await supabase.from("advertisements").insert({
+        title: adForm.title,
+        image_url: url,
+        mobile_image_url: mobileUrl,
+        link_url: adForm.link_url || null,
+        placement: adForm.placement,
+        priority: adForm.priority,
+        is_active: true,
+        image_aspect: adForm.imageDims?.aspect ?? null,
+        focal_y: adForm.focalY,
+      });
+      if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+      else { toast({ title: "Ad published" }); setAdForm(emptyAdForm); load(); }
+    } finally {
+      setSavingAd(false);
+    }
   };
+
   const toggleAdActive = async (id: string, val: boolean) => {
     const { error } = await supabase.from("advertisements").update({ is_active: val }).eq("id", id);
     if (error) toast({ title: "Failed", variant: "destructive" }); else load();
@@ -454,6 +509,11 @@ const AdminModeration = () => {
                 <Card>
                   <CardHeader><CardTitle className="text-base">Upload New Ad</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
+                    <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground space-y-1">
+                      <p className="font-medium text-foreground">Recommended creative size</p>
+                      <p>Desktop: 1456 × 180 px (728×90 @2x) · Mobile: 720 × 200 px. JPG/PNG/WebP under 300 KB.</p>
+                      <p>Logos and text should sit in the centre band. Off-ratio images will be letterboxed instead of cropped.</p>
+                    </div>
                     <div className="space-y-1.5"><Label>Title</Label><Input maxLength={120} value={adForm.title} onChange={(e) => setAdForm({ ...adForm, title: e.target.value })} /></div>
                     <div className="space-y-1.5"><Label>Click-through URL</Label><Input maxLength={500} placeholder="https://..." value={adForm.link_url} onChange={(e) => setAdForm({ ...adForm, link_url: e.target.value })} /></div>
                     <div className="space-y-1.5">
@@ -471,12 +531,82 @@ const AdminModeration = () => {
                       <Label>Priority (higher shows first)</Label>
                       <Input type="number" value={adForm.priority} onChange={(e) => setAdForm({ ...adForm, priority: Number(e.target.value) || 0 })} />
                     </div>
-                    <div className="space-y-1.5"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setAdForm({ ...adForm, file: e.target.files?.[0] ?? null })} /></div>
+                    <div className="space-y-1.5">
+                      <Label>Desktop / primary image</Label>
+                      <Input type="file" accept="image/*" onChange={async (e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        let dims: AdImageDims = null;
+                        if (file) {
+                          try { dims = await measureImage(file); } catch { /* ignore */ }
+                        }
+                        setAdForm((f) => ({ ...f, file, imageDims: dims }));
+                      }} />
+                      {adForm.imageDims && (
+                        <p className="text-xs text-muted-foreground">{adForm.imageDims.width} × {adForm.imageDims.height} px · aspect {adForm.imageDims.aspect.toFixed(2)}</p>
+                      )}
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Mobile image <span className="text-muted-foreground font-normal">(optional)</span></Label>
+                      <Input type="file" accept="image/*" onChange={async (e) => {
+                        const file = e.target.files?.[0] ?? null;
+                        let dims: AdImageDims = null;
+                        if (file) {
+                          try { dims = await measureImage(file); } catch { /* ignore */ }
+                        }
+                        setAdForm((f) => ({ ...f, mobileFile: file, mobileDims: dims }));
+                      }} />
+                      {adForm.mobileDims && (
+                        <p className="text-xs text-muted-foreground">{adForm.mobileDims.width} × {adForm.mobileDims.height} px · aspect {adForm.mobileDims.aspect.toFixed(2)}</p>
+                      )}
+                    </div>
+                    {adForm.file && (
+                      <>
+                        <div className="space-y-1.5">
+                          <Label>Crop focal point (top ↔ bottom)</Label>
+                          <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            value={adForm.focalY}
+                            onChange={(e) => setAdForm({ ...adForm, focalY: Number(e.target.value) })}
+                            className="w-full accent-primary"
+                          />
+                          <p className="text-xs text-muted-foreground">Used when cropping is unavoidable; ignored for letterboxed images.</p>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label>Preview</Label>
+                          <div className="space-y-2 rounded-md border bg-muted/30 p-2">
+                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Mobile slot</div>
+                            <AdPreview file={adForm.mobileFile ?? adForm.file} aspect={adForm.mobileFile ? adForm.mobileDims?.aspect : adForm.imageDims?.aspect} focalY={adForm.focalY} slotAspect={32 / 5} />
+                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground mt-2">Desktop slot</div>
+                            <AdPreview file={adForm.file} aspect={adForm.imageDims?.aspect} focalY={adForm.focalY} slotAspect={728 / 90} />
+                          </div>
+                        </div>
+                        {(() => {
+                          const warnings: string[] = [];
+                          const mobileAspect = adForm.mobileFile ? adForm.mobileDims?.aspect : adForm.imageDims?.aspect;
+                          if (mobileAspect) {
+                            const mobileSlot = 32 / 5;
+                            const r = mobileAspect / mobileSlot;
+                            if (r < 0.85 || r > 1.15) warnings.push(`Mobile slot ratio is ${mobileSlot.toFixed(2)}; this image will be letterboxed.`);
+                          }
+                          if (adForm.imageDims?.aspect) {
+                            const desktopSlot = 728 / 90;
+                            const r = adForm.imageDims.aspect / desktopSlot;
+                            if (r < 0.85 || r > 1.15) warnings.push(`Desktop slot ratio is ${desktopSlot.toFixed(2)}; this image will be letterboxed.`);
+                          }
+                          if (warnings.length === 0) return null;
+                          return <div className="text-xs text-amber-600 space-y-0.5">{warnings.map((w, i) => <p key={i}>{w}</p>)}</div>;
+                        })()}
+
+                      </>
+                    )}
                     <Button onClick={saveAd} disabled={savingAd} variant="accent">
                       {savingAd ? <Loader2 className="h-3 w-3 animate-spin" /> : "Publish Ad"}
                     </Button>
                   </CardContent>
                 </Card>
+
                 {ads.map((a) => (
                   <Card key={a.id}>
                     <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
