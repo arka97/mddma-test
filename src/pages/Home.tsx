@@ -14,7 +14,7 @@ import { TopicChips, type FeedTopic } from "@/components/market/TopicChips";
 import { useFollowingSet } from "@/hooks/useFollow";
 import { listUserIdsForCompanies } from "@/repositories/companies";
 import { Link } from "react-router-dom";
-import { FeedTabs, type FeedTab } from "@/components/market/FeedTabs";
+import { FEED_TOPIC_ORDER } from "@/components/market/TopicChips";
 import { ReelsView } from "@/components/reels/ReelsView";
 import { listReposts } from "@/repositories/postReposts";
 import { PostCard } from "@/components/market/PostCard";
