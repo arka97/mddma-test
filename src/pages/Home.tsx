@@ -210,9 +210,24 @@ const Home = () => {
                   </div>
                 ))
               ) : rest.length === 0 ? (
-                <p className="py-16 text-center text-sm text-muted-foreground">
-                  No posts yet — be the first to share.
-                </p>
+                topic === "following" ? (
+                  <div className="px-6 py-16 text-center">
+                    <p className="text-sm font-semibold text-foreground">Your Following feed is empty</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Follow businesses to build your Following feed.
+                    </p>
+                    <Link
+                      to="/discover"
+                      className="mt-4 inline-flex h-9 items-center rounded-full bg-foreground px-5 text-sm font-semibold text-background"
+                    >
+                      Discover businesses
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="py-16 text-center text-sm text-muted-foreground">
+                    No posts yet — be the first to share.
+                  </p>
+                )
               ) : (
                 rest.map((p, idx) => {
                   const event = idx > 0 && idx % 4 === 0
