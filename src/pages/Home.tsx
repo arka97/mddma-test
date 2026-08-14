@@ -138,13 +138,36 @@ const Home = () => {
     return () => { cancelled = true; };
   }, [followingIdsKey]);
 
-  const pinned = topic === "following"
+  const pinned = topic === "following" || topic === "bulletin"
     ? []
     : posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const restAll = posts.filter((p) => !pinned.includes(p));
   const rest = topic === "following"
     ? restAll.filter((p) => !p.is_anonymous && followedAuthorIds.has(p.author_id))
     : restAll;
+
+  // Bulletins (circulars) flow inline with posts instead of a fixed card.
+  const bulletins = circulars ?? [];
+  const bulletinDate = (c: CircularRow) => new Date(c.published_at ?? c.created_at).getTime();
+
+  type FeedItem =
+    | { kind: "post"; post: CommunityPostRow }
+    | { kind: "bulletin"; circular: CircularRow };
+
+  const items: FeedItem[] =
+    topic === "bulletin"
+      ? bulletins.map((c) => ({ kind: "bulletin" as const, circular: c }))
+      : topic === "all"
+        ? [
+            ...rest.map((p) => ({ kind: "post" as const, post: p })),
+            ...bulletins.map((c) => ({ kind: "bulletin" as const, circular: c })),
+          ].sort((a, b) => {
+            const at = a.kind === "post" ? new Date(a.post.created_at).getTime() : bulletinDate(a.circular);
+            const bt = b.kind === "post" ? new Date(b.post.created_at).getTime() : bulletinDate(b.circular);
+            return bt - at;
+          })
+        : rest.map((p) => ({ kind: "post" as const, post: p }));
+
 
   return (
     <Layout>
