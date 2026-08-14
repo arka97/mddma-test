@@ -50,11 +50,11 @@ const Home = () => {
   const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   /** Horizontal swipe moves to the previous/next chip in order. */
-  const onTouchStart = (e: React.TouchEvent) => {
+  const onTouchStart = (e: ReactTouchEvent) => {
     const t = e.touches[0];
     touchStart.current = { x: t.clientX, y: t.clientY };
   };
-  const onTouchEnd = (e: React.TouchEvent) => {
+  const onTouchEnd = (e: ReactTouchEvent) => {
     const s = touchStart.current;
     touchStart.current = null;
     if (!s) return;
