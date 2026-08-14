@@ -19,11 +19,14 @@ export type Database = {
           clicks: number
           created_at: string
           end_date: string | null
+          focal_y: number | null
           id: string
+          image_aspect: number | null
           image_url: string
           impressions: number
           is_active: boolean
           link_url: string | null
+          mobile_image_url: string | null
           placement: string
           priority: number
           start_date: string
@@ -34,11 +37,14 @@ export type Database = {
           clicks?: number
           created_at?: string
           end_date?: string | null
+          focal_y?: number | null
           id?: string
+          image_aspect?: number | null
           image_url: string
           impressions?: number
           is_active?: boolean
           link_url?: string | null
+          mobile_image_url?: string | null
           placement?: string
           priority?: number
           start_date?: string
@@ -49,11 +55,14 @@ export type Database = {
           clicks?: number
           created_at?: string
           end_date?: string | null
+          focal_y?: number | null
           id?: string
+          image_aspect?: number | null
           image_url?: string
           impressions?: number
           is_active?: boolean
           link_url?: string | null
+          mobile_image_url?: string | null
           placement?: string
           priority?: number
           start_date?: string
