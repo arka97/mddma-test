@@ -11,6 +11,7 @@ import { listLikes, likePost, unlikePost } from "@/repositories/postLikes";
 import { listReposts, setRepost } from "@/repositories/postReposts";
 import { nativeShare, postUrl } from "@/lib/share";
 import { cn } from "@/lib/utils";
+import { useChromeVisibility } from "@/contexts/ChromeVisibilityContext";
 
 interface RailButtonProps {
   icon: typeof Heart;
@@ -76,6 +77,7 @@ function ReelMedia({ item, active, muted }: { item: ReelItem; active: boolean; m
 export function ReelsView() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { hidden: chromeHidden, reportScroll } = useChromeVisibility();
   const navigate = useNavigate();
   const [items, setItems] = useState<ReelItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -109,6 +111,8 @@ export function ReelsView() {
     const el = containerRef.current;
     if (!el) return;
     setActiveIdx(Math.round(el.scrollTop / el.clientHeight));
+    // Feed the shared chrome state so header/chips/bottom bar behave as in the feed.
+    reportScroll(el.scrollTop);
   };
 
   const requireAuth = () => {
@@ -178,7 +182,10 @@ export function ReelsView() {
       <div
         ref={containerRef}
         onScroll={onScroll}
-        className="h-[calc(100vh-10rem)] snap-y snap-mandatory overflow-y-auto overscroll-contain rounded-none bg-black lg:h-[calc(100vh-8rem)] lg:rounded-2xl"
+        className={cn(
+          "snap-y snap-mandatory overflow-y-auto overscroll-contain rounded-none bg-black transition-[height] duration-200 ease-out lg:h-[calc(100dvh-8rem)] lg:rounded-2xl",
+          chromeHidden ? "h-[100dvh]" : "h-[calc(100dvh-10rem)]",
+        )}
       >
         {items.map((item, idx) => (
           <section key={item.id} className="relative h-full w-full snap-start snap-always">
