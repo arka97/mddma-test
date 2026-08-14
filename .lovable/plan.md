@@ -1,39 +1,54 @@
-# Simplify navigation, X-style
+# X + Instagram style navigation
 
-Make the app feel like X: one account drawer holds everything, the header stays minimal, and the compose button no longer collides with the bottom bar.
+Rebuild the app shell so it behaves the way people already expect from X and Instagram: avatar drawer for everything personal, a slim header, a five-slot bottom bar with a centre create button, and no floating button fighting the tabs.
 
-## Header changes
+## Home header (mobile)
 
-- Remove the global search bar from the Home feed only (it stays on Discover, Directory, Products, RFQ).
-- Left slot: replace the "G-BAU-G" wordmark with the user's avatar (account button). Tapping it opens a left slide-out drawer. Signed-out users see a "Login" button in that slot instead.
-- Centre slot: keep the G-BAU-G logo mark (unchanged).
-- Right slot: replace the current avatar/user menu with a notifications bell (with unread dot). Keep the install button.
-- Deal rooms / chat icon moves out of the header.
+```text
+[ avatar ]        [ G-BAU-G logo ]        [ bell ]
+   For You  Reels  Following  Bulletin  Price Signals →
+```
 
-## Account drawer (X-style)
+- Search bar removed from Home (it stays on Discover, Directory, Products, RFQ, where searching is the point).
+- Left: user avatar. Tap opens the account drawer. Signed out: a person icon that opens the same drawer in its logged-out state.
+- Centre: G-BAU-G logo mark only.
+- Right: notifications bell with an unread dot.
+- Topic chips sit directly under the header and stay sticky while scrolling, exactly like X's feed tabs. The ad slot moves below the chips so the chips are the first thing under the header.
 
-Slide-out sheet from the left containing, in order:
+## Account drawer (X's left slide-out)
 
-- Profile header: avatar, name, email, company chip if present.
-- Primary: Dashboard, My profile, My business / Register business, My storefront, My products, My brands, Bookmarks, My quotations.
-- Navigation (everything the header dropdown and "More" menu used to hold): Home, Discover, Directory, Products, RFQ, Brands, Membership/Join, Knowledge, FAQ, About, Contact, Documents.
-- Admin section (admins only): Moderation.
-- Footer: company switcher, Install app, Sign out.
+Slides in from the left over a dimmed backdrop.
 
-Signed-out state shows the same navigation section plus Login / Join buttons instead of the profile block.
+- Top: large avatar, display name, email, and a Following / Followers count row.
+- Big-type primary list (X uses oversized rows, easy thumb targets): Profile, My business, My storefront, My products, My brands, Bookmarks, My quotations, Dashboard.
+- Divider, then Explore: Discover, Directory, Products, RFQ, Brands, Membership, Knowledge, FAQ, About, Contact, Documents.
+- Divider, then Admin (admins only): Moderation.
+- Bottom strip: company switcher, Install app, Settings/Sign out.
+- Signed out: the same Explore list with Login and Join buttons at top.
 
-## Bottom tab bar
+## Bottom bar (Instagram's five slots)
 
-Tabs become: Home · Discover · RFQ · Firms · Chat (deal rooms, with the activity dot). The Account tab is removed since account lives in the header drawer. Chat requires sign-in and redirects to login otherwise.
+```text
+  Home     Discover     ( + )      RFQ      Chat
+```
 
-## Compose button overlap
+- Home — the feed.
+- Discover — search/browse (magnifier icon, matching Instagram's search tab).
+- Centre Create button — filled burgundy circle that opens the compose sheet. This replaces the floating post button entirely, which is what fixes the overlap.
+- RFQ — the trade board.
+- Chat — deal rooms, with the activity dot. Requires sign-in.
+- Account leaves the bottom bar; it lives in the header avatar drawer.
 
-Raise the floating compose button so it clears the bottom bar (bottom offset above the tab bar height plus safe-area inset) and drop its z-index below the tab bar, so it never sits on top of the tabs.
+## Compose
+
+The floating action button is deleted. Compose opens from the centre tab on every page, so posting is always one thumb tap away and nothing ever covers the tab bar.
 
 ## Technical notes
 
-- New `src/components/layout/AccountDrawer.tsx` using the existing shadcn `Sheet`; `Header.tsx` owns its open state.
-- `Header.tsx`: accepts the feed context via `useLocation` to hide the search row on `/`; user dropdown replaced by drawer trigger; new `NotificationsButton` placeholder routing to `/messages` activity until a notifications feature exists (no backend change).
-- `MobileBottomTabBar.tsx`: swap the Account tab for Chat using `useDealRoomsActivity` for the dot.
-- `Home.tsx`: adjust FAB classes to `bottom-[calc(72px+env(safe-area-inset-bottom))] z-30`.
-- Frontend only; no database or business-logic changes.
+- New `src/components/layout/AccountDrawer.tsx` (shadcn `Sheet`, side left) holding the profile block, nav sections, and footer actions; opened from `Header.tsx` and reused on desktop from the avatar.
+- New `src/components/layout/NotificationsButton.tsx` — bell with dot; routes to a notifications view backed by existing deal-room/comment activity signals. No schema change.
+- `Header.tsx`: three-slot grid becomes avatar / logo / bell + install; the current dropdown user menu and its links move into the drawer; search row renders only when `location.pathname !== "/"`.
+- `MobileBottomTabBar.tsx`: five slots with a raised centre create button; centre button lifts `ComposeSheet` state into the tab bar (or `Layout`) so it works on all routes.
+- `Home.tsx`: remove the fixed FAB; keep the chip swipe behaviour; move the ad slot below the sticky chips.
+- Desktop keeps the horizontal nav links; drawer and bell also appear there.
+- Frontend and presentation only — no database or business-logic changes.
