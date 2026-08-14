@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
 import { Feather } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { FeedShell } from "@/components/layout/FeedShell";
