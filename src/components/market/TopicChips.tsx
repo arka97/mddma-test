@@ -16,7 +16,7 @@ export const FEED_TOPIC_ORDER: FeedTopic[] = [
 ];
 
 const CHIPS: { id: FeedTopic; label: string }[] = [
-  { id: "all", label: "For You" },
+  { id: "all", label: "Feed" },
   { id: "reels", label: "Reels" },
   { id: "following", label: "Following" },
   { id: "bulletin", label: "Bulletin" },
