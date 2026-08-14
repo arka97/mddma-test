@@ -1,6 +1,6 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { formatDistanceToNow } from "date-fns";
+import { shortTimeAgo } from "@/lib/time";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Shield, MoreHorizontal, EyeOff, Trash2, UserX, BadgeCheck } from "lucide-react";
@@ -243,7 +243,7 @@ export function PostCard({
   const verified = !anon && !!author?.is_verified;
   const followId = slug ?? author?.id ?? null;
   const isSelf = !!user?.id && !!author?.id && user.id === author.id;
-  const time = formatDistanceToNow(new Date(post.created_at), { addSuffix: false });
+  const time = shortTimeAgo(post.created_at);
   const tlabel = topicLabel(post.topic_tag);
   const detailHref = `/market/${post.id}`;
 
@@ -381,6 +381,7 @@ export function PostCard({
             likeCount={count}
             commentCount={replies}
             viewCount={viewCount}
+            showViews={isDetail}
             reposted={reposted}
             repostCount={repostCount}
             onRepost={onRepost}
