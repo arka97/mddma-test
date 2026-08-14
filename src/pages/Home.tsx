@@ -152,6 +152,14 @@ const Home = () => {
     listFeedEvents(6).then(setEvents).catch(() => setEvents([]));
   }, [canRead]);
 
+  // Composing from the bottom bar lives outside this page — refresh on its signal.
+  useEffect(() => {
+    const onRefresh = () => load();
+    window.addEventListener("gbaug:feed-refresh", onRefresh);
+    return () => window.removeEventListener("gbaug:feed-refresh", onRefresh);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topic]);
+
   // Resolve the author user ids behind the businesses the viewer follows.
   const followingIdsKey = Array.from(followingSet).sort().join(",");
   useEffect(() => {
@@ -209,16 +217,17 @@ const Home = () => {
         }
       >
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
-        <div className="px-4 pt-3">
-          <AdSlot placement="homepage-banner" />
-        </div>
-
-        {/* X-style feed header */}
-        <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
+        {/* X-style feed header — chips sit directly under the app header */}
+        <div className="sticky top-12 z-20 bg-background/85 backdrop-blur">
           <div className="border-b border-border px-2 py-2">
             <TopicChips active={topic} onChange={setTopic} />
           </div>
         </div>
+
+        <div className="px-4 pt-3">
+          <AdSlot placement="homepage-banner" />
+        </div>
+
 
         <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         {topic === "reels" ? (
@@ -316,13 +325,14 @@ const Home = () => {
 
         {canEngage && (
           <>
+            {/* Mobile composing happens from the bottom bar's centre button. */}
             <Button
               onClick={() => setComposeOpen(true)}
               aria-label="Compose post"
-              className="fixed bottom-20 right-4 z-50 h-14 w-14 rounded-full p-0 shadow-lg lg:bottom-6 lg:h-12 lg:w-auto lg:px-6"
+              className="fixed bottom-6 right-6 z-30 hidden h-12 rounded-full px-6 shadow-lg lg:inline-flex"
             >
-              <Feather className="h-6 w-6 lg:h-5 lg:w-5" />
-              <span className="hidden lg:inline">Post</span>
+              <Feather className="mr-2 h-5 w-5" />
+              Post
             </Button>
             <ComposeSheet
               open={composeOpen}
