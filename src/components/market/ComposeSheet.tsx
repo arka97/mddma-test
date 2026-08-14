@@ -580,7 +580,6 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
             </span>
           </div>
         </div>
-        </div>
       </SheetContent>
     </Sheet>
   );
