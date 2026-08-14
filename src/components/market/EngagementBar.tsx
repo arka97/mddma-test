@@ -90,6 +90,7 @@ export function EngagementBar({
   likeCount,
   commentCount,
   viewCount,
+  showViews = false,
   reposted = false,
   repostCount = 0,
   onRepost,
@@ -150,13 +151,15 @@ export function EngagementBar({
         fill
         size={size}
       />
-      <ActionButton
-        icon={BarChart3}
-        count={viewCount}
-        label="Views"
-        size={size}
-        disabled
-      />
+      {showViews && (
+        <ActionButton
+          icon={BarChart3}
+          count={viewCount}
+          label="Views"
+          size={size}
+          disabled
+        />
+      )}
       <div className="flex items-center">
         <ActionButton
           icon={Bookmark}
