@@ -369,7 +369,7 @@ export function PostCard({
 
           <StructuredBody post={post} />
           {Media}
-          {post.post_type === "poll" && <PollWidget postId={post.id} canVote={canEngage} />}
+          {post.post_type === "poll" && <PollWidget postId={post.id} canVote={!!user} />}
           {LinkPreviewBlock}
 
           {anon && (
@@ -379,7 +379,7 @@ export function PostCard({
           <EngagementBar
             liked={liked}
             likeCount={count}
-            commentCount={commentCount}
+            commentCount={replies}
             viewCount={viewCount}
             reposted={reposted}
             repostCount={repostCount}
@@ -394,7 +394,12 @@ export function PostCard({
         </div>
       </div>
 
-      <CommentsSheet open={open} onOpenChange={setOpen} postId={post.id} canComment={canEngage} />
+      <CommentsSheet
+        open={open}
+        onOpenChange={setOpen}
+        postId={post.id}
+        onCommentAdded={() => setReplies((n) => n + 1)}
+      />
     </article>
   );
 }
