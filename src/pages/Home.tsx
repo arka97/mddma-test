@@ -138,9 +138,6 @@ const Home = () => {
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
         {/* X-style feed header */}
         <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
-          <div className="px-4 pt-3">
-            <h1 className="text-lg font-extrabold tracking-tight text-foreground">Home</h1>
-          </div>
           <FeedTabs active={feedTab} onChange={setFeedTab} />
           {feedTab === "feed" && (
             <div className="border-b border-border px-2 pt-2">
