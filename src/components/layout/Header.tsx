@@ -168,27 +168,38 @@ export function Header() {
     </DropdownMenu>
   );
 
+  const isHome = location.pathname === "/";
+
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card pt-safe">
       <div className="container mx-auto px-5 sm:px-6 lg:px-8">
         <div
           className={cn(
             "grid grid-cols-[1fr_auto_1fr] items-center gap-2 overflow-hidden transition-all duration-200 ease-out",
-            scrolled
+            scrolled && !isHome
               ? "pointer-events-none h-0 opacity-0 lg:pointer-events-auto lg:h-12 lg:opacity-100"
               : "h-12 opacity-100",
           )}
-          aria-hidden={scrolled ? "true" : "false"}
         >
-          <Link to="/" className="flex min-w-0 items-center" aria-label="G-BAU-G">
-            <span className="text-base font-bold tracking-tight text-foreground lg:text-lg">G-BAU-G</span>
-          </Link>
+          <div className="flex min-w-0 items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              aria-label="Open account menu"
+              className="rounded-full p-0.5 transition-colors hover:bg-muted"
+            >
+              {user ? (
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={profile?.avatar_url ?? undefined} />
+                  <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+                </Avatar>
+              ) : (
+                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground">
+                  <Menu className="h-[18px] w-[18px]" />
+                </span>
+              )}
+            </button>
 
-          <Link to="/" className="flex justify-center" aria-label="G-BAU-G home">
-            <Logo variant="mark" className="h-10 w-10 shrink-0 lg:h-12 lg:w-12" />
-          </Link>
-
-          <div className="flex items-center justify-end gap-1.5">
             <div className="hidden lg:flex lg:items-center lg:gap-0.5">
               {desktopNav.map((item) => (
                 <Link
@@ -204,42 +215,27 @@ export function Header() {
                   {item.name}
                 </Link>
               ))}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="inline-flex items-center gap-0.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground">
-                    More <ChevronDown className="h-3.5 w-3.5" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {moreNav.map((item) => (
-                    <DropdownMenuItem key={item.name} asChild>
-                      <Link to={item.href}>{item.name}</Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
+          </div>
 
-            <InstallAppButton iconOnly size="sm" className="h-9 w-9 p-0" />
-            {user && (
-              <Link
-                to="/messages"
-                aria-label="Deal rooms"
-                className="relative inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          <Link to="/" className="flex justify-center" aria-label="G-BAU-G home">
+            <Logo variant="mark" className="h-10 w-10 shrink-0 lg:h-12 lg:w-12" />
+          </Link>
+
+          <div className="flex items-center justify-end gap-1.5">
+            {isHome && (
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                aria-label="Search"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
-                <MessageSquareText className="h-[18px] w-[18px]" />
-                {hasDealActivity && (
-                  <span
-                    aria-hidden
-                    className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary ring-2 ring-card"
-                  />
-                )}
-              </Link>
+                <Search className="h-[20px] w-[20px]" />
+              </button>
             )}
-            {user && <CompanySwitcher />}
-            {user ? (
-              <UserMenu />
-            ) : (
+            <InstallAppButton iconOnly size="sm" className="hidden h-9 w-9 p-0 sm:inline-flex" />
+            <NotificationsButton />
+            {!user && (
               <Button size="sm" variant="default" className="h-9" asChild>
                 <Link to="/login">
                   <LogIn className="h-4 w-4 sm:mr-1" />
@@ -250,26 +246,31 @@ export function Header() {
           </div>
         </div>
 
-        <div className="relative pb-2.5 pt-1">
-          <button
-            type="button"
-            onClick={() => setSearchOpen(true)}
-            className="group flex h-11 w-full items-center gap-2.5 rounded-full border border-transparent bg-muted px-4 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/70 focus-visible:border-primary focus-visible:bg-background focus-visible:outline-none"
-            aria-label="Open global search"
-          >
-            <Search className="h-[18px] w-[18px]" aria-hidden />
-            <span className="flex-1 truncate">Search businesses, products, RFQs…</span>
-            <kbd className="hidden shrink-0 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-muted-foreground sm:inline-block">
-              ⌘K
-            </kbd>
-          </button>
-        </div>
+        {!isHome && (
+          <div className="relative pb-2.5 pt-1">
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="group flex h-11 w-full items-center gap-2.5 rounded-full border border-transparent bg-muted px-4 text-left text-sm text-muted-foreground transition-colors hover:bg-muted/70 focus-visible:border-primary focus-visible:bg-background focus-visible:outline-none"
+              aria-label="Open global search"
+            >
+              <Search className="h-[18px] w-[18px]" aria-hidden />
+              <span className="flex-1 truncate">Search businesses, products, RFQs…</span>
+              <kbd className="hidden shrink-0 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-medium tracking-wide text-muted-foreground sm:inline-block">
+                ⌘K
+              </kbd>
+            </button>
+          </div>
+        )}
 
-        <div className="pb-2.5">
-          <AdSlot placement="search-below" />
-        </div>
+        {!isHome && (
+          <div className="pb-2.5">
+            <AdSlot placement="search-below" />
+          </div>
+        )}
       </div>
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+      <AccountDrawer open={drawerOpen} onOpenChange={setDrawerOpen} />
     </header>
   );
 }
