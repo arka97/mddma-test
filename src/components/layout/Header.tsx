@@ -107,16 +107,6 @@ export function Header() {
           </Link>
 
           <div className="flex items-center justify-end gap-1.5">
-            {isHome && (
-              <button
-                type="button"
-                onClick={() => setSearchOpen(true)}
-                aria-label="Search"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-              >
-                <Search className="h-[20px] w-[20px]" />
-              </button>
-            )}
             <InstallAppButton iconOnly size="sm" className="hidden h-9 w-9 p-0 sm:inline-flex" />
             <NotificationsButton />
             {!user && (

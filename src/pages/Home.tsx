@@ -217,16 +217,18 @@ const Home = () => {
         }
       >
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
-        {/* X-style feed header — chips sit directly under the app header */}
-        <div className="sticky top-12 z-20 bg-background/85 backdrop-blur">
+        <div className="px-4 pt-3 pb-3">
+          <AdSlot placement="homepage-banner" />
+        </div>
+
+        {/* Chips stick under the app header (48px tall) with an opaque bg so
+            nothing shows through while the ad scrolls beneath. */}
+        <div className="sticky top-12 z-20 bg-background">
           <div className="border-b border-border px-2 py-2">
             <TopicChips active={topic} onChange={setTopic} />
           </div>
         </div>
 
-        <div className="px-4 pt-3">
-          <AdSlot placement="homepage-banner" />
-        </div>
 
 
         <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>

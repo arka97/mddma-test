@@ -12,7 +12,8 @@ export function Layout({ children }: LayoutProps) {
     <div className="flex min-h-screen flex-col">
       <Header />
       {/* Bottom tab bar reserves ~64px on mobile so content isn't covered */}
-      <main className="w-full min-w-0 overflow-x-hidden flex-1 pb-[72px] lg:pb-0">{children}</main>
+      {/* overflow-x-clip (not hidden) so sticky children still stick to the viewport */}
+      <main className="w-full min-w-0 overflow-x-clip flex-1 pb-[72px] lg:pb-0">{children}</main>
       <div className="hidden lg:block">
         <Footer />
       </div>
