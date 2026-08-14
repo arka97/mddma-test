@@ -1,10 +1,23 @@
 import { cn } from "@/lib/utils";
 import type { TopicTag } from "@/repositories/communityPosts";
 
-export type FeedTopic = TopicTag | "all" | "following" | "bulletin";
+export type FeedTopic = TopicTag | "all" | "reels" | "following" | "bulletin";
+
+export const FEED_TOPIC_ORDER: FeedTopic[] = [
+  "all",
+  "reels",
+  "following",
+  "bulletin",
+  "price_signals",
+  "market_alerts",
+  "sourcing",
+  "member_news",
+  "polls",
+];
 
 const CHIPS: { id: FeedTopic; label: string }[] = [
   { id: "all", label: "For You" },
+  { id: "reels", label: "Reels" },
   { id: "following", label: "Following" },
   { id: "bulletin", label: "Bulletin" },
   { id: "price_signals", label: "Price Signals" },

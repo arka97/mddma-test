@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
 import { Feather } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { FeedShell } from "@/components/layout/FeedShell";
@@ -14,7 +14,7 @@ import { TopicChips, type FeedTopic } from "@/components/market/TopicChips";
 import { useFollowingSet } from "@/hooks/useFollow";
 import { listUserIdsForCompanies } from "@/repositories/companies";
 import { Link } from "react-router-dom";
-import { FeedTabs, type FeedTab } from "@/components/market/FeedTabs";
+import { FEED_TOPIC_ORDER } from "@/components/market/TopicChips";
 import { ReelsView } from "@/components/reels/ReelsView";
 import { listReposts } from "@/repositories/postReposts";
 import { PostCard } from "@/components/market/PostCard";
@@ -47,7 +47,26 @@ const Home = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<FeedTopic>("all");
-  const [feedTab, setFeedTab] = useState<FeedTab>("feed");
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  /** Horizontal swipe moves to the previous/next chip in order. */
+  const onTouchStart = (e: ReactTouchEvent) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const onTouchEnd = (e: ReactTouchEvent) => {
+    const s = touchStart.current;
+    touchStart.current = null;
+    if (!s) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - s.x;
+    const dy = t.clientY - s.y;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const i = FEED_TOPIC_ORDER.indexOf(topic);
+    if (i < 0) return;
+    const next = dx < 0 ? i + 1 : i - 1;
+    if (next >= 0 && next < FEED_TOPIC_ORDER.length) setTopic(FEED_TOPIC_ORDER[next]);
+  };
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
   const [authorCompanyIds, setAuthorCompanyIds] = useState<Record<string, string>>({});
@@ -80,8 +99,11 @@ const Home = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const topicArg = topic === "all" || topic === "following" || topic === "bulletin" ? undefined : topic;
-      const data = topic === "bulletin" ? [] : await listFeedPosts(topicArg);
+      const topicArg =
+        topic === "all" || topic === "following" || topic === "bulletin" || topic === "reels"
+          ? undefined
+          : (topic as TopicTag);
+      const data = topic === "bulletin" || topic === "reels" ? [] : await listFeedPosts(topicArg);
 
       setPosts(data);
       const ids = data.map((p) => p.id);
@@ -193,15 +215,13 @@ const Home = () => {
 
         {/* X-style feed header */}
         <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
-          <FeedTabs active={feedTab} onChange={setFeedTab} />
-          {feedTab === "feed" && (
-            <div className="border-b border-border px-2 pt-2">
-              <TopicChips active={topic} onChange={setTopic} />
-            </div>
-          )}
+          <div className="border-b border-border px-2 py-2">
+            <TopicChips active={topic} onChange={setTopic} />
+          </div>
         </div>
 
-        {feedTab === "reels" ? (
+        <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        {topic === "reels" ? (
           <ReelsView />
         ) : (
         <>
@@ -292,6 +312,7 @@ const Home = () => {
         )}
         </>
         )}
+        </div>
 
         {canEngage && (
           <>
