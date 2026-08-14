@@ -8,8 +8,9 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  X, Loader2, Image as ImageIcon, FileText, Link as LinkIcon, BarChart3, Zap, ChevronLeft, Tag, Plus, Trash2, Video,
+  X, Loader2, Image as ImageIcon, FileText, Link as LinkIcon, BarChart3, Zap, ChevronLeft, Tag, Plus, Trash2, Video, Globe, EyeOff,
 } from "lucide-react";
+import { useVisualViewportHeight } from "@/hooks/useVisualViewportHeight";
 import { cn } from "@/lib/utils";
 import { createPost, type PostType, type TopicTag } from "@/repositories/communityPosts";
 import { createPollForPost } from "@/repositories/postPolls";
@@ -50,6 +51,8 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const [isAnon, setIsAnon] = useState(false);
   const [sd, setSd] = useState<Record<string, string | number>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const vvHeight = useVisualViewportHeight();
 
   const [images, setImages] = useState<PendingImage[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
@@ -229,62 +232,104 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const openMode = (m: EditorMode) => { setMode(m); setSd({}); };
   const backToGeneral = () => { setMode("general"); setSd({}); };
 
+  const modeLabel = mode === "price" ? "Price" : mode === "poll" ? "Poll" : mode === "signal" ? (SIGNAL_OPTIONS.find((o) => o.value === signalType)?.label ?? "Signal") : null;
+  const CHAR_LIMIT = 2000;
+  const ringPct = Math.min(1, content.length / CHAR_LIMIT);
+
   return (
     <Sheet open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
       <SheetContent
         side="bottom"
-        className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 rounded-none bg-background p-0 pt-safe [&>button.absolute]:hidden sm:h-auto sm:max-h-[92vh] sm:rounded-t-2xl"
+        style={vvHeight ? { height: vvHeight, maxHeight: vvHeight } : undefined}
+        className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 overscroll-contain rounded-none bg-background p-0 pt-safe [&>button.absolute]:hidden sm:h-auto sm:max-h-[92vh] sm:rounded-t-2xl"
       >
         {/* X-style top bar: Cancel · title · Post */}
-        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5">
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5">
           <SheetClose asChild>
             <button type="button" className="text-[15px] font-medium text-foreground">Cancel</button>
           </SheetClose>
-          <h2 className="text-[15px] font-bold">New Post</h2>
-          <Button onClick={submit} disabled={!canSubmit} size="sm" className="h-8 rounded-full px-5 text-sm font-bold">
+          <h2 className="text-[15px] font-bold">{modeLabel ? `New ${modeLabel}` : "New Post"}</h2>
+          <Button
+            onClick={submit}
+            disabled={!canSubmit}
+            size="sm"
+            title={canSubmit ? "Post" : "Add text or media to post"}
+            className="h-8 rounded-full px-5 text-sm font-bold"
+          >
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Post"}
           </Button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          {mode === "general" && (
-            <div className="flex gap-3">
-              <Avatar className="h-10 w-10 shrink-0">
-                <AvatarImage src={profile?.avatar_url ?? undefined} />
-                <AvatarFallback className="bg-primary/20 text-sm font-semibold text-primary-foreground">{initials}</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-                  {!isAnon && company && (
-                    <span className="inline-flex items-center gap-1">
-                      Posting as <span className="font-medium text-foreground">{company.name}</span>
-                      {memberships.length > 1 && <span>· switch in header</span>}
-                    </span>
-                  )}
-                  {canPostAnonymous && (
-                    <span className="inline-flex items-center gap-1.5">
-                      <Label htmlFor="anon-toggle" className="text-[11px] font-medium">Anonymous</Label>
-                      <Switch id="anon-toggle" checked={isAnon} onCheckedChange={setIsAnon} className="scale-75" />
-                    </span>
-                  )}
-                </div>
-                {isAnon && (
-                  <p className="mb-2 rounded-md bg-muted/50 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                    Only MDDMA admins can trace anonymous posts — a log is kept for compliance and dispute resolution.
-                  </p>
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+          {/* Identity row — always visible, whatever the mode */}
+          <div className="mb-3 flex items-start gap-3">
+            <Avatar className="h-10 w-10 shrink-0">
+              <AvatarImage src={isAnon ? undefined : profile?.avatar_url ?? undefined} />
+              <AvatarFallback className="bg-primary/15 text-sm font-semibold text-primary">
+                {isAnon ? "?" : initials}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-sm font-semibold text-foreground">
+                {isAnon ? "Anonymous member" : company?.name ?? profile?.full_name ?? "You"}
+              </p>
+              <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                  <Globe className="h-3 w-3" /> Public · everyone on G-BAU-G
+                </span>
+                {canPostAnonymous && (
+                  <button
+                    type="button"
+                    onClick={() => setIsAnon((v) => !v)}
+                    aria-pressed={isAnon}
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors",
+                      isAnon ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    <EyeOff className="h-3 w-3" /> Anonymous
+                  </button>
                 )}
-                <Textarea
-                  ref={textareaRef}
-                  className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground/70 focus-visible:ring-0"
-                  placeholder="What's happening in the market?"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  onPaste={onPaste}
-                  autoFocus
-                />
+                {modeLabel && (
+                  <button
+                    type="button"
+                    onClick={backToGeneral}
+                    className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] font-semibold text-primary"
+                  >
+                    {modeLabel} <X className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+              {isAnon && (
+                <p className="mt-2 rounded-md bg-muted/60 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                  Only MDDMA admins can trace anonymous posts — a log is kept for compliance and dispute resolution.
+                </p>
+              )}
+            </div>
+          </div>
 
+          {/* Writing surface — visible field so the caret is never a mystery */}
+          <div
+            onClick={() => textareaRef.current?.focus()}
+            className={cn(
+              "rounded-2xl border bg-muted/30 px-3 py-2.5 transition-colors",
+              focused ? "border-primary ring-2 ring-primary/25" : "border-border",
+            )}
+          >
+            <Textarea
+              ref={textareaRef}
+              className="min-h-[150px] resize-none border-0 bg-transparent p-0 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
+              placeholder={mode === "general" ? "What's happening in the market?" : "Add a note (optional)"}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              onPaste={onPaste}
+              autoFocus
+            />
+          </div>
 
-
+          <div className="min-w-0">
                 {images.length > 0 && (
                   <div className={cn("mt-2 grid gap-1", images.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
                     {images.map((im, i) => (
@@ -335,18 +380,19 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                     <div className="mt-2 rounded-xl border border-border/60 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">Loading preview…</div>
                   )
                 )}
-              </div>
-            </div>
-          )}
+          </div>
+
 
           {mode === "price" && (
-            <div className="space-y-3">
-              <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-                <ChevronLeft className="h-3.5 w-3.5" /> Back to post
-              </button>
-              <div className="text-sm font-semibold">Share a price</div>
+            <div className="mt-3 space-y-3 rounded-2xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Share a price</div>
+                <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-3.5 w-3.5" /> Remove
+                </button>
+              </div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="col-span-2"><Label className="text-xs">Commodity</Label><Input value={String(sd.commodity ?? "")} onChange={(e) => update("commodity", e.target.value)} placeholder="e.g. Mamra Almonds" autoFocus /></div>
+                <div className="col-span-2"><Label className="text-xs">Commodity</Label><Input value={String(sd.commodity ?? "")} onChange={(e) => update("commodity", e.target.value)} placeholder="e.g. Mamra Almonds" /></div>
                 <div><Label className="text-xs">Origin (optional)</Label><Input value={String(sd.origin ?? "")} onChange={(e) => update("origin", e.target.value)} placeholder="Iran" /></div>
                 <div><Label className="text-xs">Unit</Label>
                   <Select value={String(sd.unit ?? "kg")} onValueChange={(v) => update("unit", v)}>
@@ -357,22 +403,21 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                 <div><Label className="text-xs">Price from (₹)</Label><Input type="number" inputMode="numeric" value={String(sd.price_min ?? "")} onChange={(e) => update("price_min", e.target.value)} /></div>
                 <div><Label className="text-xs">Price to (₹)</Label><Input type="number" inputMode="numeric" value={String(sd.price_max ?? "")} onChange={(e) => update("price_max", e.target.value)} /></div>
               </div>
-              <div>
-                <Label className="text-xs">Add a note (optional)</Label>
-                <Textarea className="mt-1" rows={2} value={content} onChange={(e) => setContent(e.target.value)} />
-              </div>
             </div>
           )}
 
+
           {mode === "poll" && (
-            <div className="space-y-3">
-              <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-                <ChevronLeft className="h-3.5 w-3.5" /> Back to post
-              </button>
-              <div className="text-sm font-semibold">Create a poll</div>
+            <div className="mt-3 space-y-3 rounded-2xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Create a poll</div>
+                <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-3.5 w-3.5" /> Remove
+                </button>
+              </div>
               <div>
                 <Label className="text-xs">Question</Label>
-                <Input value={pollQ} onChange={(e) => setPollQ(e.target.value)} placeholder="Ask members…" autoFocus />
+                <Input value={pollQ} onChange={(e) => setPollQ(e.target.value)} placeholder="Ask members…" />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs">Options</Label>
@@ -403,18 +448,17 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label className="text-xs">Add a note (optional)</Label>
-                <Textarea className="mt-1" rows={2} value={content} onChange={(e) => setContent(e.target.value)} />
-              </div>
             </div>
           )}
 
           {mode === "signal" && (
-            <div className="space-y-3">
-              <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-                <ChevronLeft className="h-3.5 w-3.5" /> Back to post
-              </button>
+            <div className="mt-3 space-y-3 rounded-2xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Market signal</div>
+                <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-3.5 w-3.5" /> Remove
+                </button>
+              </div>
               <div>
                 <Label className="text-xs">Signal type</Label>
                 <Select value={signalType} onValueChange={(v) => { setSignalType(v as typeof signalType); setSd({}); }}>
@@ -478,12 +522,9 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                 </div>
               )}
 
-              <div>
-                <Label className="text-xs">Add a note (optional)</Label>
-                <Textarea className="mt-1" rows={3} placeholder="Anything else members should know?" value={content} onChange={(e) => setContent(e.target.value)} />
-              </div>
             </div>
           )}
+          <div className="h-6" />
         </div>
 
         {/* Hidden inputs */}
@@ -511,17 +552,33 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         />
 
         {/* Toolbar pinned above the keyboard */}
-        <div className="flex items-center gap-0.5 border-t border-border/60 bg-background px-2 py-2 pb-safe">
-          <ActionPill icon={ImageIcon} label="Photo" onClick={() => imageInputRef.current?.click()} disabled={mode !== "general"} />
-          <ActionPill icon={Video} label="Video" onClick={() => videoInputRef.current?.click()} disabled={mode !== "general"} />
-          <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
-          <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
-          <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
-          <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
-          <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
-          <span className="ml-auto pr-2 text-xs tabular-nums text-muted-foreground">
-            {content.length > 0 ? content.length : ""}
-          </span>
+        <div className="shrink-0 border-t border-border/60 bg-background pb-safe">
+          <div className="flex items-center gap-1 overflow-x-auto px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <ActionPill icon={ImageIcon} label="Photo" onClick={() => imageInputRef.current?.click()} disabled={mode !== "general"} />
+            <ActionPill icon={Video} label="Video" onClick={() => videoInputRef.current?.click()} disabled={mode !== "general"} />
+            <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
+            <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
+            <span className="mx-1 h-5 w-px shrink-0 bg-border" aria-hidden />
+            <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
+            <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
+            <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
+            <span className="ml-auto flex shrink-0 items-center gap-2 pl-2 pr-1">
+              {content.length > 0 && (
+                <span
+                  className="relative h-5 w-5 rounded-full"
+                  style={{ background: `conic-gradient(hsl(var(--primary)) ${ringPct * 360}deg, hsl(var(--muted)) 0deg)` }}
+                  aria-hidden
+                >
+                  <span className="absolute inset-[3px] rounded-full bg-background" />
+                </span>
+              )}
+              {content.length > CHAR_LIMIT - 200 && (
+                <span className={cn("text-xs tabular-nums", content.length > CHAR_LIMIT ? "text-destructive" : "text-muted-foreground")}>
+                  {CHAR_LIMIT - content.length}
+                </span>
+              )}
+            </span>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
@@ -545,12 +602,13 @@ function ActionPill({
       aria-label={label}
       title={label}
       className={cn(
-        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
+        "inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium transition-colors",
         active ? "bg-primary/15 text-primary" : "text-primary hover:bg-primary/10",
         disabled && "cursor-not-allowed opacity-40",
       )}
     >
       <Icon className="h-[18px] w-[18px]" />
+      <span>{label}</span>
     </button>
   );
 }
