@@ -384,13 +384,15 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
 
 
           {mode === "price" && (
-            <div className="space-y-3">
-              <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-                <ChevronLeft className="h-3.5 w-3.5" /> Back to post
-              </button>
-              <div className="text-sm font-semibold">Share a price</div>
+            <div className="mt-3 space-y-3 rounded-2xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Share a price</div>
+                <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-3.5 w-3.5" /> Remove
+                </button>
+              </div>
               <div className="grid grid-cols-2 gap-2">
-                <div className="col-span-2"><Label className="text-xs">Commodity</Label><Input value={String(sd.commodity ?? "")} onChange={(e) => update("commodity", e.target.value)} placeholder="e.g. Mamra Almonds" autoFocus /></div>
+                <div className="col-span-2"><Label className="text-xs">Commodity</Label><Input value={String(sd.commodity ?? "")} onChange={(e) => update("commodity", e.target.value)} placeholder="e.g. Mamra Almonds" /></div>
                 <div><Label className="text-xs">Origin (optional)</Label><Input value={String(sd.origin ?? "")} onChange={(e) => update("origin", e.target.value)} placeholder="Iran" /></div>
                 <div><Label className="text-xs">Unit</Label>
                   <Select value={String(sd.unit ?? "kg")} onValueChange={(v) => update("unit", v)}>
@@ -401,12 +403,9 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                 <div><Label className="text-xs">Price from (₹)</Label><Input type="number" inputMode="numeric" value={String(sd.price_min ?? "")} onChange={(e) => update("price_min", e.target.value)} /></div>
                 <div><Label className="text-xs">Price to (₹)</Label><Input type="number" inputMode="numeric" value={String(sd.price_max ?? "")} onChange={(e) => update("price_max", e.target.value)} /></div>
               </div>
-              <div>
-                <Label className="text-xs">Add a note (optional)</Label>
-                <Textarea className="mt-1" rows={2} value={content} onChange={(e) => setContent(e.target.value)} />
-              </div>
             </div>
           )}
+
 
           {mode === "poll" && (
             <div className="space-y-3">
