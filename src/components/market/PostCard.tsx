@@ -165,14 +165,16 @@ export function PostCard({
   const [count, setCount] = useState(initialCount);
   const [reposted, setReposted] = useState(initialReposted);
   const [repostCount, setRepostCount] = useState(initialRepostCount);
+  const [replies, setReplies] = useState(commentCount);
   const [open, setOpen] = useState(false);
 
   useEffect(() => { setLiked(initialLiked); setCount(initialCount); }, [initialLiked, initialCount]);
   useEffect(() => { setReposted(initialReposted); setRepostCount(initialRepostCount); }, [initialReposted, initialRepostCount]);
+  useEffect(() => { setReplies(commentCount); }, [commentCount]);
 
-  // Record view once per mount (RLS allows authenticated only).
+  // Record view once per mount (signed-in users only).
   useEffect(() => {
-    if (user) recordView(post.id, user.id);
+    if (user) recordView(post.id);
   }, [post.id, user]);
 
   const onLike = async () => {
@@ -181,22 +183,20 @@ export function PostCard({
       navigate("/login");
       return;
     }
-    if (!canEngage) {
-      toast({ title: "Not available", description: "Your account can't interact with posts right now." });
-      return;
-    }
     const next = !liked;
     setLiked(next);
-    setCount((c) => c + (next ? 1 : -1));
+    setCount((c) => Math.max(0, c + (next ? 1 : -1)));
     try {
-      if (next) await likePost(post.id, user.id);
-      else await unlikePost(post.id, user.id);
+      if (next) await likePost(post.id);
+      else await unlikePost(post.id);
       qc.invalidateQueries({ queryKey: ["post-likes"] });
-    } catch {
+    } catch (e) {
       setLiked(!next);
-      setCount((c) => c + (next ? -1 : 1));
+      setCount((c) => Math.max(0, c + (next ? -1 : 1)));
+      toast({ title: "Couldn't update like", description: e instanceof Error ? e.message : "", variant: "destructive" });
     }
   };
+
 
   const onRepost = async () => {
     if (!user) {
