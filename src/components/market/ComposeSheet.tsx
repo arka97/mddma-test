@@ -408,14 +408,16 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
 
 
           {mode === "poll" && (
-            <div className="space-y-3">
-              <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
-                <ChevronLeft className="h-3.5 w-3.5" /> Back to post
-              </button>
-              <div className="text-sm font-semibold">Create a poll</div>
+            <div className="mt-3 space-y-3 rounded-2xl border border-border bg-card p-3">
+              <div className="flex items-center justify-between">
+                <div className="text-sm font-semibold">Create a poll</div>
+                <button type="button" onClick={backToGeneral} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  <ChevronLeft className="h-3.5 w-3.5" /> Remove
+                </button>
+              </div>
               <div>
                 <Label className="text-xs">Question</Label>
-                <Input value={pollQ} onChange={(e) => setPollQ(e.target.value)} placeholder="Ask members…" autoFocus />
+                <Input value={pollQ} onChange={(e) => setPollQ(e.target.value)} placeholder="Ask members…" />
               </div>
               <div className="space-y-2">
                 <Label className="text-xs">Options</Label>
