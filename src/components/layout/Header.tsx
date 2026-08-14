@@ -1,22 +1,7 @@
 import { useEffect, useState } from "react";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import {
-  Building2,
-  ChevronDown,
-  FileCheck2,
-  LayoutDashboard,
-  LogIn,
-  LogOut,
-  Bookmark,
-  MessageSquareText,
-  Package,
-  Search,
-  ShieldCheck,
-  Sparkles,
-  Store,
-  User,
-} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { LogIn, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
@@ -24,18 +9,10 @@ import { useScrolled } from "@/hooks/use-scrolled";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
-import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
-import { useDealRoomsActivity } from "@/hooks/useDealRoomsActivity";
+import { AccountDrawer } from "@/components/layout/AccountDrawer";
+import { NotificationsButton } from "@/components/layout/NotificationsButton";
 import { AdSlot } from "@/components/home/today/AdSlot";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 const desktopNav = [
   { name: "Home", href: "/" },
@@ -43,24 +20,14 @@ const desktopNav = [
   { name: "Directory", href: "/directory" },
   { name: "Products", href: "/products" },
   { name: "RFQ", href: "/rfq" },
-  { name: "Join", href: "/membership" },
-];
-
-const moreNav = [
-  { name: "Brands", href: "/brands" },
-  { name: "Knowledge", href: "/knowledge" },
-  { name: "FAQ", href: "/faq" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
 ];
 
 export function Header() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user, profile, company, hasRole, signOut } = useAuth();
+  const { user, profile } = useAuth();
   const scrolled = useScrolled(24);
-  const { hasActivity: hasDealActivity } = useDealRoomsActivity();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
