@@ -152,6 +152,14 @@ const Home = () => {
     listFeedEvents(6).then(setEvents).catch(() => setEvents([]));
   }, [canRead]);
 
+  // Composing from the bottom bar lives outside this page — refresh on its signal.
+  useEffect(() => {
+    const onRefresh = () => load();
+    window.addEventListener("gbaug:feed-refresh", onRefresh);
+    return () => window.removeEventListener("gbaug:feed-refresh", onRefresh);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topic]);
+
   // Resolve the author user ids behind the businesses the viewer follows.
   const followingIdsKey = Array.from(followingSet).sort().join(",");
   useEffect(() => {
