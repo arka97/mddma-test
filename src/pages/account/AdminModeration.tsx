@@ -170,26 +170,51 @@ const AdminModeration = () => {
   };
 
   // Ads
+  const measureImage = (file: File): Promise<{ width: number; height: number; aspect: number }> =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve({ width: img.naturalWidth, height: img.naturalHeight, aspect: img.naturalWidth / img.naturalHeight });
+      };
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("Could not read image")); };
+      img.src = objectUrl;
+    });
+
+  const emptyAdForm = { title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null as File | null, mobileFile: null as File | null, focalY: 50, imageDims: null as AdImageDims, mobileDims: null as AdImageDims };
+
   const saveAd = async () => {
     if (!user || !adForm.title.trim() || !adForm.file) {
       toast({ title: "Title and image required", variant: "destructive" });
       return;
     }
     setSavingAd(true);
-    const url = await uploadFile("ad-assets", user.id, adForm.file);
-    if (!url) { setSavingAd(false); toast({ title: "Image upload failed", variant: "destructive" }); return; }
-    const { error } = await supabase.from("advertisements").insert({
-      title: adForm.title,
-      image_url: url,
-      link_url: adForm.link_url || null,
-      placement: adForm.placement,
-      priority: adForm.priority,
-      is_active: true,
-    });
-    setSavingAd(false);
-    if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
-    else { toast({ title: "Ad published" }); setAdForm({ title: "", link_url: "", placement: "homepage-banner", priority: 0, file: null }); load(); }
+    try {
+      const url = await uploadFile("ad-assets", user.id, adForm.file);
+      if (!url) { toast({ title: "Image upload failed", variant: "destructive" }); return; }
+      let mobileUrl: string | null = null;
+      if (adForm.mobileFile) {
+        mobileUrl = await uploadFile("ad-assets", user.id, adForm.mobileFile);
+      }
+      const { error } = await supabase.from("advertisements").insert({
+        title: adForm.title,
+        image_url: url,
+        mobile_image_url: mobileUrl,
+        link_url: adForm.link_url || null,
+        placement: adForm.placement,
+        priority: adForm.priority,
+        is_active: true,
+        image_aspect: adForm.imageDims?.aspect ?? null,
+        focal_y: adForm.focalY,
+      });
+      if (error) toast({ title: "Failed", description: friendlyErrorMessage(error), variant: "destructive" });
+      else { toast({ title: "Ad published" }); setAdForm(emptyAdForm); load(); }
+    } finally {
+      setSavingAd(false);
+    }
   };
+
   const toggleAdActive = async (id: string, val: boolean) => {
     const { error } = await supabase.from("advertisements").update({ is_active: val }).eq("id", id);
     if (error) toast({ title: "Failed", variant: "destructive" }); else load();
