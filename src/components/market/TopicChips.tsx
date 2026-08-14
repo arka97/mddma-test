@@ -1,17 +1,19 @@
 import { cn } from "@/lib/utils";
 import type { TopicTag } from "@/repositories/communityPosts";
 
-export type FeedTopic = TopicTag | "all" | "following";
+export type FeedTopic = TopicTag | "all" | "following" | "bulletin";
 
 const CHIPS: { id: FeedTopic; label: string }[] = [
   { id: "all", label: "For You" },
   { id: "following", label: "Following" },
+  { id: "bulletin", label: "Bulletin" },
   { id: "price_signals", label: "Price Signals" },
   { id: "market_alerts", label: "Market Alerts" },
   { id: "sourcing", label: "Sourcing" },
   { id: "member_news", label: "Member News" },
   { id: "polls", label: "Polls" },
 ];
+
 
 interface Props {
   active: FeedTopic;

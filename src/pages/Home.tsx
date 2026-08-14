@@ -20,9 +20,11 @@ import { listReposts } from "@/repositories/postReposts";
 import { PostCard } from "@/components/market/PostCard";
 import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
-import { PaywallOverlay, GuestTeaser } from "@/components/market/PaywallOverlay";
-import { CircularsSection } from "@/components/home/today/CircularsSection";
+import { BulletinCard } from "@/components/market/BulletinCard";
+import { useCirculars } from "@/hooks/queries/useContent";
+import type { CircularRow } from "@/repositories/circulars";
 import { AdSlot } from "@/components/home/today/AdSlot";
+
 import { listFeedPosts, type CommunityPostRow, type TopicTag } from "@/repositories/communityPosts";
 import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
@@ -58,6 +60,8 @@ const Home = () => {
   const [events, setEvents] = useState<FeedEvent[]>([]);
   const followingSet = useFollowingSet();
   const [followedAuthorIds, setFollowedAuthorIds] = useState<Set<string>>(new Set());
+  const { data: circulars } = useCirculars();
+
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
@@ -76,7 +80,9 @@ const Home = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await listFeedPosts(topic === "all" || topic === "following" ? undefined : topic);
+      const topicArg = topic === "all" || topic === "following" || topic === "bulletin" ? undefined : topic;
+      const data = topic === "bulletin" ? [] : await listFeedPosts(topicArg);
+
       setPosts(data);
       const ids = data.map((p) => p.id);
       const aIds = Array.from(new Set(data.filter((p) => !p.is_anonymous).map((p) => p.author_id)));
@@ -136,13 +142,36 @@ const Home = () => {
     return () => { cancelled = true; };
   }, [followingIdsKey]);
 
-  const pinned = topic === "following"
+  const pinned = topic === "following" || topic === "bulletin"
     ? []
     : posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const restAll = posts.filter((p) => !pinned.includes(p));
   const rest = topic === "following"
     ? restAll.filter((p) => !p.is_anonymous && followedAuthorIds.has(p.author_id))
     : restAll;
+
+  // Bulletins (circulars) flow inline with posts instead of a fixed card.
+  const bulletins = circulars ?? [];
+  const bulletinDate = (c: CircularRow) => new Date(c.published_at ?? c.created_at).getTime();
+
+  type FeedItem =
+    | { kind: "post"; post: CommunityPostRow }
+    | { kind: "bulletin"; circular: CircularRow };
+
+  const items: FeedItem[] =
+    topic === "bulletin"
+      ? bulletins.map((c) => ({ kind: "bulletin" as const, circular: c }))
+      : topic === "all"
+        ? [
+            ...rest.map((p) => ({ kind: "post" as const, post: p })),
+            ...bulletins.map((c) => ({ kind: "bulletin" as const, circular: c })),
+          ].sort((a, b) => {
+            const at = a.kind === "post" ? new Date(a.post.created_at).getTime() : bulletinDate(a.circular);
+            const bt = b.kind === "post" ? new Date(b.post.created_at).getTime() : bulletinDate(b.circular);
+            return bt - at;
+          })
+        : rest.map((p) => ({ kind: "post" as const, post: p }));
+
 
   return (
     <Layout>
@@ -176,11 +205,8 @@ const Home = () => {
           <ReelsView />
         ) : (
         <>
-        <div className="px-4 pt-3">
-          <CircularsSection />
-        </div>
-
         {!canRead && !isGuest && (
+
           <div className="m-4 rounded-2xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">
             Free trial expired. Upgrade to access the market feed.
           </div>
@@ -209,7 +235,7 @@ const Home = () => {
                     <Skeleton className="h-28 rounded-2xl" />
                   </div>
                 ))
-              ) : rest.length === 0 ? (
+              ) : items.length === 0 ? (
                 topic === "following" ? (
                   <div className="px-6 py-16 text-center">
                     <p className="text-sm font-semibold text-foreground">Your Following feed is empty</p>
@@ -223,13 +249,21 @@ const Home = () => {
                       Discover businesses
                     </Link>
                   </div>
+                ) : topic === "bulletin" ? (
+                  <p className="py-16 text-center text-sm text-muted-foreground">
+                    No bulletins published yet.
+                  </p>
                 ) : (
                   <p className="py-16 text-center text-sm text-muted-foreground">
                     No posts yet — be the first to share.
                   </p>
                 )
               ) : (
-                rest.map((p, idx) => {
+                items.map((item, idx) => {
+                  if (item.kind === "bulletin") {
+                    return <BulletinCard key={`bulletin-${item.circular.id}`} circular={item.circular} />;
+                  }
+                  const p = item.post;
                   const event = idx > 0 && idx % 4 === 0
                     ? events[Math.floor(idx / 4) - 1]
                     : null;
@@ -252,6 +286,7 @@ const Home = () => {
                   );
                 })
               )}
+
             </div>
           </>
         )}
@@ -278,8 +313,6 @@ const Home = () => {
       </div>
       </FeedShell>
 
-      {isGuest && <GuestTeaser />}
-      {!isGuest && !canRead && <PaywallOverlay />}
     </Layout>
   );
 };
