@@ -50,6 +50,7 @@ const Home = () => {
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<FeedTopic>("all");
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const hideChrome = useScrollDirection();
 
   /** Horizontal swipe moves to the previous/next chip in order. */
   const onTouchStart = (e: ReactTouchEvent) => {
