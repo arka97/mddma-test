@@ -138,7 +138,7 @@ const Home = () => {
       >
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
         <div className="px-4 pt-3">
-          <AdSlot placement="feed-top" />
+          <AdSlot placement="homepage-banner" />
         </div>
 
         {/* X-style feed header */}
