@@ -3,7 +3,7 @@ import { Building2, FileText, Home, MessageSquareText, Search } from "lucide-rea
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDealRoomsActivity } from "@/hooks/useDealRoomsActivity";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useChromeHidden } from "@/contexts/ChromeVisibilityContext";
 
 interface Tab {
   label: string;
@@ -18,7 +18,7 @@ export function MobileBottomTabBar() {
   const location = useLocation();
   const { user } = useAuth();
   const { hasActivity } = useDealRoomsActivity();
-  const hidden = useScrollDirection();
+  const hidden = useChromeHidden();
 
   const tabs: Tab[] = [
     { label: "Home", href: "/", icon: Home, match: (p) => p === "/" },

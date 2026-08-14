@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 import { useScrolled } from "@/hooks/use-scrolled";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useChromeHidden } from "@/contexts/ChromeVisibilityContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
@@ -29,7 +29,7 @@ export function Header() {
   const location = useLocation();
   const { user, profile } = useAuth();
   const scrolled = useScrolled(24);
-  const hideChrome = useScrollDirection();
+  const hideChrome = useChromeHidden();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

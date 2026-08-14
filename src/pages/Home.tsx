@@ -25,7 +25,7 @@ import { useCirculars } from "@/hooks/queries/useContent";
 import type { CircularRow } from "@/repositories/circulars";
 import { AdSlot } from "@/components/home/today/AdSlot";
 import { cn } from "@/lib/utils";
-import { useScrollDirection } from "@/hooks/useScrollDirection";
+import { useChromeVisibility } from "@/contexts/ChromeVisibilityContext";
 
 import { listFeedPosts, type CommunityPostRow, type TopicTag } from "@/repositories/communityPosts";
 import { listLikes } from "@/repositories/postLikes";
@@ -50,7 +50,7 @@ const Home = () => {
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<FeedTopic>("all");
   const touchStart = useRef<{ x: number; y: number } | null>(null);
-  const hideChrome = useScrollDirection();
+  const { hidden: hideChrome, showChrome } = useChromeVisibility();
   const navigate = useNavigate();
 
   /** Horizontal swipe moves to the previous/next chip in order. */
