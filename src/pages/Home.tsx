@@ -24,7 +24,6 @@ import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
 import { viewCounts } from "@/repositories/postViews";
 import { listCompaniesByOwners } from "@/repositories/companies";
-import { useFollowingSet } from "@/hooks/useFollow";
 import { listFeedEvents, type FeedEvent } from "@/repositories/feedEvents";
 import { SystemEventCard } from "@/components/market/SystemEventCard";
 import { supabase } from "@/integrations/supabase/client";
@@ -53,7 +52,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
   const [events, setEvents] = useState<FeedEvent[]>([]);
-  const followingSet = useFollowingSet();
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
