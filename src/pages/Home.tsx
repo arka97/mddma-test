@@ -44,7 +44,7 @@ type FeedAuthor = {
 const Home = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
-  const [topic, setTopic] = useState<TopicTag | "all">("all");
+  const [topic, setTopic] = useState<FeedTopic>("all");
   const [feedTab, setFeedTab] = useState<FeedTab>("feed");
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
@@ -74,7 +74,7 @@ const Home = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await listFeedPosts(topic === "all" ? undefined : topic);
+      const data = await listFeedPosts(topic === "all" || topic === "following" ? undefined : topic);
       setPosts(data);
       const ids = data.map((p) => p.id);
       const aIds = Array.from(new Set(data.filter((p) => !p.is_anonymous).map((p) => p.author_id)));
@@ -122,9 +122,13 @@ const Home = () => {
     listFeedEvents(6).then(setEvents).catch(() => setEvents([]));
   }, [canRead]);
 
-  const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
+  const pinned = topic === "following"
+    ? []
+    : posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const restAll = posts.filter((p) => !pinned.includes(p));
-  const rest = restAll;
+  const rest = topic === "following"
+    ? restAll.filter((p) => !p.is_anonymous && followedAuthorIds.has(p.author_id))
+    : restAll;
 
   return (
     <Layout>
