@@ -1033,6 +1033,35 @@ export type Database = {
           },
         ]
       }
+      post_reposts: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_reposts_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_views: {
         Row: {
           id: string
@@ -1875,6 +1904,14 @@ export type Database = {
           post_id: string
         }[]
       }
+      get_post_repost_summary: {
+        Args: { _ids: string[] }
+        Returns: {
+          post_id: string
+          repost_count: number
+          reposted: boolean
+        }[]
+      }
       get_post_view_summary: {
         Args: { _ids: string[] }
         Returns: {
@@ -1912,6 +1949,10 @@ export type Database = {
       }
       set_business_post_like: {
         Args: { _liked: boolean; _post_id: string }
+        Returns: boolean
+      }
+      set_business_post_repost: {
+        Args: { _post_id: string; _reposted: boolean }
         Returns: boolean
       }
       slugify: { Args: { _title: string }; Returns: string }
