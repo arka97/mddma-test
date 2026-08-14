@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type TouchEvent as ReactTouchEvent } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type TouchEvent as ReactTouchEvent } from "react";
 import { Feather } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { FeedShell } from "@/components/layout/FeedShell";
@@ -50,6 +50,8 @@ const Home = () => {
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<FeedTopic>("all");
   const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const homeChromeRef = useRef<HTMLDivElement | null>(null);
+  const [reelTopInset, setReelTopInset] = useState(48);
   const { hidden: hideChrome, showChrome } = useChromeVisibility();
   const navigate = useNavigate();
 
@@ -99,6 +101,23 @@ const Home = () => {
 
   const canRead = true;
   const canEngage = !!user;
+
+  // Reels is fixed to the mobile viewport. Measure the actual bottom edge of
+  // the visible ad + chip stack so its media starts below chrome without
+  // relying on brittle hard-coded banner heights.
+  useLayoutEffect(() => {
+    const el = homeChromeRef.current;
+    if (!el || hideChrome) return;
+    const measure = () => setReelTopInset(Math.max(48, Math.round(el.getBoundingClientRect().bottom)));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [hideChrome, topic]);
 
   const load = async () => {
     setLoading(true);
@@ -227,19 +246,24 @@ const Home = () => {
         }
       >
       <div className="mx-auto min-h-screen w-full pb-24 sm:border-x sm:border-border xl:border-x-0">
-        <div className="px-4 pt-3 pb-3">
-          <AdSlot placement="homepage-banner" />
-        </div>
-
-        {/* Chips stick under the app header and slide away with it on scroll-down. */}
         <div
+          ref={homeChromeRef}
+          style={{
+            "--home-chrome-transform": hideChrome ? "translateY(calc(-100% - 48px))" : "translateY(0)",
+            "--home-chrome-opacity": hideChrome ? 0 : 1,
+          } as CSSProperties}
           className={cn(
-            "sticky top-12 z-20 bg-background transition-transform duration-200 ease-out will-change-transform",
-            hideChrome ? "-translate-y-[200%] lg:translate-y-0" : "translate-y-0",
+            "sticky top-12 z-30 bg-background opacity-[var(--home-chrome-opacity)] [transform:var(--home-chrome-transform)] transition-[transform,opacity] duration-200 ease-out lg:top-12 lg:translate-y-0 lg:opacity-100",
+            hideChrome ? "pointer-events-none lg:pointer-events-auto" : "pointer-events-auto",
           )}
         >
-          <div className="border-b border-border px-2 py-2">
-            <TopicChips active={topic} onChange={setTopic} />
+          <div>
+            <div className="px-4 pb-3 pt-3">
+              <AdSlot placement="homepage-banner" />
+            </div>
+            <div className="border-b border-border px-2 py-2">
+              <TopicChips active={topic} onChange={setTopic} />
+            </div>
           </div>
         </div>
 
@@ -247,7 +271,7 @@ const Home = () => {
 
         <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
         {topic === "reels" ? (
-          <ReelsView />
+          <ReelsView visibleTopInset={reelTopInset} />
         ) : (
         <>
         {!canRead && !isGuest && (
@@ -343,9 +367,13 @@ const Home = () => {
           <Button
             onClick={() => (canEngage ? setComposeOpen(true) : navigate("/login"))}
             aria-label="Compose post"
+            style={{
+              "--fab-bottom": hideChrome
+                ? "calc(env(safe-area-inset-bottom) + 12px)"
+                : "calc(env(safe-area-inset-bottom) + 66px)",
+            } as CSSProperties}
             className={cn(
-              "fixed bottom-[86px] right-4 z-40 h-14 w-14 rounded-full p-0 shadow-lg transition-all duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
-              hideChrome && "translate-y-24 opacity-0 lg:translate-y-0 lg:opacity-100",
+              "fixed bottom-[var(--fab-bottom)] right-4 z-40 h-14 w-14 rounded-full p-0 shadow-lg transition-[bottom] duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
             )}
           >
             <Feather className="h-6 w-6 lg:mr-2 lg:h-5 lg:w-5" />
