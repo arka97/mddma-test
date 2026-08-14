@@ -11,7 +11,7 @@ const MemberProfile = lazy(() => import("./pages/MemberProfile"));
 const Storefront = lazy(() => import("./pages/Storefront"));
 const Products = lazy(() => import("./pages/Products"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
-const Home = lazy(() => import("./pages/Market"));
+const Home = lazy(() => import("./pages/Home"));
 const PostDetail = lazy(() => import("./pages/PostDetail"));
 const Rfq = lazy(() => import("./pages/Rfq"));
 const MyQuotations = lazy(() => import("./pages/MyQuotations"));

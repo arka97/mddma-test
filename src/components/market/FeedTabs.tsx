@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export type FeedTab = "for_you" | "following";
+export type FeedTab = "feed" | "reels";
 
 interface Props {
   active: FeedTab;
@@ -14,8 +14,8 @@ interface Props {
  */
 export function FeedTabs({ active, onChange, followingDisabled }: Props) {
   const tabs: { id: FeedTab; label: string; disabled?: boolean }[] = [
-    { id: "for_you", label: "For you" },
-    { id: "following", label: "Following", disabled: followingDisabled },
+    { id: "feed", label: "Feed" },
+    { id: "reels", label: "Reels" },
   ];
 
   return (
