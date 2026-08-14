@@ -293,6 +293,7 @@ const Home = () => {
         )}
         </>
         )}
+        </div>
 
         {canEngage && (
           <>
