@@ -285,6 +285,8 @@
   #root {
     overflow-x: clip;
     max-width: 100vw;
+    /* Pinch/double-tap zoom would drift the fixed app chrome out of place */
+    touch-action: pan-x pan-y;
   }
   /* Media must never blow out its container */
   img, video, svg, canvas, iframe {
