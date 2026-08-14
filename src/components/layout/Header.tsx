@@ -195,7 +195,7 @@ export function Header() {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
+                    "whitespace-nowrap rounded-md px-2 py-1.5 text-sm font-medium transition-colors",
                     isActive(item.href)
                       ? "bg-secondary text-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
