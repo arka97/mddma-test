@@ -35,7 +35,7 @@ export default function BookmarksPage() {
   const [views, setViews] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
-  const canEngage = !!user && isEffectivePaid;
+  const canEngage = !!user;
   const isAdmin = role === "admin";
 
   useEffect(() => {

@@ -43,7 +43,7 @@ const PostDetail = () => {
   const [sending, setSending] = useState(false);
   const composerRef = useRef<HTMLInputElement>(null);
 
-  const canEngage = !!user && isEffectivePaid;
+  const canEngage = !!user;
   const isAdmin = role === "admin";
 
   useEffect(() => {

@@ -71,7 +71,8 @@ interface Props {
   viewCount: number;
   reposted?: boolean;
   repostCount?: number;
-  canEngage: boolean;
+  /** Deprecated: engagement only requires a signed-in user. */
+  canEngage?: boolean;
   isAdmin: boolean;
   variant?: "feed" | "detail";
   /** When provided, the reply action calls this instead of opening the sheet. */
@@ -152,7 +153,6 @@ export function PostCard({
   viewCount,
   reposted: initialReposted = false,
   repostCount: initialRepostCount = 0,
-  canEngage,
   isAdmin,
   variant = "feed",
   onReply,
