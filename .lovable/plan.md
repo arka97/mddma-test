@@ -40,7 +40,16 @@ From your screenshot and the current build:
 - Per-image upload progress overlay and a disabled-with-reason tooltip on Post ("Add text or media to post").
 - Success toast keeps current behaviour.
 
+### Lock pinch-zoom on mobile / installed app
+Your screenshot is the installed app, where a two-finger pinch zooms the whole page and the layout drifts off-centre — that's what makes the composer look broken.
+
+- Set the viewport meta to `width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover` so double-tap and pinch no longer scale the page.
+- Add `touch-action: manipulation` on the app root and `overscroll-behavior: none` on the composer body so rubber-banding doesn't shift the sheet.
+- Trade-off: this removes browser zoom for low-vision users everywhere in the app. Body text stays at 15–17px and inputs at 16px (which also stops iOS auto-zoom on focus), so nothing becomes unreadable.
+
 ## Technical notes
 - Single file for most of it: `src/components/market/ComposeSheet.tsx`; plus a small `useVisualViewportHeight` hook in `src/hooks/`.
+- Viewport/zoom change is in `index.html` + one rule in `src/index.css`.
 - Uses existing semantic tokens only (primary/muted/border) — no new colours.
 - No backend, schema, policy or upload-logic changes; posting payload stays identical.
+
