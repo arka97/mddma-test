@@ -1,12 +1,11 @@
 import { supabase } from "@/integrations/supabase/client";
 import { friendlyErrorMessage } from "@/lib/errors";
 
+type RpcFn = (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
+
 export async function listLikes(postIds: string[]) {
   if (postIds.length === 0) return { counts: {}, mine: new Set<string>() };
-  const { data, error } = await (supabase.rpc as unknown as (
-    fn: string,
-    args: Record<string, unknown>,
-  ) => Promise<{ data: unknown; error: unknown }>)("get_post_like_summary", { _ids: postIds });
+  const { data, error } = await (supabase.rpc as unknown as RpcFn)("get_post_like_summary", { _ids: postIds });
   if (error) throw new Error(friendlyErrorMessage(error as never));
   const counts: Record<string, number> = {};
   const mine = new Set<string>();
@@ -17,16 +16,19 @@ export async function listLikes(postIds: string[]) {
   return { counts, mine };
 }
 
-export async function likePost(postId: string, userId: string) {
-  const { error } = await supabase.from("post_likes").insert({ post_id: postId, user_id: userId });
-  if (error && !/duplicate/i.test(error.message)) throw new Error(friendlyErrorMessage(error));
+/** Likes go through the security-definer RPC — direct table writes are blocked. */
+async function setLike(postId: string, liked: boolean) {
+  const { error } = await (supabase.rpc as unknown as RpcFn)("set_business_post_like", {
+    _post_id: postId,
+    _liked: liked,
+  });
+  if (error) throw new Error(friendlyErrorMessage(error as never));
 }
 
-export async function unlikePost(postId: string, userId: string) {
-  const { error } = await supabase
-    .from("post_likes")
-    .delete()
-    .eq("post_id", postId)
-    .eq("user_id", userId);
-  if (error) throw new Error(friendlyErrorMessage(error));
+export async function likePost(postId: string, _userId?: string) {
+  await setLike(postId, true);
+}
+
+export async function unlikePost(postId: string, _userId?: string) {
+  await setLike(postId, false);
 }
