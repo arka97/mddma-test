@@ -80,8 +80,11 @@ const Home = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const topicArg = topic === "all" || topic === "following" || topic === "bulletin" ? undefined : topic;
-      const data = topic === "bulletin" ? [] : await listFeedPosts(topicArg);
+      const topicArg =
+        topic === "all" || topic === "following" || topic === "bulletin" || topic === "reels"
+          ? undefined
+          : (topic as TopicTag);
+      const data = topic === "bulletin" || topic === "reels" ? [] : await listFeedPosts(topicArg);
 
       setPosts(data);
       const ids = data.map((p) => p.id);
