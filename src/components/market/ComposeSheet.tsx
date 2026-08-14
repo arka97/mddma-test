@@ -51,6 +51,8 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const [isAnon, setIsAnon] = useState(false);
   const [sd, setSd] = useState<Record<string, string | number>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const vvHeight = useVisualViewportHeight();
 
   const [images, setImages] = useState<PendingImage[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
