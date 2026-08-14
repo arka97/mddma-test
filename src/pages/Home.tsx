@@ -196,15 +196,13 @@ const Home = () => {
 
         {/* X-style feed header */}
         <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
-          <FeedTabs active={feedTab} onChange={setFeedTab} />
-          {feedTab === "feed" && (
-            <div className="border-b border-border px-2 pt-2">
-              <TopicChips active={topic} onChange={setTopic} />
-            </div>
-          )}
+          <div className="border-b border-border px-2 py-2">
+            <TopicChips active={topic} onChange={setTopic} />
+          </div>
         </div>
 
-        {feedTab === "reels" ? (
+        <div onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+        {topic === "reels" ? (
           <ReelsView />
         ) : (
         <>
