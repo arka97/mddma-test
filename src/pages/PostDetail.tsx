@@ -29,7 +29,7 @@ interface Author {
 const PostDetail = () => {
   const { postId } = useParams();
   const { user } = useAuth();
-  const { role, isEffectivePaid } = useRole();
+  const { role } = useRole();
   const { toast } = useToast();
 
   const [post, setPost] = useState<CommunityPostRow | null>(null);

@@ -24,7 +24,7 @@ interface Author {
 
 export default function BookmarksPage() {
   const { user } = useAuth();
-  const { role, isEffectivePaid } = useRole();
+  const { role } = useRole();
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, Author>>({});
   const [likes, setLikes] = useState<{ counts: Record<string, number>; mine: Set<string> }>({
