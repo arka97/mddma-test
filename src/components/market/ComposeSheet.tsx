@@ -8,8 +8,9 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  X, Loader2, Image as ImageIcon, FileText, Link as LinkIcon, BarChart3, Zap, ChevronLeft, Tag, Plus, Trash2, Video,
+  X, Loader2, Image as ImageIcon, FileText, Link as LinkIcon, BarChart3, Zap, ChevronLeft, Tag, Plus, Trash2, Video, Globe, EyeOff,
 } from "lucide-react";
+import { useVisualViewportHeight } from "@/hooks/useVisualViewportHeight";
 import { cn } from "@/lib/utils";
 import { createPost, type PostType, type TopicTag } from "@/repositories/communityPosts";
 import { createPollForPost } from "@/repositories/postPolls";
