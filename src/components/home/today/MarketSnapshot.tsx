@@ -17,7 +17,7 @@ export function MarketSnapshot() {
           </p>
           <h2 className="t-h3 mt-1 text-foreground">Today's rate snapshot</h2>
         </div>
-        <Link to="/market" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
+        <Link to="/" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
           Full market <ArrowRight className="h-3 w-3" />
         </Link>
       </header>

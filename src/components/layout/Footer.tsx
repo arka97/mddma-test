@@ -8,9 +8,9 @@ const platformLinks = [
   { to: "/directory", label: "Business Directory" },
   { to: "/products", label: "Products" },
   { to: "/brands", label: "Brands" },
-  { to: "/market", label: "Market Network" },
+  { to: "/", label: "Market Network" },
   { to: "/rfq", label: "RFQ Board" },
-  { to: "/circulars", label: "Bulletin" },
+  { to: "/", label: "Bulletin" },
   { to: "/membership", label: "Join G-BAU-G" },
 ];
 

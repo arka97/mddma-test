@@ -13,7 +13,7 @@ export function LiveTicker() {
 
   return (
     <Link
-      to="/market"
+      to="/"
       aria-label="Open full market"
       className="group relative flex items-stretch overflow-hidden rounded-xl border border-border bg-card shadow-sm"
     >

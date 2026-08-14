@@ -17,7 +17,7 @@ export function CircularsSection() {
           </p>
           <h2 className="t-h3 mt-1 text-foreground">Trade notices &amp; association updates</h2>
         </div>
-        <Link to="/circulars" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
+        <Link to="/" className="inline-flex shrink-0 items-center gap-1 text-xs font-medium text-accent hover:text-accent/80">
           All <ArrowRight className="h-3 w-3" />
         </Link>
       </header>
@@ -34,7 +34,7 @@ export function CircularsSection() {
             const date = c.published_at ?? c.created_at;
             return (
               <li key={c.id}>
-                <Link to="/circulars" className="group flex flex-col gap-1 py-3 transition-colors hover:bg-muted/40">
+                <Link to="/" className="group flex flex-col gap-1 py-3 transition-colors hover:bg-muted/40">
                   <div className="flex items-center gap-2 text-[11px]">
                     {c.category && <Badge variant="neutral" className="capitalize">{c.category}</Badge>}
                     <span className="inline-flex items-center gap-1 text-muted-foreground">

@@ -32,7 +32,7 @@ type Result = {
 
 const QUICK: Result[] = [
   { key: "nav-home", label: "Home", href: "/", icon: Compass },
-  { key: "nav-market", label: "Market feed", href: "/market", icon: MessageSquare },
+  { key: "nav-market", label: "Market feed", href: "/", icon: MessageSquare },
   { key: "nav-rfq", label: "RFQ board", href: "/rfq", icon: FileText },
   { key: "nav-directory", label: "Members directory", href: "/directory", icon: Building2 },
   { key: "nav-products", label: "Products", href: "/products", icon: Package },

@@ -15,7 +15,7 @@ export function SystemEventCard({ event }: { event: FeedEvent }) {
   if (event.kind === "circular_published") {
     return (
       <Link
-        to="/circulars"
+        to="/"
         className="flex gap-3 px-4 py-3 transition hover:bg-muted/40"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/15 text-accent">
