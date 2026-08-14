@@ -249,15 +249,15 @@ const Home = () => {
         <div
           ref={homeChromeRef}
           style={{
-            "--home-chrome-rows": hideChrome ? "0fr" : "1fr",
+            "--home-chrome-transform": hideChrome ? "translateY(calc(-100% - 48px))" : "translateY(0)",
             "--home-chrome-opacity": hideChrome ? 0 : 1,
           } as CSSProperties}
           className={cn(
-            "sticky top-12 z-30 grid grid-rows-[var(--home-chrome-rows)] overflow-hidden bg-background opacity-[var(--home-chrome-opacity)] transition-[grid-template-rows,opacity] duration-200 ease-out lg:top-12 lg:grid-rows-[1fr] lg:opacity-100",
+            "sticky top-12 z-30 bg-background opacity-[var(--home-chrome-opacity)] [transform:var(--home-chrome-transform)] transition-[transform,opacity] duration-200 ease-out lg:top-12 lg:translate-y-0 lg:opacity-100",
             hideChrome ? "pointer-events-none lg:pointer-events-auto" : "pointer-events-auto",
           )}
         >
-          <div className="min-h-0 overflow-hidden">
+          <div>
             <div className="px-4 pb-3 pt-3">
               <AdSlot placement="homepage-banner" />
             </div>
