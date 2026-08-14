@@ -35,6 +35,7 @@ import { listCompaniesByOwners } from "@/repositories/companies";
 import { listFeedEvents, type FeedEvent } from "@/repositories/feedEvents";
 import { SystemEventCard } from "@/components/market/SystemEventCard";
 import { supabase } from "@/integrations/supabase/client";
+import { fabBottom, Z_INDEX } from "@/lib/chrome-layout";
 
 type FeedAuthor = {
   id: string;
