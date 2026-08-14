@@ -47,7 +47,26 @@ const Home = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<FeedTopic>("all");
-  const [feedTab, setFeedTab] = useState<FeedTab>("feed");
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  /** Horizontal swipe moves to the previous/next chip in order. */
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const s = touchStart.current;
+    touchStart.current = null;
+    if (!s) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - s.x;
+    const dy = t.clientY - s.y;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const i = FEED_TOPIC_ORDER.indexOf(topic);
+    if (i < 0) return;
+    const next = dx < 0 ? i + 1 : i - 1;
+    if (next >= 0 && next < FEED_TOPIC_ORDER.length) setTopic(FEED_TOPIC_ORDER[next]);
+  };
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
   const [authorCompanyIds, setAuthorCompanyIds] = useState<Record<string, string>>({});
