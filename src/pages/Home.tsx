@@ -76,7 +76,9 @@ const Home = () => {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await listFeedPosts(topic === "all" || topic === "following" ? undefined : topic);
+      const topicArg = topic === "all" || topic === "following" || topic === "bulletin" ? undefined : topic;
+      const data = topic === "bulletin" ? [] : await listFeedPosts(topicArg);
+
       setPosts(data);
       const ids = data.map((p) => p.id);
       const aIds = Array.from(new Set(data.filter((p) => !p.is_anonymous).map((p) => p.author_id)));
