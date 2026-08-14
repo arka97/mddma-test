@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 const BUCKET = "community-media";
 export const MAX_IMAGE_MB = 5;
 export const MAX_FILE_MB = 10;
+export const MAX_VIDEO_MB = 50;
 export const MAX_IMAGES_PER_POST = 4;
 const IMAGE_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+export const VIDEO_MIME = ["video/mp4", "video/quicktime", "video/webm"];
 
 export interface UploadedMedia {
   path: string;
