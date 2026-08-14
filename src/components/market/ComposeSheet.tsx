@@ -510,15 +510,18 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickPdf(f); e.target.value = ""; }}
         />
 
-        {/* Bottom action row */}
-        <div className="flex items-center gap-1 overflow-x-auto border-t border-border/60 bg-card px-2 py-2 pb-safe">
+        {/* Toolbar pinned above the keyboard */}
+        <div className="flex items-center gap-0.5 border-t border-border/60 bg-background px-2 py-2 pb-safe">
           <ActionPill icon={ImageIcon} label="Photo" onClick={() => imageInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={Video} label="Video" onClick={() => videoInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
-          <ActionPill icon={Tag} label="Price" onClick={() => openMode("price")} active={mode === "price"} />
-          <ActionPill icon={BarChart3} label="Poll" onClick={() => openMode("poll")} active={mode === "poll"} />
+          <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
+          <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
           <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
+          <span className="ml-auto pr-2 text-xs tabular-nums text-muted-foreground">
+            {content.length > 0 ? content.length : ""}
+          </span>
         </div>
       </SheetContent>
     </Sheet>
@@ -539,16 +542,16 @@ function ActionPill({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-label={label}
+      title={label}
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-        active
-          ? "bg-primary/15 text-foreground"
-          : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
-        disabled && "opacity-40 cursor-not-allowed",
+        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
+        active ? "bg-primary/15 text-primary" : "text-primary hover:bg-primary/10",
+        disabled && "cursor-not-allowed opacity-40",
       )}
     >
-      <Icon className={cn("h-4 w-4", active ? "text-primary" : "text-muted-foreground")} />
-      {label}
+      <Icon className="h-[18px] w-[18px]" />
     </button>
   );
 }
+
