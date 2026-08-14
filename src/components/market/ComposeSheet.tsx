@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  X, Loader2, Image as ImageIcon, FileText, Link as LinkIcon, BarChart3, Zap, ChevronLeft, Tag, Plus, Trash2,
+  X, Loader2, Image as ImageIcon, FileText, Link as LinkIcon, BarChart3, Zap, ChevronLeft, Tag, Plus, Trash2, Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createPost, type PostType, type TopicTag } from "@/repositories/communityPosts";
@@ -19,8 +19,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { extractFirstUrl, fetchLinkPreview, type LinkPreview } from "@/lib/linkPreview";
 import { LinkPreviewCard } from "./LinkPreviewCard";
 import {
-  uploadPostImage, uploadPostFile, getMediaSignedUrl, formatBytes,
-  MAX_IMAGES_PER_POST, MAX_IMAGE_MB, MAX_FILE_MB, type UploadedMedia,
+  uploadPostImage, uploadPostFile, uploadPostVideo, getMediaSignedUrl, formatBytes,
+  MAX_IMAGES_PER_POST, MAX_IMAGE_MB, MAX_FILE_MB, MAX_VIDEO_MB, VIDEO_MIME, type UploadedMedia,
 } from "@/lib/uploads";
 
 interface Props {
@@ -53,6 +53,7 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
 
   const [images, setImages] = useState<PendingImage[]>([]);
   const [pdf, setPdf] = useState<File | null>(null);
+  const [video, setVideo] = useState<{ file: File; previewUrl: string } | null>(null);
 
   const [pollQ, setPollQ] = useState("");
   const [pollOpts, setPollOpts] = useState<string[]>(["", ""]);
@@ -65,6 +66,7 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
 
   const initials = useMemo(() => {
     const src = (profile?.full_name || user?.email || "U").trim();
@@ -77,6 +79,8 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
     setContent(""); setIsAnon(false); setSd({});
     images.forEach((i) => URL.revokeObjectURL(i.previewUrl));
     setImages([]); setPdf(null);
+    if (video) URL.revokeObjectURL(video.previewUrl);
+    setVideo(null);
     setPollQ(""); setPollOpts(["", ""]); setPollDays(3);
     setPreview(null); setPreviewLoading(false); setPreviewDismissed(new Set());
   };
@@ -126,6 +130,13 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
     setImages((prev) => prev.filter((_, idx) => idx !== i));
   };
 
+  const onPickVideo = (file: File) => {
+    if (!VIDEO_MIME.includes(file.type)) { toast({ title: "Use MP4, MOV or WebM", variant: "destructive" }); return; }
+    if (file.size > MAX_VIDEO_MB * 1024 * 1024) { toast({ title: `Video > ${MAX_VIDEO_MB} MB`, variant: "destructive" }); return; }
+    if (video) URL.revokeObjectURL(video.previewUrl);
+    setVideo({ file, previewUrl: URL.createObjectURL(file) });
+  };
+
   const onPickPdf = (file: File) => {
     if (file.type !== "application/pdf") { toast({ title: "PDF only" }); return; }
     if (file.size > MAX_FILE_MB * 1024 * 1024) { toast({ title: `File > ${MAX_FILE_MB} MB`, variant: "destructive" }); return; }
@@ -145,8 +156,8 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
       return !!sd.commodity && !!sd.price_min && !!sd.price_max;
     }
     if (mode === "signal") return true;
-    return content.trim().length > 0 || images.length > 0 || pdf !== null;
-  }, [submitting, user, mode, content, images, pdf, sd, pollQ, pollOpts]);
+    return content.trim().length > 0 || images.length > 0 || pdf !== null || video !== null;
+  }, [submitting, user, mode, content, images, pdf, video, sd, pollQ, pollOpts]);
 
   const computePostType = (): { type: PostType; topic: TopicTag | null } => {
     if (mode === "poll") return { type: "poll", topic: "polls" };
@@ -165,11 +176,13 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
       const uploadedImages: UploadedMedia[] = [];
       for (const im of images) uploadedImages.push(await uploadPostImage(user.id, im.file));
       const uploadedFile = pdf ? await uploadPostFile(user.id, pdf) : null;
+      const uploadedVideo = video ? await uploadPostVideo(user.id, video.file) : null;
 
       const { type, topic } = computePostType();
       const merged: Record<string, unknown> = { ...sd };
       if (preview) merged.link_preview = preview;
       if (uploadedImages.length) merged.images = uploadedImages.map((u) => u.path);
+      if (uploadedVideo) merged.video = { path: uploadedVideo.path, name: uploadedVideo.name, size: uploadedVideo.size };
       if (uploadedFile) merged.file = { path: uploadedFile.path, name: uploadedFile.name, size: uploadedFile.size };
 
       const post = await createPost({
@@ -298,6 +311,20 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                         </button>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {video && (
+                  <div className="relative mt-2 overflow-hidden rounded-lg bg-black">
+                    <video src={video.previewUrl} controls playsInline className="max-h-64 w-full object-contain" />
+                    <button
+                      type="button"
+                      onClick={() => { URL.revokeObjectURL(video.previewUrl); setVideo(null); }}
+                      className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-foreground/70 text-background hover:bg-foreground"
+                      aria-label="Remove video"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 )}
 
@@ -480,6 +507,13 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
           onChange={(e) => { if (e.target.files) addImageFiles(e.target.files); e.target.value = ""; }}
         />
         <input
+          ref={videoInputRef}
+          type="file"
+          accept="video/mp4,video/quicktime,video/webm"
+          className="hidden"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickVideo(f); e.target.value = ""; }}
+        />
+        <input
           ref={fileInputRef}
           type="file"
           accept="application/pdf"
@@ -490,6 +524,7 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         {/* Bottom action row */}
         <div className="flex items-center gap-1 overflow-x-auto border-t border-border/60 bg-card px-2 py-2 pb-safe">
           <ActionPill icon={ImageIcon} label="Photo" onClick={() => imageInputRef.current?.click()} disabled={mode !== "general"} />
+          <ActionPill icon={Video} label="Video" onClick={() => videoInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
           <ActionPill icon={Tag} label="Price" onClick={() => openMode("price")} active={mode === "price"} />

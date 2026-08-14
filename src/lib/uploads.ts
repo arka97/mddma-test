@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 const BUCKET = "community-media";
 export const MAX_IMAGE_MB = 5;
 export const MAX_FILE_MB = 10;
+export const MAX_VIDEO_MB = 50;
 export const MAX_IMAGES_PER_POST = 4;
 const IMAGE_MIME = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+export const VIDEO_MIME = ["video/mp4", "video/quicktime", "video/webm"];
 
 export interface UploadedMedia {
   path: string;
@@ -64,4 +66,17 @@ export function formatBytes(b: number): string {
   if (b < 1024) return `${b} B`;
   if (b < 1024 * 1024) return `${(b / 1024).toFixed(0)} KB`;
   return `${(b / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export async function uploadPostVideo(userId: string, file: File): Promise<UploadedMedia> {
+  if (!VIDEO_MIME.includes(file.type)) throw new Error("Unsupported video type (use MP4, MOV or WebM)");
+  if (file.size > MAX_VIDEO_MB * 1024 * 1024) throw new Error(`Video > ${MAX_VIDEO_MB} MB`);
+  const ext = file.name.split(".").pop() || "mp4";
+  const path = `posts/${userId}/videos/${crypto.randomUUID()}.${ext}`;
+  const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
+    contentType: file.type,
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+  return { path, name: file.name, size: file.size, mime: file.type };
 }

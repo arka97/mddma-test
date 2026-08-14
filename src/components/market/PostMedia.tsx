@@ -132,3 +132,20 @@ export function PostFileChip({ file }: { file: { path: string; name: string; siz
     </a>
   );
 }
+
+/** Inline video player for post media (signed storage URL). */
+export function PostVideo({ path }: { path: string }) {
+  const url = useSigned(path);
+  if (!url) return <div className="mt-3 aspect-video w-full animate-pulse rounded-2xl bg-muted" />;
+  return (
+    <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-black" data-no-nav>
+      <video
+        src={url}
+        controls
+        playsInline
+        preload="metadata"
+        className="max-h-[510px] w-full bg-black object-contain"
+      />
+    </div>
+  );
+}

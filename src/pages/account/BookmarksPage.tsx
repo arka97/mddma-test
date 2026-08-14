@@ -137,7 +137,7 @@ export default function BookmarksPage() {
               You haven't bookmarked anything yet. Tap the{" "}
               <Bookmark className="inline h-4 w-4 align-text-bottom" /> icon on any post to save it here.
             </p>
-            <Link to="/market" className="mt-4 inline-flex text-sm font-semibold text-primary hover:underline">
+            <Link to="/" className="mt-4 inline-flex text-sm font-semibold text-primary hover:underline">
               Browse the market feed →
             </Link>
           </div>

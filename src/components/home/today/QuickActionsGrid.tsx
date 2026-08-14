@@ -21,11 +21,11 @@ export function QuickActionsGrid() {
   const { data: metrics } = useHomeMetrics();
 
   const tiles: Tile[] = [
-    { label: "Market", meta: "Signals, reports and trade updates", href: "/market", icon: LineChart, tone: "primary" },
+    { label: "Market", meta: "Signals, reports and trade updates", href: "/", icon: LineChart, tone: "primary" },
     {
       label: "Bulletin",
       meta: metrics ? `${metrics.recentBulletins} official updates` : "Official trade notices",
-      href: "/circulars",
+      href: "/",
       icon: Megaphone,
       tone: "warning",
     },

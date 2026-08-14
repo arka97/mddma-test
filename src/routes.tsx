@@ -4,14 +4,14 @@ import { Loader2 } from "lucide-react";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PasswordGate } from "@/components/PasswordGate";
 
-const Index = lazy(() => import("./pages/Index"));
+const Discover = lazy(() => import("./pages/Discover"));
 const About = lazy(() => import("./pages/About"));
 const Directory = lazy(() => import("./pages/Directory"));
 const MemberProfile = lazy(() => import("./pages/MemberProfile"));
 const Storefront = lazy(() => import("./pages/Storefront"));
 const Products = lazy(() => import("./pages/Products"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
-const Market = lazy(() => import("./pages/Market"));
+const Home = lazy(() => import("./pages/Home"));
 const PostDetail = lazy(() => import("./pages/PostDetail"));
 const Rfq = lazy(() => import("./pages/Rfq"));
 const MyQuotations = lazy(() => import("./pages/MyQuotations"));
@@ -19,7 +19,6 @@ const DealRooms = lazy(() => import("./pages/DealRooms"));
 const DealRoom = lazy(() => import("./pages/DealRoom"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const MembershipPlans = lazy(() => import("./pages/MembershipPlans"));
-const Circulars = lazy(() => import("./pages/Circulars"));
 const Forms = lazy(() => import("./pages/Forms"));
 const Login = lazy(() => import("./pages/Login"));
 const Apply = lazy(() => import("./pages/Apply"));
@@ -61,7 +60,8 @@ export function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<Index />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/discover" element={<Discover />} />
         <Route path="/about" element={<About />} />
         <Route path="/directory" element={<Directory />} />
         <Route path="/directorylist" element={<Navigate to="/directory" replace />} />
@@ -72,16 +72,16 @@ export function AppRoutes() {
         <Route path="/brands" element={<Brands />} />
         <Route path="/brands/:slug" element={<BrandPage />} />
         <Route path="/broker" element={<Navigate to="/directory?type=Broker" replace />} />
-        <Route path="/market" element={<Market />} />
+        <Route path="/market" element={<Navigate to="/" replace />} />
         <Route path="/market/:postId" element={<PostDetail />} />
-        <Route path="/community" element={<Navigate to="/market" replace />} />
+        <Route path="/community" element={<Navigate to="/" replace />} />
         <Route path="/rfq" element={<Rfq />} />
         <Route path="/quotes" element={protect(<MyQuotations />)} />
         <Route path="/messages" element={protect(<DealRooms />)} />
         <Route path="/messages/:roomId" element={protect(<DealRoom />)} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/membership" element={<MembershipPlans />} />
-        <Route path="/circulars" element={<Circulars />} />
+        <Route path="/circulars" element={<Navigate to="/" replace />} />
         <Route path="/forms" element={<Forms />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/faq" element={<Faq />} />

@@ -1,7 +1,6 @@
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { HomeHero } from "@/components/home/hero/HomeHero";
-import { LiveTicker } from "@/components/home/hero/LiveTicker";
 import { TodayHeader } from "@/components/home/today/TodayHeader";
 import { AdSlot } from "@/components/home/today/AdSlot";
 import { QuickActionsGrid } from "@/components/home/today/QuickActionsGrid";
@@ -10,12 +9,12 @@ import { RecentListingsList } from "@/components/home/today/RecentListingsList";
 import { NewMembersList } from "@/components/home/today/NewMembersList";
 import { MembershipCTA } from "@/components/home/today/MembershipCTA";
 
-const Index = () => (
+const Discover = () => (
   <Layout>
     <Seo
-      title="G-BAU-G — Verified Global Food Trade Network by MDDMA"
+      title="Discover — G-BAU-G Verified Food Trade Network"
       description="Discover verified businesses, products, market intelligence and RFQs across nuts, dry fruits, dates, seeds, spices and allied foods."
-      path="/"
+      path="/discover"
     />
 
     <div className="container mx-auto max-w-6xl space-y-5 px-5 pt-4 sm:px-6 sm:pt-5 lg:px-8">
@@ -32,10 +31,9 @@ const Index = () => (
         <RecentListingsList />
         <NewMembersList />
         <MembershipCTA />
-        <LiveTicker />
-      </div>
+          </div>
     </div>
   </Layout>
 );
 
-export default Index;
+export default Discover;

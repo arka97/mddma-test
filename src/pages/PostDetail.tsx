@@ -116,7 +116,7 @@ const PostDetail = () => {
 
       <div className="mx-auto min-h-screen max-w-[600px] pb-24 sm:border-x sm:border-border">
         <div className="flex items-center gap-6 border-b border-border bg-background px-4 py-2.5">
-          <Link to="/market" aria-label="Back to Market" className="flex h-9 w-9 items-center justify-center rounded-full text-foreground hover:bg-muted">
+          <Link to="/" aria-label="Back to feed" className="flex h-9 w-9 items-center justify-center rounded-full text-foreground hover:bg-muted">
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <h1 className="text-lg font-extrabold tracking-tight">Post</h1>
@@ -127,7 +127,7 @@ const PostDetail = () => {
         ) : notFound || !post ? (
           <div className="px-4 py-16 text-center">
             <p className="text-sm text-muted-foreground">This post isn't available.</p>
-            <Button asChild variant="outline" className="mt-4"><Link to="/market">Back to Market</Link></Button>
+            <Button asChild variant="outline" className="mt-4"><Link to="/">Back to feed</Link></Button>
           </div>
         ) : (
           <>

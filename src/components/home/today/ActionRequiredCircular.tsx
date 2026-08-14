@@ -23,7 +23,7 @@ export function ActionRequiredCircular() {
   }, []);
 
   if (!circular) return null;
-  const href = "/circulars";
+  const href = "/";
 
   return (
     <article className="rounded-2xl border border-warning/40 bg-warning/5 p-4 shadow-sm">
@@ -43,7 +43,7 @@ export function ActionRequiredCircular() {
         >
           Read &amp; act <ArrowRight className="h-3 w-3" />
         </Link>
-        <Link to="/circulars" className="text-xs font-medium text-muted-foreground hover:text-foreground">
+        <Link to="/" className="text-xs font-medium text-muted-foreground hover:text-foreground">
           All circulars
         </Link>
       </div>

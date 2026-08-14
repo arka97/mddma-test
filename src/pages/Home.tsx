@@ -12,6 +12,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { TopicChips } from "@/components/market/TopicChips";
 import { FeedTabs, type FeedTab } from "@/components/market/FeedTabs";
+import { ReelsView } from "@/components/reels/ReelsView";
+import { listReposts } from "@/repositories/postReposts";
 import { PostCard } from "@/components/market/PostCard";
 import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
@@ -22,7 +24,6 @@ import { listLikes } from "@/repositories/postLikes";
 import { commentCounts } from "@/repositories/postComments";
 import { viewCounts } from "@/repositories/postViews";
 import { listCompaniesByOwners } from "@/repositories/companies";
-import { useFollowingSet } from "@/hooks/useFollow";
 import { listFeedEvents, type FeedEvent } from "@/repositories/feedEvents";
 import { SystemEventCard } from "@/components/market/SystemEventCard";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,21 +37,21 @@ type FeedAuthor = {
   is_verified?: boolean | null;
 };
 
-const Market = () => {
+const Home = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const { role, featuresOpen, isEffectivePaid } = useRole();
   const [topic, setTopic] = useState<TopicTag | "all">("all");
-  const [feedTab, setFeedTab] = useState<FeedTab>("for_you");
+  const [feedTab, setFeedTab] = useState<FeedTab>("feed");
   const [posts, setPosts] = useState<CommunityPostRow[]>([]);
   const [authors, setAuthors] = useState<Record<string, FeedAuthor>>({});
   const [authorCompanyIds, setAuthorCompanyIds] = useState<Record<string, string>>({});
   const [likes, setLikes] = useState<{ counts: Record<string, number>; mine: Set<string> }>({ counts: {}, mine: new Set() });
   const [comments, setComments] = useState<Record<string, number>>({});
   const [views, setViews] = useState<Record<string, number>>({});
+  const [reposts, setReposts] = useState<{ counts: Record<string, number>; mine: Set<string> }>({ counts: {}, mine: new Set() });
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
   const [events, setEvents] = useState<FeedEvent[]>([]);
-  const followingSet = useFollowingSet();
 
   const isPaid = isEffectivePaid;
   const isAdmin = role === "admin";
@@ -63,8 +64,8 @@ const Market = () => {
     return Date.now() - new Date(created).getTime() < 7 * 86400000;
   }, [profile, role]);
 
-  const canRead = isPaid || freeInGrace || featuresOpen;
-  const canEngage = isPaid && !!user;
+  const canRead = true;
+  const canEngage = !!user;
 
   const load = async () => {
     setLoading(true);
@@ -81,6 +82,7 @@ const Market = () => {
         aIds.length ? listCompaniesByOwners(aIds) : Promise.resolve({}),
       ]);
       setLikes(l);
+      listReposts(ids).then(setReposts).catch(() => undefined);
       setComments(c);
       setViews(v);
       const map: Record<string, FeedAuthor> = {};
@@ -118,16 +120,11 @@ const Market = () => {
 
   const pinned = posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
   const restAll = posts.filter((p) => !pinned.includes(p));
-  const rest = feedTab === "following"
-    ? restAll.filter((p) => {
-        const cid = authorCompanyIds[p.author_id];
-        return cid ? followingSet.has(cid) : false;
-      })
-    : restAll;
+  const rest = restAll;
 
   return (
     <Layout>
-      <Seo title="Market — G-BAU-G" description="G-BAU-G market feed: price signals, alerts, sourcing asks and verified-member rates." path="/market" noindex />
+      <Seo title="G-BAU-G — Verified food trade feed by MDDMA" description="Live feed of rates, bulletins, sourcing asks and reels from verified nuts, dry fruits, dates and spice businesses." path="/" />
 
       <FeedShell
         rightRail={
@@ -142,14 +139,20 @@ const Market = () => {
         {/* X-style feed header */}
         <div className="sticky top-14 z-20 bg-background/85 backdrop-blur">
           <div className="px-4 pt-3">
-            <h1 className="text-lg font-extrabold tracking-tight text-foreground">Market</h1>
+            <h1 className="text-lg font-extrabold tracking-tight text-foreground">Home</h1>
           </div>
-          <FeedTabs active={feedTab} onChange={setFeedTab} followingDisabled={!user} />
-          <div className="border-b border-border px-2 pt-2">
-            <TopicChips active={topic} onChange={setTopic} />
-          </div>
+          <FeedTabs active={feedTab} onChange={setFeedTab} />
+          {feedTab === "feed" && (
+            <div className="border-b border-border px-2 pt-2">
+              <TopicChips active={topic} onChange={setTopic} />
+            </div>
+          )}
         </div>
 
+        {feedTab === "reels" ? (
+          <ReelsView />
+        ) : (
+        <>
         <div className="px-4 pt-3">
           <CircularsSection />
         </div>
@@ -185,13 +188,11 @@ const Market = () => {
                 ))
               ) : rest.length === 0 ? (
                 <p className="py-16 text-center text-sm text-muted-foreground">
-                  {feedTab === "following"
-                    ? "You're not following anyone with posts yet — try Who to follow on the right."
-                    : "No posts yet — be the first to share."}
+                  No posts yet — be the first to share.
                 </p>
               ) : (
                 rest.map((p, idx) => {
-                  const event = feedTab === "for_you" && idx > 0 && idx % 4 === 0
+                  const event = idx > 0 && idx % 4 === 0
                     ? events[Math.floor(idx / 4) - 1]
                     : null;
                   return (
@@ -204,6 +205,8 @@ const Market = () => {
                         likeCount={likes.counts[p.id] ?? 0}
                         commentCount={comments[p.id] ?? 0}
                         viewCount={views[p.id] ?? 0}
+                        reposted={reposts.mine.has(p.id)}
+                        repostCount={reposts.counts[p.id] ?? 0}
                         canEngage={canEngage}
                         isAdmin={isAdmin}
                       />
@@ -213,6 +216,8 @@ const Market = () => {
               )}
             </div>
           </>
+        )}
+        </>
         )}
 
         {canEngage && (
@@ -241,4 +246,4 @@ const Market = () => {
   );
 };
 
-export default Market;
+export default Home;

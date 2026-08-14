@@ -1,21 +1,17 @@
 import { cn } from "@/lib/utils";
 
-export type FeedTab = "for_you" | "following";
+export type FeedTab = "feed" | "reels";
 
 interface Props {
   active: FeedTab;
   onChange: (t: FeedTab) => void;
-  followingDisabled?: boolean;
 }
 
-/**
- * X-style two-tab header for the community feed. "Following" is disabled
- * for signed-out users (the caller controls this via `followingDisabled`).
- */
-export function FeedTabs({ active, onChange, followingDisabled }: Props) {
+/** X-style switcher between the text feed and the vertical reels feed. */
+export function FeedTabs({ active, onChange }: Props) {
   const tabs: { id: FeedTab; label: string; disabled?: boolean }[] = [
-    { id: "for_you", label: "For you" },
-    { id: "following", label: "Following", disabled: followingDisabled },
+    { id: "feed", label: "Feed" },
+    { id: "reels", label: "Reels" },
   ];
 
   return (

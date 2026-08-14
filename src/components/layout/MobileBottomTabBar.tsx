@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Building2, FileText, Home, Newspaper, User } from "lucide-react";
+import { Building2, Compass, FileText, Home, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -14,7 +14,7 @@ interface Tab {
 
 const baseTabs: Tab[] = [
   { label: "Home", href: "/", icon: Home, match: (path) => path === "/" },
-  { label: "Market", href: "/market", icon: Newspaper, match: (path) => path.startsWith("/market") },
+  { label: "Discover", href: "/discover", icon: Compass, match: (path) => path.startsWith("/discover") },
   { label: "RFQ", href: "/rfq", icon: FileText, match: (path) => path.startsWith("/rfq") },
   {
     label: "Firms",

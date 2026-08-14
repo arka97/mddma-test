@@ -38,16 +38,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const desktopNav = [
+  { name: "Home", href: "/" },
+  { name: "Discover", href: "/discover" },
   { name: "Directory", href: "/directory" },
   { name: "Products", href: "/products" },
-  { name: "Market", href: "/market" },
   { name: "RFQ", href: "/rfq" },
   { name: "Join", href: "/membership" },
 ];
 
 const moreNav = [
   { name: "Brands", href: "/brands" },
-  { name: "Bulletin", href: "/circulars" },
   { name: "Knowledge", href: "/knowledge" },
   { name: "FAQ", href: "/faq" },
   { name: "About", href: "/about" },
@@ -80,7 +80,8 @@ export function Header() {
   }, []);
 
 
-  const isActive = (href: string) => location.pathname.startsWith(href);
+  const isActive = (href: string) =>
+    href === "/" ? location.pathname === "/" : location.pathname.startsWith(href);
   const initials = (profile?.full_name || user?.email || "U").slice(0, 1).toUpperCase();
 
   const handleSignOut = async () => {
@@ -194,7 +195,7 @@ export function Header() {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    "rounded-md px-2.5 py-1.5 text-sm font-medium transition-colors",
+                    "whitespace-nowrap rounded-md px-2 py-1.5 text-sm font-medium transition-colors",
                     isActive(item.href)
                       ? "bg-secondary text-foreground"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground",
