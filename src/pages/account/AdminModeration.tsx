@@ -583,13 +583,22 @@ const AdminModeration = () => {
                           </div>
                         </div>
                         {(() => {
-                          const slotAspect = 32 / 5;
-                          const aspect = adForm.mobileFile ? adForm.mobileDims?.aspect : adForm.imageDims?.aspect;
-                          if (!aspect) return null;
-                          const ratio = aspect / slotAspect;
-                          if (ratio >= 0.85 && ratio <= 1.15) return null;
-                          return <p className="text-xs text-amber-600">This image will be letterboxed in the mobile slot. For edge-to-edge coverage, use a ratio closer to {slotAspect.toFixed(2)}.</p>;
+                          const warnings: string[] = [];
+                          const mobileAspect = adForm.mobileFile ? adForm.mobileDims?.aspect : adForm.imageDims?.aspect;
+                          if (mobileAspect) {
+                            const mobileSlot = 32 / 5;
+                            const r = mobileAspect / mobileSlot;
+                            if (r < 0.85 || r > 1.15) warnings.push(`Mobile slot ratio is ${mobileSlot.toFixed(2)}; this image will be letterboxed.`);
+                          }
+                          if (adForm.imageDims?.aspect) {
+                            const desktopSlot = 728 / 90;
+                            const r = adForm.imageDims.aspect / desktopSlot;
+                            if (r < 0.85 || r > 1.15) warnings.push(`Desktop slot ratio is ${desktopSlot.toFixed(2)}; this image will be letterboxed.`);
+                          }
+                          if (warnings.length === 0) return null;
+                          return <div className="text-xs text-amber-600 space-y-0.5">{warnings.map((w, i) => <p key={i}>{w}</p>)}</div>;
                         })()}
+
                       </>
                     )}
                     <Button onClick={saveAd} disabled={savingAd} variant="accent">
