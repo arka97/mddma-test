@@ -233,42 +233,20 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
     <Sheet open={open} onOpenChange={(v) => { if (!v) reset(); onOpenChange(v); }}>
       <SheetContent
         side="bottom"
-        className="flex max-h-[92vh] flex-col gap-0 rounded-t-2xl bg-card p-0 [&>button.absolute]:hidden"
+        className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 rounded-none bg-background p-0 pt-safe [&>button.absolute]:hidden sm:h-auto sm:max-h-[92vh] sm:rounded-t-2xl"
       >
-        <div className="flex justify-center pt-2">
-          <span className="h-1 w-10 rounded-full bg-border" aria-hidden="true" />
-        </div>
-
-        <div className="flex items-center justify-between gap-3 px-4 py-3">
+        {/* X-style top bar: Cancel · title · Post */}
+        <div className="flex items-center justify-between gap-3 border-b border-border/60 px-4 py-2.5">
           <SheetClose asChild>
-            <button type="button" className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-foreground hover:bg-muted/80" aria-label="Close">
-              <X className="h-4 w-4" />
-            </button>
+            <button type="button" className="text-[15px] font-medium text-foreground">Cancel</button>
           </SheetClose>
-          <h2 className="text-base font-semibold">New Post</h2>
-          <Button onClick={submit} disabled={!canSubmit} size="sm" className="h-9 px-5">
+          <h2 className="text-[15px] font-bold">New Post</h2>
+          <Button onClick={submit} disabled={!canSubmit} size="sm" className="h-8 rounded-full px-5 text-sm font-bold">
             {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Post"}
           </Button>
         </div>
 
-        {canPostAnonymous && (
-          <div className="border-t border-border/60 px-4 py-3">
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <Label className="text-sm font-semibold">Post anonymously</Label>
-                <p className="truncate text-xs text-muted-foreground">Your identity will be hidden from other members</p>
-              </div>
-              <Switch checked={isAnon} onCheckedChange={setIsAnon} />
-            </div>
-            {isAnon && (
-              <p className="mt-2 rounded-md bg-muted/50 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                Only MDDMA admins can trace anonymous posts — a log is kept for compliance and dispute resolution.
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="flex-1 overflow-y-auto border-t border-border/60 px-4 py-4">
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           {mode === "general" && (
             <div className="flex gap-3">
               <Avatar className="h-10 w-10 shrink-0">
@@ -276,24 +254,35 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
                 <AvatarFallback className="bg-primary/20 text-sm font-semibold text-primary-foreground">{initials}</AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
-                {!isAnon && company && (
-                  <div className="mb-1 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <span>Posting as</span>
-                    <span className="font-medium text-foreground">{company.name}</span>
-                    {memberships.length > 1 && (
-                      <span className="text-muted-foreground">· switch in header</span>
-                    )}
-                  </div>
+                <div className="mb-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
+                  {!isAnon && company && (
+                    <span className="inline-flex items-center gap-1">
+                      Posting as <span className="font-medium text-foreground">{company.name}</span>
+                      {memberships.length > 1 && <span>· switch in header</span>}
+                    </span>
+                  )}
+                  {canPostAnonymous && (
+                    <span className="inline-flex items-center gap-1.5">
+                      <Label htmlFor="anon-toggle" className="text-[11px] font-medium">Anonymous</Label>
+                      <Switch id="anon-toggle" checked={isAnon} onCheckedChange={setIsAnon} className="scale-75" />
+                    </span>
+                  )}
+                </div>
+                {isAnon && (
+                  <p className="mb-2 rounded-md bg-muted/50 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                    Only MDDMA admins can trace anonymous posts — a log is kept for compliance and dispute resolution.
+                  </p>
                 )}
                 <Textarea
                   ref={textareaRef}
-                  className="min-h-[120px] resize-none border-0 bg-transparent p-0 text-base shadow-none focus-visible:ring-0"
+                  className="min-h-[140px] resize-none border-0 bg-transparent p-0 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground/70 focus-visible:ring-0"
                   placeholder="What's happening in the market?"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   onPaste={onPaste}
                   autoFocus
                 />
+
 
 
                 {images.length > 0 && (
@@ -521,15 +510,18 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
           onChange={(e) => { const f = e.target.files?.[0]; if (f) onPickPdf(f); e.target.value = ""; }}
         />
 
-        {/* Bottom action row */}
-        <div className="flex items-center gap-1 overflow-x-auto border-t border-border/60 bg-card px-2 py-2 pb-safe">
+        {/* Toolbar pinned above the keyboard */}
+        <div className="flex items-center gap-0.5 border-t border-border/60 bg-background px-2 py-2 pb-safe">
           <ActionPill icon={ImageIcon} label="Photo" onClick={() => imageInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={Video} label="Video" onClick={() => videoInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
           <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
-          <ActionPill icon={Tag} label="Price" onClick={() => openMode("price")} active={mode === "price"} />
-          <ActionPill icon={BarChart3} label="Poll" onClick={() => openMode("poll")} active={mode === "poll"} />
+          <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
+          <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
           <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
+          <span className="ml-auto pr-2 text-xs tabular-nums text-muted-foreground">
+            {content.length > 0 ? content.length : ""}
+          </span>
         </div>
       </SheetContent>
     </Sheet>
@@ -550,16 +542,16 @@ function ActionPill({
       type="button"
       onClick={onClick}
       disabled={disabled}
+      aria-label={label}
+      title={label}
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-        active
-          ? "bg-primary/15 text-foreground"
-          : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground",
-        disabled && "opacity-40 cursor-not-allowed",
+        "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full transition-colors",
+        active ? "bg-primary/15 text-primary" : "text-primary hover:bg-primary/10",
+        disabled && "cursor-not-allowed opacity-40",
       )}
     >
-      <Icon className={cn("h-4 w-4", active ? "text-primary" : "text-muted-foreground")} />
-      {label}
+      <Icon className="h-[18px] w-[18px]" />
     </button>
   );
 }
+

@@ -14,7 +14,7 @@ import { viewCounts } from "@/repositories/postViews";
 import { listComments, addComment, type PostCommentRow } from "@/repositories/postComments";
 import { listCompaniesByOwners } from "@/repositories/companies";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow } from "date-fns";
+import { shortTimeAgo } from "@/lib/time";
 import { useToast } from "@/hooks/use-toast";
 
 interface Author {
@@ -175,7 +175,7 @@ const PostDetail = () => {
                 comments.map((c) => (
                   <div key={c.id} className="px-4 py-3">
                     <div className="mb-1 text-[13px] text-muted-foreground">
-                      Member · {formatDistanceToNow(new Date(c.created_at), { addSuffix: true })}
+                      Member · {shortTimeAgo(c.created_at)}
                     </div>
                     <p className="whitespace-pre-wrap text-[15px]">{c.content}</p>
                   </div>

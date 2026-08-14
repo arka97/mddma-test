@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 import { cn } from "@/lib/utils";
 import { useScrolled } from "@/hooks/use-scrolled";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/brand/Logo";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
@@ -28,6 +29,7 @@ export function Header() {
   const location = useLocation();
   const { user, profile } = useAuth();
   const scrolled = useScrolled(24);
+  const hideChrome = useScrollDirection();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -55,7 +57,12 @@ export function Header() {
   const isHome = location.pathname === "/";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card pt-safe">
+    <header
+      className={cn(
+        "sticky top-0 z-40 border-b border-border bg-card pt-safe transition-transform duration-200 ease-out will-change-transform",
+        hideChrome ? "-translate-y-full lg:translate-y-0" : "translate-y-0",
+      )}
+    >
       <div className="container mx-auto px-5 sm:px-6 lg:px-8">
         <div
           className={cn(
