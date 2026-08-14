@@ -145,6 +145,12 @@ const Home = () => {
     }
   };
 
+  // Switching chip always brings the chrome back so nav is never hidden on arrival.
+  useEffect(() => {
+    showChrome();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topic]);
+
   useEffect(() => {
     if (canRead) load();
     else setLoading(false);
