@@ -35,6 +35,7 @@ import { listCompaniesByOwners } from "@/repositories/companies";
 import { listFeedEvents, type FeedEvent } from "@/repositories/feedEvents";
 import { SystemEventCard } from "@/components/market/SystemEventCard";
 import { supabase } from "@/integrations/supabase/client";
+import { fabBottom } from "@/lib/chrome-layout";
 
 type FeedAuthor = {
   id: string;
@@ -368,13 +369,12 @@ const Home = () => {
             onClick={() => (canEngage ? setComposeOpen(true) : navigate("/login"))}
             aria-label="Compose post"
             style={{
-              "--fab-bottom": hideChrome
-                ? "calc(env(safe-area-inset-bottom) + 12px)"
-                : "calc(env(safe-area-inset-bottom) + 66px)",
+              "--fab-bottom": fabBottom(hideChrome),
             } as CSSProperties}
             className={cn(
               "fixed bottom-[var(--fab-bottom)] right-4 z-40 h-14 w-14 rounded-full p-0 shadow-lg transition-[bottom] duration-200 ease-out lg:bottom-6 lg:right-6 lg:h-12 lg:w-auto lg:px-6",
             )}
+
           >
             <Feather className="h-6 w-6 lg:mr-2 lg:h-5 lg:w-5" />
             <span className="hidden lg:inline">Post</span>
