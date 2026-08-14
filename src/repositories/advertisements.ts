@@ -5,6 +5,7 @@ export interface AdRow {
   id: string;
   title: string;
   image_url: string;
+  mobile_image_url: string | null;
   link_url: string | null;
   placement: string;
   start_date: string;
@@ -13,9 +14,12 @@ export interface AdRow {
   priority: number;
   impressions: number;
   clicks: number;
+  image_aspect: number | null;
+  focal_y: number | null;
   created_at: string;
   updated_at: string;
 }
+
 
 export async function listAdsByPlacement(placement: string) {
   const today = new Date().toISOString().slice(0, 10);
