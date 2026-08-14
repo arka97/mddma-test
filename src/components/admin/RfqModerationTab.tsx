@@ -55,7 +55,7 @@ export function RfqModerationTab() {
             <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <Badge className={r.listing_type === "buy" ? "bg-primary text-primary-foreground" : "bg-accent text-gold-dark-foreground"}>
+                  <Badge className={r.listing_type === "buy" ? "bg-primary text-primary-foreground" : "bg-accent text-accent-foreground"}>
                     {r.listing_type.toUpperCase()}
                   </Badge>
                   {r.is_hidden && <Badge variant="outline">Hidden</Badge>}

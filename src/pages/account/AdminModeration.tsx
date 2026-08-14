@@ -301,7 +301,7 @@ const AdminModeration = () => {
                         <p className="text-xs text-muted-foreground truncate">/{c.slug} · {c.city ?? "—"}</p>
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {c.is_verified && <Badge className="bg-accent text-gold-dark-foreground">Verified</Badge>}
+                        {c.is_verified && <Badge className="bg-accent text-accent-foreground">Verified</Badge>}
                         {c.is_hidden && <Badge variant="outline">Hidden</Badge>}
                       </div>
                       <div className="flex gap-1">
@@ -332,7 +332,7 @@ const AdminModeration = () => {
                         </div>
                         <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
                           <div className="flex flex-wrap gap-1">
-                            {p.is_featured && <Badge className="bg-accent text-gold-dark-foreground">Featured</Badge>}
+                            {p.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
                             {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
                           </div>
                           <div className="flex gap-1">
@@ -441,7 +441,7 @@ const AdminModeration = () => {
                         </p>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
-                        {c.is_published ? <Badge className="bg-accent text-gold-dark-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
+                        {c.is_published ? <Badge className="bg-accent text-accent-foreground">Live</Badge> : <Badge variant="outline">Draft</Badge>}
                         <Button size="sm" variant="outline" onClick={() => togglePublishCircular(c.id, !c.is_published)}>{c.is_published ? "Unpublish" : "Publish"}</Button>
                         <Button size="sm" variant="outline" onClick={() => deleteCircular(c.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
@@ -501,7 +501,7 @@ const AdminModeration = () => {
                             }}
                           />
                         </div>
-                        {a.is_active ? <Badge className="bg-accent text-gold-dark-foreground">Active</Badge> : <Badge variant="outline">Paused</Badge>}
+                        {a.is_active ? <Badge className="bg-accent text-accent-foreground">Active</Badge> : <Badge variant="outline">Paused</Badge>}
                         <Button size="sm" variant="outline" onClick={() => toggleAdActive(a.id, !a.is_active)}>{a.is_active ? "Pause" : "Activate"}</Button>
                         <Button size="sm" variant="outline" onClick={() => deleteAd(a.id)}><Trash2 className="h-3 w-3" /></Button>
                       </div>
@@ -591,7 +591,7 @@ const AdminModeration = () => {
                           </div>
                           <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap sm:ml-auto sm:shrink-0">
                             <div className="flex flex-wrap gap-1">
-                              {c.is_featured && <Badge className="bg-accent text-gold-dark-foreground">Featured</Badge>}
+                              {c.is_featured && <Badge className="bg-accent text-accent-foreground">Featured</Badge>}
                               {!c.is_active && <Badge variant="outline">Inactive</Badge>}
                             </div>
                             <div className="flex gap-1">

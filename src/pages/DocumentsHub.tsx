@@ -114,7 +114,7 @@ const DocumentsHub = () => {
     <div className="min-h-screen bg-primary text-primary-foreground">
       <div className="max-w-5xl mx-auto px-6 py-16 space-y-12">
         <div className="text-center space-y-4">
-          <Badge className="bg-accent text-gold-dark-foreground font-semibold text-sm px-4 py-1">v3.2 · July 2026</Badge>
+          <Badge className="bg-accent text-accent-foreground font-semibold text-sm px-4 py-1">v3.2 · July 2026</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
             MDDMA <span className="text-gold-dark">Documentation</span>
           </h1>

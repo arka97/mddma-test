@@ -56,7 +56,7 @@ export function ListingRow({
           </span>
         )}
         {hot && (
-          <span className="absolute -right-1 -top-1 rounded bg-accent px-1 text-[8px] font-bold uppercase tracking-wide text-gold-dark-foreground">
+          <span className="absolute -right-1 -top-1 rounded bg-accent px-1 text-[8px] font-bold uppercase tracking-wide text-accent-foreground">
             Hot
           </span>
         )}
