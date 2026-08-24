@@ -669,19 +669,22 @@ export type Database = {
       follows: {
         Row: {
           created_at: string
-          followed_company_id: string
+          followed_company_id: string | null
+          followed_user_id: string | null
           follower_user_id: string
           id: string
         }
         Insert: {
           created_at?: string
-          followed_company_id: string
+          followed_company_id?: string | null
+          followed_user_id?: string | null
           follower_user_id: string
           id?: string
         }
         Update: {
           created_at?: string
-          followed_company_id?: string
+          followed_company_id?: string | null
+          followed_user_id?: string | null
           follower_user_id?: string
           id?: string
         }
@@ -1856,6 +1859,7 @@ export type Database = {
         }[]
       }
       get_company_whatsapp: { Args: { _company_id: string }; Returns: string }
+      get_followed_author_ids: { Args: never; Returns: string[] }
       get_my_company: {
         Args: never
         Returns: {
@@ -1948,6 +1952,17 @@ export type Database = {
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
       is_verification_open: { Args: never; Returns: boolean }
+      list_suggested_follows: {
+        Args: { _limit?: number }
+        Returns: {
+          avatar_url: string
+          company_id: string
+          company_name: string
+          company_slug: string
+          full_name: string
+          user_id: string
+        }[]
+      }
       record_business_post_view: {
         Args: { _post_id: string }
         Returns: undefined
