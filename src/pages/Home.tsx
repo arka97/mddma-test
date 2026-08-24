@@ -17,6 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FEED_TOPIC_ORDER } from "@/components/market/TopicChips";
 import { ReelsView } from "@/components/reels/ReelsView";
 import { listReposts } from "@/repositories/postReposts";
+import { fetchPublicProfiles } from "@/repositories/profiles";
 import { PostCard } from "@/components/market/PostCard";
 import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
@@ -136,7 +137,7 @@ const Home = () => {
         listLikes(ids),
         commentCounts(ids),
         viewCounts(ids),
-        aIds.length ? supabase.from("profiles").select("id,full_name,avatar_url,company_name").in("id", aIds) : Promise.resolve({ data: [] }),
+        fetchPublicProfiles(aIds),
         aIds.length ? listCompaniesByOwners(aIds) : Promise.resolve({}),
       ]);
       setLikes(l);
@@ -145,7 +146,8 @@ const Home = () => {
       setViews(v);
       const map: Record<string, FeedAuthor> = {};
       const companyIds: Record<string, string> = {};
-      ((profs.data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null; company_name?: string | null }>).forEach((p) => { map[p.id] = p; });
+      profs.forEach((p) => { map[p.id] = p; });
+
       // Merge storefront slug + verified flag so authors link to their profile.
       Object.entries(companies as Record<string, { id: string; slug: string; name: string; is_verified: boolean }>).forEach(([ownerId, co]) => {
         map[ownerId] = {

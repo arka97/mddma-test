@@ -14,6 +14,7 @@ import { viewCounts } from "@/repositories/postViews";
 import { listComments, addComment, type PostCommentRow } from "@/repositories/postComments";
 import { listCompaniesByOwners } from "@/repositories/companies";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchPublicProfiles } from "@/repositories/profiles";
 import { shortTimeAgo } from "@/lib/time";
 import { useToast } from "@/hooks/use-toast";
 
@@ -70,14 +71,12 @@ const PostDetail = () => {
         setComments(cts);
 
         if (!p.is_anonymous) {
-          const [{ data: profs }, companies] = await Promise.all([
-            supabase.from("profiles").select("id,full_name,avatar_url,company_name").eq("id", p.author_id),
+          const [profs, companies] = await Promise.all([
+            fetchPublicProfiles([p.author_id]),
             listCompaniesByOwners([p.author_id]),
           ]);
           if (!alive) return;
-          const prof = (profs ?? [])[0] as
-            | { full_name: string | null; avatar_url: string | null; company_name: string | null }
-            | undefined;
+          const prof = profs[0];
           const co = companies[p.author_id];
           setAuthorCompanyId(co?.id ?? null);
           setAuthor({

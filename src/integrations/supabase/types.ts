@@ -2082,6 +2082,16 @@ export type Database = {
           view_count: number
         }[]
       }
+      get_public_profiles: {
+        Args: { _ids: string[] }
+        Returns: {
+          avatar_url: string
+          company_name: string
+          full_name: string
+          id: string
+          verification_tier: Database["public"]["Enums"]["verification_tier"]
+        }[]
+      }
       has_company_role: {
         Args: {
           _company_id: string

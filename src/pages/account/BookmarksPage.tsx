@@ -4,6 +4,7 @@ import { Bookmark, Loader2 } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { supabase } from "@/integrations/supabase/client";
+import { fetchPublicProfiles } from "@/repositories/profiles";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { PostCard } from "@/components/market/PostCard";
@@ -71,7 +72,7 @@ export default function BookmarksPage() {
         listLikes(ids).catch(() => ({ counts: {}, mine: new Set<string>() })),
         viewCounts(ids).catch(() => ({} as Record<string, number>)),
         commentCounts(ids).catch(() => ({} as Record<string, number>)),
-        supabase.from("profiles").select("id, full_name, avatar_url").in("id", ownerIds),
+        fetchPublicProfiles(ownerIds),
         listCompaniesByOwners(ownerIds).catch(() => ({} as Record<string, { name: string; slug: string; is_verified: boolean }>)),
       ]);
 
@@ -82,7 +83,7 @@ export default function BookmarksPage() {
       setComments(commentRes);
 
       const authorMap: Record<string, Author> = {};
-      (profilesRes.data ?? []).forEach((p) => {
+      profilesRes.forEach((p) => {
         authorMap[p.id] = {
           id: p.id,
           full_name: p.full_name,
