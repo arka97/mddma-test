@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useVisualViewportHeight } from "@/hooks/useVisualViewportHeight";
 import { cn } from "@/lib/utils";
-import { createPost, type PostType, type TopicTag } from "@/repositories/communityPosts";
+import { createPost, type PostType, type TopicTag, type PostChannel } from "@/repositories/communityPosts";
 import { createPollForPost } from "@/repositories/postPolls";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -46,7 +46,9 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const qc = useQueryClient();
 
   const [mode, setMode] = useState<EditorMode>("general");
+  const [channel, setChannel] = useState<PostChannel>("updates");
   const [signalType, setSignalType] = useState<"market_alert" | "sourcing_ask" | "member_news">("market_alert");
+
   const [content, setContent] = useState("");
   const [isAnon, setIsAnon] = useState(false);
   const [sd, setSd] = useState<Record<string, string | number>>({});
