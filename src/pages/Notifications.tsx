@@ -70,7 +70,7 @@ export default function NotificationsPage() {
 
   return (
     <Layout>
-      <Seo title="Notifications | G-BAU-G" description="Your activity on G-BAU-G." noindex />
+      <Seo title="Notifications | G-BAU-G" description="Your activity on G-BAU-G." path="/notifications" noindex />
       <div className="mx-auto max-w-2xl pb-24">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <h1 className="text-lg font-bold text-foreground">Notifications</h1>

@@ -51,12 +51,12 @@ export function permissionState(): NotificationPermission | "unavailable" {
   return Notification.permission;
 }
 
-function urlBase64ToUint8Array(base64: string): Uint8Array {
+function urlBase64ToUint8Array(base64: string): BufferSource {
   const padding = "=".repeat((4 - (base64.length % 4)) % 4);
   const raw = atob((base64 + padding).replace(/-/g, "+").replace(/_/g, "/"));
   const out = new Uint8Array(raw.length);
   for (let i = 0; i < raw.length; i += 1) out[i] = raw.charCodeAt(i);
-  return out;
+  return out.buffer as ArrayBuffer;
 }
 
 function keyToBase64(key: ArrayBuffer | null): string {
