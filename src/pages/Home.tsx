@@ -17,6 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FEED_TOPIC_ORDER } from "@/components/market/TopicChips";
 import { ReelsView } from "@/components/reels/ReelsView";
 import { listReposts } from "@/repositories/postReposts";
+import { fetchPublicProfiles } from "@/repositories/profiles";
 import { PostCard } from "@/components/market/PostCard";
 import { PinnedRatesCard } from "@/components/market/PinnedRatesCard";
 import { ComposeSheet } from "@/components/market/ComposeSheet";
