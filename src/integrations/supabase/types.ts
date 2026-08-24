@@ -861,6 +861,87 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_preferences: {
+        Row: {
+          announcements: boolean
+          created_at: string
+          deals: boolean
+          market: boolean
+          personal: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          announcements?: boolean
+          created_at?: string
+          deals?: boolean
+          market?: boolean
+          personal?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          announcements?: boolean
+          created_at?: string
+          deals?: boolean
+          market?: boolean
+          personal?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          actor_id: string | null
+          body: string | null
+          circular_id: string | null
+          created_at: string
+          group_count: number
+          id: string
+          post_id: string | null
+          read_at: string | null
+          recipient_id: string
+          rfq_id: string | null
+          room_id: string | null
+          title: string
+          type: string
+          url: string | null
+        }
+        Insert: {
+          actor_id?: string | null
+          body?: string | null
+          circular_id?: string | null
+          created_at?: string
+          group_count?: number
+          id?: string
+          post_id?: string | null
+          read_at?: string | null
+          recipient_id: string
+          rfq_id?: string | null
+          room_id?: string | null
+          title: string
+          type: string
+          url?: string | null
+        }
+        Update: {
+          actor_id?: string | null
+          body?: string | null
+          circular_id?: string | null
+          created_at?: string
+          group_count?: number
+          id?: string
+          post_id?: string | null
+          read_at?: string | null
+          recipient_id?: string
+          rfq_id?: string | null
+          room_id?: string | null
+          title?: string
+          type?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
       post_bookmarks: {
         Row: {
           created_at: string
@@ -1448,6 +1529,42 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          last_seen_at: string
+          p256dh: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          last_seen_at?: string
+          p256dh: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          last_seen_at?: string
+          p256dh?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       rfq_contact_reveals: {
         Row: {
           id: string
@@ -1799,6 +1916,7 @@ export type Database = {
         Args: { _option_id: string; _poll_id: string }
         Returns: string
       }
+      count_my_unread_notifications: { Args: never; Returns: number }
       create_business_poll_post: {
         Args: {
           _content?: string
@@ -1827,6 +1945,21 @@ export type Database = {
             }
             Returns: string
           }
+      create_notification: {
+        Args: {
+          _actor: string
+          _body?: string
+          _circular_id?: string
+          _post_id?: string
+          _recipient: string
+          _rfq_id?: string
+          _room_id?: string
+          _title: string
+          _type: string
+          _url?: string
+        }
+        Returns: string
+      }
       downgrade_to_free: { Args: { _user_id: string }; Returns: undefined }
       get_business_poll: {
         Args: { _post_id: string }
@@ -1969,6 +2102,22 @@ export type Database = {
       is_muted: { Args: { _uid: string }; Returns: boolean }
       is_paid_or_admin: { Args: { _uid: string }; Returns: boolean }
       is_verification_open: { Args: never; Returns: boolean }
+      list_my_notifications: {
+        Args: { _before?: string; _limit?: number }
+        Returns: {
+          actor_avatar: string
+          actor_id: string
+          actor_name: string
+          body: string
+          created_at: string
+          group_count: number
+          id: string
+          read_at: string
+          title: string
+          type: string
+          url: string
+        }[]
+      }
       list_suggested_follows: {
         Args: { _limit?: number }
         Returns: {
@@ -1980,6 +2129,8 @@ export type Database = {
           user_id: string
         }[]
       }
+      mark_notifications_read: { Args: { _ids: string[] }; Returns: number }
+      notification_category: { Args: { _type: string }; Returns: string }
       record_business_post_view: {
         Args: { _post_id: string }
         Returns: undefined
