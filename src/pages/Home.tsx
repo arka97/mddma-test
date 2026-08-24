@@ -11,8 +11,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { TopicChips, type FeedTopic } from "@/components/market/TopicChips";
-import { useFollowingSet } from "@/hooks/useFollow";
-import { listUserIdsForCompanies } from "@/repositories/companies";
+import { useFollowedAuthorIds } from "@/hooks/useFollow";
+
 import { Link, useNavigate } from "react-router-dom";
 import { FEED_TOPIC_ORDER } from "@/components/market/TopicChips";
 import { ReelsView } from "@/components/reels/ReelsView";
