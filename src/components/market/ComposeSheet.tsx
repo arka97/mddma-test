@@ -255,7 +255,15 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const openMode = (m: EditorMode) => { setMode(m); setSd({}); };
   const backToGeneral = () => { setMode("general"); setSd({}); };
 
-  const modeLabel = mode === "price" ? "Price" : mode === "poll" ? "Poll" : mode === "signal" ? (SIGNAL_OPTIONS.find((o) => o.value === signalType)?.label ?? "Signal") : null;
+  const switchChannel = (c: PostChannel) => {
+    setChannel(c);
+    if (c === "buzz") { setMode("general"); setSd({}); }
+  };
+
+  const modeLabel = channel === "buzz"
+    ? null
+    : mode === "price" ? "Price" : mode === "poll" ? "Poll" : mode === "signal" ? (SIGNAL_OPTIONS.find((o) => o.value === signalType)?.label ?? "Signal") : null;
+
   const CHAR_LIMIT = 2000;
   const ringPct = Math.min(1, content.length / CHAR_LIMIT);
 
