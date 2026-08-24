@@ -55,6 +55,8 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
       const c = await addComment(postId, user.id, text.trim());
       setComments((arr) => [...arr, c]);
       setText("");
+      if (inputRef.current) inputRef.current.style.height = "auto";
+
       onCommentAdded?.();
     } catch (e) {
       toast({ title: "Couldn't post reply", description: e instanceof Error ? e.message : "", variant: "destructive" });
