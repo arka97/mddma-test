@@ -89,10 +89,11 @@ export function useFollow(target: FollowTarget | null | undefined) {
       if (!userId || !target) throw new Error("Sign in to follow");
       const column = target.type === "company" ? "followed_company_id" : "followed_user_id";
       if (nextFollowing) {
-        const row =
-          target.type === "company"
-            ? { follower_user_id: userId, followed_company_id: target.id }
-            : { follower_user_id: userId, followed_user_id: target.id };
+        const row: { follower_user_id: string; followed_company_id?: string; followed_user_id?: string } = {
+          follower_user_id: userId,
+        };
+        if (target.type === "company") row.followed_company_id = target.id;
+        else row.followed_user_id = target.id;
         const { error } = await supabase.from("follows").insert(row);
         // Ignore unique-violation races — the row we wanted already exists.
         if (error && error.code !== "23505") throw error;
