@@ -24,6 +24,7 @@ import { BulletinCard } from "@/components/market/BulletinCard";
 import { useCirculars } from "@/hooks/queries/useContent";
 import type { CircularRow } from "@/repositories/circulars";
 import { AdSlot } from "@/components/home/today/AdSlot";
+import { EnablePushCard } from "@/components/notifications/EnablePushCard";
 import { cn } from "@/lib/utils";
 import { useChromeVisibility } from "@/contexts/ChromeVisibilityContext";
 
@@ -280,6 +281,9 @@ const Home = () => {
 
         {canRead && (
           <>
+            <div className="pt-3">
+              <EnablePushCard />
+            </div>
             {pinned.length > 0 && (
               <div className="space-y-3 px-4 pt-3">
                 {pinned.map((p) => (

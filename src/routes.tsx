@@ -41,6 +41,7 @@ const Faq = lazy(() => import("./pages/Faq"));
 const Knowledge = lazy(() => import("./pages/Knowledge"));
 const KnowledgeArticle = lazy(() => import("./pages/KnowledgeArticle"));
 const Contact = lazy(() => import("./pages/Contact"));
+const NotificationsPage = lazy(() => import("./pages/Notifications"));
 
 function RouteFallback() {
   return (
@@ -80,6 +81,7 @@ export function AppRoutes() {
         <Route path="/messages" element={protect(<DealRooms />)} />
         <Route path="/messages/:roomId" element={protect(<DealRoom />)} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/membership" element={<MembershipPlans />} />
         <Route path="/circulars" element={<Navigate to="/" replace />} />
         <Route path="/forms" element={<Forms />} />

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
+  Bell,
   Bookmark,
   Building2,
   BookOpen,
@@ -189,6 +190,9 @@ export function AccountDrawer({ open, onOpenChange }: Props) {
               </Row>
               <Row to="/account/bookmarks" icon={Bookmark} onNavigate={close}>
                 Bookmarks
+              </Row>
+              <Row to="/notifications" icon={Bell} onNavigate={close}>
+                Notifications
               </Row>
               <Row to="/quotes" icon={FileCheck2} onNavigate={close}>
                 My quotations
