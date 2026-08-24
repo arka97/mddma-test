@@ -97,7 +97,11 @@ export function CommunityModerationTab() {
                 <p className="text-[10px] text-muted-foreground mt-1">{new Date(p.created_at).toLocaleString()}</p>
               </div>
               <div className="flex gap-1 sm:shrink-0">
+                <Button size="sm" variant="outline" onClick={() => onMoveChannel(p.id, p.channel)} title={p.channel === "buzz" ? "Move to Updates" : "Move to Buzz"}>
+                  {p.channel === "buzz" ? "→ Updates" : "→ Buzz"}
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => onHide(p.id, !p.is_hidden)} title={p.is_hidden ? "Unhide" : "Hide"}>
+
                   {p.is_hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => onMute(p.id, realAuthorId)} title="Mute author">
