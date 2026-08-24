@@ -65,6 +65,8 @@ interface Author {
 interface Props {
   post: CommunityPostRow;
   author?: Author;
+  /** Business id behind the author, when they own one. */
+  companyId?: string | null;
   liked: boolean;
   likeCount: number;
   commentCount: number;
@@ -147,6 +149,7 @@ function StructuredBody({ post }: { post: CommunityPostRow }) {
 export function PostCard({
   post,
   author,
+  companyId,
   liked: initialLiked,
   likeCount: initialCount,
   commentCount,
@@ -241,7 +244,13 @@ export function PostCard({
   const profileHref = slug ? `/store/${slug}` : undefined;
   const handle = slug ? `@${slug}` : null;
   const verified = !anon && !!author?.is_verified;
-  const followId = slug ?? author?.id ?? null;
+  const followTarget = anon
+    ? null
+    : companyId
+      ? ({ type: "company", id: companyId } as const)
+      : author?.id
+        ? ({ type: "user", id: author.id } as const)
+        : null;
   const isSelf = !!user?.id && !!author?.id && user.id === author.id;
   const time = shortTimeAgo(post.created_at);
   const tlabel = topicLabel(post.topic_tag);
@@ -332,8 +341,8 @@ export function PostCard({
           <div className="flex items-start justify-between gap-2">
             {NameBlock}
             <div className="flex shrink-0 items-center gap-1">
-              {followId && !isSelf && !anon && (
-                <FollowButton id={followId} name={displayName} />
+              {followTarget && !isSelf && (
+                <FollowButton target={followTarget} name={displayName} />
               )}
               {isAdmin && (
                 <DropdownMenu>

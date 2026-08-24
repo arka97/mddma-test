@@ -83,7 +83,7 @@ function HoverCardBody({ data }: { data: CompanySummary }) {
             <div className="truncate text-xs text-muted-foreground">@{data.slug}</div>
           </div>
         </Link>
-        <FollowButton id={data.id} name={data.name} />
+        <FollowButton target={{ type: "company", id: data.id }} name={data.name} />
       </div>
       {data.tagline && (
         <p className="line-clamp-3 text-xs text-muted-foreground">{data.tagline}</p>

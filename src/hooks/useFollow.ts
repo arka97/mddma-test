@@ -2,51 +2,99 @@ import { useCallback } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { friendlyErrorMessage } from "@/lib/errors";
 
 /**
- * Live follow state for a single company, backed by `public.follows`.
+ * Live follow state, backed by `public.follows`.
  *
- * - The set of companies the current user follows is fetched once and cached;
- *   individual FollowButtons read the boolean off the set so they all stay in
- *   sync without one query per row.
- * - `toggle()` is optimistic — flips the cached set, writes to Supabase, and
- *   rolls back on error.
- * - Signed-out users get a stable `following=false` and a no-op toggle (the
- *   caller decides whether to show the button at all).
+ * A follow row points at EITHER a business (`followed_company_id`) or an
+ * individual member (`followed_user_id`), so every non-anonymous author is
+ * followable even when their business is still pending review.
+ *
+ * - The viewer's whole follow set is fetched once and cached; individual
+ *   FollowButtons read a boolean off it so they all stay in sync.
+ * - `toggle()` is optimistic and rolls back with a toast on error.
  */
 
-const followingSetKey = (userId: string | null) => ["follows", "set", userId] as const;
+export type FollowTarget = { type: "company" | "user"; id: string };
 
-async function fetchFollowingSet(userId: string): Promise<Set<string>> {
-  const { data, error } = await supabase
-    .from("follows")
-    .select("followed_company_id")
-    .eq("follower_user_id", userId);
-  if (error) throw error;
-  return new Set((data ?? []).map((row) => row.followed_company_id));
+export interface FollowSet {
+  companies: Set<string>;
+  users: Set<string>;
 }
 
-export function useFollow(companyId: string | null | undefined) {
+const followSetKey = (userId: string | null) => ["follows", "set", userId] as const;
+const followAuthorsKey = (userId: string | null) => ["follows", "authors", userId] as const;
+
+const emptySet: FollowSet = { companies: new Set(), users: new Set() };
+
+async function fetchFollowSet(userId: string): Promise<FollowSet> {
+  const { data, error } = await supabase
+    .from("follows")
+    .select("followed_company_id, followed_user_id")
+    .eq("follower_user_id", userId);
+  if (error) throw error;
+  const companies = new Set<string>();
+  const users = new Set<string>();
+  for (const row of data ?? []) {
+    if (row.followed_company_id) companies.add(row.followed_company_id);
+    if (row.followed_user_id) users.add(row.followed_user_id);
+  }
+  return { companies, users };
+}
+
+function has(set: FollowSet | undefined, target: FollowTarget | null | undefined) {
+  if (!set || !target) return false;
+  return target.type === "company" ? set.companies.has(target.id) : set.users.has(target.id);
+}
+
+function withTarget(set: FollowSet, target: FollowTarget, following: boolean): FollowSet {
+  const next: FollowSet = { companies: new Set(set.companies), users: new Set(set.users) };
+  const bucket = target.type === "company" ? next.companies : next.users;
+  if (following) bucket.add(target.id);
+  else bucket.delete(target.id);
+  return next;
+}
+
+export function useFollowSet(): FollowSet {
   const { user } = useAuth();
+  const userId = user?.id ?? null;
+  const { data } = useQuery({
+    queryKey: followSetKey(userId),
+    queryFn: () => fetchFollowSet(userId as string),
+    enabled: !!userId,
+    staleTime: 60_000,
+  });
+  return data ?? emptySet;
+}
+
+export function useFollow(target: FollowTarget | null | undefined) {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const userId = user?.id ?? null;
   const qc = useQueryClient();
 
-  const { data: followingSet } = useQuery({
-    queryKey: followingSetKey(userId),
-    queryFn: () => fetchFollowingSet(userId as string),
+  const { data: followSet } = useQuery({
+    queryKey: followSetKey(userId),
+    queryFn: () => fetchFollowSet(userId as string),
     enabled: !!userId,
     staleTime: 60_000,
   });
 
-  const following = !!(companyId && followingSet?.has(companyId));
+  const following = has(followSet, target);
 
   const mutation = useMutation({
     mutationFn: async (nextFollowing: boolean) => {
-      if (!userId || !companyId) throw new Error("Sign in to follow businesses");
+      if (!userId || !target) throw new Error("Sign in to follow");
+      const column = target.type === "company" ? "followed_company_id" : "followed_user_id";
       if (nextFollowing) {
-        const { error } = await supabase
-          .from("follows")
-          .insert({ follower_user_id: userId, followed_company_id: companyId });
+        const row: { follower_user_id: string; followed_company_id?: string; followed_user_id?: string } = {
+          follower_user_id: userId,
+        };
+        if (target.type === "company") row.followed_company_id = target.id;
+        else row.followed_user_id = target.id;
+        const { error } = await supabase.from("follows").insert(row);
         // Ignore unique-violation races — the row we wanted already exists.
         if (error && error.code !== "23505") throw error;
       } else {
@@ -54,53 +102,68 @@ export function useFollow(companyId: string | null | undefined) {
           .from("follows")
           .delete()
           .eq("follower_user_id", userId)
-          .eq("followed_company_id", companyId);
+          .eq(column, target.id);
         if (error) throw error;
       }
     },
     onMutate: async (nextFollowing: boolean) => {
-      if (!userId || !companyId) return;
-      await qc.cancelQueries({ queryKey: followingSetKey(userId) });
-      const prev = qc.getQueryData<Set<string>>(followingSetKey(userId));
-      const next = new Set(prev ?? []);
-      if (nextFollowing) next.add(companyId);
-      else next.delete(companyId);
-      qc.setQueryData(followingSetKey(userId), next);
+      if (!userId || !target) return;
+      await qc.cancelQueries({ queryKey: followSetKey(userId) });
+      const prev = qc.getQueryData<FollowSet>(followSetKey(userId)) ?? emptySet;
+      qc.setQueryData(followSetKey(userId), withTarget(prev, target, nextFollowing));
       return { prev };
     },
-    onError: (_err, _next, ctx) => {
-      if (!userId) return;
-      if (ctx?.prev) qc.setQueryData(followingSetKey(userId), ctx.prev);
+    onError: (err, _next, ctx) => {
+      if (userId && ctx?.prev) qc.setQueryData(followSetKey(userId), ctx.prev);
+      toast({
+        title: "Couldn't update follow",
+        description: friendlyErrorMessage(err),
+        variant: "destructive",
+      });
     },
     onSettled: () => {
       if (!userId) return;
-      qc.invalidateQueries({ queryKey: followingSetKey(userId) });
+      qc.invalidateQueries({ queryKey: followSetKey(userId) });
+      qc.invalidateQueries({ queryKey: followAuthorsKey(userId) });
+      qc.invalidateQueries({ queryKey: ["follows", "suggested"] });
     },
   });
 
   const toggle = useCallback(() => {
-    if (!companyId) return;
-    if (!userId) return; // caller should gate the button; noop here is safe
+    if (!target || !userId) return; // caller gates the button; noop is safe
     mutation.mutate(!following);
-  }, [companyId, userId, following, mutation]);
+  }, [target, userId, following, mutation]);
 
   return { following, toggle, isPending: mutation.isPending };
 }
 
-/** Live set of company ids the current user follows. Empty when signed out. */
-export function useFollowingSet(): Set<string> {
+/**
+ * Author user ids behind everything the viewer follows — owners and team of
+ * followed businesses (regardless of review status) plus followed people.
+ */
+export function useFollowedAuthorIds(): { authorIds: Set<string>; isLoading: boolean } {
   const { user } = useAuth();
   const userId = user?.id ?? null;
-  const { data } = useQuery({
-    queryKey: followingSetKey(userId),
-    queryFn: () => fetchFollowingSet(userId as string),
+  const { data, isLoading } = useQuery({
+    queryKey: followAuthorsKey(userId),
+    queryFn: async () => {
+      const { data: rows, error } = await supabase.rpc("get_followed_author_ids");
+      if (error) throw error;
+      return new Set<string>((rows ?? []) as string[]);
+    },
     enabled: !!userId,
-    staleTime: 60_000,
+    staleTime: 30_000,
   });
-  return data ?? new Set<string>();
+  return { authorIds: data ?? new Set<string>(), isLoading: !!userId && isLoading };
 }
 
-/** Live count of companies the current user follows. Zero when signed out. */
+/** Live set of company ids the current user follows. Empty when signed out. */
+export function useFollowingSet(): Set<string> {
+  return useFollowSet().companies;
+}
+
+/** Live count of everything the current user follows. Zero when signed out. */
 export function useFollowingCount(): number {
-  return useFollowingSet().size;
+  const set = useFollowSet();
+  return set.companies.size + set.users.size;
 }
