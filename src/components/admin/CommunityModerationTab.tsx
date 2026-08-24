@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EyeOff, Eye, Trash2, UserX, Loader2 } from "lucide-react";
-import { listAllPostsAdmin, setPostHidden, deletePost, muteAuthor, type CommunityPostRow } from "@/repositories/communityPosts";
+import { listAllPostsAdmin, setPostHidden, deletePost, muteAuthor, setPostChannel, type CommunityPostRow } from "@/repositories/communityPosts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 

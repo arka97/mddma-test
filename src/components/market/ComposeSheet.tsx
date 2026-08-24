@@ -640,9 +640,10 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
             <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
             <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
             <span className="mx-1 h-5 w-px shrink-0 bg-border" aria-hidden />
-            <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
-            <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
-            <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
+            <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} disabled={channel === "buzz"} />
+            <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} disabled={channel === "buzz"} />
+            <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} disabled={channel === "buzz"} />
+
             <span className="ml-auto flex shrink-0 items-center gap-2 pl-2 pr-1">
               {content.length > 0 && (
                 <span
