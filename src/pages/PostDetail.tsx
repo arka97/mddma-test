@@ -156,7 +156,7 @@ const PostDetail = () => {
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Post your reply"
                   onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-                  className="rounded-full"
+                  className="rounded-full text-base"
                 />
                 <Button size="icon" onClick={submit} disabled={sending || !text.trim()} aria-label="Reply">
                   <Send className="h-4 w-4" />

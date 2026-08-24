@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send, Loader2 } from "lucide-react";
@@ -9,6 +8,8 @@ import { listComments, addComment, type PostCommentRow } from "@/repositories/po
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { shortTimeAgo } from "@/lib/time";
+import { useVisualViewportHeight } from "@/hooks/useVisualViewportHeight";
+
 
 interface Props {
   open: boolean;
@@ -26,6 +27,17 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const vvHeight = useVisualViewportHeight();
+  const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Keep the newest reply and the caret visible when the iOS keyboard opens.
+  useEffect(() => {
+    if (!open) return;
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [open, comments.length, vvHeight]);
+
 
   useEffect(() => {
     if (!open) return;
@@ -43,6 +55,8 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
       const c = await addComment(postId, user.id, text.trim());
       setComments((arr) => [...arr, c]);
       setText("");
+      if (inputRef.current) inputRef.current.style.height = "auto";
+
       onCommentAdded?.();
     } catch (e) {
       toast({ title: "Couldn't post reply", description: e instanceof Error ? e.message : "", variant: "destructive" });
@@ -53,13 +67,18 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="flex h-[80vh] flex-col">
-        <SheetHeader>
+      <SheetContent
+        side="bottom"
+        className="flex flex-col gap-0 overscroll-contain p-4 pb-[env(safe-area-inset-bottom,0px)]"
+        style={{ height: vvHeight ? Math.min(vvHeight - 8, vvHeight * 0.92) : "80vh", maxHeight: "100dvh" }}
+      >
+        <SheetHeader className="shrink-0">
           <SheetTitle>
             Replies{comments.length > 0 ? ` · ${comments.length}` : ""}
           </SheetTitle>
         </SheetHeader>
-        <div className="flex-1 space-y-4 overflow-y-auto py-3">
+        <div ref={listRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain py-3">
+
           {loading ? (
             <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin" /></div>
           ) : comments.length === 0 ? (
@@ -88,23 +107,38 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
           )}
         </div>
         {user ? (
-          <div className="flex items-center gap-2 border-t border-border pt-3">
-            <Input
+          <div className="shrink-0 flex items-end gap-2 border-t border-border pt-3">
+            <textarea
+              ref={inputRef}
+              rows={1}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value);
+                const el = e.currentTarget;
+                el.style.height = "auto";
+                el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+              }}
               placeholder="Post your reply…"
-              onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+              enterKeyHint="send"
+              className="max-h-[120px] min-h-[42px] flex-1 resize-none rounded-2xl border border-input bg-background px-3 py-2.5 text-base leading-snug outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  submit();
+                }
+              }}
             />
-            <Button size="icon" onClick={submit} disabled={sending || !text.trim()}>
+            <Button size="icon" className="h-11 w-11 shrink-0 rounded-full" onClick={submit} disabled={sending || !text.trim()} aria-label="Send reply">
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </div>
         ) : (
-          <p className="border-t border-border pt-3 text-center text-xs text-muted-foreground">
+          <p className="shrink-0 border-t border-border pt-3 text-center text-xs text-muted-foreground">
             <Link to="/login" className="font-medium text-primary hover:underline">Sign in</Link> to reply.
           </p>
         )}
       </SheetContent>
     </Sheet>
   );
+
 }
