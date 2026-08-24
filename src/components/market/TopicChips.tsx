@@ -88,7 +88,9 @@ export function TopicChips({ active, onChange }: Props) {
             </button>
           );
         })}
+        </div>
       </div>
     </div>
+
   );
 }
