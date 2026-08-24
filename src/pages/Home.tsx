@@ -219,6 +219,15 @@ const Home = () => {
           })
         : rest.map((p) => ({ kind: "post" as const, post: p }));
 
+  // Anything older than a week is de-emphasised so stale rates don't read as today's.
+  const itemTime = (i: FeedItem) =>
+    i.kind === "post" ? new Date(i.post.created_at).getTime() : bulletinDate(i.circular);
+  const olderStartIdx = items.findIndex(
+    (i) => Date.now() - itemTime(i) > 7 * 86400000,
+  );
+
+
+
 
   return (
     <Layout>
