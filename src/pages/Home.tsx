@@ -84,8 +84,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [composeOpen, setComposeOpen] = useState(false);
   const [events, setEvents] = useState<FeedEvent[]>([]);
-  const followingSet = useFollowingSet();
-  const [followedAuthorIds, setFollowedAuthorIds] = useState<Set<string>>(new Set());
+  const { authorIds: followedAuthorIds, isLoading: followsLoading } = useFollowedAuthorIds();
   const { data: circulars } = useCirculars();
 
 
@@ -190,18 +189,6 @@ const Home = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic]);
 
-  // Resolve the author user ids behind the businesses the viewer follows.
-  const followingIdsKey = Array.from(followingSet).sort().join(",");
-  useEffect(() => {
-    const ids = followingIdsKey ? followingIdsKey.split(",") : [];
-    if (!ids.length) { setFollowedAuthorIds(new Set()); return; }
-    let cancelled = false;
-    listUserIdsForCompanies(ids)
-      .then((s) => { if (!cancelled) setFollowedAuthorIds(s); })
-      .catch(() => { if (!cancelled) setFollowedAuthorIds(new Set()); });
-    return () => { cancelled = true; };
-  }, [followingIdsKey]);
-
   const pinned = topic === "following" || topic === "bulletin"
     ? []
     : posts.filter((p) => p.is_pinned || p.post_type === "admin_rate_update");
@@ -299,7 +286,7 @@ const Home = () => {
             )}
 
             <div className="mt-3 divide-y divide-border border-t border-border">
-              {loading ? (
+              {loading || (topic === "following" && followsLoading) ? (
                 Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="px-4 py-3">
                     <Skeleton className="h-28 rounded-2xl" />
@@ -310,7 +297,7 @@ const Home = () => {
                   <div className="px-6 py-16 text-center">
                     <p className="text-sm font-semibold text-foreground">Your Following feed is empty</p>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Follow businesses to build your Following feed.
+                      Follow businesses or members and their posts show up here.
                     </p>
                     <Link
                       to="/discover"
@@ -343,6 +330,7 @@ const Home = () => {
                       <PostCard
                         post={p}
                         author={authors[p.author_id]}
+                        companyId={authorCompanyIds[p.author_id] ?? null}
                         liked={likes.mine.has(p.id)}
                         likeCount={likes.counts[p.id] ?? 0}
                         commentCount={comments[p.id] ?? 0}
