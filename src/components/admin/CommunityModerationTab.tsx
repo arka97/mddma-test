@@ -84,7 +84,9 @@ export function CommunityModerationTab() {
             <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
+                  <Badge className="text-[10px]">{p.channel === "buzz" ? "Buzz" : "Updates"}</Badge>
                   <Badge variant="outline" className="text-[10px]">{p.post_type}</Badge>
+
                   {p.topic_tag && <Badge variant="secondary" className="text-[10px]">{p.topic_tag}</Badge>}
                   {p.is_anonymous && <Badge className="bg-muted text-foreground text-[10px]">Anon</Badge>}
                   {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
