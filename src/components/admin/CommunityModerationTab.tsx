@@ -64,6 +64,13 @@ export function CommunityModerationTab() {
     await muteAuthor(authorId, true);
     toast({ title: "Author muted" });
   };
+  const onMoveChannel = async (id: string, current: string) => {
+    const next = current === "buzz" ? "updates" : "buzz";
+    await setPostChannel(id, next);
+    toast({ title: next === "buzz" ? "Moved to Buzz" : "Moved to Updates" });
+    load();
+  };
+
 
   if (loading) return <div className="py-10 flex justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>;
 
