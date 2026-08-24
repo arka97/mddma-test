@@ -80,7 +80,8 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   }, [profile, user]);
 
   const reset = () => {
-    setMode("general"); setSignalType("market_alert");
+    setMode("general"); setChannel("updates"); setSignalType("market_alert");
+
     setContent(""); setIsAnon(false); setSd({});
     images.forEach((i) => URL.revokeObjectURL(i.previewUrl));
     setImages([]); setPdf(null);
@@ -165,6 +166,9 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   }, [submitting, user, mode, content, images, pdf, video, sd, pollQ, pollOpts]);
 
   const computePostType = (): { type: PostType; topic: TopicTag | null } => {
+    if (channel === "buzz") {
+      return { type: "member_news", topic: "member_news" };
+    }
     if (mode === "poll") return { type: "poll", topic: "polls" };
     if (mode === "price") return { type: "price_signal", topic: "price_signals" };
     if (mode === "signal") {
@@ -173,6 +177,21 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
     }
     return { type: "general", topic: null };
   };
+
+  const hasMedia = images.length > 0 || video !== null;
+
+  /** Advisory nudges that keep the Updates lane free of chatter. */
+  const nudge = useMemo(() => {
+    if (channel !== "updates" || mode !== "general") return null;
+    const text = content.trim();
+    if (hasMedia && text.length < 25) {
+      return "Photos and videos with little context belong in Buzz.";
+    }
+    if (!hasMedia && text.length > 0 && text.length < 40) {
+      return "This looks like chatter — post it as Buzz?";
+    }
+    return null;
+  }, [channel, mode, content, hasMedia]);
 
   const submit = async () => {
     if (!user || !canSubmit) return;
@@ -195,9 +214,11 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         post_type: type,
         content: content.trim(),
         topic_tag: topic,
+        channel,
         structured_data: Object.keys(merged).length ? (merged as Record<string, string | number>) : null,
         is_anonymous: isAnon,
       });
+
 
       if (mode === "poll") {
         await createPollForPost({
