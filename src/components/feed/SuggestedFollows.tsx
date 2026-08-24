@@ -50,21 +50,30 @@ export function SuggestedFollows({ limit = 5 }: { limit?: number }) {
             ? <li className="px-4 py-3 text-xs text-muted-foreground">No suggestions right now.</li>
             : rows.map((r) => {
                 const name = r.company_name ?? r.full_name ?? "Member";
-                const href = r.company_slug ? `/store/${r.company_slug}` : `/members/${r.user_id}`;
+                const href = r.company_slug ? `/store/${r.company_slug}` : null;
                 return (
                   <li key={r.user_id} className="flex items-center gap-3 px-4 py-3">
-                    <Link to={href} className="flex min-w-0 flex-1 items-center gap-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={r.avatar_url ?? undefined} />
-                        <AvatarFallback>{name.slice(0, 1)}</AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0">
-                        <div className="truncate text-sm font-semibold text-foreground">{name}</div>
-                        <div className="truncate text-xs text-muted-foreground">
-                          {r.company_slug ? `@${r.company_slug}` : r.full_name ?? "Member"}
-                        </div>
-                      </div>
-                    </Link>
+                    {(() => {
+                      const Inner = (
+                        <>
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={r.avatar_url ?? undefined} />
+                            <AvatarFallback>{name.slice(0, 1)}</AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0">
+                            <div className="truncate text-sm font-semibold text-foreground">{name}</div>
+                            <div className="truncate text-xs text-muted-foreground">
+                              {r.company_slug ? `@${r.company_slug}` : "Member"}
+                            </div>
+                          </div>
+                        </>
+                      );
+                      return href ? (
+                        <Link to={href} className="flex min-w-0 flex-1 items-center gap-3">{Inner}</Link>
+                      ) : (
+                        <div className="flex min-w-0 flex-1 items-center gap-3">{Inner}</div>
+                      );
+                    })()}
                     <FollowButton
                       target={r.company_id ? { type: "company", id: r.company_id } : { type: "user", id: r.user_id }}
                       name={name}
