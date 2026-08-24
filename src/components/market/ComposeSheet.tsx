@@ -373,7 +373,13 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
             <Textarea
               ref={textareaRef}
               className="min-h-[150px] resize-none border-0 bg-transparent p-0 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
-              placeholder={mode === "general" ? "What's happening in the market?" : "Add a note (optional)"}
+              placeholder={
+                channel === "buzz"
+                  ? "Share a photo, video or something light…"
+                  : mode === "general"
+                    ? "What's happening in the market?"
+                    : "Add a note (optional)"
+              }
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onFocus={() => setFocused(true)}
@@ -382,6 +388,27 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
               autoFocus
             />
           </div>
+
+          {nudge && (
+            <div className="mt-2 flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-3 py-2 text-[12px] text-muted-foreground">
+              <span className="min-w-0 flex-1">{nudge}</span>
+              <button
+                type="button"
+                onClick={() => switchChannel("buzz")}
+                className="shrink-0 rounded-full bg-foreground px-3 py-1 text-[11px] font-semibold text-background"
+              >
+                Switch to Buzz
+              </button>
+            </div>
+          )}
+
+          {channel === "buzz" && !hasMedia && (
+            <p className="mt-2 rounded-xl bg-muted/40 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+              Add a photo or video — Buzz posts without media won't show in the Buzz swipe view.
+            </p>
+          )}
+
+
 
           <div className="min-w-0">
                 {images.length > 0 && (
