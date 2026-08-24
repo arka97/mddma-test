@@ -18,16 +18,14 @@ export interface PostCommentRow {
 async function withAuthors(rows: PostCommentRow[]) {
   const ids = Array.from(new Set(rows.map((r) => r.author_id)));
   if (ids.length === 0) return rows;
-  const { data } = await supabase.from("profiles").select("id,full_name,avatar_url").in("id", ids);
-  const map = new Map(
-    ((data ?? []) as Array<{ id: string; full_name: string | null; avatar_url: string | null }>).map((p) => [p.id, p]),
-  );
+  const map = await fetchPublicProfileMap(ids);
   return rows.map((r) => ({
     ...r,
-    author_name: map.get(r.author_id)?.full_name ?? null,
-    author_avatar: map.get(r.author_id)?.avatar_url ?? null,
+    author_name: map[r.author_id]?.full_name ?? null,
+    author_avatar: map[r.author_id]?.avatar_url ?? null,
   }));
 }
+
 
 export async function listComments(postId: string) {
   const { data, error } = await supabase
