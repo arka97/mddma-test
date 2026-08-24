@@ -219,6 +219,15 @@ const Home = () => {
           })
         : rest.map((p) => ({ kind: "post" as const, post: p }));
 
+  // Anything older than a week is de-emphasised so stale rates don't read as today's.
+  const itemTime = (i: FeedItem) =>
+    i.kind === "post" ? new Date(i.post.created_at).getTime() : bulletinDate(i.circular);
+  const olderStartIdx = items.findIndex(
+    (i) => Date.now() - itemTime(i) > 7 * 86400000,
+  );
+
+
+
 
   return (
     <Layout>
@@ -320,15 +329,27 @@ const Home = () => {
                 )
               ) : (
                 items.map((item, idx) => {
+                  const isOlder = idx >= olderStartIdx && olderStartIdx >= 0;
+                  const divider = idx === olderStartIdx && olderStartIdx > 0 ? (
+                    <div className="px-4 py-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+                      Older than a week
+                    </div>
+                  ) : null;
                   if (item.kind === "bulletin") {
-                    return <BulletinCard key={`bulletin-${item.circular.id}`} circular={item.circular} />;
+                    return (
+                      <div key={`bulletin-${item.circular.id}`} className={cn(isOlder && "opacity-70")}>
+                        {divider}
+                        <BulletinCard circular={item.circular} />
+                      </div>
+                    );
                   }
                   const p = item.post;
                   const event = idx > 0 && idx % 4 === 0
                     ? events[Math.floor(idx / 4) - 1]
                     : null;
                   return (
-                    <div key={p.id}>
+                    <div key={p.id} className={cn(isOlder && "opacity-70")}>
+                      {divider}
                       {event && <SystemEventCard event={event} />}
                       <PostCard
                         post={p}
@@ -346,6 +367,7 @@ const Home = () => {
                     </div>
                   );
                 })
+
               )}
 
             </div>

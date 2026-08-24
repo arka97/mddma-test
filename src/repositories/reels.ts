@@ -30,10 +30,12 @@ export async function listPostReels(limit = 40): Promise<ReelItem[]> {
     .from("community_posts")
     .select("*")
     .eq("is_hidden", false)
+    .eq("channel", "buzz")
     .not("structured_data", "is", null)
     .order("created_at", { ascending: false })
     .limit(120);
   if (error) return [];
+
 
   const rows = (data ?? []) as unknown as CommunityPostRow[];
   const items: ReelItem[] = [];

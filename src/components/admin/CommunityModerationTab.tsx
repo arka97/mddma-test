@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EyeOff, Eye, Trash2, UserX, Loader2 } from "lucide-react";
-import { listAllPostsAdmin, setPostHidden, deletePost, muteAuthor, type CommunityPostRow } from "@/repositories/communityPosts";
+import { listAllPostsAdmin, setPostHidden, deletePost, muteAuthor, setPostChannel, type CommunityPostRow } from "@/repositories/communityPosts";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -64,6 +64,13 @@ export function CommunityModerationTab() {
     await muteAuthor(authorId, true);
     toast({ title: "Author muted" });
   };
+  const onMoveChannel = async (id: string, current: string) => {
+    const next = current === "buzz" ? "updates" : "buzz";
+    await setPostChannel(id, next);
+    toast({ title: next === "buzz" ? "Moved to Buzz" : "Moved to Updates" });
+    load();
+  };
+
 
   if (loading) return <div className="py-10 flex justify-center"><Loader2 className="h-5 w-5 animate-spin" /></div>;
 
@@ -77,7 +84,9 @@ export function CommunityModerationTab() {
             <CardContent className="p-3 flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
+                  <Badge className="text-[10px]">{p.channel === "buzz" ? "Buzz" : "Updates"}</Badge>
                   <Badge variant="outline" className="text-[10px]">{p.post_type}</Badge>
+
                   {p.topic_tag && <Badge variant="secondary" className="text-[10px]">{p.topic_tag}</Badge>}
                   {p.is_anonymous && <Badge className="bg-muted text-foreground text-[10px]">Anon</Badge>}
                   {p.is_hidden && <Badge variant="outline">Hidden</Badge>}
@@ -88,7 +97,11 @@ export function CommunityModerationTab() {
                 <p className="text-[10px] text-muted-foreground mt-1">{new Date(p.created_at).toLocaleString()}</p>
               </div>
               <div className="flex gap-1 sm:shrink-0">
+                <Button size="sm" variant="outline" onClick={() => onMoveChannel(p.id, p.channel)} title={p.channel === "buzz" ? "Move to Updates" : "Move to Buzz"}>
+                  {p.channel === "buzz" ? "→ Updates" : "→ Buzz"}
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => onHide(p.id, !p.is_hidden)} title={p.is_hidden ? "Unhide" : "Hide"}>
+
                   {p.is_hidden ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => onMute(p.id, realAuthorId)} title="Mute author">

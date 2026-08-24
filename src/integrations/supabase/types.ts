@@ -310,6 +310,7 @@ export type Database = {
         Row: {
           anonymous_expires_at: string | null
           author_id: string
+          channel: string
           content: string
           created_at: string
           id: string
@@ -324,6 +325,7 @@ export type Database = {
         Insert: {
           anonymous_expires_at?: string | null
           author_id: string
+          channel?: string
           content?: string
           created_at?: string
           id?: string
@@ -338,6 +340,7 @@ export type Database = {
         Update: {
           anonymous_expires_at?: string | null
           author_id?: string
+          channel?: string
           content?: string
           created_at?: string
           id?: string
@@ -1806,10 +1809,24 @@ export type Database = {
         }
         Returns: string
       }
-      create_business_post: {
-        Args: { _content?: string; _post_type: string; _structured_data?: Json }
-        Returns: string
-      }
+      create_business_post:
+        | {
+            Args: {
+              _content?: string
+              _post_type: string
+              _structured_data?: Json
+            }
+            Returns: string
+          }
+        | {
+            Args: {
+              _channel?: string
+              _content: string
+              _post_type: string
+              _structured_data?: Json
+            }
+            Returns: string
+          }
       downgrade_to_free: { Args: { _user_id: string }; Returns: undefined }
       get_business_poll: {
         Args: { _post_id: string }

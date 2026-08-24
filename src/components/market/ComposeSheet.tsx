@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useVisualViewportHeight } from "@/hooks/useVisualViewportHeight";
 import { cn } from "@/lib/utils";
-import { createPost, type PostType, type TopicTag } from "@/repositories/communityPosts";
+import { createPost, type PostType, type TopicTag, type PostChannel } from "@/repositories/communityPosts";
 import { createPollForPost } from "@/repositories/postPolls";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -46,7 +46,9 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const qc = useQueryClient();
 
   const [mode, setMode] = useState<EditorMode>("general");
+  const [channel, setChannel] = useState<PostChannel>("updates");
   const [signalType, setSignalType] = useState<"market_alert" | "sourcing_ask" | "member_news">("market_alert");
+
   const [content, setContent] = useState("");
   const [isAnon, setIsAnon] = useState(false);
   const [sd, setSd] = useState<Record<string, string | number>>({});
@@ -78,7 +80,8 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   }, [profile, user]);
 
   const reset = () => {
-    setMode("general"); setSignalType("market_alert");
+    setMode("general"); setChannel("updates"); setSignalType("market_alert");
+
     setContent(""); setIsAnon(false); setSd({});
     images.forEach((i) => URL.revokeObjectURL(i.previewUrl));
     setImages([]); setPdf(null);
@@ -163,6 +166,9 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   }, [submitting, user, mode, content, images, pdf, video, sd, pollQ, pollOpts]);
 
   const computePostType = (): { type: PostType; topic: TopicTag | null } => {
+    if (channel === "buzz") {
+      return { type: "member_news", topic: "member_news" };
+    }
     if (mode === "poll") return { type: "poll", topic: "polls" };
     if (mode === "price") return { type: "price_signal", topic: "price_signals" };
     if (mode === "signal") {
@@ -171,6 +177,21 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
     }
     return { type: "general", topic: null };
   };
+
+  const hasMedia = images.length > 0 || video !== null;
+
+  /** Advisory nudges that keep the Updates lane free of chatter. */
+  const nudge = useMemo(() => {
+    if (channel !== "updates" || mode !== "general") return null;
+    const text = content.trim();
+    if (hasMedia && text.length < 25) {
+      return "Photos and videos with little context belong in Buzz.";
+    }
+    if (!hasMedia && text.length > 0 && text.length < 40) {
+      return "This looks like chatter — post it as Buzz?";
+    }
+    return null;
+  }, [channel, mode, content, hasMedia]);
 
   const submit = async () => {
     if (!user || !canSubmit) return;
@@ -193,9 +214,11 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         post_type: type,
         content: content.trim(),
         topic_tag: topic,
+        channel,
         structured_data: Object.keys(merged).length ? (merged as Record<string, string | number>) : null,
         is_anonymous: isAnon,
       });
+
 
       if (mode === "poll") {
         await createPollForPost({
@@ -232,7 +255,15 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
   const openMode = (m: EditorMode) => { setMode(m); setSd({}); };
   const backToGeneral = () => { setMode("general"); setSd({}); };
 
-  const modeLabel = mode === "price" ? "Price" : mode === "poll" ? "Poll" : mode === "signal" ? (SIGNAL_OPTIONS.find((o) => o.value === signalType)?.label ?? "Signal") : null;
+  const switchChannel = (c: PostChannel) => {
+    setChannel(c);
+    if (c === "buzz") { setMode("general"); setSd({}); }
+  };
+
+  const modeLabel = channel === "buzz"
+    ? null
+    : mode === "price" ? "Price" : mode === "poll" ? "Poll" : mode === "signal" ? (SIGNAL_OPTIONS.find((o) => o.value === signalType)?.label ?? "Signal") : null;
+
   const CHAR_LIMIT = 2000;
   const ringPct = Math.min(1, content.length / CHAR_LIMIT);
 
@@ -248,7 +279,7 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
           <SheetClose asChild>
             <button type="button" className="text-[15px] font-medium text-foreground">Cancel</button>
           </SheetClose>
-          <h2 className="text-[15px] font-bold">{modeLabel ? `New ${modeLabel}` : "New Post"}</h2>
+          <h2 className="text-[15px] font-bold">{modeLabel ? `New ${modeLabel}` : channel === "buzz" ? "New Buzz" : "New Update"}</h2>
           <Button
             onClick={submit}
             disabled={!canSubmit}
@@ -261,8 +292,31 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         </div>
 
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+          {/* Channel switch — decides which lane this post lands in */}
+          <div className="mb-3 grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+            {([
+              { id: "updates" as const, label: "Update", hint: "Prices, alerts, sourcing, notices" },
+              { id: "buzz" as const, label: "Buzz", hint: "Photos, videos, member news, fun" },
+            ]).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => switchChannel(c.id)}
+                aria-pressed={channel === c.id}
+                className={cn(
+                  "rounded-full px-3 py-1.5 text-center transition-colors",
+                  channel === c.id ? "bg-background shadow-sm" : "text-muted-foreground",
+                )}
+              >
+                <span className={cn("block text-[13px] font-semibold", channel === c.id && "text-foreground")}>{c.label}</span>
+                <span className="block text-[10px] leading-tight text-muted-foreground">{c.hint}</span>
+              </button>
+            ))}
+          </div>
+
           {/* Identity row — always visible, whatever the mode */}
           <div className="mb-3 flex items-start gap-3">
+
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src={isAnon ? undefined : profile?.avatar_url ?? undefined} />
               <AvatarFallback className="bg-primary/15 text-sm font-semibold text-primary">
@@ -319,7 +373,13 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
             <Textarea
               ref={textareaRef}
               className="min-h-[150px] resize-none border-0 bg-transparent p-0 text-[17px] leading-relaxed shadow-none placeholder:text-muted-foreground focus-visible:ring-0"
-              placeholder={mode === "general" ? "What's happening in the market?" : "Add a note (optional)"}
+              placeholder={
+                channel === "buzz"
+                  ? "Share a photo, video or something light…"
+                  : mode === "general"
+                    ? "What's happening in the market?"
+                    : "Add a note (optional)"
+              }
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onFocus={() => setFocused(true)}
@@ -328,6 +388,27 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
               autoFocus
             />
           </div>
+
+          {nudge && (
+            <div className="mt-2 flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-3 py-2 text-[12px] text-muted-foreground">
+              <span className="min-w-0 flex-1">{nudge}</span>
+              <button
+                type="button"
+                onClick={() => switchChannel("buzz")}
+                className="shrink-0 rounded-full bg-foreground px-3 py-1 text-[11px] font-semibold text-background"
+              >
+                Switch to Buzz
+              </button>
+            </div>
+          )}
+
+          {channel === "buzz" && !hasMedia && (
+            <p className="mt-2 rounded-xl bg-muted/40 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+              Add a photo or video — Buzz posts without media won't show in the Buzz swipe view.
+            </p>
+          )}
+
+
 
           <div className="min-w-0">
                 {images.length > 0 && (
@@ -559,9 +640,10 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
             <ActionPill icon={FileText} label="PDF" onClick={() => fileInputRef.current?.click()} disabled={mode !== "general"} />
             <ActionPill icon={LinkIcon} label="Link" onClick={handleLink} disabled={mode !== "general"} />
             <span className="mx-1 h-5 w-px shrink-0 bg-border" aria-hidden />
-            <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} />
-            <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} />
-            <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} />
+            <ActionPill icon={Tag} label="Price" onClick={() => (mode === "price" ? backToGeneral() : openMode("price"))} active={mode === "price"} disabled={channel === "buzz"} />
+            <ActionPill icon={BarChart3} label="Poll" onClick={() => (mode === "poll" ? backToGeneral() : openMode("poll"))} active={mode === "poll"} disabled={channel === "buzz"} />
+            <ActionPill icon={Zap} label="Signal" onClick={() => (mode === "signal" ? backToGeneral() : openMode("signal"))} active={mode === "signal"} disabled={channel === "buzz"} />
+
             <span className="ml-auto flex shrink-0 items-center gap-2 pl-2 pr-1">
               {content.length > 0 && (
                 <span

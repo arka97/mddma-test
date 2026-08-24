@@ -17,6 +17,9 @@ export type TopicTag =
   | "member_news"
   | "polls";
 
+/** Content lane: "updates" = business/market signal, "buzz" = light content. */
+export type PostChannel = "updates" | "buzz";
+
 export interface CommunityPostRow {
   id: string;
   author_id: string;
@@ -24,6 +27,7 @@ export interface CommunityPostRow {
   content: string;
   structured_data: Record<string, unknown> | null;
   topic_tag: TopicTag | null;
+  channel: PostChannel;
   is_anonymous: boolean;
   is_pinned: boolean;
   is_hidden: boolean;
@@ -37,6 +41,7 @@ export async function listFeedPosts(topic?: TopicTag) {
     .from("community_posts")
     .select("*")
     .eq("is_hidden", false)
+    .eq("channel", "updates")
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(100);
@@ -45,6 +50,7 @@ export async function listFeedPosts(topic?: TopicTag) {
   if (error) throw new Error(friendlyErrorMessage(error));
   return (data ?? []) as unknown as CommunityPostRow[];
 }
+
 
 export async function getPost(id: string) {
   const { data, error } = await supabase
@@ -71,6 +77,7 @@ export interface CreatePostInput {
   post_type: PostType;
   content: string;
   topic_tag?: TopicTag | null;
+  channel?: PostChannel;
   structured_data?: Record<string, unknown> | null;
   is_anonymous?: boolean;
 }
@@ -83,6 +90,7 @@ export async function createPost(input: CreatePostInput) {
       post_type: input.post_type,
       content: input.content,
       topic_tag: input.topic_tag ?? null,
+      channel: input.channel ?? "updates",
       structured_data: (input.structured_data ?? null) as never,
       is_anonymous: input.is_anonymous ?? false,
     })
@@ -91,6 +99,12 @@ export async function createPost(input: CreatePostInput) {
   if (error) throw new Error(friendlyErrorMessage(error));
   return data as unknown as CommunityPostRow;
 }
+
+export async function setPostChannel(id: string, channel: PostChannel) {
+  const { error } = await supabase.from("community_posts").update({ channel }).eq("id", id);
+  if (error) throw new Error(friendlyErrorMessage(error));
+}
+
 
 export async function setPostHidden(id: string, hidden: boolean) {
   const { error } = await supabase.from("community_posts").update({ is_hidden: hidden }).eq("id", id);
