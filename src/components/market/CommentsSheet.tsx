@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send, Loader2 } from "lucide-react";
@@ -9,6 +8,8 @@ import { listComments, addComment, type PostCommentRow } from "@/repositories/po
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { shortTimeAgo } from "@/lib/time";
+import { useVisualViewportHeight } from "@/hooks/useVisualViewportHeight";
+
 
 interface Props {
   open: boolean;
