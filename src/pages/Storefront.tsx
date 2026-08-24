@@ -199,7 +199,7 @@ const Storefront = () => {
                   {company.tagline && <p className="mt-1 text-sm text-muted-foreground">{company.tagline}</p>}
                 </div>
                 {!isOwner && (
-                  <FollowButton id={company.id} name={company.name} size="default" />
+                  <FollowButton target={{ type: "company", id: company.id }} name={company.name} size="default" />
                 )}
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
