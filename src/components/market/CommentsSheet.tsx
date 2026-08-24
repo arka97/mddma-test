@@ -105,23 +105,38 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
           )}
         </div>
         {user ? (
-          <div className="flex items-center gap-2 border-t border-border pt-3">
-            <Input
+          <div className="shrink-0 flex items-end gap-2 border-t border-border pt-3">
+            <textarea
+              ref={inputRef}
+              rows={1}
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value);
+                const el = e.currentTarget;
+                el.style.height = "auto";
+                el.style.height = `${Math.min(el.scrollHeight, 120)}px`;
+              }}
               placeholder="Post your reply…"
-              onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+              enterKeyHint="send"
+              className="max-h-[120px] min-h-[42px] flex-1 resize-none rounded-2xl border border-input bg-background px-3 py-2.5 text-base leading-snug outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  submit();
+                }
+              }}
             />
-            <Button size="icon" onClick={submit} disabled={sending || !text.trim()}>
+            <Button size="icon" className="h-11 w-11 shrink-0 rounded-full" onClick={submit} disabled={sending || !text.trim()} aria-label="Send reply">
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>
           </div>
         ) : (
-          <p className="border-t border-border pt-3 text-center text-xs text-muted-foreground">
+          <p className="shrink-0 border-t border-border pt-3 text-center text-xs text-muted-foreground">
             <Link to="/login" className="font-medium text-primary hover:underline">Sign in</Link> to reply.
           </p>
         )}
       </SheetContent>
     </Sheet>
   );
+
 }
