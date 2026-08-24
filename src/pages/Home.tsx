@@ -305,6 +305,9 @@ const Home = () => {
                     >
                       Discover businesses
                     </Link>
+                    <div className="mx-auto mt-6 max-w-sm text-left">
+                      <SuggestedFollows limit={5} />
+                    </div>
                   </div>
                 ) : topic === "bulletin" ? (
                   <p className="py-16 text-center text-sm text-muted-foreground">
