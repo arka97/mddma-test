@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
+import { fetchPublicProfileMap } from "@/repositories/profiles";
 import { friendlyErrorMessage } from "@/lib/errors";
+
 
 type RpcFn = (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }>;
 
