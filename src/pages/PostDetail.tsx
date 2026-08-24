@@ -34,6 +34,7 @@ const PostDetail = () => {
 
   const [post, setPost] = useState<CommunityPostRow | null>(null);
   const [author, setAuthor] = useState<Author | undefined>();
+  const [authorCompanyId, setAuthorCompanyId] = useState<string | null>(null);
   const [likes, setLikes] = useState({ count: 0, liked: false });
   const [views, setViews] = useState(0);
   const [comments, setComments] = useState<PostCommentRow[]>([]);
@@ -78,6 +79,7 @@ const PostDetail = () => {
             | { full_name: string | null; avatar_url: string | null; company_name: string | null }
             | undefined;
           const co = companies[p.author_id];
+          setAuthorCompanyId(co?.id ?? null);
           setAuthor({
             id: p.author_id,
             full_name: prof?.full_name ?? null,
@@ -135,6 +137,7 @@ const PostDetail = () => {
               <PostCard
                 post={post}
                 author={author}
+                companyId={authorCompanyId}
                 liked={likes.liked}
                 likeCount={likes.count}
                 commentCount={comments.length}
