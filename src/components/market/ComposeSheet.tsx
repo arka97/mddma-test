@@ -279,7 +279,7 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
           <SheetClose asChild>
             <button type="button" className="text-[15px] font-medium text-foreground">Cancel</button>
           </SheetClose>
-          <h2 className="text-[15px] font-bold">{modeLabel ? `New ${modeLabel}` : "New Post"}</h2>
+          <h2 className="text-[15px] font-bold">{modeLabel ? `New ${modeLabel}` : channel === "buzz" ? "New Buzz" : "New Update"}</h2>
           <Button
             onClick={submit}
             disabled={!canSubmit}
