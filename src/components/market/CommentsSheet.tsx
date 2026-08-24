@@ -65,13 +65,18 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="flex h-[80vh] flex-col">
-        <SheetHeader>
+      <SheetContent
+        side="bottom"
+        className="flex flex-col gap-0 overscroll-contain p-4 pb-[env(safe-area-inset-bottom,0px)]"
+        style={{ height: vvHeight ? Math.min(vvHeight - 8, vvHeight * 0.92) : "80vh", maxHeight: "100dvh" }}
+      >
+        <SheetHeader className="shrink-0">
           <SheetTitle>
             Replies{comments.length > 0 ? ` · ${comments.length}` : ""}
           </SheetTitle>
         </SheetHeader>
-        <div className="flex-1 space-y-4 overflow-y-auto py-3">
+        <div ref={listRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain py-3">
+
           {loading ? (
             <div className="flex justify-center py-10"><Loader2 className="h-5 w-5 animate-spin" /></div>
           ) : comments.length === 0 ? (
