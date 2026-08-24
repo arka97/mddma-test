@@ -27,6 +27,17 @@ export function CommentsSheet({ open, onOpenChange, postId, onCommentAdded }: Pr
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const vvHeight = useVisualViewportHeight();
+  const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Keep the newest reply and the caret visible when the iOS keyboard opens.
+  useEffect(() => {
+    if (!open) return;
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [open, comments.length, vvHeight]);
+
 
   useEffect(() => {
     if (!open) return;
