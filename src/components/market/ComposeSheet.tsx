@@ -292,8 +292,31 @@ export function ComposeSheet({ open, onOpenChange, canPostAnonymous }: Props) {
         </div>
 
         <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
+          {/* Channel switch — decides which lane this post lands in */}
+          <div className="mb-3 grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+            {([
+              { id: "updates" as const, label: "Update", hint: "Prices, alerts, sourcing, notices" },
+              { id: "buzz" as const, label: "Buzz", hint: "Photos, videos, member news, fun" },
+            ]).map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => switchChannel(c.id)}
+                aria-pressed={channel === c.id}
+                className={cn(
+                  "rounded-full px-3 py-1.5 text-center transition-colors",
+                  channel === c.id ? "bg-background shadow-sm" : "text-muted-foreground",
+                )}
+              >
+                <span className={cn("block text-[13px] font-semibold", channel === c.id && "text-foreground")}>{c.label}</span>
+                <span className="block text-[10px] leading-tight text-muted-foreground">{c.hint}</span>
+              </button>
+            ))}
+          </div>
+
           {/* Identity row — always visible, whatever the mode */}
           <div className="mb-3 flex items-start gap-3">
+
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarImage src={isAnon ? undefined : profile?.avatar_url ?? undefined} />
               <AvatarFallback className="bg-primary/15 text-sm font-semibold text-primary">
