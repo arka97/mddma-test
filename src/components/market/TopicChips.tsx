@@ -47,7 +47,9 @@ interface Props {
 export function TopicChips({ active, onChange }: Props) {
   return (
     <div className="rounded-xl bg-muted/40 px-1 py-2">
-      <div className="flex snap-x snap-mandatory items-start gap-1 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:justify-center">
+      <div className="snap-x snap-mandatory overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mx-auto flex w-fit items-start gap-1">
+
         {CHIPS.map((c) => {
           const Icon = c.icon;
           const isActive = active === c.id;
@@ -86,7 +88,9 @@ export function TopicChips({ active, onChange }: Props) {
             </button>
           );
         })}
+        </div>
       </div>
     </div>
+
   );
 }
