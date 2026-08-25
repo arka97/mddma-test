@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { shortTimeAgo } from "@/lib/time";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Shield, MoreHorizontal, EyeOff, Trash2, UserX, BadgeCheck } from "lucide-react";
+import { Shield, MoreHorizontal, EyeOff, Trash2, UserX, BadgeCheck, Repeat2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
