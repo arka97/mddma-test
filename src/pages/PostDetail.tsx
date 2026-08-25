@@ -186,18 +186,30 @@ const PostDetail = () => {
             </div>
 
             {canEngage ? (
-              <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-                <Input
-                  ref={composerRef}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Post your reply"
-                  onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-                  className="rounded-full text-base"
-                />
-                <Button size="icon" onClick={submit} disabled={sending || !text.trim()} aria-label="Reply">
-                  <Send className="h-4 w-4" />
-                </Button>
+              <div className="border-b border-border px-4 py-3">
+                {replyTo && (
+                  <div className="mb-2 flex items-center gap-2 text-[12px] text-muted-foreground">
+                    <span className="truncate">
+                      Replying to <span className="font-medium text-foreground">{replyTo.author_name?.trim() || "Member"}</span>
+                    </span>
+                    <button type="button" onClick={() => setReplyTo(null)} aria-label="Cancel reply" className="rounded-full p-1 hover:bg-muted">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={composerRef}
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder={replyTo ? `Reply to ${replyTo.author_name?.trim() || "Member"}` : "Post your reply"}
+                    onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+                    className="rounded-full text-base"
+                  />
+                  <Button size="icon" onClick={submit} disabled={sending || !text.trim()} aria-label="Reply">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ) : (
               <p className="border-b border-border px-4 py-4 text-center text-xs text-muted-foreground">
@@ -208,19 +220,29 @@ const PostDetail = () => {
             )}
 
             <div className="divide-y divide-border">
-              {comments.length === 0 ? (
+              {threads.length === 0 ? (
                 <p className="py-10 text-center text-sm text-muted-foreground">No replies yet.</p>
               ) : (
-                comments.map((c) => (
-                  <div key={c.id} className="px-4 py-3">
-                    <div className="mb-1 text-[13px] text-muted-foreground">
-                      Member · {shortTimeAgo(c.created_at)}
-                    </div>
-                    <p className="whitespace-pre-wrap text-[15px]">{c.content}</p>
+                threads.map((t) => (
+                  <div key={t.comment.id} className="space-y-3 px-4 py-3">
+                    <CommentRow comment={t.comment} onReply={canEngage ? () => startReply(t.comment) : undefined} />
+                    {t.children.length > 0 && (
+                      <div className="ml-6 space-y-3 border-l border-border pl-4">
+                        {t.children.map((child) => (
+                          <CommentRow
+                            key={child.id}
+                            comment={child}
+                            compact
+                            onReply={canEngage ? () => startReply(t.comment) : undefined}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))
               )}
             </div>
+
           </>
         )}
       </div>
