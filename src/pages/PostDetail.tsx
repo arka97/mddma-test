@@ -1,22 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Loader2, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Send, X } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PostCard } from "@/components/market/PostCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { getPost, type CommunityPostRow } from "@/repositories/communityPosts";
 import { listLikes } from "@/repositories/postLikes";
 import { viewCounts } from "@/repositories/postViews";
-import { listComments, addComment, type PostCommentRow } from "@/repositories/postComments";
+import { listComments, addComment, buildThreads, type PostCommentRow } from "@/repositories/postComments";
 import { listCompaniesByOwners } from "@/repositories/companies";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchPublicProfiles } from "@/repositories/profiles";
 import { shortTimeAgo } from "@/lib/time";
 import { useToast } from "@/hooks/use-toast";
+
 
 interface Author {
   id: string;
@@ -43,9 +45,13 @@ const PostDetail = () => {
   const [notFound, setNotFound] = useState(false);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [replyTo, setReplyTo] = useState<PostCommentRow | null>(null);
   const composerRef = useRef<HTMLInputElement>(null);
 
+  const threads = useMemo(() => buildThreads(comments), [comments]);
+
   const canEngage = !!user;
+
   const isAdmin = role === "admin";
 
   useEffect(() => {
@@ -97,19 +103,50 @@ const PostDetail = () => {
     return () => { alive = false; };
   }, [postId]);
 
+  const startReply = (c: PostCommentRow) => {
+    setReplyTo(c);
+    composerRef.current?.focus();
+  };
+
   const submit = async () => {
     if (!user || !post || !text.trim()) return;
     setSending(true);
     try {
-      const c = await addComment(post.id, user.id, text.trim());
+      const c = await addComment(post.id, user.id, text.trim(), replyTo?.id ?? null);
       setComments((arr) => [...arr, c]);
       setText("");
+      setReplyTo(null);
     } catch (e) {
       toast({ title: "Failed to reply", description: e instanceof Error ? e.message : "", variant: "destructive" });
     } finally {
       setSending(false);
     }
   };
+
+  const CommentRow = ({ comment, compact, onReply }: { comment: PostCommentRow; compact?: boolean; onReply?: () => void }) => {
+    const name = comment.author_name?.trim() || "Member";
+    return (
+      <div className="flex gap-3">
+        <Avatar className={compact ? "h-7 w-7 shrink-0" : "h-9 w-9 shrink-0"}>
+          <AvatarImage src={comment.author_avatar ?? undefined} alt={name} />
+          <AvatarFallback>{name.slice(0, 1).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 text-[13px]">
+            <span className="font-semibold">{name}</span>
+            <span className="text-muted-foreground">· {shortTimeAgo(comment.created_at)}</span>
+          </div>
+          <p className="whitespace-pre-wrap break-words text-[15px]">{comment.content}</p>
+          {onReply && (
+            <button type="button" onClick={onReply} className="mt-1 text-[12px] font-medium text-muted-foreground hover:text-primary">
+              Reply
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
 
   return (
     <Layout>
@@ -149,18 +186,30 @@ const PostDetail = () => {
             </div>
 
             {canEngage ? (
-              <div className="flex items-center gap-2 border-b border-border px-4 py-3">
-                <Input
-                  ref={composerRef}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  placeholder="Post your reply"
-                  onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
-                  className="rounded-full text-base"
-                />
-                <Button size="icon" onClick={submit} disabled={sending || !text.trim()} aria-label="Reply">
-                  <Send className="h-4 w-4" />
-                </Button>
+              <div className="border-b border-border px-4 py-3">
+                {replyTo && (
+                  <div className="mb-2 flex items-center gap-2 text-[12px] text-muted-foreground">
+                    <span className="truncate">
+                      Replying to <span className="font-medium text-foreground">{replyTo.author_name?.trim() || "Member"}</span>
+                    </span>
+                    <button type="button" onClick={() => setReplyTo(null)} aria-label="Cancel reply" className="rounded-full p-1 hover:bg-muted">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <Input
+                    ref={composerRef}
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    placeholder={replyTo ? `Reply to ${replyTo.author_name?.trim() || "Member"}` : "Post your reply"}
+                    onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+                    className="rounded-full text-base"
+                  />
+                  <Button size="icon" onClick={submit} disabled={sending || !text.trim()} aria-label="Reply">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ) : (
               <p className="border-b border-border px-4 py-4 text-center text-xs text-muted-foreground">
@@ -171,19 +220,29 @@ const PostDetail = () => {
             )}
 
             <div className="divide-y divide-border">
-              {comments.length === 0 ? (
+              {threads.length === 0 ? (
                 <p className="py-10 text-center text-sm text-muted-foreground">No replies yet.</p>
               ) : (
-                comments.map((c) => (
-                  <div key={c.id} className="px-4 py-3">
-                    <div className="mb-1 text-[13px] text-muted-foreground">
-                      Member · {shortTimeAgo(c.created_at)}
-                    </div>
-                    <p className="whitespace-pre-wrap text-[15px]">{c.content}</p>
+                threads.map((t) => (
+                  <div key={t.comment.id} className="space-y-3 px-4 py-3">
+                    <CommentRow comment={t.comment} onReply={canEngage ? () => startReply(t.comment) : undefined} />
+                    {t.children.length > 0 && (
+                      <div className="ml-6 space-y-3 border-l border-border pl-4">
+                        {t.children.map((child) => (
+                          <CommentRow
+                            key={child.id}
+                            comment={child}
+                            compact
+                            onReply={canEngage ? () => startReply(t.comment) : undefined}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))
               )}
             </div>
+
           </>
         )}
       </div>

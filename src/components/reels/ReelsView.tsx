@@ -152,9 +152,25 @@ export function ReelsView({ visibleTopInset = 48 }: ReelsViewProps) {
     });
     try {
       await setRepost(postId, !on);
-    } catch {
-      toast({ title: "Couldn't repost", variant: "destructive" });
+      const summary = await listReposts([postId]);
+      setReposts((s) => {
+        const mine = new Set(s.mine);
+        summary.mine.has(postId) ? mine.add(postId) : mine.delete(postId);
+        return { counts: { ...s.counts, [postId]: summary.counts[postId] ?? 0 }, mine };
+      });
+    } catch (e) {
+      setReposts((s) => {
+        const mine = new Set(s.mine);
+        on ? mine.add(postId) : mine.delete(postId);
+        return { counts: { ...s.counts, [postId]: Math.max(0, (s.counts[postId] ?? 0) + (on ? 1 : -1)) }, mine };
+      });
+      toast({
+        title: "Couldn't repost",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
     }
+
   };
 
   const share = async (item: ReelItem) => {

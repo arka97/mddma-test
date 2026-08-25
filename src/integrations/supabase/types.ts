@@ -975,6 +975,7 @@ export type Database = {
           created_at: string
           id: string
           is_hidden: boolean
+          parent_id: string | null
           post_id: string
         }
         Insert: {
@@ -983,6 +984,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_hidden?: boolean
+          parent_id?: string | null
           post_id: string
         }
         Update: {
@@ -991,9 +993,17 @@ export type Database = {
           created_at?: string
           id?: string
           is_hidden?: boolean
+          parent_id?: string | null
           post_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "post_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "post_comments_post_id_fkey"
             columns: ["post_id"]
@@ -1907,10 +1917,12 @@ export type Database = {
       }
     }
     Functions: {
-      add_business_comment: {
-        Args: { _content: string; _post_id: string }
-        Returns: string
-      }
+      add_business_comment:
+        | { Args: { _content: string; _post_id: string }; Returns: string }
+        | {
+            Args: { _content: string; _parent_id: string; _post_id: string }
+            Returns: string
+          }
       can_access_deal_room: { Args: { _room_id: string }; Returns: boolean }
       cast_business_poll_vote: {
         Args: { _option_id: string; _poll_id: string }

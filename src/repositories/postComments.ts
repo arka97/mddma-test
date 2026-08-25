@@ -12,8 +12,15 @@ export interface PostCommentRow {
   content: string;
   is_hidden: boolean;
   created_at: string;
+  parent_id?: string | null;
   author_name?: string | null;
   author_avatar?: string | null;
+}
+
+/** A reply with its direct children, X-style single-level threading. */
+export interface CommentThread {
+  comment: PostCommentRow;
+  children: PostCommentRow[];
 }
 
 /** Attach display name + avatar for a batch of comment rows. */
@@ -26,6 +33,34 @@ async function withAuthors(rows: PostCommentRow[]) {
     author_name: map[r.author_id]?.full_name ?? null,
     author_avatar: map[r.author_id]?.avatar_url ?? null,
   }));
+}
+
+/** Group a flat, chronological list into parents with their direct children. */
+export function buildThreads(rows: PostCommentRow[]): CommentThread[] {
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const threads: CommentThread[] = [];
+  const index = new Map<string, CommentThread>();
+
+  rows.forEach((r) => {
+    if (!r.parent_id || !byId.has(r.parent_id)) {
+      const t: CommentThread = { comment: r, children: [] };
+      threads.push(t);
+      index.set(r.id, t);
+    }
+  });
+  rows.forEach((r) => {
+    if (!r.parent_id) return;
+    // Flatten deeper nesting onto the top-level ancestor, like X does.
+    let parentId: string | null | undefined = r.parent_id;
+    const seen = new Set<string>();
+    while (parentId && !index.has(parentId) && !seen.has(parentId)) {
+      seen.add(parentId);
+      parentId = byId.get(parentId)?.parent_id ?? null;
+    }
+    const thread = parentId ? index.get(parentId) : undefined;
+    if (thread) thread.children.push(r);
+  });
+  return threads;
 }
 
 
@@ -44,10 +79,11 @@ export async function listComments(postId: string) {
  * Comments are written through the `add_business_comment` security-definer
  * function — direct inserts into `post_comments` are blocked by RLS.
  */
-export async function addComment(postId: string, _authorId: string, content: string) {
+export async function addComment(postId: string, _authorId: string, content: string, parentId?: string | null) {
   const { data, error } = await (supabase.rpc as unknown as RpcFn)("add_business_comment", {
     _post_id: postId,
     _content: content,
+    _parent_id: parentId ?? null,
   });
   if (error) throw new Error(friendlyErrorMessage(error as never));
   const newId = data as string;
@@ -58,6 +94,7 @@ export async function addComment(postId: string, _authorId: string, content: str
     author_id: _authorId,
     content,
     is_hidden: false,
+    parent_id: parentId ?? null,
     created_at: new Date().toISOString(),
   }) as PostCommentRow;
   const [withAuthor] = await withAuthors([base]);

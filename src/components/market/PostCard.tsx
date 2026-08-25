@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { shortTimeAgo } from "@/lib/time";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Shield, MoreHorizontal, EyeOff, Trash2, UserX, BadgeCheck } from "lucide-react";
+import { Shield, MoreHorizontal, EyeOff, Trash2, UserX, BadgeCheck, Repeat2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -21,7 +21,7 @@ import { CompanyHoverCard } from "@/components/social/CompanyHoverCard";
 import type { CommunityPostRow } from "@/repositories/communityPosts";
 import { recordView } from "@/repositories/postViews";
 import { likePost, unlikePost } from "@/repositories/postLikes";
-import { setRepost } from "@/repositories/postReposts";
+import { listReposts, setRepost } from "@/repositories/postReposts";
 import { setPostHidden, deletePost, muteAuthor } from "@/repositories/communityPosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -212,12 +212,22 @@ export function PostCard({
     setRepostCount((c) => Math.max(0, c + (next ? 1 : -1)));
     try {
       await setRepost(post.id, next);
+      // Reconcile with the server so the count/highlight are never optimistic-only.
+      const summary = await listReposts([post.id]);
+      setRepostCount(summary.counts[post.id] ?? 0);
+      setReposted(summary.mine.has(post.id));
+      qc.invalidateQueries({ queryKey: ["post-reposts"] });
     } catch (e) {
       setReposted(!next);
       setRepostCount((c) => Math.max(0, c + (next ? -1 : 1)));
-      toast({ title: "Failed", description: e instanceof Error ? e.message : "", variant: "destructive" });
+      toast({
+        title: next ? "Couldn't repost" : "Couldn't undo repost",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
     }
   };
+
 
   const onHide = async () => {
     await setPostHidden(post.id, true);
@@ -318,7 +328,13 @@ export function PostCard({
         !isDetail && "cursor-pointer hover:bg-muted/40",
       )}
     >
+      {reposted && (
+        <p className="mb-1 flex items-center gap-1.5 pl-[52px] text-[12px] font-medium text-muted-foreground">
+          <Repeat2 className="h-3.5 w-3.5" /> You reposted
+        </p>
+      )}
       <div className="flex gap-3">
+
         {anon ? (
           <div className={cn("flex shrink-0 items-center justify-center rounded-full bg-muted", isDetail ? "h-11 w-11" : "h-10 w-10")}>
             <Shield className="h-5 w-5 text-muted-foreground" />

@@ -41,7 +41,6 @@ function ActionButton({
   fill,
   disabled,
   size,
-  asChild,
 }: {
   icon: ComponentType<{ className?: string }>;
   count?: number;
@@ -54,7 +53,6 @@ function ActionButton({
   fill?: boolean;
   disabled?: boolean;
   size: "sm" | "lg";
-  asChild?: boolean;
 }) {
   const iconSize = size === "lg" ? "h-5 w-5" : "h-[18px] w-[18px]";
   return (
@@ -65,7 +63,7 @@ function ActionButton({
       aria-label={label}
       aria-pressed={active}
       className={cn(
-        "group -ml-2 inline-flex items-center gap-1 text-[13px] transition-colors disabled:opacity-40",
+        "group inline-flex items-center justify-center gap-1 text-[13px] transition-colors disabled:opacity-40",
         active ? activeText : "text-muted-foreground",
         !disabled && hoverText,
       )}
@@ -84,7 +82,7 @@ function ActionButton({
   );
 }
 
-/** X-style action row: reply · repost · like · views · bookmark · share. */
+/** X-style action row: comment · share · like · repost · save (+ views on an opened post). */
 export function EngagementBar({
   liked,
   likeCount,
@@ -115,8 +113,13 @@ export function EngagementBar({
     toast({ title: "Link copied" });
   };
 
+  const columns = showViews ? 6 : 5;
+
   return (
-    <div className={cn("mt-2 flex items-center justify-between", size === "lg" ? "max-w-lg" : "max-w-md")}>
+    <div
+      className={cn("mt-2 grid items-center", size === "lg" ? "max-w-lg" : "max-w-md")}
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+    >
       <ActionButton
         icon={MessageCircle}
         count={commentCount}
@@ -126,18 +129,36 @@ export function EngagementBar({
         hoverBg="group-hover:bg-primary/10"
         size={size}
       />
-      <ActionButton
-        icon={Repeat2}
-        count={repostCount}
-        label={reposted ? "Undo repost" : "Repost"}
-        onClick={onRepost}
-        disabled={disabled || !onRepost}
-        active={reposted}
-        activeText="text-repost"
-        hoverText="hover:text-repost"
-        hoverBg="group-hover:bg-repost/10"
-        size={size}
-      />
+
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            aria-label="Share post"
+            className="group inline-flex items-center justify-center gap-1 text-[13px] text-muted-foreground transition-colors hover:text-primary"
+          >
+            <span className={cn("flex items-center justify-center rounded-full transition-colors group-hover:bg-primary/10", size === "lg" ? "p-2.5" : "p-2")}>
+              <Share className={size === "lg" ? "h-5 w-5" : "h-[18px] w-[18px]"} />
+            </span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" onClick={(e) => e.stopPropagation()}>
+          <DropdownMenuItem onClick={onNativeShare}>
+            <Share className="mr-2 h-4 w-4" /> Share via…
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onCopy}>
+            <Copy className="mr-2 h-4 w-4" /> Copy link
+          </DropdownMenuItem>
+          {shareTargets(url, shareText).map((t) => (
+            <DropdownMenuItem key={t.id} asChild>
+              <a href={t.href} target="_blank" rel="noreferrer noopener">
+                <Link2 className="mr-2 h-4 w-4" /> {t.label}
+              </a>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <ActionButton
         icon={Heart}
         count={likeCount}
@@ -151,56 +172,35 @@ export function EngagementBar({
         fill
         size={size}
       />
+
+      <ActionButton
+        icon={Repeat2}
+        count={repostCount}
+        label={reposted ? "Undo repost" : "Repost"}
+        onClick={onRepost}
+        disabled={disabled || !onRepost}
+        active={reposted}
+        activeText="text-repost"
+        hoverText="hover:text-repost"
+        hoverBg="group-hover:bg-repost/10"
+        size={size}
+      />
+
+      <ActionButton
+        icon={Bookmark}
+        label={bookmarked ? "Remove bookmark" : "Bookmark"}
+        onClick={toggleBookmark}
+        active={bookmarked}
+        activeText="text-primary"
+        hoverText="hover:text-primary"
+        hoverBg="group-hover:bg-primary/10"
+        fill
+        size={size}
+      />
+
       {showViews && (
-        <ActionButton
-          icon={BarChart3}
-          count={viewCount}
-          label="Views"
-          size={size}
-          disabled
-        />
+        <ActionButton icon={BarChart3} count={viewCount} label="Views" size={size} disabled />
       )}
-      <div className="flex items-center">
-        <ActionButton
-          icon={Bookmark}
-          label={bookmarked ? "Remove bookmark" : "Bookmark"}
-          onClick={toggleBookmark}
-          active={bookmarked}
-          activeText="text-primary"
-          hoverText="hover:text-primary"
-          hoverBg="group-hover:bg-primary/10"
-          fill
-          size={size}
-        />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              aria-label="Share post"
-              className="group -ml-2 inline-flex items-center gap-1 text-[13px] text-muted-foreground transition-colors hover:text-primary"
-            >
-              <span className={cn("flex items-center justify-center rounded-full transition-colors group-hover:bg-primary/10", size === "lg" ? "p-2.5" : "p-2")}>
-                <Share className={size === "lg" ? "h-5 w-5" : "h-[18px] w-[18px]"} />
-              </span>
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-            <DropdownMenuItem onClick={onNativeShare}>
-              <Share className="mr-2 h-4 w-4" /> Share via…
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onCopy}>
-              <Copy className="mr-2 h-4 w-4" /> Copy link
-            </DropdownMenuItem>
-            {shareTargets(url, shareText).map((t) => (
-              <DropdownMenuItem key={t.id} asChild>
-                <a href={t.href} target="_blank" rel="noreferrer noopener">
-                  <Link2 className="mr-2 h-4 w-4" /> {t.label}
-                </a>
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
     </div>
   );
 }
