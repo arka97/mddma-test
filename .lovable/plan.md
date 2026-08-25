@@ -36,4 +36,6 @@ The app has a manifest and icons, but no app-shell service worker (`public/push-
 - `src/lib/push.ts`: point `SW_URL` at `/sw.js` and unregister a stale `/push-sw.js` registration so existing installs migrate cleanly.
 - `useInstallPrompt`: also treat `navigator.getInstalledRelatedApps` / repeat `appinstalled` as installed; no behavioural change otherwise.
 - New `src/components/pwa/InstallBar.tsx` rendered from `src/pages/Home.tsx` above the bottom tab bar, respecting safe-area insets and the existing hide-on-scroll chrome; dismissal key `mddma:install-bar-dismissed`.
+- New `src/components/pwa/InstallPromoCard.tsx` (in-feed / Discover strip) plus a shared `useInstallVisibility` helper wrapping `useInstallPrompt` with one localStorage namespace (`mddma:install:*`) so header pill, feed card, drawer row, post-signup sheet and notification hint share dismissal and installed state.
 - Offline caching only affects the published app, not the Lovable editor preview.
+
