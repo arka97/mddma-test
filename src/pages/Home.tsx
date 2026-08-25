@@ -26,6 +26,8 @@ import { useCirculars } from "@/hooks/queries/useContent";
 import type { CircularRow } from "@/repositories/circulars";
 import { AdSlot } from "@/components/home/today/AdSlot";
 import { EnablePushCard } from "@/components/notifications/EnablePushCard";
+import { InstallPromoCard } from "@/components/pwa/InstallPromoCard";
+import { InstallBar } from "@/components/pwa/InstallBar";
 import { cn } from "@/lib/utils";
 import { useChromeVisibility } from "@/contexts/ChromeVisibilityContext";
 
@@ -283,6 +285,9 @@ const Home = () => {
 
         {canRead && (
           <>
+            <div className="px-4 pt-3">
+              <InstallPromoCard />
+            </div>
             <div className="pt-3">
               <EnablePushCard />
             </div>
@@ -405,6 +410,7 @@ const Home = () => {
               canPostAnonymous={role === "paid_member" || role === "broker"}
             />
           )}
+          <InstallBar />
         </>
 
       </div>

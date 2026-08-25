@@ -29,6 +29,7 @@ import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/contexts/AuthContext";
 import { CompanySwitcher } from "@/components/layout/CompanySwitcher";
 import { InstallAppButton } from "@/components/pwa/InstallAppButton";
+import { InstallPromoCard } from "@/components/pwa/InstallPromoCard";
 
 interface Props {
   open: boolean;
@@ -231,8 +232,12 @@ export function AccountDrawer({ open, onOpenChange }: Props) {
 
         <Separator className="my-2" />
 
+        <div className="px-4 pb-2 pt-1">
+          <InstallPromoCard variant="strip" />
+        </div>
+
         <div className="flex items-center justify-between gap-2 px-4 pb-8 pt-1">
-          <InstallAppButton size="sm" variant="outline" />
+          <InstallAppButton size="sm" variant="outline" label="Install app" />
           {user && (
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="mr-1.5 h-4 w-4" /> Sign out

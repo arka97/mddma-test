@@ -3,7 +3,7 @@ import { Bell, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
-import { enablePush, isPushEnabledHere, permissionState, pushSupport } from "@/lib/push";
+import { enablePush, isPushEnabledHere, isStandalone, permissionState, pushSupport } from "@/lib/push";
 
 const DISMISS_KEY = "gbaug:push-nudge-dismissed";
 
@@ -63,6 +63,11 @@ export function EnablePushCard() {
           <p className="mt-0.5 text-xs text-muted-foreground">
             Replies, deal-room messages and new bulletins — even when the app is closed.
           </p>
+          {!isStandalone() && (
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Tip: installing G-BAU-G on your home screen makes alerts far more reliable.
+            </p>
+          )}
           <Button size="sm" className="mt-2" onClick={turnOn} disabled={busy}>
             {busy ? "Turning on…" : "Turn on"}
           </Button>

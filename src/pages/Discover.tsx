@@ -8,6 +8,7 @@ import { CategoryGrid } from "@/components/home/today/CategoryGrid";
 import { RecentListingsList } from "@/components/home/today/RecentListingsList";
 import { NewMembersList } from "@/components/home/today/NewMembersList";
 import { MembershipCTA } from "@/components/home/today/MembershipCTA";
+import { InstallPromoCard } from "@/components/pwa/InstallPromoCard";
 
 const Discover = () => (
   <Layout>
@@ -18,6 +19,7 @@ const Discover = () => (
     />
 
     <div className="container mx-auto max-w-6xl space-y-5 px-5 pt-4 sm:px-6 sm:pt-5 lg:px-8">
+      <InstallPromoCard variant="strip" />
       <AdSlot placement="homepage-banner" />
       <TodayHeader />
       <QuickActionsGrid />

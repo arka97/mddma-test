@@ -114,7 +114,11 @@ export function Header() {
           </Link>
 
           <div className="flex items-center justify-end gap-1.5">
-            <InstallAppButton iconOnly size="sm" className="hidden h-9 w-9 p-0 sm:inline-flex" />
+            <InstallAppButton
+              label="Get App"
+              size="sm"
+              className="h-9 rounded-full px-3 text-xs"
+            />
             <NotificationsButton />
             {!user && (
               <Button size="sm" variant="default" className="h-9" asChild>
