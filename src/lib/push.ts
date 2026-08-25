@@ -1,6 +1,8 @@
 import { supabase } from "@/integrations/supabase/client";
 
-const SW_URL = "/push-sw.js";
+/** Push handlers live inside the generated app-shell worker. */
+const SW_URL = "/sw.js";
+const LEGACY_SW_URL = "/push-sw.js";
 
 /** Preview / dev hosts where service workers must never register. */
 function isBlockedHost(): boolean {
@@ -70,6 +72,11 @@ function keyToBase64(key: ArrayBuffer | null): string {
 }
 
 async function getRegistration(): Promise<ServiceWorkerRegistration> {
+  // Retire the standalone push worker if this device still has it.
+  const legacy = await navigator.serviceWorker.getRegistration(LEGACY_SW_URL);
+  if (legacy && (legacy.active?.scriptURL || "").endsWith(LEGACY_SW_URL)) {
+    await legacy.unregister().catch(() => undefined);
+  }
   const existing = await navigator.serviceWorker.getRegistration(SW_URL);
   if (existing) return existing;
   return navigator.serviceWorker.register(SW_URL, { scope: "/" });
