@@ -21,7 +21,7 @@ import { CompanyHoverCard } from "@/components/social/CompanyHoverCard";
 import type { CommunityPostRow } from "@/repositories/communityPosts";
 import { recordView } from "@/repositories/postViews";
 import { likePost, unlikePost } from "@/repositories/postLikes";
-import { setRepost } from "@/repositories/postReposts";
+import { listReposts, setRepost } from "@/repositories/postReposts";
 import { setPostHidden, deletePost, muteAuthor } from "@/repositories/communityPosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
