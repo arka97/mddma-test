@@ -6,11 +6,7 @@ export function postUrl(postId: string) {
 export function shareTargets(url: string, text = "") {
   const u = encodeURIComponent(url);
   const t = encodeURIComponent(text ? `${text} ` : "");
-  return [
-    { id: "whatsapp", label: "WhatsApp", href: `https://wa.me/?text=${t}${u}` },
-    { id: "x", label: "X", href: `https://twitter.com/intent/tweet?url=${u}&text=${t}` },
-    { id: "linkedin", label: "LinkedIn", href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}` },
-  ];
+  return [{ id: "whatsapp", label: "WhatsApp", href: `https://wa.me/?text=${t}${u}` }];
 }
 
 export async function nativeShare(url: string, text?: string): Promise<"shared" | "copied" | "cancelled"> {
