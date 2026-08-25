@@ -103,19 +103,50 @@ const PostDetail = () => {
     return () => { alive = false; };
   }, [postId]);
 
+  const startReply = (c: PostCommentRow) => {
+    setReplyTo(c);
+    composerRef.current?.focus();
+  };
+
   const submit = async () => {
     if (!user || !post || !text.trim()) return;
     setSending(true);
     try {
-      const c = await addComment(post.id, user.id, text.trim());
+      const c = await addComment(post.id, user.id, text.trim(), replyTo?.id ?? null);
       setComments((arr) => [...arr, c]);
       setText("");
+      setReplyTo(null);
     } catch (e) {
       toast({ title: "Failed to reply", description: e instanceof Error ? e.message : "", variant: "destructive" });
     } finally {
       setSending(false);
     }
   };
+
+  const CommentRow = ({ comment, compact, onReply }: { comment: PostCommentRow; compact?: boolean; onReply?: () => void }) => {
+    const name = comment.author_name?.trim() || "Member";
+    return (
+      <div className="flex gap-3">
+        <Avatar className={compact ? "h-7 w-7 shrink-0" : "h-9 w-9 shrink-0"}>
+          <AvatarImage src={comment.author_avatar ?? undefined} alt={name} />
+          <AvatarFallback>{name.slice(0, 1).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 text-[13px]">
+            <span className="font-semibold">{name}</span>
+            <span className="text-muted-foreground">· {shortTimeAgo(comment.created_at)}</span>
+          </div>
+          <p className="whitespace-pre-wrap break-words text-[15px]">{comment.content}</p>
+          {onReply && (
+            <button type="button" onClick={onReply} className="mt-1 text-[12px] font-medium text-muted-foreground hover:text-primary">
+              Reply
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
 
   return (
     <Layout>
