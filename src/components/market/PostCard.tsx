@@ -328,7 +328,13 @@ export function PostCard({
         !isDetail && "cursor-pointer hover:bg-muted/40",
       )}
     >
+      {reposted && (
+        <p className="mb-1 flex items-center gap-1.5 pl-[52px] text-[12px] font-medium text-muted-foreground">
+          <Repeat2 className="h-3.5 w-3.5" /> You reposted
+        </p>
+      )}
       <div className="flex gap-3">
+
         {anon ? (
           <div className={cn("flex shrink-0 items-center justify-center rounded-full bg-muted", isDetail ? "h-11 w-11" : "h-10 w-10")}>
             <Shield className="h-5 w-5 text-muted-foreground" />
