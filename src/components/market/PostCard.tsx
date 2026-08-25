@@ -212,12 +212,22 @@ export function PostCard({
     setRepostCount((c) => Math.max(0, c + (next ? 1 : -1)));
     try {
       await setRepost(post.id, next);
+      // Reconcile with the server so the count/highlight are never optimistic-only.
+      const summary = await listReposts([post.id]);
+      setRepostCount(summary.counts[post.id] ?? 0);
+      setReposted(summary.mine.has(post.id));
+      qc.invalidateQueries({ queryKey: ["post-reposts"] });
     } catch (e) {
       setReposted(!next);
       setRepostCount((c) => Math.max(0, c + (next ? -1 : 1)));
-      toast({ title: "Failed", description: e instanceof Error ? e.message : "", variant: "destructive" });
+      toast({
+        title: next ? "Couldn't repost" : "Couldn't undo repost",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
     }
   };
+
 
   const onHide = async () => {
     await setPostHidden(post.id, true);
