@@ -18,6 +18,16 @@ The app has a manifest and icons, but no app-shell service worker (`public/push-
 4. **Simplify the fallback dialog**
    Keep the existing per-platform instructions, but only show them when the browser truly can't install. When a native prompt exists, never show instructions.
 
+5. **Push install to the front so more members actually install**
+   - Header: the Install button becomes visible on mobile too (currently hidden below `sm`), styled as a gold pill labelled "Get App".
+   - Home feed: a full-width "Install the G-BAU-G app" card appears in the feed once (after a few posts) for browser users, with a one-tap Install action and a "Why install" line (faster, home-screen icon, alerts).
+   - Discover page: a compact install strip near the top, matching the existing card styling.
+   - Account drawer: promote the existing Install entry to a highlighted row with app icon and "Recommended" tag.
+   - After sign-up / first login: a one-time install sheet instead of a silent redirect.
+   - Notifications: when a member enables alerts in a browser tab, mention that installing the app makes alerts reliable, with the Install action inline.
+   - All surfaces read one shared dismissal + "already installed" state, so an installed or opted-out user sees none of them and nothing nags twice.
+
+
 ## Technical notes
 
 - Add `vite-plugin-pwa` in `generateSW` mode: `registerType: "autoUpdate"`, `injectRegister: null`, `devOptions.enabled: false`, output at `/sw.js`, `importScripts: ["/push-sw.js"]` so push handlers live inside the generated worker.
@@ -26,4 +36,6 @@ The app has a manifest and icons, but no app-shell service worker (`public/push-
 - `src/lib/push.ts`: point `SW_URL` at `/sw.js` and unregister a stale `/push-sw.js` registration so existing installs migrate cleanly.
 - `useInstallPrompt`: also treat `navigator.getInstalledRelatedApps` / repeat `appinstalled` as installed; no behavioural change otherwise.
 - New `src/components/pwa/InstallBar.tsx` rendered from `src/pages/Home.tsx` above the bottom tab bar, respecting safe-area insets and the existing hide-on-scroll chrome; dismissal key `mddma:install-bar-dismissed`.
+- New `src/components/pwa/InstallPromoCard.tsx` (in-feed / Discover strip) plus a shared `useInstallVisibility` helper wrapping `useInstallPrompt` with one localStorage namespace (`mddma:install:*`) so header pill, feed card, drawer row, post-signup sheet and notification hint share dismissal and installed state.
 - Offline caching only affects the published app, not the Lovable editor preview.
+
