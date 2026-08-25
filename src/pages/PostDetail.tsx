@@ -1,22 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Loader2, Send } from "lucide-react";
+import { ArrowLeft, Loader2, Send, X } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PostCard } from "@/components/market/PostCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { getPost, type CommunityPostRow } from "@/repositories/communityPosts";
 import { listLikes } from "@/repositories/postLikes";
 import { viewCounts } from "@/repositories/postViews";
-import { listComments, addComment, type PostCommentRow } from "@/repositories/postComments";
+import { listComments, addComment, buildThreads, type PostCommentRow } from "@/repositories/postComments";
 import { listCompaniesByOwners } from "@/repositories/companies";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchPublicProfiles } from "@/repositories/profiles";
 import { shortTimeAgo } from "@/lib/time";
 import { useToast } from "@/hooks/use-toast";
+
 
 interface Author {
   id: string;
