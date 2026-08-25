@@ -45,9 +45,13 @@ const PostDetail = () => {
   const [notFound, setNotFound] = useState(false);
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
+  const [replyTo, setReplyTo] = useState<PostCommentRow | null>(null);
   const composerRef = useRef<HTMLInputElement>(null);
 
+  const threads = useMemo(() => buildThreads(comments), [comments]);
+
   const canEngage = !!user;
+
   const isAdmin = role === "admin";
 
   useEffect(() => {
