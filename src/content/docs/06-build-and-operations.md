@@ -1,6 +1,6 @@
 # Build & Operations
 
-> **v3.2 · Last verified July 2026** against the deployed shell, edge functions, secrets manager and roadmap.
+> **v3.3 · Last verified September 2026** against the deployed shell, edge functions, secrets manager and roadmap.
 
 How to set up, run, ship, and evolve G-BAU-G. This is the playbook — not a status report.
 
@@ -96,7 +96,11 @@ The published site is a static SPA. Lovable hosting handles the SPA fallback aut
 
 ## PWA install
 
-`public/manifest.json` is configured for G-BAU-G branding and installability. On iOS Safari and Android Chrome, members get an "Add to Home Screen" prompt the second time they open the site. The dashboard shows a dismissible **InstallAppNudge**; dismissal is stored in `localStorage.mddma:install-nudge-dismissed`.
+`vite-plugin-pwa` (`generateSW`) emits `/sw.js` — the app shell plus the Web Push handlers — registered from `src/lib/registerSW.ts`. Chrome/Edge therefore fire the native install prompt, which the app surfaces as a one-tap button: a "Get App" header pill, a sticky bottom install bar, and promo cards on the feed, Discover, the dashboard and the account drawer, all sharing one dismissal state. iOS Safari gets the short Share → Add to Home Screen instructions instead. `public/manifest.json` carries the G-BAU-G branding and splash configuration.
+
+## Notifications & push
+
+Database triggers write to the notification tables on replies, likes, follows, deal-room activity, announcements and market signals. The `push-vapid-key` edge function serves the public VAPID key; `send-push` delivers Web Push to stored subscriptions. The header bell subscribes to realtime updates for its badge, `/notifications` lists history, and members control delivery per type in their profile settings.
 
 ## Roadmap
 
@@ -115,6 +119,8 @@ gantt
   v3.1.3 RFQ + /forms cleanup        :done, 2026-06-01, 1w
   v3.2 Community Feed + RFQ v2       :done, 2026-06-15, 3w
   v3.2 review — brand + IA + a11y    :done, 2026-07-05, 2w
+  v3.3 Feed-as-Home + Updates/Buzz   :done, 2026-08-10, 3w
+  v3.3 Notifications + one-tap PWA   :done, 2026-08-24, 2w
   Pilot · 8–10 two-sided (PILOT-001) :active, 2026-05-03, 12w
   section Next
   Promote Privacy/Terms/Refund pages :2026-07-25, 1w

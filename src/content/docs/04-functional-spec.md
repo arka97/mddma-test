@@ -1,6 +1,6 @@
 # Functional Spec
 
-> **v3.2 · Last verified July 2026** against `src/routes.tsx`, the live database, edge functions and storage buckets.
+> **v3.3 · Last verified September 2026** against `src/routes.tsx`, the live database, edge functions and storage buckets.
 
 Module-by-module specification with acceptance criteria. Each module names its data dependencies, the role gates that apply, and the behaviour expected on the happy path.
 
@@ -8,11 +8,12 @@ Module-by-module specification with acceptance criteria. Each module names its d
 
 ```mermaid
 flowchart LR
-  Home[Home /] --> Dir[Directory]
-  Home --> Prod[Products]
-  Home --> Brands[Brands]
-  Home --> Bulletin[Bulletin /circulars]
-  Home --> Market[Community Feed /market]
+  Home --> Disc[Discover /discover]
+  Disc --> Dir[Directory]
+  Disc --> Prod[Products]
+  Disc --> Brands[Brands]
+  Home --> Bulletin[Bulletin in feed]
+  Home[Home = Community Feed /] --> Buzz[Buzz reels]
   Home --> RFQ[RFQ board /rfq]
   Dir --> Mem[Member Profile]
   Mem --> Store[Storefront]
@@ -62,16 +63,18 @@ Home (`/`) renders, in order: **HomeHero** → Homepage banner ad → **LiveTick
 - Cross-company house-brand discovery. Brand page links to the brand's products and to the owning company's storefront. Branded SKUs may link to an external B2C URL.
 - **Acceptance:** brands without active products are still listed and show an empty state on the brand page.
 
-### Community Feed `/market`
-- The live posting surface. Replaces the older "Market News" page and the retired `/community` route (which now redirects here).
-- Tables: `community_posts`, `post_comments`, `post_likes`, `post_views`, `post_polls`, `post_poll_options`, `post_poll_votes`, `anonymous_identity_log` (admin-only RLS).
-- Compose supports **text · images (clipboard paste, up to N per post) · PDFs · polls · price ranges · anonymous toggle**. Links auto-expand into rich previews via the `fetch-link-preview` edge function (oEmbed for YouTube/Vimeo, direct-image/video/PDF detection). Pinned rate cards can be featured by admins.
+### Community Feed — the home page `/`
+- The live posting surface and the app's landing screen. `/market`, `/community` and `/circulars` all redirect here.
+- **Lanes:** `community_posts.channel` is `updates` or `buzz`. **Updates** = prices, alerts, sourcing, polls and bulletins (list view). **Buzz** = humor, gossip and member news media, rendered as a vertical snap-scroll reels view. Admins can move a post between lanes.
+- **Chips:** circular dashed-ring icon chips — Updates · Buzz · Following · Bulletin · Price Signals — with horizontal swipe between lanes and hide-on-scroll chrome.
+- Tables: `community_posts`, `post_comments` (self-referencing `parent_id` for threaded replies), `post_likes`, `post_views`, `post_reposts`, `post_polls`, `post_poll_options`, `post_poll_votes`, `anonymous_identity_log` (admin-only RLS).
+- Compose supports **text · images (clipboard paste) · PDFs · video (MP4/MOV/WebM, ≤50 MB) · polls · price ranges · Update/Buzz switch · anonymous toggle**, in a keyboard-aware full-height sheet. Links auto-expand into rich previews via the `fetch-link-preview` edge function (oEmbed for YouTube/Vimeo, direct-image/video/PDF detection). Pinned rate cards can be featured by admins.
 - Compose media uploads land in the `community-media` bucket. Update policy on the bucket requires `is_paid_or_admin` — losing paid status removes overwrite rights.
-- Engagement bar uses a thumbs-up icon (not a heart).
-- Access tiers: **paid + admin** can post/comment/like/poll; **free members** are read-only for 7 days then hit a paywall overlay; **guests** see a teaser; **anonymous posting** is paid-only and the real identity is written to `anonymous_identity_log` for admin audit.
+- Engagement bar is an evenly spaced grid in the order **comment · share · like · repost · save**; view counts appear only on an opened post. Share offers native share, copy link and WhatsApp only. Reposts persist in `post_reposts` via the `set_business_post_repost` / `get_post_repost_summary` RPCs and show a "You reposted" line. Replies support one level of threading with "Replying to" context, and every author shows their real name and avatar via the `get_public_profiles` RPC.
+- Access: **any signed-in member** can post, reply, like, repost, bookmark, share and follow while the Feature Access and "verification not required" toggles are ON. **Guests can read the feed but cannot interact.** Admin-only actions (pin, hide, move lane) stay gated. Anonymous posting writes the real identity to `anonymous_identity_log` for admin audit.
 - When **Feature Access** is ON (`is_features_open() = true`), RLS opens read to guests + free members.
-- Floating "Post" FAB: `z-50`, `bottom-24` so it clears the mobile bottom tabs.
-- **Acceptance:** paid users can post/like/comment/poll; free users past 7 days see the paywall overlay; anonymous posts hide the author from other members but are visible to admins via the log; pin escalation is blocked at RLS (`WITH CHECK` prevents authors from self-pinning).
+- Floating "Post" FAB sits above the bottom tabs using shared safe-area geometry (`src/lib/chrome-layout.ts`) and slides down with the tab bar when chrome hides. Mobile-scroll regression tests cover chip, chrome and FAB alignment across Updates, Buzz and Following.
+- **Acceptance:** any signed-in member can post/like/comment/repost/poll; guests see the feed read-only; anonymous posts hide the author from other members but are visible to admins via the log; pin escalation is blocked at RLS (`WITH CHECK` prevents authors from self-pinning).
 
 ### RFQ board `/rfq`
 - Paid members and admins create and browse RFQ listings (buy or sell intent).
@@ -80,8 +83,8 @@ Home (`/`) renders, in order: **HomeHero** → Homepage banner ad → **LiveTick
 - When Feature Access is ON, RLS opens read to guests + free members.
 - **Acceptance:** a paid member creates a listing with expiry; another paid member reveals contact once and the reveal appears in `rfq_contact_reveals`; expired listings drop from the public feed.
 
-### Bulletin `/circulars` and `/circulars/:slug`
-- Admin-managed announcements with title, slug, body, optional attachment URL, `published_at`. Renamed from "Circulars & Notices" to **Bulletin** in the UI while keeping the `/circulars` URLs for continuity.
+### Bulletin (in the feed)
+- Admin-managed announcements with title, slug, body, optional attachment URL, `published_at`. The standalone page is gone — bulletins are interleaved into the Updates feed and surfaced by the **Bulletin** chip; `/circulars` redirects to `/`.
 - Attachments served via **1-hour signed URLs** (tightened from the earlier 5-year signing).
 - **Acceptance:** drafts are not visible to non-admins; published entries are reachable by slug; the home QuickActions "Bulletin" tile shows a live count of published entries.
 
@@ -89,7 +92,7 @@ Home (`/`) renders, in order: **HomeHero** → Homepage banner ad → **LiveTick
 
 | Route | Contents | Notes |
 |---|---|---|
-| `/` | Home shell above | Prerendered |
+| `/discover` | Discover shell above | Prerendered |
 | `/about` | Association history + committee members + office bearers | Prerendered |
 | `/membership` | 2-card grid (Free vs Paid) + side-by-side comparison table | Prerendered |
 | `/apply` | Single Paid plan checkout + "I operate as a broker" flag | — |
@@ -98,7 +101,6 @@ Home (`/`) renders, in order: **HomeHero** → Homepage banner ad → **LiveTick
 | `/knowledge/:slug` | Individual article | Prerendered |
 | `/faq` | Categorised FAQs + `FAQPage` JSON-LD generated from the same source | Prerendered |
 | `/contact` | Real office address, phone, hours, Grievance Officer, mailto form | Prerendered |
-| `/circulars`, `/circulars/:slug` | Bulletin (see above) | Prerendered |
 
 ## Forms `/forms`
 
@@ -106,7 +108,7 @@ Two tabs only: **Advertise** and **Submit Circular**. The Verification Request t
 
 ## Account hub `/dashboard`, `/account/*`
 
-Mobile bottom-tab "Account" opens `/dashboard`. The dashboard shows a gold-underlined hero card, the **OnboardingChecklist** (5 live-progress steps) and the dismissible **InstallAppNudge** (dismissal persisted in `localStorage.mddma:install-nudge-dismissed`).
+Mobile bottom-tab "Account" opens `/dashboard`. The dashboard shows a gold-underlined hero card, the **OnboardingChecklist** (5 live-progress steps) and the **install promo card**.
 
 | Route | Purpose |
 |---|---|
@@ -138,13 +140,15 @@ stateDiagram-v2
 - **Feature Access toggle:** flips `app_settings.features_open_to_all`; `useAppSettings` hook syncs it in real time; `RoleContext.isEffectivePaid` follows.
 - **Member moderation:** approve verification, toggle broker flag, suspend, set `review_status` and `is_hidden`.
 
-## Live ticker
+## Notifications
 
-Compact top-of-home ticker (`LiveTicker`) auto-scrolls curated APMC rate signals and admin-featured items. Never carries an exact price.
+In-app notifications plus Web Push. Tables cover notifications, push subscriptions and per-type preferences; database triggers fire on replies, likes, follows, deal-room activity, announcements and market signals. Delivery runs through the `push-vapid-key` and `send-push` edge functions and the app-shell service worker; the header bell badge updates in realtime, `/notifications` lists history, and `/account/profile` holds the per-type switches.
+
+*The Live Ticker, Market News and Humor modules were removed in v3.3.*
 
 ## SEO surfaces (GTM-001)
 
-Public authority routes are prerendered, listed in `sitemap.xml`, and allowlist GPTBot / ClaudeBot / PerplexityBot / Google-Extended in `robots.txt`. `index.html` carries an Organization JSON-LD block. The transactional core (`/directory`, `/products`, `/store/:slug`, `/brands`, `/brands/:slug`, `/market`, `/rfq`, `/dashboard`, `/account/*`, `/documents`, `/login`, `/forms`) is `noindex` via `<Seo noindex />` and contains no price / stock / contact in indexable HTML.
+Public authority routes are prerendered, listed in `sitemap.xml`, and allowlist GPTBot / ClaudeBot / PerplexityBot / Google-Extended in `robots.txt`. `index.html` carries an Organization JSON-LD block. The transactional core (`/` feed, `/directory`, `/products`, `/store/:slug`, `/brands`, `/brands/:slug`, `/rfq`, `/notifications`, `/dashboard`, `/account/*`, `/documents`, `/login`, `/forms`) is `noindex` via `<Seo noindex />` and contains no price / stock / contact in indexable HTML.
 
 ## Acceptance principle
 

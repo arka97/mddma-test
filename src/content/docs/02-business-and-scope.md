@@ -1,6 +1,6 @@
 # Business & Scope
 
-> **v3.2 · Last verified July 2026** against the live app shell, database and routes.
+> **v3.3 · Last verified September 2026** against the live app shell, database and routes.
 
 This document defines **what the platform is for the Association as a business**: strategic goals, monetisation, engagement scope, and the boundaries we deliberately enforce.
 
@@ -52,6 +52,8 @@ gantt
   v3.1.3 RFQ + /forms cleanup    :done, 2026-06-01, 1w
   v3.2 Community Feed + RFQ v2   :done, 2026-06-15, 3w
   v3.2 review — brand + IA sweep :done, 2026-07-05, 2w
+  v3.3 Feed-as-Home + Updates/Buzz :done, 2026-08-10, 3w
+  v3.3 Notifications + PWA install :done, 2026-08-24, 2w
   section Pilot & launch
   Pilot · 8–10 two-sided (PILOT-001) :active, 2026-05-03, 12w
   Public launch (committee)      : 2026-07-25, 1w
@@ -65,11 +67,13 @@ gantt
 - Admin CMS for **Bulletin** (circulars), Ads, and member moderation, plus the **Feature Access** toggle.
 - Verified-member onboarding with KYC document upload, reviewed by an admin.
 - Member directory, seller storefronts (`/store/:slug`), brand pages (`/brands/:slug`) and a cross-member product catalogue.
-- **Community Feed** (`/market`) with images/PDFs/polls/anonymous mode/pinned rate cards/oEmbed previews.
+- **Community feed as the home page** (`/`) with Updates/Buzz lanes, images/PDFs/video/polls, threaded replies, reposts, bookmarks, anonymous mode and link previews.
 - **RFQ board** (`/rfq`) with 1–90 day expiry and logged contact reveal.
 - **Public authority pages** — `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/knowledge`, `/knowledge/:slug`, `/faq` (FAQPage JSON-LD), `/contact`.
 - Forms surface (Advertise + Submit Circular) at `/forms`.
-- Dashboard with 5-step OnboardingChecklist and dismissible InstallAppNudge.
+- Dashboard with 5-step OnboardingChecklist and install promotion.
+- In-app and Web Push notifications with per-type preferences.
+- One-tap PWA install (app-shell service worker, install bar and promo cards).
 - Documentation suite — **29 docs** (7 public 00–06 + 22 internal 07–28), versioned in source control.
 
 ### Legal, policy & operator pack (shipped May 2026)

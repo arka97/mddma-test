@@ -1,6 +1,6 @@
 # Start Here
 
-> **v3.2 · Last verified July 2026** against the live database (`public` schema), deployed edge functions, `src/routes.tsx`, and the header/footer/bottom-tab shells.
+> **v3.3 · Last verified September 2026** against the live database (`public` schema), deployed edge functions, `src/routes.tsx`, and the header/footer/bottom-tab shells.
 
 If you have never opened **G-BAU-G** (the MDDMA digital platform) before, read **this page first**. Five minutes. It tells you what the Association is, what the platform actually does today, and which of the other 28 docs is the right next read for you.
 
@@ -16,22 +16,23 @@ Named **Grievance & Data Protection Officer** under DPDP Act 2023 §8(9) and IT 
 
 - **App name:** **G-BAU-G** (rendered "G.BAU.G" in the header wordmark).
 - **Publisher:** by Mumbai Dryfruits & Dates Merchants Association.
-- **Palette:** GoKwik-inspired "Warm Commerce" — gold primary `#d8a86a`, cream backgrounds, navy ink, 16px radii, pill buttons.
+- **Palette:** "MDDMA Burgundy & Gold" — burgundy `#6E1B2E`, gold `#C99A3A`, white base, dark ink typography. Legible on white; no cream washes.
 - **Every color, gradient and shadow is a semantic HSL token** in `src/index.css`. Hard-coded utilities (`text-white`, `bg-emerald-*`, `bg-[#...]`) are forbidden — the `success` token replaces green everywhere.
 
 ## What the platform is, in one paragraph
 
-A **Behavioral Trade Operating System** for the Association: a verified member directory, seller storefronts and brand pages, a controlled-transparency product catalogue, a **Community Feed** (`/market`) that replaces the old chat-first workflow, an **RFQ board** (`/rfq`) for buy/sell intent, an admin CMS for **Bulletin** (circulars) and advertising, a public knowledge + FAQ + contact authority layer, and a dashboard with live onboarding checklist and install nudge — wrapped in an installable PWA, role-aware (Guest / Free / Paid / Broker / Admin), DPDP-compliant, and built on Lovable Cloud (Auth + Postgres + Storage + Edge Functions). No exact prices, no exact stock counts are ever rendered — that is the **controlled transparency** rule (UX-001). Contact between buyers and sellers happens via `wa.me` deeplinks and revealed phone numbers, logged for audit.
+A **Behavioral Trade Operating System** for the Association: a verified member directory, seller storefronts and brand pages, a controlled-transparency product catalogue, a **community feed that is the home page** (`/`), split into **Updates** and **Buzz** lanes, replacing the old chat-first workflow, an **RFQ board** (`/rfq`) for buy/sell intent, an admin CMS for **Bulletin** (circulars) and advertising, a public knowledge + FAQ + contact authority layer, and a dashboard with live onboarding checklist and install nudge — wrapped in an installable PWA, role-aware (Guest / Free / Paid / Broker / Admin), DPDP-compliant, and built on Lovable Cloud (Auth + Postgres + Storage + Edge Functions). No exact prices, no exact stock counts are ever rendered — that is the **controlled transparency** rule (UX-001). Contact between buyers and sellers happens via `wa.me` deeplinks and revealed phone numbers, logged for audit.
 
 ## Information architecture (source of truth)
 
 | Surface | Routes |
 |---|---|
 | **Public authority layer** (prerendered, indexable, AI-crawler-friendly) | `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/circulars/:slug`, `/knowledge`, `/knowledge/:slug`, `/faq`, `/contact` |
-| **Transactional core** (`noindex`, auth-walled, no price/stock/contact in HTML) | `/directory`, `/directory/:slug`, `/products`, `/products/:slug`, `/store/:slug`, `/brands`, `/brands/:slug`, `/market`, `/rfq`, `/dashboard`, `/account/*`, `/documents`, `/login`, `/forms` |
-| **Desktop nav** | Home · Directory · Products · Market · RFQ · Membership + **More** dropdown (Brands, Circulars, Knowledge, FAQ, About, Contact) |
-| **Mobile bottom tabs** | Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`) — 52 px hit area, `text-[11px]` labels |
-| **Retired routes (v3.2 review)** | `/broker` → `/directory?type=Broker` · `/community` → `/market` · `/directorylist` → `/directory` |
+| **Transactional core** (`noindex`, auth-walled, no price/stock/contact in HTML) | `/directory`, `/directory/:slug`, `/products`, `/products/:slug`, `/store/:slug`, `/brands`, `/brands/:slug`, `/rfq`, `/dashboard`, `/account/*`, `/notifications`, `/documents`, `/login`, `/forms` |
+| **Desktop nav** | Home · Discover · Directory · Products · RFQ · Join + **More** dropdown (Brands, Knowledge, FAQ, About, Contact) |
+| **Mobile bottom tabs** | Home (`/` feed) · Discover (`/discover`) · RFQ (`/rfq`) · Firms (`/directory`) · Account (`/dashboard`) — 52 px hit area, `text-[11px]` labels |
+| **Mobile header** | Account avatar (opens the account drawer) · centred G.BAU.G logo · notifications bell with unread badge |
+| **Retired routes (v3.3)** | `/market`, `/community`, `/circulars` → `/` (feed) · `/broker` → `/directory?type=Broker` · `/directorylist` → `/directory` |
 
 ## What's live, planned, and explicitly out of scope
 
@@ -43,20 +44,25 @@ If another doc disagrees with this table, this table wins.
 | Member directory + storefronts + product catalogue | **Live** (live DB only — DATA-001) | doc 04 |
 | Seller brands (`/brands`, `/brands/:slug`, storefront brand strip) | **Live** | doc 04 |
 | Admin CMS — **Bulletin** (circulars) + Ads | **Live** | doc 04, doc 13 |
-| Home shell — hero, live ticker, quick actions, category grid, New Products, New Members, membership CTA | **Live** | doc 04 |
-| Community Feed (`/market`) — posts, comments, likes, views, polls, PDFs, images (clipboard paste), rich link/oEmbed previews, anonymous posting | **Live** | doc 04 |
+| Home = community feed (`/`) with **Updates / Buzz / Following / Bulletin** icon chips, swipe between lanes, hide-on-scroll chrome, floating Post button | **Live** | doc 04 |
+| Buzz lane — vertical snap-scroll video/media reels | **Live** | doc 04 |
+| Post interactions — threaded replies, likes, reposts, bookmarks, share (native / copy link / WhatsApp), view counts on opened posts | **Live** | doc 04 |
+| Discover shell (`/discover`) — hero, quick actions, category grid, New Products, New Members, membership CTA | **Live** | doc 04 |
+| Bulletin — published inside the feed (no separate page) | **Live** | doc 04 |
+| In-app + Web Push notifications (VAPID, realtime badge, per-type preferences) | **Live** | doc 04, doc 06 |
 | RFQ board (`/rfq`) — listings with 1–90 day expiry, logged contact reveal | **Live** | doc 04 |
 | Admin **Feature Access** toggle (opens Market + RFQ to guests/free during pilot) | **Live** | doc 04, doc 13 |
-| Dashboard — 5-step OnboardingChecklist + dismissible InstallAppNudge | **Live** | doc 03 |
+| Dashboard — 5-step OnboardingChecklist + install promo card | **Live** | doc 03 |
 | Public authority pages — `/faq` (JSON-LD), `/knowledge` + `/knowledge/:slug`, `/contact` | **Live** | doc 04 |
 | Forms page (`/forms`) — Advertise + Submit Circular tabs | **Live** | doc 04 |
 | KYC verification (admin-managed via `/account/moderation`) | **Live** | doc 23 |
-| Native forum tables (posts + comments) | **Read-only archive** — superseded by `/market` | doc 04 |
+| Live ticker, Market News and Humor modules | **Removed v3.3** | doc 04 |
 | Markdown documentation hub — 29 docs (7 public 00–06 + 22 internal 07–28) | **Live** | doc 06 |
-| PWA install (Android Chrome + iOS Safari) | **Live** | doc 06 |
+| One-tap PWA install (service worker via `vite-plugin-pwa`, install bar + promo cards; iOS gets Share → Add to Home Screen steps) | **Live** | doc 06 |
 | Razorpay payment links | **Built, test-mode only** — live keys gated on the legal pack going public (LEGAL-001) | doc 12 |
 | Legal pack as public routes (`/privacy`, `/terms`, `/refund`, `/grievance`) | **Drafted, not promoted** — counsel review pending | docs 19–22 |
-| Pilot — 8–10 sellers + 8–10 buyers, 90 days | **Active** (Week 3 of 12, PILOT-001) | doc 27 |
+| Pilot — 8–10 sellers + 8–10 buyers, 90 days | **Active** (PILOT-001) | doc 27 |
+| Feature Access + "verification not required" toggles | **Live and currently ON** — every signed-in member can post, comment, follow and use RFQ | doc 04 |
 | Behavioral Intelligence Layer (BIL) | **Planned**, external API (TECH-001) | doc 05, doc 14 |
 | Buyer reputation scoring (GOV-001) | **Planned** — Q3 2026 | doc 06 |
 | Demand-trend chips on every card | **Planned** | doc 06 |
@@ -106,6 +112,7 @@ The full glossary lives in **doc 14**. These six are the ones the very first pag
 - **Mandi** — wholesale physical market; here, the historic Masjid Bunder market.
 - **APMC** — Agricultural Produce Market Committee; the regulated wholesale market complex in Vashi, Navi Mumbai.
 - **Storefront** — a Paid member's curated product showcase at `/store/:slug`, with brand strip and category tabs.
+- **Updates / Buzz** — the two feed lanes. Updates carries rates, notices, sourcing and bulletins; Buzz carries humor, gossip and member news as snap-scroll media.
 - **BIL** — Behavioral Intelligence Layer; the planned external service that turns member activity into demand-trend chips and buyer-reputation scores. Not live today.
 
 ## A note on the build

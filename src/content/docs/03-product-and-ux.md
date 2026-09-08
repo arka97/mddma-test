@@ -1,6 +1,6 @@
 # Product & UX
 
-> **v3.2 · Last verified July 2026** against the live app shell (`Header`, `Footer`, `MobileBottomTabBar`), routes, and role-context flags.
+> **v3.3 · Last verified September 2026** against the live app shell (`Header`, `Footer`, `MobileBottomTabBar`), routes, and role-context flags.
 
 How real members experience G-BAU-G — personas, what each role can see, the controlled-transparency rules that govern every screen, and how a buyer moves from discovery to contact.
 
@@ -20,19 +20,23 @@ A header **role simulator** lets the committee experience the site as any role d
 
 | Surface | Contents |
 |---|---|
-| **Header (desktop)** | Logo (G.BAU.G · "by Mumbai Dryfruits & Dates Merchants Association") · **Home · Directory · Products · Market · RFQ · Membership · More** (Brands, Circulars, Knowledge, FAQ, About, Contact) · Role simulator · Auth |
-| **Header (mobile)** | Logo · Auth · Role simulator drawer |
-| **Bottom tabs (mobile only)** | Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`) — 52 px hit area, `text-[11px]` labels |
+| **Header (desktop)** | G.BAU.G logo · **Home · Discover · Directory · Products · RFQ · Join · More** (Brands, Knowledge, FAQ, About, Contact) · Role simulator · Auth |
+| **Header (mobile)** | Account avatar (drawer) · centred logo · notifications bell with unread badge |
+| **Bottom tabs (mobile only)** | Home (`/` feed) · Discover (`/discover`) · RFQ (`/rfq`) · Firms (`/directory`) · Account (`/dashboard`) — 52 px hit area, `text-[11px]` labels |
 | **Footer** | Brand block · Explore · Members · **Legal** · Contact block |
-| **Retired routes (v3.2 review)** | `/broker` → `/directory?type=Broker` · `/community` → `/market` · `/directorylist` → `/directory` · `/contact` is now a real page (was a Forms alias) |
+| **Retired routes (v3.3)** | `/market`, `/community`, `/circulars` → `/` (feed) · `/broker` → `/directory?type=Broker` · `/directorylist` → `/directory` |
 
-## Home shell
+## Home shell (the feed)
 
-`/` renders, in order: **HomeHero** (proof points + guest-vs-member CTAs) → Homepage banner ad → **LiveTicker** (auto-scrolling APMC rate signals) → **QuickActionsGrid** (4 primary tiles with live counts for Bulletin and RFQ) → **CategoryGrid** (two horizontal snap-strips: 4 tiles on mobile, 8 on desktop, featured first) → interstitial ad → **New Products** (`RecentListingsList`) → **New Members** (`NewMembersList`) → **Membership CTA**. The removed "Our partners" and "PAID member" strips are not coming back.
+`/` renders the community feed: sticky ad slot + **icon chips** (circular icons with dashed rings — Updates · Buzz · Following · Bulletin · Price Signals …), the selected lane below, and a floating **Post** button. Header, ad, chips and bottom tabs hide on scroll-down and return on scroll-up as one coordinated chrome layer; horizontal swipe moves between chips in order. Buzz renders as a full-height vertical snap-scroll reels view. Safe-area insets keep the Post button clear of the iOS home indicator.
+
+## Discover shell
+
+`/discover` renders, in order: **HomeHero** (proof points + guest-vs-member CTAs) → Homepage banner ad → **QuickActionsGrid** (4 primary tiles with live counts for Bulletin and RFQ) → **CategoryGrid** (two horizontal snap-strips: 4 tiles on mobile, 8 on desktop, featured first) → interstitial ad → **New Products** (`RecentListingsList`) → **New Members** (`NewMembersList`) → **Membership CTA**. The removed "Our partners" and "PAID member" strips are not coming back.
 
 ## Dashboard shell
 
-`/dashboard` (opened by the "Account" bottom tab) shows the hero card (gold underline), the **OnboardingChecklist** (5 steps, live progress from Supabase: profile → company → verification → first product → first community post), and the dismissible **InstallAppNudge** (dismiss state stored in `localStorage.mddma:install-nudge-dismissed`). From there members reach `/account/profile`, `/account/company`, `/account/products`, `/account/brands`, and (admin only) `/account/moderation`.
+`/dashboard` (opened by the "Account" bottom tab) shows the hero card (gold underline), the **OnboardingChecklist** (5 steps, live progress from Supabase: profile → company → verification → first product → first community post), and the **install promo card** (shared dismiss state across every install surface). From there members reach `/account/profile`, `/account/company`, `/account/products`, `/account/brands`, and (admin only) `/account/moderation`.
 
 ## Role-based access
 
@@ -110,7 +114,7 @@ A **Verified** badge appears next to a member when KYC documents (GST, business 
 
 ## Community Feed compose behavior
 
-The `/market` compose sheet mirrors a Twitter-style card with avatar, borderless textarea and a row of pill actions: **Photo · File · Link · Poll · Signal**. Photos support clipboard paste; files are PDFs; links auto-expand into rich cards (image + title + description, video play overlay for YouTube/Vimeo via oEmbed, dedicated file chip for direct PDFs); polls are backed by `post_polls` / `post_poll_options` / `post_poll_votes`; the anonymous toggle shows an inline compliance-log explainer ("your real identity is logged for admin audit"). The floating **Post** button sits at `z-50` with `bottom-24` so it clears the mobile bottom tabs.
+The compose sheet mirrors a Twitter-style card with avatar, borderless textarea and a row of pill actions: **Photo · File · Link · Poll · Signal**. Photos support clipboard paste; files are PDFs; links auto-expand into rich cards (image + title + description, video play overlay for YouTube/Vimeo via oEmbed, dedicated file chip for direct PDFs); polls are backed by `post_polls` / `post_poll_options` / `post_poll_votes`; a **Update / Buzz switch** decides the lane the post lands in; the anonymous toggle shows an inline compliance-log explainer ("your real identity is logged for admin audit"). The floating **Post** button sits at `z-50` with `bottom-24` so it clears the mobile bottom tabs.
 
 ## Member-facing policies
 

@@ -1,6 +1,6 @@
 # Architecture & Tech
 
-> **v3.2 · Last verified July 2026** against the live schema, edge functions, storage buckets and `src/` layout.
+> **v3.3 · Last verified September 2026** against the live schema, edge functions, storage buckets and `src/` layout.
 
 The implementation reference: stack, layering, data model, auth model, the Behavioral Intelligence Layer contract, and the rules that keep the codebase honest.
 
@@ -9,12 +9,14 @@ The implementation reference: stack, layering, data model, auth model, the Behav
 | Layer | Choice | Why |
 |---|---|---|
 | Frontend | React 18 + Vite 5 + TypeScript 5 | Lovable native, fast HMR |
-| Styling | Tailwind 3 + shadcn/ui + HSL semantic tokens | GoKwik-inspired "Warm Commerce" palette (gold `#d8a86a`, cream, navy); dark-mode safe; **hard-coded utilities forbidden** |
+| Styling | Tailwind 3 + shadcn/ui + HSL semantic tokens | "MDDMA Burgundy & Gold" palette (burgundy `#6E1B2E`, gold `#C99A3A`, white base); dark-mode safe; **hard-coded utilities forbidden** |
 | Routing | React Router v6 (`BrowserRouter`) — v6.30.1+ security-patched | SPA fallback handled by Lovable hosting |
 | Data | TanStack Query (`@tanstack/react-query`) | Caching + invalidation over the repository layer |
 | Backend | **Lovable Cloud** (Auth, Postgres, Storage, Edge Functions) | Single managed surface, no external accounts |
 | Payments | Razorpay (single Paid plan, broker is a flag) | India-first, UPI native; **test-mode only** until LEGAL-001 |
-| Community Feed | Native (`community_posts`, `post_comments`, `post_likes`, `post_views`, `post_polls*`, `anonymous_identity_log`) | Replaced earlier Discourse embed for the day-to-day surface |
+| Community Feed | Native (`community_posts` with an `updates`/`buzz` channel, `post_comments` with `parent_id`, `post_likes`, `post_views`, `post_reposts`, `post_polls*`, `anonymous_identity_log`) | The home page; replaced the earlier Discourse embed |
+| Notifications | Postgres triggers + Web Push (VAPID) via the `send-push` / `push-vapid-key` edge functions, delivered by the app-shell service worker | In-app badge is realtime; push works on installed PWAs |
+| PWA | `vite-plugin-pwa` (`generateSW`) emitting `/sw.js` with the push handlers folded in | One-tap install prompt on Chrome/Edge |
 | Behavioral Intelligence Layer | **External API service** (TECH-001) | Compute-heavy; lives outside edge functions |
 
 ## System architecture
@@ -86,7 +88,9 @@ Key tables:
 - `companies` — one per Paid member; carries `is_broker`, `is_verified`, slug, categories, `review_status`, `is_hidden`. Read by the public via the `companies_public` view (security_invoker, safe-column SELECT grants only). PII columns (`email`, `phone`, `gstin`, `address`) have **no SELECT grants** to `anon` or `authenticated`.
 - `brands` — house brands per company; powers `/brands`, `/brands/:slug`, storefront brand strip.
 - `products` + `product_variants` — variant-level pricing input (never rendered exactly).
-- `community_posts` + engagement tables — the `/market` surface. RLS reads `is_features_open()` so the admin Feature Access toggle can open reads to everyone without policy edits.
+- `community_posts` + engagement tables — the home feed. `channel` splits Updates from Buzz; `post_comments.parent_id` gives one-level threads; `post_reposts` backs reposting. RLS reads `is_features_open()` so the admin Feature Access toggle can open reads and writes without policy edits.
+- `notifications`, push-subscription and notification-preference tables — populated by triggers, read only by their owner.
+- Display names/avatars are never read from `profiles` directly by the client — the `get_public_profiles(_ids uuid[])` security-definer RPC returns only safe display fields to signed-in callers.
 - `rfq_listings` + `rfq_contact_reveals` — v3.2 RFQ board. Reveal goes through the `get_company_whatsapp` RPC and is logged.
 - `anonymous_identity_log` — admin-only RLS; maps anonymous community posts to their real author for audit.
 - `app_settings` — single-row config table exposing `features_open_to_all`; wrapped by the SQL helper `is_features_open()`.
