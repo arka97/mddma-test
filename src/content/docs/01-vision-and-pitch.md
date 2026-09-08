@@ -1,6 +1,6 @@
 # Vision & Pitch
 
-> **v3.2 · Last verified July 2026** against the live app shell, database and routes.
+> **v3.3 · Last verified September 2026** against the live app shell, database and routes.
 
 > **Thesis.** G-BAU-G does not expose the dry-fruits and dates market — it **structures and controls** it. The platform is a Behavioral Trade Operating System for the Mumbai Dryfruits & Dates Merchants Association: a verified directory, a controlled-transparency catalogue, seller storefronts and brands, a community feed and RFQ board that keep member intent on-platform, and a published authority layer (knowledge, bulletin, FAQ, contact) designed to keep pricing power inside the association.
 
@@ -36,9 +36,9 @@ The platform never renders exact prices or exact stock to anyone. Buyers see ran
 ## The four member-facing surfaces
 
 1. **Directory & Storefronts** — verified profiles, brand pages, product catalogue with variants. The public trust layer.
-2. **Community Feed (`/market`)** — the day-to-day posting surface. Text, images (with clipboard paste), PDFs, polls, price ranges, oEmbed link previews, anonymous mode (audit-logged), pinned rate cards. Replaces the "market news" chat firehose.
+2. **Community feed (the home page `/`)** — the day-to-day posting surface, split into **Updates** (rates, notices, sourcing, bulletins, polls) and **Buzz** (humor, gossip, member news as snap-scroll media). Text, images (with clipboard paste), PDFs, video, polls, price ranges, link previews, threaded replies, likes, reposts, bookmarks and anonymous mode (audit-logged).
 3. **RFQ board (`/rfq`)** — structured buy/sell intent with 1–90 day expiry and one-tap contact reveal. Complements — does not replace — the wa.me negotiation.
-4. **Authority layer** — `/`, `/about`, `/membership`, `/circulars` (Bulletin), `/knowledge` + `/knowledge/:slug`, `/faq` (with FAQPage JSON-LD), `/contact`. Prerendered, AI-crawler-friendly, cited by search when members are Googled.
+4. **Authority layer** — `/discover`, `/about`, `/membership`, `/circulars` (Bulletin), `/knowledge` + `/knowledge/:slug`, `/faq` (with FAQPage JSON-LD), `/contact`. Prerendered, AI-crawler-friendly, cited by search when members are Googled.
 
 ## Lean canvas
 
