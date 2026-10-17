@@ -1,244 +1,69 @@
 # Operations Runbook
 
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
-> **v3.2 Update Notice (July 2026)** — This doc has been updated for **v3.2**. Key changes since v3.1.3:
->
-> - **RFQ is back**, under a new schema. The `/rfq` route is live, backed by the `rfq_listings` and `rfq_contact_reveals` tables. It is open to paid members and admins; contact reveal is logged. The old `rfqs` / `inquiry_products` / `rfq_responses` tables, the multi-item RFQ cart, `CartContext`, `CartFab` / `CartDrawer` / `RFQModal`, and the `/account/rfqs` inbox all remain **removed**. Any older reference below to those artifacts is historical.
-> - **`/market` is now the Community Feed**, not Market News. It uses `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS). Paid + admin can post; free members are read-only for the first 7 days; guests see a teaser; anonymous posting is paid-only.
-> - **Mobile bottom tab bar** order is now **Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`)**.
-> - **Admin Feature Access toggle** — while the pilot is running, admins can flip a global switch (`app_settings.features_open_to_all`, exposed via the `is_features_open()` SQL function) that temporarily opens Community Feed posts and RFQ listings to guests and free members. RLS on `community_posts` and `rfq_listings` reads `is_features_open()`; the frontend reads `featuresOpen` / `isEffectivePaid` from `RoleContext`. Managed from **Admin → Moderation → Feature Access**.
->
-> The **/forms Verification Request** flow remains **removed** — members are verified during admin onboarding, not via a self-serve form.
+## Audience and safeguards
 
----
+Developer troubleshooting reference. **Committee/office staff never run SQL (OPS-001); use doc 25.** Diagnose from the failing UI/network/log signal before changing policies. A signed-out demo role is not a permission test. Do not export personal data to unmanaged devices.
 
+## Current task map
 
-The day-to-day playbook. Skim the table of contents; jump to the recipe you need.
-
-> **For the committee:** this doc is SQL-heavy and for the developer. If you're an office-staff or committee member, start with **doc 25 (Committee Operator Guide)** — every common task (approve a company, publish a circular, run an ad, pin a post) has a zero-SQL version there. Per OPS-001 (doc 11), committee members never run SQL.
-
-## Recipes
-
-1. Seed demo data for a pilot
-2. Rotate a secret
-3. Manually grant a role
-4. Manually verify a member
-5. Find a stuck RFQ
-6. Read edge function logs
-7. Debug a failed Razorpay webhook
-8. Restore a soft-hidden company / product
-9. Change the docs password
-10. Publish a circular
-11. Place a homepage ad
-12. Common psql queries
-
----
-
-### 1 · Seed demo data for a pilot
-
-Discovery pages render only what's in the database. Insert a handful of real companies and products via the admin UI:
-
-1. Sign in as `admin@mddma.org`.
-2. `/account/company` — create a company you control as a smoke test.
-3. `/account/products` — add 2–3 products with variants.
-4. `/account/moderation` → **Members** — promote 5–10 founders to `paid_member`.
-5. Have those members add their own companies + products.
-6. `/account/moderation` → **Circulars** — publish ≥3 announcements.
-7. `/account/moderation` → **Ads** — at least 1 active homepage banner.
-
-The home page only looks "full" once 3+ products and 1+ ad exist.
-
-### 2 · Rotate a secret
-
-Secrets live in Lovable Cloud secrets manager. To rotate:
-
-1. Generate the new value (Razorpay dashboard, etc.).
-2. Update the secret in Lovable Cloud — secret name does **not** change. Edge functions pick up new values on next invocation.
-3. For `RAZORPAY_WEBHOOK_SECRET` only: also update the corresponding Razorpay dashboard webhook secret. Both must match exactly.
-
-Active secrets used by this project:
-
-| Secret | Used by |
+| Symptom | Check / next action |
 |---|---|
-| `DOCS_PASSWORD` | `verify-doc-password` |
-| `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | `razorpay-create-payment-link` |
-| `RAZORPAY_WEBHOOK_SECRET` | `razorpay-webhook` |
-| `LOVABLE_API_KEY` | (reserved — AI features) |
-| `SUPABASE_*` | injected automatically — do not rotate manually |
+| Sign-in fails | Hosted auth settings, user confirmation, public OAuth return origin and actual error; don't infer settings from source alone |
+| Business invisible | Company `review_status`, `is_hidden`, safe view projection and grants; staff UI does not currently show full Approve/Reject workflow |
+| Cannot follow / Following empty | Sign in, exercise actual business/person target, verify mutation/read-back and followed target filters |
+| Comment says Member | Safe profile RPC requires login; verify stored display name and enrichment; never broaden private profiles read |
+| Repost fails | Capture RPC error and read summary back; optimistic UI is not persistence |
+| Compose/reply hidden by iOS keyboard | Visual viewport resize, 16px input, safe area, focus/scroll; compare actual device behavior |
+| RFQ creation fails despite Access ON | Hosted insert still checks verified/approved/visible business and representative; do not claim the switch overrides this |
+| RFQ empty signed out | Hosted RFQ listing reads require authentication |
+| Contact reveal unavailable | `get_company_whatsapp` explicitly requires Paid/Broker/Admin; don't bypass by exposing company phone |
+| Private chat inaccessible | Session plus room-company/representative access; `can_access_deal_room`, context and mutation RPC errors |
+| Feed upload denied | Private `community-media`, opaque path, signed-in owner, current insert policy; no blanket bucket public toggle |
+| Bulletin attachment denied/expired | Published attachment reference, authenticated signing policy, one-hour URL refresh |
+| Bell changes but no device sound | History/realtime versus push are distinct; subscription, browser support, permission, VAPID, server hook and OS sound settings |
+| Docs old | Rebuild `content.ts`, deploy `get-internal-doc`, read updated source through password-checked response |
+| Docs 401 after secret rotation | Unlock again with the new secret; the password is held in memory and checked on every internal request |
+| Payment queue empty | Expected: membership helpers are disabled stubs and hosted membership table is absent |
+| Google Maps fails | Check configured custom connection and currently served origin allowlist; don't assume an old custom domain is attached |
 
-### 3 · Manually grant a role
+## Release checks
 
-The admin UI handles this. SQL fallback:
+- Run existing focused tests, including membership logic and `src/test/mobile-chrome.test.ts`; allow the preview harness to build.
+- Test guest read-only feed and real signed-in interaction separately. Use a real authorised business for quotations/deals.
+- Exercise post → open → reply to reply → repost/read-back; business/person follow → Following.
+- Check Updates/Buzz/Following scroll direction, hidden chrome pointer behavior and FAB safe-area geometry.
+- Verify `/market/:postId` detail still works while `/market` index redirects.
+- Check install prompt where supported and iOS manual steps; test push on an installed supported device. Realtime badge is not push proof.
+- Inspect latest scan findings/grants/RLS and run a recovery drill; a prior audit date is not today's clean bill.
+- Verify all 29 docs and ZIP coverage, then publish only on an explicit owner request.
 
-```sql
-INSERT INTO public.user_roles (user_id, role)
-VALUES ('<uuid>', 'paid_member');
-```
-
-The `remove_free_when_upgraded` trigger removes the `free_member` row automatically. To remove a role:
-
-```sql
-DELETE FROM public.user_roles WHERE user_id='<uuid>' AND role='paid_member';
-```
-
-If you removed all paid/broker rows manually, also restore free:
-
-```sql
-SELECT public.downgrade_to_free('<uuid>');
-```
-
-### 4 · Manually verify a member
-
-Use `/account/moderation` → toggle `is_verified` on the company, or run:
-
-```sql
-UPDATE public.companies SET is_verified = true WHERE slug = '<slug>';
-```
-
-To bump KYC tier on a profile (admin / service role only — non-admin writes are blocked by `prevent_profile_privilege_escalation`):
+## Read-only diagnostics (developer)
 
 ```sql
-UPDATE public.profiles
-   SET verification_tier = 'gst',
-       gst_verified_at   = now(),
-       company_verified_at = COALESCE(company_verified_at, now()),
-       email_verified_at   = COALESCE(email_verified_at,   now()),
-       buyer_reputation_score = 80
- WHERE id = '<user-uuid>';
+-- Platform role distribution (no personal contact data)
+select role, count(*) from public.user_roles group by role;
+
+-- RFQ board status, not the removed rfqs table
+select status, count(*) from public.rfq_listings group by status;
+
+-- Paid/Free exclusivity violations
+select user_id from public.user_roles
+where role in ('free_member','paid_member','broker')
+group by user_id
+having bool_or(role='free_member')
+   and (bool_or(role='paid_member') or bool_or(role='broker'));
 ```
 
-There is no `promote-verification` edge function — promotion is admin-driven.
+Do not reuse old SQL targeting `rfqs`, `inquiry_products`, `rfq_responses`, `memberships`, the RFQ cart or ticker. Role updates go through reviewed admin actions or an authorised developer intervention with audit evidence, not casual committee queries.
 
-### 5 · Find a stuck RFQ
+## Admin surfaces actually present
 
-A "stuck" RFQ is `status='new'` for more than 7 days with no response.
+Moderation tabs: Access, Companies, Products, Users, Circulars, Ads, Categories, Community, Anon Log, RFQs. Company rows expose Verify/Unverify and Hide/Unhide; Users has role buttons; Circulars has compose/Publish/Unpublish/Delete; RFQs has Hide/Unhide and force Expire. No email rejection workflow, red-dot queues or payment activation should be promised without implementation.
 
-```sql
-SELECT r.id, r.product_name, r.created_at, p.full_name AS buyer, c.name AS seller
-FROM rfqs r
-LEFT JOIN profiles p ON p.id = r.buyer_id
-LEFT JOIN companies c ON c.id = r.company_id
-WHERE r.status = 'new'
-  AND r.created_at < now() - interval '7 days'
-ORDER BY r.created_at;
-```
+## Deployment/secrets/recovery
 
-To force-expire:
+Keep `DOCS_PASSWORD`, Razorpay and VAPID private values in Lovable Cloud's secrets facilities; never write them in docs. Rotate external-service and app-side values together where relevant. Managed service-role/database credentials are not available to extract. Read logs without tokens/PII.
 
-```sql
-UPDATE rfqs SET status = 'expired' WHERE id = '<uuid>';
-```
-
-### 6 · Read edge function logs
-
-In Lovable Cloud, open the project's Cloud panel and look at the function-specific log streams. Useful filters:
-
-| Function | What to grep |
-|---|---|
-| `razorpay-webhook` | `signature mismatch`, `activate_membership failed`, `activated membership` |
-| `razorpay-create-payment-link` | `Razorpay create link failed`, the HTTP status |
-| `get-internal-doc` | `Unknown slug` (means a doc was added to `_meta.ts` but not to `SLUG_TO_FILE`) |
-| `verify-doc-password` | usually silent — only logs on 500 |
-
-### 7 · Debug a failed Razorpay webhook
-
-Symptoms: user paid, role didn't grant.
-
-1. **Razorpay dashboard → Webhooks → recent deliveries.** Look for the failed POST.
-2. If status code is **401**, `RAZORPAY_WEBHOOK_SECRET` mismatch. Compare the value in Lovable secrets with the one in Razorpay dashboard. Rotate if needed (recipe 2).
-3. If status code is **400**, the payload is malformed or `notes.membership_id` is missing. The link must have been created **outside** our edge function. Re-create via the admin UI.
-4. If status code is **500**, look at `razorpay-webhook` logs for the actual error. Most common: `activate_membership` RPC failed because the membership row doesn't exist (was deleted) or `_payload` is malformed.
-5. **Replay**: in the Razorpay dashboard, click "Resend" on the delivery. The webhook is idempotent.
-6. **Manual fallback**: use `/account/moderation` → "Mark active manually" with the actual amount paid.
-
-### 8 · Restore a soft-hidden company / product
-
-```sql
-UPDATE companies SET is_hidden = false WHERE slug = '<slug>';
-UPDATE products  SET is_hidden = false WHERE slug = '<slug>';
-```
-
-If `review_status='rejected'` you also need:
-
-```sql
-UPDATE companies SET review_status = 'approved', rejection_reason = null WHERE slug = '<slug>';
-```
-
-### 9 · Change the docs password
-
-1. Update the `DOCS_PASSWORD` secret in Lovable Cloud.
-2. Share the new value out-of-band with anyone who needs access. Never write the value into source-controlled files or memory documents.
-3. Tell anyone who needs access. Old sessions cached in `sessionStorage` continue to work until the user closes the tab — that is intentional.
-
-### 10 · Publish a circular
-
-`/account/moderation` → **Circulars** → New → fill title + body + category → tick **Published**. The public list at `/circulars` shows only `is_published=true` rows. Unpublish by toggling the same checkbox.
-
-### 11 · Place a homepage ad
-
-`/account/moderation` → **Ads** → New. Required fields: `title`, `image_url` (upload to `ad-assets` bucket first), `placement` (default `homepage-banner`). Optional: `link_url`, `start_date`, `end_date`. The public RLS policy only shows ads where `is_active AND start_date <= today AND (end_date IS NULL OR end_date >= today)`.
-
-### 12 · Common psql queries
-
-**Role distribution**
-```sql
-SELECT role, count(*) FROM user_roles GROUP BY role ORDER BY count DESC;
-```
-
-**KYC funnel**
-```sql
-SELECT verification_tier, count(*) FROM profiles GROUP BY verification_tier;
-```
-
-**Active memberships expiring in next 30 days**
-```sql
-SELECT m.id, p.full_name, m.expires_at
-FROM memberships m
-JOIN profiles p ON p.id = m.profile_id
-WHERE m.status = 'active'
-  AND m.expires_at BETWEEN now() AND now() + interval '30 days'
-ORDER BY m.expires_at;
-```
-
-**RFQ funnel by status**
-```sql
-SELECT status, count(*) FROM rfqs GROUP BY status ORDER BY count DESC;
-```
-
-**Top sellers by inquiry count (last 30 days)**
-```sql
-SELECT c.name, count(*) AS rfqs
-FROM rfqs r
-JOIN companies c ON c.id = r.company_id
-WHERE r.created_at > now() - interval '30 days'
-GROUP BY c.name
-ORDER BY rfqs DESC
-LIMIT 20;
-```
-
-**Recent signups**
-```sql
-SELECT id, full_name, created_at FROM profiles
-ORDER BY created_at DESC LIMIT 25;
-```
-
-**Find users with both paid and free (should always return 0 rows)**
-```sql
-SELECT user_id, array_agg(role) AS roles
-FROM user_roles
-WHERE role IN ('free_member','paid_member','broker')
-GROUP BY user_id
-HAVING count(*) > 1
-   AND 'free_member' = ANY(array_agg(role::text))
-   AND ('paid_member' = ANY(array_agg(role::text)) OR 'broker' = ANY(array_agg(role::text)));
-```
-
-If this query ever returns rows, the ROLE-001 trigger has been bypassed. Run `SELECT downgrade_to_free(<uuid>); SELECT activate_membership(...);` to repair.
-
-## Health checks before a release
-
-1. `bunx vitest run` — must pass.
-2. Spot-check `/`, `/directory`, `/products`, `/community`, `/documents`, `/account/profile`, `/account/moderation` (admin) — all render without console errors.
-3. Use the role simulator to view the home page as Guest, Free, Paid, Broker, Admin. No layout shifts, no role badges where they shouldn't be.
-4. Verify the live ticker shows ≥1 priced product. If empty, seed a product with `price_min` and `price_max`.
-5. Submit a test RFQ as a Paid member, then check the Sent / Received tabs.
+Backup frequency, retention and restore capability require a current hosted check and tested restore; don't state a daily snapshot guarantee from old prose. Storage recovery is separate from row recovery. Retention automation is absent; the officer coordinates any reviewed manual action through the developer.

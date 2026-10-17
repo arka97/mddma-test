@@ -1,206 +1,59 @@
 # Edge Functions Reference
 
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
-> **v3.2 Update Notice (July 2026)** — This doc has been updated for **v3.2**. Key changes since v3.1.3:
->
-> - **RFQ is back**, under a new schema. The `/rfq` route is live, backed by the `rfq_listings` and `rfq_contact_reveals` tables. It is open to paid members and admins; contact reveal is logged. The old `rfqs` / `inquiry_products` / `rfq_responses` tables, the multi-item RFQ cart, `CartContext`, `CartFab` / `CartDrawer` / `RFQModal`, and the `/account/rfqs` inbox all remain **removed**. Any older reference below to those artifacts is historical.
-> - **`/market` is now the Community Feed**, not Market News. It uses `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS). Paid + admin can post; free members are read-only for the first 7 days; guests see a teaser; anonymous posting is paid-only.
-> - **Mobile bottom tab bar** order is now **Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`)**.
-> - **Admin Feature Access toggle** — while the pilot is running, admins can flip a global switch (`app_settings.features_open_to_all`, exposed via the `is_features_open()` SQL function) that temporarily opens Community Feed posts and RFQ listings to guests and free members. RLS on `community_posts` and `rfq_listings` reads `is_features_open()`; the frontend reads `featuresOpen` / `isEffectivePaid` from `RoleContext`. Managed from **Admin → Moderation → Feature Access**.
->
-> The **/forms Verification Request** flow remains **removed** — members are verified during admin onboarding, not via a self-serve form.
+## Function inventory
 
----
+Seven source directories exist under `supabase/functions/`. Source presence does not certify deployment or a successful production call. Deploy only the changed function and verify its response.
 
-
-Every edge function actually deployed in the project, in detail. All four live under `supabase/functions/<name>/index.ts` and deploy automatically when you save changes.
-
-| Function | Purpose | Auth |
+| Function | Input / outcome | Protection and dependencies |
 |---|---|---|
-| `verify-doc-password` | Validate the `/documents` shared passphrase | None — public, constant-time secret compare |
-| `get-internal-doc` | Return markdown for password-gated internal docs (07–17) | None at JWT layer; password verified per request |
-| `razorpay-create-payment-link` | Generate a Razorpay payment link for a pending membership | Bearer JWT; admin role required |
-| `razorpay-webhook` | Receive `payment_link.paid` events and activate memberships | None at JWT layer; HMAC signature verified |
+| `verify-doc-password` | `{password}` → `{ok}` | Server-side `DOCS_PASSWORD`, constant-time comparison; malformed input fails |
+| `get-internal-doc` | `{password, slug?}` → markdown or list of slugs | Same secret checked **every request**; 22 internal docs, 07–28 |
+| `fetch-link-preview` | Link → OG/oEmbed/direct-media preview | Bearer validation in implementation; URL/protocol/address/redirect checks guard SSRF; no arbitrary private-network fetching |
+| `push-vapid-key` | Public push application-server key | Public VAPID key only; never expose private signing key |
+| `send-push` | Notification delivery request | Validated server invocation and VAPID signing; subscription/preference lookups; expired subscriptions can be removed |
+| `razorpay-create-payment-link` | Membership ID → payment link | JWT + admin check; retained legacy code depends on absent membership schema |
+| `razorpay-webhook` | Razorpay event → legacy activation call | HMAC-SHA256 over raw body; depends on absent membership activation path |
 
-All four have `verify_jwt = false` (the project default) and validate the JWT or signature **in code** — never trust the gateway alone.
+No `promote-verification`, `retention-cron` or BIL inference function is shipped in this source tree. BIL remains an external-service proposal. No WhatsApp Business API; `wa.me` is a direct user-initiated link.
 
-> ⚠️ **Implementation status (May 2026):** `verify-doc-password` and `get-internal-doc` are live and load-bearing — the entire `/documents` hub depends on them. The two Razorpay functions are deployed and code-complete, but they read/write a `memberships` table whose migration has not yet been applied. Until that schema ships, they will fail on first DB lookup. Treat them as "wired but dormant"; manual role grants via `INSERT INTO user_roles` work today.
+## Documentation delivery
 
----
+Public-marked docs 00–06 are client-bundled markdown; the whole `/documents` UI still has the shared password gate. Internal bodies 07–28 are **only** imported into `get-internal-doc`, not the browser bundle.
 
-## `verify-doc-password`
+`DocAuthProvider` keeps the password and unlock state in React memory, not sessionStorage/localStorage. Reloading requires unlocking again. Rotating the secret invalidates subsequent internal requests even if the existing tab still visually shows the unlocked hub.
 
-**Endpoint** `POST /functions/v1/verify-doc-password`
-**Body** `{ "password": string }` (1–200 chars)
-**Response** `{ "ok": true | false }`
-**Secret** `DOCS_PASSWORD` — value set in Supabase secrets (never documented in source).
+`get-internal-doc` uses `SLUG_TO_FILE` and generated `CONTENT`, not filesystem reads at request time:
 
-Constant-time comparison protects against timing oracles. Returns 400 for malformed input, 500 if the secret is unset. The frontend `PasswordGate` component caches a successful result in `sessionStorage` and gates `/documents/*` accordingly.
-
-```ts
-const { data } = await supabase.functions.invoke("verify-doc-password", {
-  body: { password: input },
-});
-if (data?.ok) sessionStorage.setItem("docs-pw-ok", "1");
+```text
+content/*.md → build-internal-docs-bundle.ts → content.ts
+                                     → deploy get-internal-doc
+                                     → password-checked markdown response
 ```
 
----
+After **every** internal markdown edit:
 
-## `get-internal-doc`
-
-**Endpoint** `POST /functions/v1/get-internal-doc`
-**Body** `{ "password": string, "slug"?: string }`
-**Response** `{ "ok": true, "slug": string, "source": string }` or `{ "ok": true, "slugs": string[] }` if no slug
-**Secret** `DOCS_PASSWORD` (same as above)
-
-Internal markdown bodies (docs 07–17) live next to the function under `./content/<NN-slug>.md` and are **never** bundled into the client. The function validates the password, looks up the slug in `SLUG_TO_FILE`, reads the file, and returns the body inline.
-
-| Slug | File |
-|---|---|
-| `database-reference` | `07-database-reference.md` |
-| `edge-functions-reference` | `08-edge-functions-reference.md` |
-| `frontend-architecture` | `09-frontend-architecture.md` |
-| `component-and-design` | `10-component-and-design.md` |
-| `decisions-log` | `11-decisions-log.md` |
-| `money-and-membership` | `12-money-and-membership.md` |
-| `operations-runbook` | `13-operations-runbook.md` |
-| `roadmap-and-glossary` | `14-roadmap-and-glossary.md` |
-| `security-and-rls` | `15-security-and-rls.md` |
-| `storage-and-media` | `16-storage-and-media.md` |
-| `owner-quickstart` | `17-owner-quickstart.md` |
-
-### Failure modes
-
-| Status | Cause |
-|---|---|
-| 400 | Missing/oversized password |
-| 401 | Password mismatch |
-| 404 | Unknown slug |
-| 500 | Server error reading the markdown file |
-
-**To add a new internal doc:** drop the `.md` in `supabase/functions/get-internal-doc/content/`, add an entry to `SLUG_TO_FILE` in `index.ts`, and add a `DocMeta` row with `internal: true` to `src/content/docs/_meta.ts`. No body import is needed in the client bundle.
-
----
-
-## `razorpay-create-payment-link`
-
-**Endpoint** `POST /functions/v1/razorpay-create-payment-link`
-**Auth** Caller must have `app_role='admin'` — checked by reading `user_roles` with the service role after validating the bearer JWT.
-**Body**
-```json
-{ "membership_id": "uuid", "expire_seconds": 1209600 }
-```
-**Response** `{ "payment_url": string, "razorpay_order_id": string }`
-**Secrets** `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `APP_URL` (defaults to `https://mddma.in`).
-
-### Flow
-
-```mermaid
-sequenceDiagram
-  participant A as Admin (UI)
-  participant EF as Edge Function
-  participant DB as Postgres
-  participant RZ as Razorpay API
-  A->>EF: POST { membership_id }
-  EF->>DB: validate caller is admin
-  EF->>DB: load memberships row + profile + auth user
-  EF-->>A: 409 if status != pending or link already exists
-  EF->>RZ: POST /v1/payment_links (₹10,000 = 1,000,000 paise)
-  RZ-->>EF: { id, short_url }
-  EF->>DB: UPDATE memberships SET razorpay_order_id, payment_link_url
-  EF-->>A: { payment_url, razorpay_order_id }
+```bash
+bunx tsx scripts/build-internal-docs-bundle.ts
 ```
 
-The payment link uses `notes.membership_id` so the webhook can find the row again. `callback_url` returns the user to `/account/profile?membership=<id>` (the legacy `/account/verify` URL was removed; update the edge function's `callback_url` if you re-introduce a verification page).
+Then deploy `get-internal-doc` and read back an updated slug. For a new document, add source, slug mapping and metadata; internal bodies must never be imported into `_meta.ts`. Unknown/unbundled slugs return 404, missing/oversized password 400, mismatch 401, unexpected error 500. Download ZIP fetches each internal body with the in-memory password; validate that all expected entries are present rather than assuming an incomplete ZIP means success.
 
-### Pricing
+## Push and service worker
 
-`TIER_PRICE_INR` collapses every legacy tier (`paid`, `broker`, `trader`, `importer`) to **₹10,000**. Per BIZ-002 / BIZ-003, the broker addon doesn't exist — `is_broker` is just a flag set on `profiles`.
+The app registers `/sw.js`, generated by `vite-plugin-pwa` in `generateSW` mode with `/push-sw.js` imported. The latter is a handler script, **not a second worker to register**. Development worker generation is disabled. The notification triggers, delivery hook and realtime badge are separate paths: a history row alone does not prove a device received a push or played a sound.
 
-### Failure modes
+Relevant secrets include `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` and the server-invocation credential used by `send-push`; verify exact names in its source before rotation. Never publish subscription keys or private VAPID values.
 
-| Status | Cause |
-|---|---|
-| 401 | Missing or invalid auth header |
-| 403 | Caller is not admin |
-| 400 | `membership_id` missing, unknown tier |
-| 404 | Membership not found |
-| 409 | Membership not in `pending` state, or link already generated |
-| 500 | `RAZORPAY_KEY_ID`/`SECRET` missing |
-| 502 | Razorpay rejected the request — `detail` contains their JSON error |
+## Payments: historical, not runnable checkout
 
----
+Current `/apply` submits a hidden pending **business** for staff review. It does not create a membership checkout. `src/lib/membership.ts` keeps pricing helpers plus empty/error-returning payment/activation/cancellation stubs. Hosted `memberships` is absent. The retained Razorpay functions are not proof of a working payment pipeline.
 
-## `razorpay-webhook`
+Do not issue real payment links or promise webhook activation from this documentation. Before enabling live payments: settle commercial packaging, restore/review the required schema and activation logic, publish counsel-approved legal pages, then test signatures, duplicate delivery, expected amount/currency and role activation. LEGAL-001 remains the publication prerequisite.
 
-**Endpoint** `POST /functions/v1/razorpay-webhook`
-**Auth** None at the JWT layer. Signature verified using HMAC-SHA256 of the raw request body, with `RAZORPAY_WEBHOOK_SECRET`. The header is `x-razorpay-signature`.
-**Events handled** `payment_link.paid`. All other events return 200 with `{ ok: true, ignored: <event> }` so Razorpay stops retrying.
-**Secrets** `RAZORPAY_WEBHOOK_SECRET`.
+## Operations
 
-### What it does on `payment_link.paid`
+Use Lovable Cloud's function logs and deployment tools; managed private keys/database credentials are not available for manual extraction. Keep auth validation and webhook checks inside functions; do not infer protection from gateway configuration alone. Avoid logging passwords, JWTs, push keys, complete payment payloads or personal contact data.
 
-1. Reads `payload.payment_link.entity.notes.membership_id`
-2. Calls `activate_membership(_membership_id, _payload)` RPC with:
-   - `razorpay_payment_id`
-   - `razorpay_order_id`
-   - `amount_paid_inr` (paise → rupees)
-3. The RPC flips status to `active`, sets `starts_at = now()`, `expires_at = now() + 1 year`, applies the 24-month `founding_lock_until`, and INSERTs `paid_member` (and `broker` if profile flagged) into `user_roles`. The `remove_free_when_upgraded` trigger then deletes the user's `free_member` row (ROLE-001).
-
-### Failure modes
-
-| Status | Cause |
-|---|---|
-| 401 | Signature mismatch |
-| 400 | Malformed JSON or missing `membership_id` |
-| 500 | Webhook secret unset, or RPC error |
-
-### Configure in Razorpay dashboard
-Webhook URL: `https://<project-ref>.functions.supabase.co/razorpay-webhook`
-Secret: same value as the `RAZORPAY_WEBHOOK_SECRET` Supabase secret.
-Events: `payment_link.paid` (and optionally `payment_link.partially_paid`).
-
----
-
-## Functions intentionally NOT in the project
-
-| Name | Why not |
-|---|---|
-| `promote-verification` | KYC tier promotion is handled by admins via `/account/moderation` (service-role writes). Earlier docs referred to a self-serve edge function; that path was never shipped. |
-| BIL inference functions | Behavioral Intelligence Layer is an external API (TECH-001), not Supabase edge functions. |
-| WhatsApp messaging functions | We use `wa.me` deeplinks only (TECH-003). |
-
----
-
-## Invoking from the frontend
-
-```ts
-import { supabase } from "@/integrations/supabase/client";
-
-// password gate
-const { data } = await supabase.functions.invoke("verify-doc-password", {
-  body: { password: input },
-});
-
-// internal doc (after gate)
-const { data: doc } = await supabase.functions.invoke("get-internal-doc", {
-  body: { password: cachedPw, slug: "decisions-log" },
-});
-
-// admin generates a payment link (uses caller's bearer token automatically)
-const { data, error } = await supabase.functions.invoke(
-  "razorpay-create-payment-link",
-  { body: { membership_id } },
-);
-```
-
-Never call functions by path. Always use `supabase.functions.invoke()`.
-
-## Logs & debugging
-
-Edge function logs stream into Lovable Cloud and are accessible from the project's Cloud panel. Common patterns:
-
-- **`razorpay-webhook: signature mismatch`** — wrong `RAZORPAY_WEBHOOK_SECRET`, or Razorpay was configured to send to a different URL.
-- **`activate_membership failed`** — usually a unique-constraint clash on `user_roles`. The trigger handles it via `ON CONFLICT DO NOTHING`; if you see this, inspect the `_payload` for malformed JSON.
-- **`Razorpay rejected the request`** — most common cause is a phone number missing the `+91` prefix.
-- **`get-internal-doc: Unknown slug`** — slug missing from `SLUG_TO_FILE`. Re-deploy after adding it.
+Read next: doc 15 security boundaries; doc 16 media; doc 13 troubleshooting.

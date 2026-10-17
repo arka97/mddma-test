@@ -1,124 +1,74 @@
 # Start Here
 
-> **v3.3 · Last verified September 2026** against the live database (`public` schema), deployed edge functions, `src/routes.tsx`, and the header/footer/bottom-tab shells.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
-If you have never opened **G-BAU-G** (the MDDMA digital platform) before, read **this page first**. Five minutes. It tells you what the Association is, what the platform actually does today, and which of the other 28 docs is the right next read for you.
+## What is G-BAU-G?
 
-## About the Association
+**G-BAU-G is the business network operated by the Mumbai Dryfruits & Dates Merchants Association (MDDMA), founded in 1930.** Current onboarding welcomes legitimate Indian and overseas businesses across nuts, dry fruits, seeds, dates, spices and allied food trade. Platform business verification, MDDMA Association membership and commercial packaging are separate statuses.
 
-The **Mumbai Dryfruits & Dates Merchants Association (MDDMA)** is a **95-year-old non-profit trade body** founded in 1930. It represents **~350 wholesale dry-fruit and dates member firms** trading out of APMC Vashi and the historic Masjid Bunder mandi. The Association is governed by an elected committee and is run day-to-day from the office in Sector 19, APMC Market, Vashi, Navi Mumbai. Office contact: **+91 98200 69545**.
+The home page is a community feed, not a marketing page. Browse permitted content, create an individual account to interact, and register an existing business for the commercial actions that require approval. Company verification confirms evidence review; it does not guarantee inventory, quality, fulfilment or creditworthiness.
 
-Until 2026 the Association coordinated almost everything — circulars, rate enquiries, dispute notices — through a constellation of WhatsApp groups. That worked for fellowship but failed for audit, search, verification, and onboarding new members. The G-BAU-G platform replaces that WhatsApp-first status quo with a single, auditable surface that the committee owns.
+## The essentials
 
-Named **Grievance & Data Protection Officer** under DPDP Act 2023 §8(9) and IT Rules 2021 §3(11): **Aditya Parmar** — grievance@mddma.org.
+- **Updates:** price signals, market information, sourcing, polls and notices.
+- **Buzz:** humor, gossip and member-news text/images/video, displayed in a vertical media lane.
+- **Following:** content from followed people and businesses.
+- **Bulletin:** Association circulars inside the feed.
+- **Discover:** businesses, categories, New Products, New Members and install promotion at `/discover`.
+- **RFQ / quotations / Chat:** buy/sell intent, private range-based responses and company conversations; the legacy multi-item cart is gone.
+- **Controlled transparency:** commodity prices are ranges; stock is bands, not exact quantities. A membership fee is not a commodity price.
 
-## The brand
+## Navigation and routes
 
-- **App name:** **G-BAU-G** (rendered "G.BAU.G" in the header wordmark).
-- **Publisher:** by Mumbai Dryfruits & Dates Merchants Association.
-- **Palette:** "MDDMA Burgundy & Gold" — burgundy `#6E1B2E`, gold `#C99A3A`, white base, dark ink typography. Legible on white; no cream washes.
-- **Every color, gradient and shadow is a semantic HSL token** in `src/index.css`. Hard-coded utilities (`text-white`, `bg-emerald-*`, `bg-[#...]`) are forbidden — the `success` token replaces green everywhere.
-
-## What the platform is, in one paragraph
-
-A **Behavioral Trade Operating System** for the Association: a verified member directory, seller storefronts and brand pages, a controlled-transparency product catalogue, a **community feed that is the home page** (`/`), split into **Updates** and **Buzz** lanes, replacing the old chat-first workflow, an **RFQ board** (`/rfq`) for buy/sell intent, an admin CMS for **Bulletin** (circulars) and advertising, a public knowledge + FAQ + contact authority layer, and a dashboard with live onboarding checklist and install nudge — wrapped in an installable PWA, role-aware (Guest / Free / Paid / Broker / Admin), DPDP-compliant, and built on Lovable Cloud (Auth + Postgres + Storage + Edge Functions). No exact prices, no exact stock counts are ever rendered — that is the **controlled transparency** rule (UX-001). Contact between buyers and sellers happens via `wa.me` deeplinks and revealed phone numbers, logged for audit.
-
-## Information architecture (source of truth)
-
-| Surface | Routes |
+| Surface | Current destination |
 |---|---|
-| **Public authority layer** (prerendered, indexable, AI-crawler-friendly) | `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/circulars/:slug`, `/knowledge`, `/knowledge/:slug`, `/faq`, `/contact` |
-| **Transactional core** (`noindex`, auth-walled, no price/stock/contact in HTML) | `/directory`, `/directory/:slug`, `/products`, `/products/:slug`, `/store/:slug`, `/brands`, `/brands/:slug`, `/rfq`, `/dashboard`, `/account/*`, `/notifications`, `/documents`, `/login`, `/forms` |
-| **Desktop nav** | Home · Discover · Directory · Products · RFQ · Join + **More** dropdown (Brands, Knowledge, FAQ, About, Contact) |
-| **Mobile bottom tabs** | Home (`/` feed) · Discover (`/discover`) · RFQ (`/rfq`) · Firms (`/directory`) · Account (`/dashboard`) — 52 px hit area, `text-[11px]` labels |
-| **Mobile header** | Account avatar (opens the account drawer) · centred G.BAU.G logo · notifications bell with unread badge |
-| **Retired routes (v3.3)** | `/market`, `/community`, `/circulars` → `/` (feed) · `/broker` → `/directory?type=Broker` · `/directorylist` → `/directory` |
+| Home / Discover / Firms | `/`, `/discover`, `/directory` |
+| RFQ / quotations / Chat | `/rfq`, `/quotes`, `/messages`, `/messages/:roomId` |
+| Opened post | `/market/:postId` (still active) |
+| Catalogue / storefront / brands | `/products`, `/products/:slug`, `/store/:slug`, `/brands`, `/brands/:slug` |
+| Account / team / businesses / saved | `/dashboard`, `/account/*` including team, companies and bookmarks |
+| Help and authority | `/about`, `/faq`, `/knowledge`, `/knowledge/:slug`, `/contact`, `/install` |
+| Join / business registration | `/membership`, `/apply` |
+| Notifications / docs | `/notifications`, `/documents`, `/documents/:slug` |
 
-## What's live, planned, and explicitly out of scope
+Mobile header: account avatar on the left, centred logo, notification bell. Mobile bottom tabs: **Home · Discover · RFQ · Firms · Chat**. Account tools are reached from the avatar/drawer. Header, ad, chips and bottom tabs hide when scrolling down and return when scrolling up; the Post button follows safe-area geometry.
 
-If another doc disagrees with this table, this table wins.
+Redirected indexes: `/market`, `/community`, `/circulars` → home; `/broker` → `/directory?type=Broker`; `/directorylist` → directory. There is no `/circulars/:slug`, `/account/rfqs`, `/account/verify` or `/leads` route.
 
-| Capability | Status | Where to read |
-|---|---|---|
-| Auth, RBAC (admin / broker / paid / free), role simulator | **Live** | doc 05, doc 15 |
-| Member directory + storefronts + product catalogue | **Live** (live DB only — DATA-001) | doc 04 |
-| Seller brands (`/brands`, `/brands/:slug`, storefront brand strip) | **Live** | doc 04 |
-| Admin CMS — **Bulletin** (circulars) + Ads | **Live** | doc 04, doc 13 |
-| Home = community feed (`/`) with **Updates / Buzz / Following / Bulletin** icon chips, swipe between lanes, hide-on-scroll chrome, floating Post button | **Live** | doc 04 |
-| Buzz lane — vertical snap-scroll video/media reels | **Live** | doc 04 |
-| Post interactions — threaded replies, likes, reposts, bookmarks, share (native / copy link / WhatsApp), view counts on opened posts | **Live** | doc 04 |
-| Discover shell (`/discover`) — hero, quick actions, category grid, New Products, New Members, membership CTA | **Live** | doc 04 |
-| Bulletin — published inside the feed (no separate page) | **Live** | doc 04 |
-| In-app + Web Push notifications (VAPID, realtime badge, per-type preferences) | **Live** | doc 04, doc 06 |
-| RFQ board (`/rfq`) — listings with 1–90 day expiry, logged contact reveal | **Live** | doc 04 |
-| Admin **Feature Access** toggle (opens Market + RFQ to guests/free during pilot) | **Live** | doc 04, doc 13 |
-| Dashboard — 5-step OnboardingChecklist + install promo card | **Live** | doc 03 |
-| Public authority pages — `/faq` (JSON-LD), `/knowledge` + `/knowledge/:slug`, `/contact` | **Live** | doc 04 |
-| Forms page (`/forms`) — Advertise + Submit Circular tabs | **Live** | doc 04 |
-| KYC verification (admin-managed via `/account/moderation`) | **Live** | doc 23 |
-| Live ticker, Market News and Humor modules | **Removed v3.3** | doc 04 |
-| Markdown documentation hub — 29 docs (7 public 00–06 + 22 internal 07–28) | **Live** | doc 06 |
-| One-tap PWA install (service worker via `vite-plugin-pwa`, install bar + promo cards; iOS gets Share → Add to Home Screen steps) | **Live** | doc 06 |
-| Razorpay payment links | **Built, test-mode only** — live keys gated on the legal pack going public (LEGAL-001) | doc 12 |
-| Legal pack as public routes (`/privacy`, `/terms`, `/refund`, `/grievance`) | **Drafted, not promoted** — counsel review pending | docs 19–22 |
-| Pilot — 8–10 sellers + 8–10 buyers, 90 days | **Active** (PILOT-001) | doc 27 |
-| Feature Access + "verification not required" toggles | **Live and currently ON** — every signed-in member can post, comment, follow and use RFQ | doc 04 |
-| Behavioral Intelligence Layer (BIL) | **Planned**, external API (TECH-001) | doc 05, doc 14 |
-| Buyer reputation scoring (GOV-001) | **Planned** — Q3 2026 | doc 06 |
-| Demand-trend chips on every card | **Planned** | doc 06 |
-| WhatsApp Business API | **Out of scope** (TECH-003) — `wa.me` deeplinks only | doc 11 |
-| Lead Packs module | **Killed** (BIZ-001) | doc 11 |
-| Silver / Gold / Platinum tiers | **Killed** (BIZ-002) — single ₹10K Paid tier | doc 11 |
-| Separate broker price / "₹5K addon" | **Killed** (BIZ-003) — broker is a flag on the same ₹10K plan | doc 11 |
-| /forms Verification Request flow | **Removed v3.1.3** — verification is admin-driven only | doc 04 |
+## Access: intent versus checked implementation
 
-## Reading path by role
+Guests can view permitted public feed/discovery content but must sign in before social interaction. The two admin access settings were **ON when checked on 17 October 2026**. They relax paths that consult them, not every rule:
 
-Pick your role. Read those 3–5 docs in order. The other 24 are reference material — open them only when one of these tells you to.
+- RFQ listing reads still require authentication.
+- RFQ writes and quotations still check verified, approved, visible businesses and appropriate representation.
+- `get_company_whatsapp` still explicitly checks Paid/Broker/Admin.
+- Private chat/quotes depend on participating business access; admin tools stay admin-only.
 
-### If you are a committee member or office operator (start here)
-1. **Doc 17 — Owner Quickstart** · "where do I…?" task index.
-2. **Doc 25 — Committee Operator Guide (Non-technical)** · zero-SQL walkthrough of every committee task: approve members, publish a bulletin, flip Feature Access, run a refund, handle a grievance.
-3. **Doc 22 — Grievance & Redressal Mechanism** · the SOP the Grievance Officer follows.
-4. **Doc 13 — Operations Runbook** · for the rare situations doc 25 does not cover; pass to the developer if it asks for SQL.
+This is a documented access inconsistency, **not fixed by this documentation update**. See docs 07/15 for the hosted-policy snapshot. Do not promise that every feature is available merely because both switches are on.
 
-> **Hard rule (OPS-001):** committee and office staff never run SQL. Doc 25 is sufficient for every standing task.
+## What is implemented, proposed or unverified?
 
-### If you are a prospective member
-1. **Doc 01 — Vision & Pitch** · why the platform exists and what it does for you.
-2. **Doc 02 — Business & Scope** · what's included for ₹10,000/year, what's not.
-3. **Doc 27 — Pilot Plan & Success Criteria** *(internal)* · ask your committee contact for access.
+| State | Capability |
+|---|---|
+| Implemented | Home feed/channels, social interactions, safe author-name lookup, business/person following, keyboard-aware compose/replies |
+| Implemented | Catalogue/business/team pages, RFQ/quotations/deal-room source and hosted entities |
+| Implemented | In-app notification history/realtime badge, Web Push infrastructure, PWA install promotion and branded startup |
+| Conditional | Native install prompt and push: browser support, HTTPS, subscription, permission and OS settings required |
+| Disabled / historical | Membership payment management; `memberships` is absent and client helpers return disabled errors |
+| Pending | Counsel-approved public Privacy/Terms/Refund/Grievance routes, commercial packaging, BIL automation, retention job |
+| Unverified | Pilot dates/progress/outcome, migration execution, recovery guarantees, device push/sound delivery |
 
-### If you are a regulator or government auditor
-1. **About the Association** above — the 95-year context.
-2. **Doc 19 — Privacy Policy** · DPDP Act 2023 grounded notice.
-3. **Doc 22 — Grievance & Redressal Mechanism** · IT Rules 2021 §3(11) compliance.
-4. **Doc 23 — KYC & Verification Policy** · what we check at each tier.
-5. **Doc 26 — Data Retention & Deletion Policy** · per data class.
+Retained commercial baseline: Free / ₹10,000/year Paid, broker same fee without addon. Current `/membership` and `/apply` are account/business onboarding, **not a paid checkout**. Do not imply purchase of verification. Legal/SLA/refund texts remain drafts or proposed commitments until approved.
 
-### If you are a developer inheriting the build
-1. **Doc 05 — Architecture & Tech** · stack, layering rules, data model, RLS model, BIL contract.
-2. **Doc 06 — Build & Operations** · local setup, required secrets, deploy, the canonical roadmap.
-3. **Doc 07 — Database Reference** *(internal)* · every table, RLS policy, function, trigger.
-4. **Doc 11 — Decisions Log** *(internal)* · every locked decision with a permanent ID.
-5. **Doc 24 — SOW & Maintenance SLA** *(internal)* · contractual context for a solo-engineered build.
+## Documentation reading order
 
-## Trade terms you'll hit immediately
+29 docs: **7 public-marked (00–06)** and **22 owner-only (07–28)**. The whole `/documents` UI has a shared password gate. Public-marked means client-bundled specification; internal bodies are fetched only after server-side password verification. This is not equivalent to public policy publication.
 
-The full glossary lives in **doc 14**. These six are the ones the very first page of doc 01 uses without defining:
+- **New member:** 00 → 01 → 03 → 04.
+- **Committee/office:** 00 → 25 (non-technical guide) → 22 (grievances) → 27 (pilot targets).
+- **Developer:** 05 → 07 → 09 → 15 → 16 → 13.
+- **Policy reviewer:** 19 → 20 → 21 → 22 → 23 → 26; 24 is an unsigned SOW template.
 
-- **Mamra** — a small, sweet, premium grade of almond (Iranian origin).
-- **Sanora** — a larger, harder Californian-style almond grade.
-- **Mandi** — wholesale physical market; here, the historic Masjid Bunder market.
-- **APMC** — Agricultural Produce Market Committee; the regulated wholesale market complex in Vashi, Navi Mumbai.
-- **Storefront** — a Paid member's curated product showcase at `/store/:slug`, with brand strip and category tabs.
-- **Updates / Buzz** — the two feed lanes. Updates carries rates, notices, sourcing and bulletins; Buzz carries humor, gossip and member news as snap-scroll media.
-- **BIL** — Behavioral Intelligence Layer; the planned external service that turns member activity into demand-trend chips and buyer-reputation scores. Not live today.
+**Committee never runs SQL (OPS-001).** Unsupported actions are handed to the developer, not invented as UI buttons. Named Grievance & Data Protection Officer: **Aditya Parmar**, grievance@mddma.org. Contact details and any legal statutory interpretations require owner/counsel confirmation before policy publication.
 
-## A note on the build
-
-The platform was built and is maintained by a single engineer under a Statement of Work plus an ongoing maintenance SLA. The full contractual context — scope, severity targets, IP, succession — lives in **doc 24**. Anything requiring multi-engineer coordination (a security audit, a large migration, a second build phase) is explicitly out of the standing SLA and is scoped separately.
-
-## Read next
-
-Pick your role above and follow the 3–5 docs it points to. Then come back here and look at the status table again — most "is this live?" questions are answered in the table without opening a single other file.
+Current project context reports `https://gbaug.lovable.app` as published, with no custom domain attached. Historical mddma.org links are not evidence that the domain or policy routes are live.

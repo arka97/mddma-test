@@ -1,20 +1,10 @@
 # Terms of Service
 
-
-> **v3.2 Update Notice (July 2026)** — This doc has been updated for **v3.2**. Key changes since v3.1.3:
->
-> - **RFQ is back**, under a new schema. The `/rfq` route is live, backed by the `rfq_listings` and `rfq_contact_reveals` tables. It is open to paid members and admins; contact reveal is logged. The old `rfqs` / `inquiry_products` / `rfq_responses` tables, the multi-item RFQ cart, `CartContext`, `CartFab` / `CartDrawer` / `RFQModal`, and the `/account/rfqs` inbox all remain **removed**. Any older reference below to those artifacts is historical.
-> - **`/market` is now the Community Feed**, not Market News. It uses `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS). Paid + admin can post; free members are read-only for the first 7 days; guests see a teaser; anonymous posting is paid-only.
-> - **Mobile bottom tab bar** order is now **Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`)**.
-> - **Admin Feature Access toggle** — while the pilot is running, admins can flip a global switch (`app_settings.features_open_to_all`, exposed via the `is_features_open()` SQL function) that temporarily opens Community Feed posts and RFQ listings to guests and free members. RLS on `community_posts` and `rfq_listings` reads `is_features_open()`; the frontend reads `featuresOpen` / `isEffectivePaid` from `RoleContext`. Managed from **Admin → Moderation → Feature Access**.
->
-> The **/forms Verification Request** flow remains **removed** — members are verified during admin onboarding, not via a self-serve form.
-
----
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 
 **Effective date:** to be set on publication.
-**Last reviewed:** draft v1, pending legal review.
+**Last reviewed:** technical alignment 17 October 2026; draft pending qualified legal review. Numeric liability/notice commitments remain unchanged.
 
 > **Draft notice.** First draft authored by the Lovable agent; counsel review required before publication.
 
@@ -43,12 +33,12 @@ Membership in MDDMA, where required, is at the Association's discretion.
 
 ## 4. Roles and membership
 
-The Platform supports four roles: **Guest, Free Member, Paid Member, Admin**. A Paid Member may additionally hold the **broker** flag. Pricing, inclusions and the cancellation process are described in doc 22 (Refund & Cancellation Policy) and on `/membership`.
+The platform enum is **free_member, paid_member, broker, admin**; Guest is a signed-out state. Business verification, team representation and MDDMA affiliation are separate. The historical commercial baseline and draft cancellation terms are in docs 12 and **21**. Current /membership explains account/business access, not paid checkout; monetisation remains separately designed.
 
 ## 5. Listings, RFQs and trade conduct
 
-- Sellers ("Paid Members") may list companies, products, variants and brands. Listings must be **accurate, lawful, non-misleading** and may not infringe IP.
-- Buyers ("Free or Paid Members") may submit Requests for Quotation. By submitting an RFQ you authorise the seller to contact you about that request.
+- Authorised business participants may list companies, products, variants and brands under current access/approval rules. Listings must be **accurate, lawful, non-misleading** and may not infringe IP.
+- RFQ board access requires authentication; posting/quoting depends on current business verification and representation checks. Private quotations and deal-room messages are shared only under participant access rules. User-initiated contact may also use direct WhatsApp/call links.
 - **MDDMA is a directory and communication facilitator, not a party to any trade.** Contracts of sale, delivery, payment and dispute resolution are exclusively between the buyer and seller.
 - We do not verify the truth of every claim made in a listing or RFQ. The verification badges (`verification_tier`) reflect documents reviewed at a point in time; they are not a guarantee of solvency, quality or future conduct.
 
@@ -74,7 +64,7 @@ We may remove, edit, hide or pin any content at our discretion, in particular if
 
 ## 9. Payments
 
-Membership fees are charged in INR via Razorpay. Detailed terms are in doc 22 (Refund & Cancellation). GST is applied as required. Invoices are issued by MDDMA.
+The earlier proposed membership-payment model uses INR/Razorpay; detailed draft refund terms are in **doc 21**. Current in-app payment/activation management is disabled and no hosted membership table exists. No live fee collection, invoice automation or tax treatment is established by this text; final commercial terms require approval.
 
 ## 10. Intellectual property
 
@@ -82,11 +72,11 @@ The Platform's design system, code, documentation, the MDDMA name and logo are o
 
 ## 11. Third-party services
 
-The Platform integrates with Lovable Cloud (hosting), Razorpay (payments), Google (OAuth), and may integrate Discourse (community). Your use of those services is governed by their own terms.
+Current/retained integrations include Lovable Cloud, Google sign-in/business-location tooling, browser/OS push and retained Razorpay code. The active community is native, not Discourse. The availability and terms of each service must be confirmed; retained payment code does not mean a working checkout.
 
 ## 12. Disclaimers
 
-The Platform is provided **"as is" and "as available"**. We do not warrant that listings are accurate, that prices quoted will be honoured, that members will behave lawfully, or that the Platform will be uninterrupted or error-free. Trade signals (stock bands, demand trends, ticker) are advisory and **must not** be relied on for trading decisions.
+The Platform is provided **"as is" and "as available"**. We do not warrant that listings are accurate, that prices quoted will be honoured, that members will behave lawfully, or that the Platform will be uninterrupted or error-free. Trade signals (price ranges, stock bands and demand trends) are advisory and **must not** be relied on for trading decisions.
 
 ## 13. Limitation of liability
 
@@ -120,3 +110,7 @@ For any complaint about these Terms or content on the Platform, contact the Grie
 - **Address:** c/o MDDMA Office, Sector 19, APMC Market, Vashi, Navi Mumbai 400705
 - **Acknowledgement:** within 24 hours.
 - **Resolution target:** within 15 days (IT Rules §3(11)(c)).
+
+## Current community, installation and publication
+
+Updates/Buzz support text/media/polls, threaded replies, likes/reposts/saves, business/person following and user-initiated native/copy/WhatsApp sharing. Anonymous mode is not anonymity from authorised compliance review. Media may be guest-viewable under current signing policies. Optional push/install depend on device support and permission, not guaranteed delivery/sound. There is no legacy RFQ cart. This remains an ineffective draft until counsel-approved /terms publication and valid acceptance capture; no public /terms route exists today.

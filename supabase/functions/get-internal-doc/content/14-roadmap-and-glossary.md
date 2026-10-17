@@ -1,191 +1,78 @@
 # Roadmap & Glossary
 
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
-> **v3.2 Update Notice (July 2026)** — This doc has been updated for **v3.2**. Key changes since v3.1.3:
->
-> - **RFQ is back**, under a new schema. The `/rfq` route is live, backed by the `rfq_listings` and `rfq_contact_reveals` tables. It is open to paid members and admins; contact reveal is logged. The old `rfqs` / `inquiry_products` / `rfq_responses` tables, the multi-item RFQ cart, `CartContext`, `CartFab` / `CartDrawer` / `RFQModal`, and the `/account/rfqs` inbox all remain **removed**. Any older reference below to those artifacts is historical.
-> - **`/market` is now the Community Feed**, not Market News. It uses `community_posts`, `post_comments`, `post_likes`, `post_views`, and `anonymous_identity_log` (admin-only RLS). Paid + admin can post; free members are read-only for the first 7 days; guests see a teaser; anonymous posting is paid-only.
-> - **Mobile bottom tab bar** order is now **Home (`/`) · Market (`/market`) · RFQ (`/rfq`) · Members (`/directory`) · Account (`/dashboard`)**.
-> - **Admin Feature Access toggle** — while the pilot is running, admins can flip a global switch (`app_settings.features_open_to_all`, exposed via the `is_features_open()` SQL function) that temporarily opens Community Feed posts and RFQ listings to guests and free members. RLS on `community_posts` and `rfq_listings` reads `is_features_open()`; the frontend reads `featuresOpen` / `isEffectivePaid` from `RoleContext`. Managed from **Admin → Moderation → Feature Access**.
->
-> The **/forms Verification Request** flow remains **removed** — members are verified during admin onboarding, not via a self-serve form.
+## Status-first roadmap
 
----
+Calendar dates in earlier versions were proposals, not evidence of completed work. As of this review, pilot week/start/end and committee outcome are **unverified**. Do not carry forward “Week 3 of 12” from May into October.
 
+| State | Capability / gate |
+|---|---|
+| Implemented in source | Feed as home, Updates/Buzz/Following/Bulletin chips, replies/reposts/simplified share, profile enrichment |
+| Implemented in source | Unified mobile chrome/FAB geometry, keyboard-aware compose/replies, PWA installation promotion/splash |
+| Source + hosted entities checked | RFQ listings/quotations, private deal rooms, team/business context, notification tables and private media |
+| Needs end-to-end evidence | Cross-device push/sound delivery, restored business review workflow, full permissions/override consistency |
+| Pending legal/committee approval | Public legal pack, binding SLA/refund terms, commercial packaging |
+| Not runnable today | Membership payment/activation flow; hosted membership table absent |
+| Planned | External BIL computation and automated buyer reputation, retention/anonymisation job |
+| Owner confirmation required | Pilot progress/outcome, migration execution, founding-window availability, production domain and recovery guarantees |
 
-Phase-2 BIL contract, the next 6 months of work, the rejected-ideas graveyard, and the full glossary of trade and platform terms.
+## Next sequence (not delivery dates)
 
-## Roadmap
+1. Reconcile open-feature/verification switch copy with actual RFQ/quote/contact policies.
+2. Validate business review and representative access through real sessions.
+3. Obtain counsel/committee sign-off and promote legal pages.
+4. Restore/test payment integration only against approved commercial terms.
+5. Run push/device/recovery/security drills and the two-sided pilot review.
+6. Scope external BIL and retention automation with measurable contracts.
 
-```mermaid
-gantt
-  title MDDMA next six months
-  dateFormat  YYYY-MM-DD
-  section Pilot
-  Pilot · 8–10 two-sided (PILOT-001)  :active, 2026-05-03, 12w
-  W12 continue/iterate/sunset call    :        2026-07-26, 1w
-  Public launch (post-pilot)          :        2026-08-02, 1w
-  section Legal & operator pack
-  Docs 18-28 drafted                  :done,   2026-05-20, 1w
-  Promote Privacy/Terms/Refund pages  :        2026-05-24, 1w
-  Counsel review + sign-off           :        2026-05-31, 2w
-  section Payments
-  Razorpay live mode + webhook drill  :        2026-05-31, 2w
-  section BIL Phase 2
-  BIL API spec frozen                 :        2026-06-21, 1w
-  BIL signal endpoints                :        2026-06-28, 4w
-  Buyer-reputation feedback loop      :        2026-07-26, 3w
-  section Polish
-  PWA push notifications              :        2026-08-16, 2w
-  Reporting dashboard for admins      :        2026-08-30, 3w
-  section Hardening
-  Backup + restore drill              :        2026-09-20, 1w
-  Security review (third party)       :        2026-09-27, 2w
-```
+The pilot target remains **8–10 seller anchors + 8–10 buyer anchors for 90 days** (PILOT-001). Doc 27 defines targets, not achieved results. No paid acquisition during pilot; approved public authority content supports warm-intro credibility (GTM-001).
 
-The Phase 2 BIL is the largest single piece of work — it converts the existing `demand_score`, `trend_direction`, and `priority_score` fields from manual seeds into computed signals. The pilot (doc 27) and the legal-stack-as-Razorpay-prerequisite (LEGAL-001) now precede BIL in the sequence.
+## BIL proposal — not a deployed API
 
-## Behavioral Intelligence Layer — contract
-
-BIL lives outside Lovable Cloud (TECH-001). The frontend talks to it over HTTPS using `BIL_API_URL`.
-
-### Endpoints (proposed v1)
+BIL is a future external HTTPS service (TECH-001), not edge inference. Proposed endpoints:
 
 ```text
-GET  /signals/products?ids=<uuid,uuid,...>
-GET  /signals/companies?ids=<uuid,uuid,...>
-POST /signals/events           # frontend posts view/click/RFQ-submit events
-GET  /signals/buyer/:user_id   # current buyer reputation breakdown
+GET /signals/products?ids=...
+GET /signals/companies?ids=...
+POST /signals/events
+GET /signals/buyer/:id
 ```
 
-### `GET /signals/products` response shape
+Proposed signal fields: product ID, demand_score, trend_direction, stock_band, rank_in_category, computed_at. Proposed cache/performance goals from the earlier spec: product/company signals 60s cache and p95 <200ms; event ack <100ms; buyer breakdown 5min cache and p95 <300ms. These are **design targets**, not a current SLA. Current repositories render stored market/product signals; no verified external BIL ingest is established. Authenticate user-scoped reads; keep ingest secrets server-side and minimise event identity.
 
-```json
-{
-  "signals": [
-    {
-      "product_id": "uuid",
-      "demand_score": 0,
-      "trend_direction": "rising | stable | cooling",
-      "stock_band": "high | medium | low",
-      "rank_in_category": 0,
-      "computed_at": "iso8601"
-    }
-  ]
-}
-```
+## Rejected/retired
 
-### `POST /signals/events` body
-
-```json
-{
-  "user_id": "uuid|null",
-  "session_id": "string",
-  "events": [
-    { "type": "product_view", "product_id": "uuid", "ts": "iso8601" },
-    { "type": "rfq_submit", "rfq_id": "uuid", "ts": "iso8601" }
-  ]
-}
-```
-
-### Authentication
-
-JWT bearer (Supabase access token) for user-scoped reads; HMAC-signed shared secret for server-to-server (`BIL_INGEST_SECRET`).
-
-### Fallback behaviour
-
-If `BIL_API_URL` is unset or the API returns 5xx, the frontend reads the manually-seeded values from the `products` table (`demand_score`, `trend_direction`, `stock_band`). UI is identical; only the source changes. This is what makes the pilot work without BIL deployed.
-
-### Cache & SLA targets
-
-| Endpoint | Cache | SLA |
-|---|---|---|
-| `GET /signals/products` | 60s edge cache | p95 < 200ms |
-| `GET /signals/companies` | 60s | p95 < 200ms |
-| `POST /signals/events` | none, fire-and-forget | p95 < 100ms ack |
-| `GET /signals/buyer/:id` | 5min | p95 < 300ms |
-
-## Rejected ideas (graveyard)
-
-Do not re-pitch these without a written reason that defeats the original objection. See `decisions-log` for the full ID-versioned record.
-
-| Idea | Why rejected |
-|---|---|
-| Lead Packs (BIZ-001) | Conflicts with Association trust model |
-| Silver / Gold / Platinum tiers (BIZ-002) | Decision fatigue, no revenue lift |
-| Separate ₹5,000 broker addon (BIZ-003) | Operationally messy; flag is enough |
-| Public price comparison (UX-001) | Erodes member margins |
-| Anonymous RFQs (UX-002) | Reputation requires identity |
-| WhatsApp Business API (TECH-003) | Cost + compliance; `wa.me` suffices |
-| BIL inside edge functions (TECH-001) | Cold-start + scale issues |
-| In-platform escrow | Trade settlement stays bank-to-bank |
-| Native mobile apps | PWA install covers the use case |
-| Storing roles on `profiles` | Privilege escalation risk; roles live in `user_roles` |
+Lead Packs, Silver/Gold/Platinum, separate broker addon, exact-price comparison, anonymous RFQ mutations, WhatsApp Business API, native mobile builds, in-platform escrow, and roles in editable profiles remain rejected. The legacy multi-item RFQ cart/inbox is removed; new listing/quotation/deal-room features do not revive that cart.
 
 ## Glossary
 
-### Trade terms
-
 | Term | Meaning |
 |---|---|
-| **Lot** | A discrete shipment of a commodity, usually one container or one bagged batch. |
-| **Origin** | Country / region where the commodity was grown or processed. Iran, Afghanistan, Saudi Arabia, USA, Chile, etc. |
-| **Grade** | Quality classification (e.g. Mamra, Sanora, California Nonpareil). Variant-level. |
-| **Variant** | A specific grade + packaging combination of a product. |
-| **MOQ** | Minimum Order Quantity — the smallest amount a seller will accept for an RFQ. |
-| **GSTIN** | 15-character India tax ID. Validated regex `^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$`. |
-| **APMC** | Agricultural Produce Market Committee — physical mandi structure that MDDMA digitally complements. |
-| **Mandi** | Wholesale physical market. |
-| **Importer** | Member who brings supply into India, typically through Mumbai port. |
-| **Wholesaler** | Member who buys in bulk from importers and resells to retailers. |
-| **Broker** | Member who matches supply and demand without taking ownership. Flag, not a price. |
+| G-BAU-G | App/network operated by MDDMA |
+| MDDMA | Mumbai Dryfruits & Dates Merchants Association; affiliation separate from business verification |
+| Lot / grade / origin | Shipment batch / quality classification / growing or processing location |
+| Mamra / Sanora | Trade almond-grade terminology |
+| APMC / mandi | Regulated market committee/complex / physical wholesale market |
+| MOQ | Minimum order quantity |
+| GSTIN / FSSAI / IEC | Indian tax registration / food-business licence / import-export identifier |
+| Controlled transparency | Commodity price ranges, stock bands and trends, not exact price/stock exposure |
+| Updates / Buzz | Informational list feed / humor, gossip and member-news media lane |
+| Following | Posts selected from followed people and businesses |
+| Bulletin | Association circulars integrated into feed; `/circulars` redirects |
+| RFQ | Buy/sell intent listing with expiry; authenticated network read and business-gated writes |
+| Quotation | Private indicative/formal response with range terms, validity and status |
+| Deal room | Private company conversation, possibly linked to RFQ/quote/product |
+| Team role | owner/admin/editor/viewer within a company; not a platform RBAC role |
+| Verified business | Evidence-reviewed business identity, not solvency/quality guarantee |
+| Paid/Broker | Legacy platform roles; broker has no separate fee |
+| Founding lock/window | Historical proposed commercial promises; not an implemented current subscription |
+| PWA | Installable web app; platform-dependent install/push behavior |
+| FAB | Floating Post action, safe-area-positioned |
+| RLS / RPC | Database row-access policy / callable database function |
+| VAPID / Web Push | Application-server signing / browser push delivery |
+| BIL | Planned external Behavioral Intelligence Layer |
+| Pattern D | Bhuta/committee warm-intro acquisition |
+| Legal hold | Documented exception to a retention/deletion schedule |
 
-### Platform terms
-
-| Term | Meaning |
-|---|---|
-| **Controlled transparency** | The thesis that platform shows enough to enable trade and hides enough to preserve margin. UX-001. |
-| **Stock band** | High / Medium / Low — never raw stock count. |
-| **Demand trend** | Rising / Stable / Cooling — never raw search count. |
-| **Range price** | `₹X–₹Y/unit` — the only legal price render. |
-| **RFQ** | Request For Quotation. The platform's core artifact. Auth-required, persistent, multi-item. |
-| **RFQ cart** | Multi-item RFQ in progress. FAB + drawer UI. Drafts auto-save to `localStorage`. |
-| **Cart drawer** | Side panel that lists cart items and the submit button. |
-| **Buyer reputation tier** | One of `new`, `emerging`, `established`, `trusted`, derived from `buyer_reputation_score`. |
-| **Verification tier** | KYC ladder: `unverified` → `email` → `company` → `gst`. |
-| **Founder admin** | `admin@mddma.org` — bypasses paid + KYC checks. |
-| **Founding lock** | 24-month price-and-tier guarantee on the first paid signup. |
-| **Founding window** | The first 90 days after public go-live during which anchors get the founding-lock price (doc 27, doc 28). |
-| **Role simulator** | Header dropdown that lets you preview the site as any role. Demo only — no server-side effect. |
-| **Live discovery** | Directory / Storefront / Products read live DB rows. Sample data is preserved for tests but not merged into production lists (see DATA-001 in `decisions-log`). |
-| **Live ticker** | Global scrolling band at the top of the page showing `commodity range ±%` from priced products. |
-| **`<GuardedPrice>`** | Single component that renders price ranges. Refuses raw values. |
-| **BIL** | Behavioral Intelligence Layer — the external API. |
-| **BIL signal** | Any one of: `demand_score`, `trend_direction`, `stock_band`, `rank_in_category`. |
-| **wa.me deeplink** | A `https://wa.me/<phone>?text=...` URL that opens WhatsApp with a prefilled message. |
-| **Grievance Officer** | The named individual responsible for DPDP / IT-Rules complaints. Currently **Aditya Parmar** — see LEGAL-002 and doc 22. |
-| **Anchor (cohort)** | One of the 25 Paid members onboarded via Bhuta-led 1:1 intros during the pilot (doc 27, doc 28). |
-| **Pattern D** | The locked acquisition pattern: warm intros via Bhuta + committee only, no cold outreach. See doc 28. |
-| **Legal hold** | A retention exception applied to rows that would otherwise be anonymised or deleted, triggered by an active dispute, regulator notice, or law-enforcement preservation request (doc 26 §6). |
-| **DPDP** | Digital Personal Data Protection Act 2023 — India's primary data-protection statute. |
-| **IT Rules 2021** | Information Technology (Intermediary Guidelines and Digital Media Ethics Code) Rules — sets the §3(11) grievance officer + 15-day SLA. |
-
-### Acronyms
-
-| | |
-|---|---|
-| MDDMA | Mumbai Dry-fruits & Dates Merchants Association |
-| BIL | Behavioral Intelligence Layer |
-| RFQ | Request For Quotation |
-| RBAC | Role-Based Access Control |
-| RLS | Row-Level Security |
-| RPC | Remote Procedure Call (Postgres function exposed via PostgREST) |
-| PWA | Progressive Web App |
-| KYC | Know Your Customer |
-| GSTIN | Goods & Services Tax Identification Number |
-| MOQ | Minimum Order Quantity |
-| FAB | Floating Action Button |
-| HSL | Hue / Saturation / Lightness (color model) |
-| SDK | Software Development Kit |
-| HMAC | Hash-based Message Authentication Code |
-| UPI | Unified Payments Interface |
+The LiveTicker, old Market News, standalone Humor and Discourse surfaces are retired. Legacy files/tables may remain without being active routes. See doc 09 for current paths and doc 26 for retention uncertainties.
