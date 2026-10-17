@@ -3,7 +3,7 @@
 > **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 
-The Platform's single biggest trust claim — a *locked KYC-maximalist* product decision (memory). This doc is the **policy** behind the mechanics already described in docs 12 and 16: what we collect, how we collect it, who can see it, how long we keep it, and how a member is promoted, demoted or rejected.
+**Draft verification/evidence policy.** Current business onboarding and verification, MDDMA Association affiliation and future commercial packaging are separate. The old “locked KYC-maximalist” description is not an accurate blanket access gate: a verification override exists, while certain hosted RFQ/quotation checks still directly require verified businesses. This document defines proposed evidence handling, not proof an upload flow is live.
 
 ## 1. Verification tiers (recap)
 
@@ -14,7 +14,7 @@ The `profiles.verification_tier` enum, in ascending trust:
 | `unverified` | Nothing beyond email | None |
 | `email` | Email link confirmation | "Email verified" |
 | `company` | Company name + address + at least one document (e.g. utility bill / GST cert) | "Company verified" |
-| `gst` | Valid, active GSTIN matched to company name; PAN; for food handlers FSSAI; for importers/exporters IEC | "GST-verified" (gold) |
+| `gst` | Valid, active GSTIN matched to company name; PAN; for food handlers FSSAI; for importers/exporters IEC | "GST-verified" (use semantic verified/success styling) |
 
 Each promotion records a timestamp (`email_verified_at`, `company_verified_at`, `gst_verified_at`). Tiers are monotonic by intent but reversible by admin if fraud is found.
 
@@ -37,7 +37,7 @@ KYC uploads use a dedicated private storage bucket (`kyc-documents`, to be provi
 - SVG is rejected (XSS surface).
 - Files are stored **private**; reads require an admin-issued signed URL with a short TTL.
 
-Until that flow ships, KYC documents are accepted out-of-band (email to grievance@mddma.org) and stored on the office NAS under the same retention rules. The Grievance Officer is the sole custodian.
+Until a reviewed private upload flow ships, contact the Grievance Officer for approved secure submission instructions. The historical email/NAS process is a proposal; custody, encryption, access and retention must be confirmed before collecting personal proofs. No public display-media bucket may store KYC.
 
 ## 4. Who can see KYC documents
 
@@ -46,7 +46,7 @@ Until that flow ships, KYC documents are accepted out-of-band (email to grievanc
 | The submitting member | Can re-upload but cannot list previously uploaded documents (write-only by design) |
 | Admin (Aditya Parmar + designated office staff) | Read via signed URL, audit-logged |
 | Other members | **Never** — only the resulting tier badge is public |
-| Lovable Cloud staff | Only at-rest encrypted blobs; not browsed |
+| Lovable Cloud processor | Access/handling according to verified processor terms; do not claim staff can only see encrypted blobs without evidence |
 | Law enforcement | Only on lawful written request (DPDP §17(1)(c)) |
 
 ## 5. Promotion procedure
@@ -56,7 +56,7 @@ Until that flow ships, KYC documents are accepted out-of-band (email to grievanc
 3. If approved:
    - `verification_tier` is updated by the admin (server-side, bypassing the `prevent_profile_privilege_escalation` trigger via the `admin` role check).
    - The relevant `*_verified_at` timestamp is set.
-   - Member receives an in-app and email notification.
+   - Staff inform the member through an approved channel. Automatic verification/rejection email delivery is not established by current UI/source; do not promise it.
 4. If rejected:
    - Member is told the reason in plain English (e.g. "GSTIN does not match company name on record").
    - Member may re-submit corrected documents.
@@ -102,3 +102,7 @@ The Grievance Officer performs a sample audit every 12 months:
 - Any deviations recorded in `kyc-audit-YYYY.xlsx`.
 
 The audit report is reviewed by the MDDMA committee chair.
+
+## Current business application and implementation gaps
+
+/apply stores name, country/city, tax/business ID and food licence identifiers (legacy gstin/fssai columns), capabilities and optional broker category; it creates a hidden pending company, not a document upload or membership payment. Overseas equivalents are accepted in current form copy, so the final evidence ladder must account for jurisdiction without inventing a new legal threshold here. Current moderation Companies UI has Verify/Unverify and Hide/Unhide, not a full document review/rejection/resubmission flow. No kyc-documents bucket exists. Tier/badge does not guarantee inventory, fulfilment, solvency or product quality. Existing review times/retention/promises above remain draft commitments; reconcile doc 19 revocation wording with section 7 before publication. Override state is not permission to display a false verification badge.

@@ -3,7 +3,7 @@
 > **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 
-Closes the gap between docs 02 (Business & Scope) and 06 (Build & Operations): we have milestones and a deployment plan but no defined **pilot cohort, duration, success metrics, or kill-switch criteria**.
+**Pilot plan and target metrics, not evidence of an active/completed pilot.** Actual kickoff, progress, cohort activation, payments, feedback and committee outcome are unverified. The old 3 May/12-week Gantt would have ended in July; it cannot establish “Week 3” in October.
 
 ## 1. Pilot definition
 
@@ -29,7 +29,7 @@ Pilot is **two-sided** — sellers alone do not validate the platform. Locked at
 | W0 | **Pre-launch** | Privacy / Terms / Refund / Grievance live; founding-window banner up; 8–10 seller anchors + 8–10 buyer anchors privately briefed |
 | W1–W2 | **Soft launch** | Anchors only; founding-window pricing; daily monitoring; bug bashes |
 | W3–W4 | **Open beta** | Free observers invited; first round of RFQs encouraged; first circular published |
-| W5–W8 | **Steady state** | Public content surface (home, about, knowledge, FAQ, circulars) accruing authority; **member acquisition continues via Pattern D warm intros; no paid ads during pilot**; first refund request expected |
+| W5–W8 | **Steady state** | Public authority surface (Discover, About, Knowledge, FAQ, Contact; Bulletin inside feed) accruing authority; **member acquisition continues via Pattern D warm intros; no paid ads during pilot**; first refund request expected |
 | W9–W12 | **Review** | Data freeze, metrics report, committee decision call |
 
 ## 4. Success metrics (quantitative)
@@ -67,7 +67,7 @@ Themes are coded and presented to the committee in the W12 review.
 | H2 | Buyer reputation > seller reputation reduces low-quality RFQs | Sellers complain less about junk RFQs in W6 vs W2 calls |
 | H3 | Founding-lock pricing is enough to convert anchors without a freemium discount | Paid conversion rate ≥ 60% of anchor cohort |
 | H4 | PWA install is preferred over native app demand | If install rate is healthy AND no anchor demands native, we defer native indefinitely |
-| H5 | KYC-maximalist (the locked decision) does not scare anchors off | < 10% anchors drop out citing KYC friction |
+| H5 | Business-evidence requirements do not deter legitimate applicants | Historical target: < 10% anchors cite verification friction; account for actual override/business gates |
 
 ## 7. Risk register
 
@@ -88,7 +88,7 @@ The committee meets in week 13 with this doc, the metrics report, and the qualit
 - **1–2 Must-hit misses BUT clear path to fix in 90 days** → **ITERATE**; extend pilot 90 days with revised plan; founding window extended.
 - **≥ 3 Must-hit misses OR upheld systemic privacy complaint** → **SUNSET** the platform; communicate to members; honour outstanding memberships pro-rata per doc 21; archive data per doc 26.
 
-The decision is logged in `decisions-log` (doc 11) under a new ID (`PILOT-001`).
+Record the actual committee outcome with dated evidence and a **new unique decision ID**; PILOT-001 already identifies the cohort baseline. Do not overwrite that baseline with an unverified result.
 
 ## 9. Out of scope for the pilot
 
@@ -97,3 +97,7 @@ The decision is logged in `decisions-log` (doc 11) under a new ID (`PILOT-001`).
 - No analytics product analytics SDK beyond Cloud's built-in logs.
 - No mobile app beyond PWA.
 - No multi-language UI.
+
+## Current metric definitions and launch prerequisites
+
+The numeric targets above are retained, not reported achievements. Map RFQs to rfq_listings, responses to private quotations or separately confirmed off-platform responses, and installs to reliable device evidence; old cart Sent/Received counts do not exist. Buyer reputation/BIL is planned, so H2 cannot be claimed validated by an automated score. Razorpay-captured membership targets cannot be measured from disabled current payment helpers/absent table; restore approved payments or have the committee explicitly revise that target. W0 requires public approved policies, which are not current routes. Commercial gates and consent/recovery/device QA must be reconciled before calling this plan launch-ready. No new cohort/threshold/refund/price commitment is introduced here.

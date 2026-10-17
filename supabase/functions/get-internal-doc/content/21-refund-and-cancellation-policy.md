@@ -15,9 +15,9 @@ The MDDMA Paid Membership grants the holder:
 
 - A verified storefront on the directory,
 - Ability to list products, variants and brands,
-- Receipt of and response to RFQs from buyers,
-- Forum posting privileges,
-- Access to market signals and the live ticker,
+- RFQ listings/quotations and private company conversations according to access policy,
+- Community participation according to access policy,
+- Access to permitted market signals (the live ticker is removed),
 - The trust badges they qualify for under doc 23 (KYC Policy).
 
 The subscription term is **12 months** from the date of activation (the date the Razorpay payment is captured and `paid_member` role is granted).
@@ -64,9 +64,9 @@ The Grievance Officer (Aditya Parmar) will acknowledge within 24 hours and decid
 ## 7. Cancellation mechanics (server-side)
 
 When a refund is approved:
-1. Admin marks the refund in Razorpay dashboard.
-2. Admin runs `SELECT downgrade_to_free('<user_id>');` per doc 17.
-3. The user retains read-only access to their account; listings are hidden; RFQ history is preserved for 7 years per doc 25.
+1. The Grievance Officer verifies the payment and approves the refund under final agreed terms; an authorised finance operator handles any external payment-provider refund.
+2. Request the developer/authorised admin to reconcile role/business access with the actual record; **committee staff never run SQL**. Current membership cancellation/activation helpers are disabled, so no automatic downgrade/refund workflow is promised.
+3. Preserve required trade/payment records under **doc 26**. Access after a downgrade follows actual settings/policies; open features mean “read-only after cancellation” is not an accurate blanket claim.
 
 The user may re-subscribe at the then-current list price; founding-lock pricing does **not** carry over after a refund.
 
@@ -86,3 +86,7 @@ If you initiate a chargeback through your card issuer, we will:
 - **Grievance & Refund queries:** Aditya Parmar — grievance@mddma.org
 - **Billing queries:** info@mddma.org
 - **Postal address:** c/o MDDMA Office, Sector 19, APMC Market, Vashi, Navi Mumbai 400705
+
+## Draft terms versus current implementation
+
+This policy remains a proposed commercial commitment, not an active subscription feature. The historical ₹10,000/year baseline, 12-month term, founding-window language, 7-day/5-RFQ thresholds, pro-rata formula, ₹2,000 fee and interruption-credit provisions above are unchanged by this refresh. They require counsel/committee approval and current RFQ usage metric definitions before publication. There is no hosted membership table, active checkout, founding-lock enforcement or automated refund UI. Do not sell these promises until approved and tested; /refund is not a public route today.

@@ -3,7 +3,7 @@
 > **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 
-Required by **IT (Intermediary Guidelines) Rules 2021, Rule 3(11)** and **DPDP Act 2023, §8(9)**. This is the operational SOP that backs the Grievance Officer notice in the Privacy Policy.
+**Draft SOP, pending legal review.** The earlier statutory references and deadlines below require counsel validation for the applicable law/rules and platform classification. This document preserves proposed response commitments; it does not certify legal compliance or an operating ticket system.
 
 ## 1. Officer
 
@@ -42,7 +42,7 @@ Send an email to **grievance@mddma.org** with:
 
 Anonymous complaints are reviewed but may be deprioritised. Frivolous or vexatious complaints may be refused.
 
-## 4. Timelines (legally binding)
+## 4. Proposed response commitments (legal applicability to be confirmed)
 
 | Stage | Maximum time | Source |
 |---|---|---|
@@ -69,7 +69,7 @@ We will cooperate fully with any lawful enquiry from these bodies.
 2. Acknowledgement template sent within 24h with ticket ID `GRV-YYYYMMDD-NNN`.
 3. Ticket logged in private spreadsheet (`grievance-log.xlsx`) — columns: ID, date, complainant, category, action, closed_date.
 4. If action required in-app, route to admin via `/account/moderation`.
-5. If action requires SQL or role change, use the recipes in doc 17.
+5. Use authorised admin UI for permitted actions; if code/SQL is needed, request the developer. Committee/office staff never run SQL (OPS-001, doc 25).
 6. Close ticket with written outcome to complainant. Retain log for 7 years.
 
 ## 7. Annual transparency note
@@ -82,3 +82,7 @@ Per IT Rules 4(1)(d), once the Platform crosses the significant-social-media-int
 - Government / law-enforcement requests received and complied with
 
 The first such report will be published 12 months after Platform launch.
+
+## Publication and operational checks
+
+Aditya Parmar remains the named officer and grievance@mddma.org the designated contact. Historical office telephone/hours/languages and all legal citations should be confirmed before publication. /grievance and /privacy are not shipped public routes. Email/ticket spreadsheet handling and annual transparency reporting above are proposed procedures, not confirmed completed operations. Cases may concern Updates/Buzz, anonymous audit, quotations/private chat, push/privacy, verification or retained payment records; preserve only authorised evidence and follow doc 26 legal holds.

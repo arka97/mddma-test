@@ -5,7 +5,7 @@
 
 **Parties:** MDDMA ("Client") and the solo developer ("Contractor"). This document scopes the build phase and the ongoing maintenance phase, and protects the Contractor from indefinite, unbilled work.
 
-> **Status:** Draft template. Both parties sign a printed copy before any further deliverables; this doc is the canonical reference inside the codebase.
+> **Status:** Unsigned draft template; signature/acceptance was not verified. Rates, percentages, time limits and liability terms below are preserved as proposals, not an agreed contract. This documentation refresh does not create or amend a binding SLA.
 
 ## 1. Engagement model
 
@@ -18,14 +18,14 @@
 Everything specified across docs 01–17 of this documentation suite at the version pinned at signature, including:
 
 - Directory, Storefront, Products, Variants, Brands
-- Multi-item RFQ Cart + RFQ Inbox
-- Membership flow (Free / Paid ₹10,000) with Razorpay
-- Forum (native posts/comments + optional Discourse embed)
+- Current RFQ listing board, private quotations and company deal-room conversations; legacy cart/inbox remains removed
+- Current account/business onboarding; historical Free/Paid ₹10,000 helpers and retained Razorpay code are not a runnable checkout
+- Native home community feed: Updates/Buzz/Following/Bulletin, media/polls, threaded replies/reposts/saves
 - Admin CMS (circulars, ads, posts moderation)
 - KYC tier ladder (mechanics; the in-app KYC upload flow ships in Maintenance unless explicitly added here)
-- PWA + Install
+- PWA installation promotion/branding and notification/Web Push infrastructure; device delivery subject to support/permission
 - Documents Hub (this suite, password-gated)
-- Behavioural signals UI (stock bands, demand trend, live ticker)
+- Controlled-transparency signals UI (ranges, stock bands, demand trends); live ticker removed
 - Role simulator (demo)
 
 ## 3. Build phase — scope (explicitly out)
@@ -44,9 +44,9 @@ Everything specified across docs 01–17 of this documentation suite at the vers
 | # | Milestone | Acceptance criteria | Payment |
 |---|---|---|---|
 | M1 | Repo + design system + auth + role simulator | Demo login as each role; all design tokens documented | 25% |
-| M2 | Directory + Products + Storefront + Brands | Browsing flows complete; sample data renders | 25% |
-| M3 | RFQ Cart + RFQ Inbox + Forum + Circulars + Ads CMS | End-to-end RFQ submission and response; CMS CRUD working | 25% |
-| M4 | Membership flow + Razorpay + KYC mechanics + Documents Hub + PWA + production deploy | First real Paid member onboarded; PWA installable; sitemap published | 25% |
+| M2 | Directory + Products + Storefront + Brands | Browsing flows complete using live-only data, not production fixture rows | 25% |
+| M3 | RFQ board/quotations/chat + current community/Bulletin/Ads | Real-session commercial/interaction read-back; applicable access checks; CMS actions working | 25% |
+| M4 | Proposed payment/legal restoration plus business review, docs/PWA and release | **Not met merely by existing source:** approved legal pages, restored/tested payments if contracted, supported-device install/push and SEO parity | 25% |
 
 Each milestone is signed off within **5 business days** of demo. Unanswered sign-off after 10 business days is deemed accepted.
 
@@ -109,7 +109,7 @@ Severity is set by the Contractor in consultation with the point of contact; dis
 
 ## 12. Confidentiality
 
-Both parties keep non-public information confidential during the engagement and for 3 years after. Personal data is additionally governed by docs 19 and 25.
+Both parties keep non-public information confidential during the engagement and for 3 years after. Personal data is additionally governed by draft policies in docs 19 and 26 once approved.
 
 ## 13. Liability
 
@@ -134,3 +134,7 @@ Printed and countersigned by:
 - _______________________ (Contractor)
 - _______________________ (MDDMA Committee Chair)
 - Date: _______________
+
+## Contract reconciliation required
+
+Old public doc 02 used a different milestone share split; neither draft is proof of agreement. This doc preserves its existing numeric terms rather than silently selecting a new contract. Confirm signed scope/version, payment milestones and acceptance records with both parties. Backup schedules, storage export and IP/hosting transfer obligations are proposed contractual responsibilities, not verified completed operations. Public policy publication, payment restoration, KYC uploads, BIL and retention automation must be explicitly scoped; no past dates or unsigned template certify delivery.
