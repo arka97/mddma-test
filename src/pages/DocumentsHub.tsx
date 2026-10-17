@@ -14,7 +14,8 @@ const READ_KEY = "mddma:doc-read";
 
 async function downloadAll(password: string | null) {
   const zip = new JSZip();
-  const folder = zip.folder("mddma-docs")!;
+  const folder = zip.folder("mddma-docs");
+  if (!folder) return;
   folder.file(
     "README.md",
     `# MDDMA Documentation\n\nCanonical specification, in reading order:\n\n${DOCS.map(
@@ -114,7 +115,7 @@ const DocumentsHub = () => {
     <div className="min-h-screen bg-primary text-primary-foreground">
       <div className="max-w-5xl mx-auto px-6 py-16 space-y-12">
         <div className="text-center space-y-4">
-          <Badge className="bg-accent text-accent-foreground font-semibold text-sm px-4 py-1">v3.3 · September 2026</Badge>
+          <Badge className="bg-accent text-accent-foreground font-semibold text-sm px-4 py-1">v3.3 · October 2026</Badge>
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
             MDDMA <span className="text-gold-dark">Documentation</span>
           </h1>
@@ -164,13 +165,13 @@ const DocumentsHub = () => {
             <div className="h-px flex-1 bg-accent/30" />
           </div>
           <p className="text-center text-sm text-primary-foreground/60 max-w-2xl mx-auto">
-            Exhaustive ground-truth docs for the project owner. Not for members or admins.
+            Owner reference, technical guides and draft policies. Approval and implementation gaps are noted in each document.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">{internalDocs.map(renderCard)}</div>
         </div>
 
         <div className="text-center text-xs text-primary-foreground/50 pt-4 border-t border-primary-foreground/10">
-          Source-controlled in <code className="text-gold-dark">src/content/docs/</code>. Updated September 2026.
+          Source-controlled in <code className="text-gold-dark">src/content/docs/</code>. Reviewed 17 October 2026.
         </div>
       </div>
     </div>
