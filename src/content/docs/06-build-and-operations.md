@@ -2,165 +2,81 @@
 
 > **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
-How to set up, run, ship, and evolve G-BAU-G. This is the playbook — not a status report.
-
-## Environment setup
-
-The project is a Lovable project. Cloning into a local Vite environment requires:
+## Developer setup
 
 ```bash
 bun install
 bun run dev
 ```
 
-The frontend reads from `.env`, which Lovable Cloud manages automatically:
+Managed frontend configuration and generated Cloud client/types are not hand-edited. Private credentials belong in Lovable Cloud secrets, never source/docs. The managed service-role key/database password are not available to extract manually.
 
-| Variable | Source |
+## Function configuration
+
+| Configuration | Purpose |
 |---|---|
-| `VITE_SUPABASE_URL` | Auto-injected by Lovable Cloud |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Auto-injected by Lovable Cloud |
-| `VITE_SUPABASE_PROJECT_ID` | Auto-injected by Lovable Cloud |
+| DOCS_PASSWORD | Vault verification and per-request internal markdown |
+| VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY / VAPID_SUBJECT | Push application-server identity/signing |
+| PUSH_HOOK_SECRET | Server invocation validation for send-push |
+| RAZORPAY_KEY_ID / KEY_SECRET / WEBHOOK_SECRET, APP_URL | Retained legacy functions; not proof of enabled checkout |
+| Google Maps connection | Configured external integration; verify actual public origin restrictions |
+| Cloud-managed runtime values | Managed by platform; never document secret values |
 
-## Required secrets (edge functions)
+Do not infer a configured/healthy service from a variable name. Current membership payments are disabled; restore/review before testing payment activation. No live keys before approved public legal policies.
 
-Stored via the Lovable secrets manager; never committed. Inspect & rotate from **Lovable Cloud → Settings → Secrets**.
+## Documentation release
 
-| Secret | Used by |
-|---|---|
-| `DOCS_PASSWORD` | `verify-doc-password`, `get-internal-doc` |
-| `RAZORPAY_KEY_ID` | `razorpay-create-payment-link` |
-| `RAZORPAY_KEY_SECRET` | `razorpay-create-payment-link` |
-| `RAZORPAY_WEBHOOK_SECRET` | `razorpay-webhook` |
-| `APP_URL` | `razorpay-create-payment-link` (callback redirect) |
-| `LOVABLE_API_KEY` | Reserved — Lovable AI Gateway |
-| `GOOGLE_MAPS_API_KEY` | Google Places autocomplete (custom connection, Aditya's key) |
-| `GOOGLE_SEARCH_CONSOLE_API_KEY` | Connector-managed; SEO ingest |
-| `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_DB_URL`, `SUPABASE_JWKS`, `SUPABASE_PUBLISHABLE_KEY*`, `SUPABASE_SECRET_KEYS` | Auto-injected by Lovable Cloud — do not rotate manually |
-
-## Seeding demo data
-
-Directory, storefront, brand and product listings render **only live database rows** (see `src/lib/dataSource.ts`). Sample arrays in `src/data/sampleData.ts` and `src/data/productListings.ts` remain as type fixtures for tests and offline previews — never merged into production reads.
-
-To seed the database for a pilot:
-
-1. Sign in as an admin (`admin@mddma.org` is auto-granted `admin` by the `handle_new_user` trigger on first signup).
-2. Open `/account/moderation` → approve member companies (`review_status='approved'`, `is_hidden=false`).
-3. Publish at least 3 Bulletin entries, 1 active homepage ad, and a handful of Community Feed posts to populate the home shell.
-4. If the pilot needs all features open to everyone: **Admin → Moderation → Feature Access → toggle on**.
-
-## Internal docs bundle
-
-Edits to the 22 internal markdown docs (07–28) live in `supabase/functions/get-internal-doc/content/*.md`. After any edit, rebuild the bundle:
+29 markdown docs: public-marked 00–06 in `src/content/docs`; internal 07–28 in the function content directory. Internal bodies must not be imported into the client.
 
 ```bash
 bunx tsx scripts/build-internal-docs-bundle.ts
 ```
 
-The edge function reads from the generated `content.ts` — it does not touch the filesystem at runtime.
+Deploy `get-internal-doc` after regeneration. Check bundle coverage, current served version, invalid password rejection, hub metadata and ZIP entries. The password is held in memory and rechecked for each internal response; reload relocks the vault. Editing loose markdown without rebuilding/deploying leaves hosted owner docs stale.
 
-## Test strategy
-
-Vitest unit tests live under `src/lib/__tests__/`. They cover the pure logic that controls money and trust:
-
-- `membership.test.ts` — single-Paid-tier resolution and legacy fallback (`tierLabel`, `tierPriceInr`)
+## Test and QA
 
 ```bash
-bunx vitest run
+bunx vitest run src/lib/__tests__/membership.test.ts src/test/mobile-chrome.test.ts
 ```
 
-Run before any release. Lovable's harness runs builds automatically on every change; never run `bun run build` or `tsc` manually.
+Tests cover retained money helpers and shared mobile chrome geometry. They do not certify physical iOS scroll/keyboard behavior, all push delivery or full RLS. Lovable's preview harness builds automatically; do not run the project's build/typecheck manually in the managed editing workflow.
 
-## Sitemap
+Real-user release flow: guest reads permitted feed; signed-in member posts/replies/reposts/follows with read-back; authorised business creates RFQ/quote/chat; outsider denied private data; mobile Updates/Buzz/Following hides/restores chrome without overlay/click interception; compose/reply clears keyboard and safe areas.
 
-`scripts/generate-sitemap.ts` writes `public/sitemap.xml` for the **public authority** routes only (GTM-001) — currently `/`, `/about`, `/membership`, `/apply`, `/install`, `/circulars`, `/circulars/:slug`, `/knowledge`, `/knowledge/:slug`, `/faq`, `/contact`. Re-run after adding a new public route:
+## PWA and push
 
-```bash
-bun run scripts/generate-sitemap.ts
-```
+Generated `/sw.js` owns the app shell and imports `/push-sw.js`; do not register the handler script as a second root worker. Development/preview workers are blocked. Confirm Get App/native dialog where eligible, Safari manual iOS instructions, branded installed startup and updated cached assets.
 
-Prerendering for the public layer runs from `scripts/prerender-public.ts`.
+Push requires supported browser/HTTPS, granted permission, stored valid subscription, VAPID/hook configuration and suitable OS settings. Realtime bell/history is not sound-delivery proof. Test on an installed supported iOS/Android device; history and preferences separately.
 
-## Build, preview, publish
+## Deployment, URLs and SEO
 
-```mermaid
-flowchart LR
-  Edit[Edit in Lovable] --> Preview[Live preview<br/>id-preview-*.lovable.app]
-  Preview --> Verify[Manual QA + role simulator]
-  Verify --> Publish[Publish to lovable.app]
-  Publish --> Domain[Custom domain<br/>mddma.org]
-  Edit -.bun run build.-> Static[Static SPA bundle]
-  Static --> Publish
-```
+Use preview QA, then publish only when requested. Supplied project context currently reports `https://gbaug.lovable.app` and no custom domain attached; older mddma.org references require domain verification. Don't certify the domain from an old diagram.
 
-The published site is a static SPA. Lovable hosting handles the SPA fallback automatically — `BrowserRouter` is the right choice; do not add `_redirects` or `vercel.json`.
+`scripts/generate-sitemap.ts` / `prerender-public.ts` still use historical home/circular/paid-plan routes/content. Current feed/noindex behavior and new Discover/FAQ/Knowledge pages are not all represented consistently. Record SEO parity as **pending**; this documentation update does not change routes, head metadata or prerender scripts.
 
-## PWA install
+## Operational checks
 
-`vite-plugin-pwa` (`generateSW`) emits `/sw.js` — the app shell plus the Web Push handlers — registered from `src/lib/registerSW.ts`. Chrome/Edge therefore fire the native install prompt, which the app surfaces as a one-tap button: a "Get App" header pill, a sticky bottom install bar, and promo cards on the feed, Discover, the dashboard and the account drawer, all sharing one dismissal state. iOS Safari gets the short Share → Add to Home Screen instructions instead. `public/manifest.json` carries the G-BAU-G branding and splash configuration.
-
-## Notifications & push
-
-Database triggers write to the notification tables on replies, likes, follows, deal-room activity, announcements and market signals. The `push-vapid-key` edge function serves the public VAPID key; `send-push` delivers Web Push to stored subscriptions. The header bell subscribes to realtime updates for its badge, `/notifications` lists history, and members control delivery per type in their profile settings.
-
-## Roadmap
-
-```mermaid
-gantt
-  title G-BAU-G evolution
-  dateFormat YYYY-MM-DD
-  section Shipped
-  Cloud + RBAC + role simulator      :done, 2026-02-01, 2w
-  Directory + storefronts + products :done, 2026-02-22, 3w
-  Brands module                      :done, 2026-03-15, 2w
-  Admin CMS (Bulletin + Ads)         :done, 2026-04-01, 2w
-  Verification via admin moderation  :done, 2026-04-20, 1w
-  Markdown documentation hub         :done, 2026-04-28, 1w
-  Legal & operator doc pack (18-28)  :done, 2026-05-20, 1w
-  v3.1.3 RFQ + /forms cleanup        :done, 2026-06-01, 1w
-  v3.2 Community Feed + RFQ v2       :done, 2026-06-15, 3w
-  v3.2 review — brand + IA + a11y    :done, 2026-07-05, 2w
-  v3.3 Feed-as-Home + Updates/Buzz   :done, 2026-08-10, 3w
-  v3.3 Notifications + one-tap PWA   :done, 2026-08-24, 2w
-  Pilot · 8–10 two-sided (PILOT-001) :active, 2026-05-03, 12w
-  section Next
-  Promote Privacy/Terms/Refund pages :2026-07-25, 1w
-  Razorpay live mode + webhooks hard :2026-08-01, 2w
-  Behavioral Intelligence Layer v1   :2026-08-15, 6w
-  Buyer reputation scoring           :2026-09-15, 4w
-  Demand-trend chips on every card   :2026-10-01, 3w
-  section Later
-  Broker matchmaking automation      :2026-11-01, 6w
-  Multi-language (Marathi, Gujarati) :2026-12-01, 4w
-```
-
-Pilot is currently in **week 3 of 12** (per doc 27).
-
-## Operational runbook
-
-| Situation | Action |
+| Situation | Operator/developer response |
 |---|---|
-| **Member can't log in** | Check `auth.users` row exists; resend confirmation from Cloud → Users panel |
-| **Verification stuck** | Open `/account/moderation` → companies tab → toggle `is_verified` or update `verification_tier` |
-| **Storefront 404 / "back to directory"** | Check `companies.review_status='approved'` and `is_hidden=false`; confirm `companies_public` returns the row; confirm safe-column SELECT grants |
-| **Community Feed empty for guests but pilot needs full access** | Admin → Moderation → **Feature Access → on**; RLS re-evaluates immediately |
-| **Anonymous author needs to be identified for a compliance case** | Admin → Moderation → Anonymous log tab (RLS admin-only) |
-| **Payment received but not promoted** | Re-send the webhook event from Razorpay dashboard (idempotent), or grant the role manually via `INSERT INTO user_roles` |
-| **Doc vault password lost** | Update `DOCS_PASSWORD` in Cloud Settings; both `verify-doc-password` and `get-internal-doc` pick it up on next call |
-| **Internal doc body not updating** | Re-run `bunx tsx scripts/build-internal-docs-bundle.ts` and redeploy the edge function |
-| **Google Maps autocomplete broken** | Confirm the Google Maps custom connection is linked and the domain is allowlisted on the API key |
-| **Live site blank** | Run `cloud_status`; if `ACTIVE_HEALTHY`, hard-refresh; otherwise wait for state to recover |
-| **Upload fails silently** | Check console for `UploadValidationError` — usually file size (10 MB images / 100 MB videos) or blocked MIME (SVG blocked) |
-| **Bulletin attachment link expired** | Attachments use 1-hour signed URLs — re-request from the Bulletin page |
-| **Member asks for a refund** | Forward to grievance@mddma.org; follow doc 21 |
-| **Member asks to delete their data** | Forward to grievance@mddma.org; follow doc 26 §5 |
-| **Committee member is stuck on a task** | Point them at doc 25 (zero-SQL Committee Operator Guide) before escalating |
+| Business pending | Review evidence; current Companies UI Verify/Hide is not full Approve/Reject workflow |
+| Cannot post/follow/repost | Real session, actual request error, relevant RPC/setting and read-back |
+| RFQ blocked while switches ON | Direct verified-business policy still applies; don't bypass contact/role protection |
+| Attachment expires | Refresh one-hour signing; published-reference/session required for Bulletin |
+| Bell but no push | Trace trigger → row → hook → delivery → subscription/device; check OS settings |
+| Refund/deletion request | Officer intake, draft policy review and authorised developer handling; no automated button promised |
+| Empty membership queue | Expected disabled legacy helpers; absent hosted membership table |
+| Vault body stale | Rebuild/deploy internal bundle and check response |
+| Possible security issue | Latest logs/scan/grants/policies; don't broaden unrelated permissions |
+| Recovery needed | Confirm hosted backup/retention settings and run a restore drill; don't assume daily snapshots |
 
-## Backups & data ownership
+## Roadmap without invented dates
 
-The Postgres database, storage buckets, and edge function code all live in the Lovable Cloud project owned by the Association. Daily snapshots are retained by the platform. Member contact data and KYC documents must not be exported outside this project. Retention windows for each data class are defined in **doc 26 (Data Retention & Deletion Policy)**.
+**Implemented:** feed channels/social changes, business/team surfaces, RFQ/quote/chat entities, notification/PWA infrastructure and mobile geometry.
 
-## Read next
+**Pending validation/approval:** exact override policy consistency, complete business review flow, device push and recovery drill, public legal pack, approved commercial packaging/restored payments, external BIL and retention automation.
 
-- **01 · Vision & Pitch** — refresh on the why.
-- **05 · Architecture & Tech** — internals reference.
-- **17 · Owner Quickstart**, **25 · Committee Operator Guide**, **27 · Pilot Plan** — operator pack.
+**Unverified operational history:** pilot start/week/outcome and migration execution. Pilot plan remains 8–10 sellers + 8–10 buyers over 90 days, not “currently week 3” in October.
+
+Committee never runs SQL. Doc 25 is their UI guide; doc 13 is developer diagnostics. Read next: 08 function delivery; 15 security; 26 retention; 27 pilot targets.
