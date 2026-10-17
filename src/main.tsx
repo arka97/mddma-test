@@ -1,15 +1,6 @@
-import "@fontsource-variable/inter/index.css";
-import "@fontsource-variable/jetbrains-mono/index.css";
 import { createRoot } from "react-dom/client";
-import { HelmetProvider } from "react-helmet-async";
-import App from "./App.tsx";
+import App from "./App";
 import "./index.css";
-import { registerAppServiceWorker } from "@/lib/registerSW";
 
-createRoot(document.getElementById("root")!).render(
-  <HelmetProvider>
-    <App />
-  </HelmetProvider>,
-);
-
-void registerAppServiceWorker();
+const root = document.getElementById("root");
+if (root) createRoot(root).render(<App />);
