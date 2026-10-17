@@ -1,12 +1,3 @@
-import { AppProviders } from "@/providers/AppProviders";
-import { AppRoutes } from "@/routes";
-import { SplashScreen } from "@/components/pwa/SplashScreen";
-
-const App = () => (
-  <AppProviders>
-    <SplashScreen />
-    <AppRoutes />
-  </AppProviders>
-);
-
-export default App;
+export default function App() {
+  return <main aria-label="G-BAU-G" />;
+}
