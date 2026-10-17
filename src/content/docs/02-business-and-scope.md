@@ -1,6 +1,6 @@
 # Business & Scope
 
-> **v3.3 · Last verified September 2026** against the live app shell, database and routes.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 This document defines **what the platform is for the Association as a business**: strategic goals, monetisation, engagement scope, and the boundaries we deliberately enforce.
 

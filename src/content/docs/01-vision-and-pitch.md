@@ -1,6 +1,6 @@
 # Vision & Pitch
 
-> **v3.3 · Last verified September 2026** against the live app shell, database and routes.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 > **Thesis.** G-BAU-G does not expose the dry-fruits and dates market — it **structures and controls** it. The platform is a Behavioral Trade Operating System for the Mumbai Dryfruits & Dates Merchants Association: a verified directory, a controlled-transparency catalogue, seller storefronts and brands, a community feed and RFQ board that keep member intent on-platform, and a published authority layer (knowledge, bulletin, FAQ, contact) designed to keep pricing power inside the association.
 

@@ -1,6 +1,6 @@
 # Functional Spec
 
-> **v3.3 · Last verified September 2026** against `src/routes.tsx`, the live database, edge functions and storage buckets.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 Module-by-module specification with acceptance criteria. Each module names its data dependencies, the role gates that apply, and the behaviour expected on the happy path.
 

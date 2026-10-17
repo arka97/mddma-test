@@ -1,6 +1,6 @@
 # Start Here
 
-> **v3.3 · Last verified September 2026** against the live database (`public` schema), deployed edge functions, `src/routes.tsx`, and the header/footer/bottom-tab shells.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 If you have never opened **G-BAU-G** (the MDDMA digital platform) before, read **this page first**. Five minutes. It tells you what the Association is, what the platform actually does today, and which of the other 28 docs is the right next read for you.
 

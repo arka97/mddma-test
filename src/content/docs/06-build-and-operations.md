@@ -1,6 +1,6 @@
 # Build & Operations
 
-> **v3.3 · Last verified September 2026** against the deployed shell, edge functions, secrets manager and roadmap.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 How to set up, run, ship, and evolve G-BAU-G. This is the playbook — not a status report.
 

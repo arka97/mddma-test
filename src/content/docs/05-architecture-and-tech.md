@@ -1,6 +1,6 @@
 # Architecture & Tech
 
-> **v3.3 · Last verified September 2026** against the live schema, edge functions, storage buckets and `src/` layout.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 The implementation reference: stack, layering, data model, auth model, the Behavioral Intelligence Layer contract, and the rules that keep the codebase honest.
 

@@ -1,6 +1,6 @@
 # Product & UX
 
-> **v3.3 · Last verified September 2026** against the live app shell (`Header`, `Footer`, `MobileBottomTabBar`), routes, and role-context flags.
+> **v3.3 · Documentation reviewed 17 October 2026.** Current source and selected hosted schema, policies, settings and buckets were checked. This is not a full security audit, legal approval or device-delivery certification.
 
 How real members experience G-BAU-G — personas, what each role can see, the controlled-transparency rules that govern every screen, and how a buyer moves from discovery to contact.
 
